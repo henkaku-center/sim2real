@@ -21,6 +21,8 @@ export type WorkerRequest =
   | { type: "pause" }
   | { type: "resume" }
   | { type: "run"; steps: number } // deterministic stepping (pause first)
+  | { type: "motion"; name: string } // schedule motion in the live loop
+  | { type: "runMotion"; name: string; settleSteps?: number } // deterministic
   | { type: "getState" };
 
 export type WorkerResponse =
@@ -28,6 +30,7 @@ export type WorkerResponse =
       type: "ready";
       joints: JointInfo[];
       geoms: GeomMeta[];
+      motions: string[];
       timestep: number;
       mujocoVersion: string;
     }

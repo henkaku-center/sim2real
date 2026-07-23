@@ -3,14 +3,32 @@
 
 import MainModuleFactory, { type MainModule, type MjModel, type MjData } from "@mujoco/mujoco";
 import modelXml from "../../models/sesame.xml?raw";
+import { ctrlSchedule, motionNames, type ScheduleEntry } from "./motions";
 import type { WorkerRequest, WorkerResponse } from "./protocol";
 
 const STEP_MS = 20; // wall-clock cadence of the free-running loop
+const DEFAULT_SETTLE_STEPS = 500; // matches sim/motions.py play_native
 
 let mj: MainModule;
 let model: MjModel;
 let data: MjData;
 let running = false;
+let globalStep = 0;
+// Pending motion schedule in absolute step indices (live-loop playback).
+let pending: { entry: ScheduleEntry; atStep: number }[] = [];
+
+function applyPendingBefore(step: number) {
+  while (pending.length > 0 && pending[0].atStep <= step) {
+    const { entry } = pending.shift()!;
+    setScalar(data.ctrl, entry.channel, entry.value);
+  }
+}
+
+function doStep() {
+  applyPendingBefore(globalStep);
+  mj.mj_step(model, data);
+  globalStep++;
+}
 
 function post(msg: WorkerResponse, transfer: Transferable[] = []) {
   (self as unknown as DedicatedWorkerGlobalScope).postMessage(msg, transfer);
@@ -60,7 +78,7 @@ function frameMessage(): { msg: WorkerResponse; transfer: Transferable[] } {
 function stepLoop() {
   if (!running) return;
   const stepsPerTick = Math.round(STEP_MS / 1000 / model.opt.timestep);
-  for (let i = 0; i < stepsPerTick; i++) mj.mj_step(model, data);
+  for (let i = 0; i < stepsPerTick; i++) doStep();
   const { msg, transfer } = frameMessage();
   post(msg, transfer);
 }
@@ -96,6 +114,7 @@ async function init() {
     type: "ready",
     joints,
     geoms,
+    motions: motionNames,
     timestep: model.opt.timestep as number,
     mujocoVersion: mj.mj_versionString(),
   });
@@ -121,6 +140,8 @@ self.onmessage = async (ev: MessageEvent<WorkerRequest>) => {
       case "reset":
         mj.mj_resetData(model, data);
         for (let i = 0; i < model.nu; i++) setScalar(data.ctrl, i, 0);
+        pending = [];
+        globalStep = 0;
         mj.mj_forward(model, data);
         {
           const { msg, transfer } = frameMessage();
@@ -136,7 +157,38 @@ self.onmessage = async (ev: MessageEvent<WorkerRequest>) => {
       case "run": {
         const wasRunning = running;
         running = false;
-        for (let i = 0; i < req.steps; i++) mj.mj_step(model, data);
+        for (let i = 0; i < req.steps; i++) doStep();
+        const { msg, transfer } = frameMessage();
+        post(msg, transfer);
+        post(stateMessage());
+        running = wasRunning;
+        break;
+      }
+      case "motion": {
+        // Live playback: schedule relative to the current step.
+        const base = globalStep;
+        pending = ctrlSchedule(req.name, model.opt.timestep).map((entry) => ({
+          entry,
+          atStep: base + entry.stepIndex,
+        }));
+        break;
+      }
+      case "runMotion": {
+        // Deterministic playback mirroring sim/motions.py play_native.
+        const wasRunning = running;
+        running = false;
+        const schedule = ctrlSchedule(req.name, model.opt.timestep);
+        const settle = req.settleSteps ?? DEFAULT_SETTLE_STEPS;
+        const last = schedule.length > 0 ? schedule[schedule.length - 1].stepIndex : 0;
+        let i = 0;
+        for (let step = 0; step < last + settle; step++) {
+          while (i < schedule.length && schedule[i].stepIndex <= step) {
+            setScalar(data.ctrl, schedule[i].channel, schedule[i].value);
+            i++;
+          }
+          mj.mj_step(model, data);
+          globalStep++;
+        }
         const { msg, transfer } = frameMessage();
         post(msg, transfer);
         post(stateMessage());

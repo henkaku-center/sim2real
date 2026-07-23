@@ -166,6 +166,36 @@ def test_stand_matches_native(page):
     )
 
 
+def test_motion_playback_matches_native(page):
+    # Same stock motion (wave), same scheduling semantics, native vs WASM.
+    from sim.motions import play_native
+
+    state = page.evaluate(
+        """async () => {
+            const sim = window.__sim;
+            sim.send({type: 'pause'});
+            sim.send({type: 'reset'});
+            sim.send({type: 'runMotion', name: 'wave'});
+            return await sim.getState();
+        }"""
+    )
+    _, data = play_native("wave")
+    np.testing.assert_allclose(
+        np.array(state["qpos"]),
+        data.qpos,
+        atol=BROWSER_ATOL,
+        err_msg="browser motion playback diverged from native play_native('wave')",
+    )
+
+
+def test_motion_buttons_rendered(page):
+    names = page.evaluate(
+        "() => [...document.querySelectorAll('#motions button')].map(b => b.dataset.motion)"
+    )
+    assert len(names) == 19
+    assert "walk" in names and "wave" in names
+
+
 def test_slider_moves_joint(page):
     # Move the R1 slider through the UI and read back ctrl from the worker.
     # Note: range inputs snap to their step grid, so compare against the

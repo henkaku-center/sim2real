@@ -25,6 +25,8 @@ app.innerHTML = `
         <button id="rest">rest</button>
         <button id="stand">stand</button>
       </div>
+      <h2>motions</h2>
+      <div id="motions"></div>
     </aside>
   </main>`;
 
@@ -156,6 +158,14 @@ worker.onmessage = (ev: MessageEvent<WorkerResponse>) => {
   if (msg.type === "ready") {
     joints = msg.joints;
     statusEl.textContent = `MuJoCo ${msg.mujocoVersion} · dt=${msg.timestep}s`;
+    const motionsEl = document.querySelector<HTMLDivElement>("#motions")!;
+    for (const name of msg.motions) {
+      const b = document.createElement("button");
+      b.textContent = name.replaceAll("_", " ");
+      b.dataset.motion = name;
+      b.addEventListener("click", () => send({ type: "motion", name }));
+      motionsEl.append(b);
+    }
     msg.geoms.forEach((meta, i) => geomEntities.push(makeGeomEntity(meta, i)));
     for (const j of joints) {
       const row = document.createElement("label");

@@ -71,3 +71,29 @@ main {
 #buttons button:hover {
   background: #35353d;
 }
+
+#panel h2 {
+  font-size: 13px;
+  margin: 16px 0 8px;
+  color: #999;
+}
+
+#motions {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+}
+
+#motions button {
+  padding: 6px 4px;
+  font-size: 11px;
+  background: #23232a;
+  color: #cbb;
+  border: 1px solid #3a3a44;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+#motions button:hover {
+  background: #35353d;
+}
