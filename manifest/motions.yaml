@@ -1,0 +1,261 @@
+# APS-owned stock motion library for the Sesame quadruped.
+#
+# Transcribed 2026-07-23 from dorianborian/sesame-robot@main
+# firmware/movement-sequences.h (Apache-2.0). Servo angles are firmware
+# degrees [0..180]; joint names/channels/limits live in robot.yaml.
+#
+# Format: each motion is a list of steps, each step exactly one of
+#   pose: <name>            apply a named pose from robot.yaml poses
+#   set: {JOINT: deg, ...}  apply servo targets (only listed joints change)
+#   wait: <ms>              hold for milliseconds of robot time
+#   repeat: {count: N, steps: [...]}   nested loop
+#
+# Timing note: upstream walk-family motions use the runtime-configurable
+# frameDelay (default 100 ms) and walkCycles (default 10); both defaults are
+# baked in here. Face-display steps are omitted (visual model only).
+
+schema_version: 1
+source: "dorianborian/sesame-robot@main firmware/movement-sequences.h (Apache-2.0)"
+defaults:
+  frame_delay_ms: 100
+  walk_cycles: 10
+
+motions:
+  rest:
+    - pose: rest
+
+  stand:
+    - pose: stand
+
+  wave:
+    - pose: stand
+    - wait: 200
+    - set: {R4: 80, L3: 180, L2: 90, R1: 100}
+    - wait: 200
+    - set: {L3: 180}
+    - wait: 300
+    - repeat:
+        count: 4
+        steps:
+          - set: {L3: 180}
+          - wait: 300
+          - set: {L3: 100}
+          - wait: 300
+    - pose: stand
+
+  dance:
+    - set: {R1: 90, R2: 90, L1: 90, L2: 90, R4: 160, R3: 160, L3: 10, L4: 10}
+    - wait: 300
+    - repeat:
+        count: 5
+        steps:
+          - set: {R4: 115, R3: 115, L3: 10, L4: 10}
+          - wait: 300
+          - set: {R4: 160, R3: 160, L3: 65, L4: 65}
+          - wait: 300
+    - pose: stand
+
+  swim:
+    - pose: rest
+    - repeat:
+        count: 4
+        steps:
+          - set: {R1: 135, R2: 45, L1: 45, L2: 135}
+          - wait: 400
+          - set: {R1: 90, R2: 90, L1: 90, L2: 90}
+          - wait: 400
+    - pose: stand
+
+  point:
+    - set: {L2: 90, R1: 135, R2: 100, L4: 180, L1: 25, L3: 145, R4: 80, R3: 170}
+    - wait: 2000
+    - pose: stand
+
+  pushup:
+    - pose: stand
+    - wait: 200
+    - set: {L1: 0, R1: 180, L3: 90, R3: 90}
+    - wait: 500
+    - repeat:
+        count: 4
+        steps:
+          - set: {L3: 0, R3: 180}
+          - wait: 600
+          - set: {L3: 90, R3: 90}
+          - wait: 500
+    - pose: stand
+
+  bow:
+    - pose: stand
+    - wait: 200
+    - set: {L1: 0, R1: 180, L3: 0, R3: 180, L2: 180, R2: 0, R4: 0, L4: 180}
+    - wait: 600
+    - set: {L3: 90, R3: 90}
+    - wait: 3000
+    - pose: stand
+
+  cute:
+    - pose: stand
+    - wait: 200
+    - set: {L2: 160, R2: 20, R4: 180, L4: 0, L1: 0, R1: 180, L3: 180, R3: 0}
+    - wait: 200
+    - repeat:
+        count: 5
+        steps:
+          - set: {R4: 180, L4: 45}
+          - wait: 300
+          - set: {R4: 135, L4: 0}
+          - wait: 300
+    - pose: stand
+
+  freaky:
+    - pose: stand
+    - wait: 200
+    - set: {L1: 0, R1: 180, L2: 180, R2: 0, R4: 90, R3: 0}
+    - wait: 200
+    - repeat:
+        count: 3
+        steps:
+          - set: {R3: 25}
+          - wait: 400
+          - set: {R3: 0}
+          - wait: 400
+    - pose: stand
+
+  worm:
+    - pose: stand
+    - wait: 200
+    - set: {R1: 180, R2: 0, L1: 0, L2: 180, R4: 90, R3: 90, L3: 90, L4: 90}
+    - wait: 200
+    - repeat:
+        count: 5
+        steps:
+          - set: {R3: 45, L3: 135, R4: 45, L4: 135}
+          - wait: 300
+          - set: {R3: 135, L3: 45, R4: 135, L4: 45}
+          - wait: 300
+    - pose: stand
+
+  shake:
+    - pose: stand
+    - wait: 200
+    - set: {R1: 135, L1: 45, L3: 90, R3: 90, L2: 90, R2: 90}
+    - wait: 200
+    - repeat:
+        count: 5
+        steps:
+          - set: {R4: 45, L4: 135}
+          - wait: 300
+          - set: {R4: 0, L4: 180}
+          - wait: 300
+    - pose: stand
+
+  shrug:
+    - pose: stand
+    - wait: 200
+    - set: {R3: 90, R4: 90, L3: 90, L4: 90}
+    - wait: 1000
+    - set: {R3: 0, R4: 180, L3: 180, L4: 0}
+    - wait: 1500
+    - pose: stand
+
+  dead:
+    - pose: stand
+    - wait: 200
+    - set: {R3: 90, R4: 90, L3: 90, L4: 90}
+
+  crab:
+    - pose: stand
+    - wait: 200
+    - set: {R1: 90, R2: 90, L1: 90, L2: 90, R4: 0, R3: 180, L3: 45, L4: 135}
+    - repeat:
+        count: 5
+        steps:
+          - set: {R4: 45, R3: 135, L3: 0, L4: 180}
+          - wait: 300
+          - set: {R4: 0, R3: 180, L3: 45, L4: 135}
+          - wait: 300
+    - pose: stand
+
+  walk:
+    - set: {R3: 135, L3: 45, R2: 100, L1: 25}
+    - wait: 100
+    - repeat:
+        count: 10
+        steps:
+          - set: {R3: 135, L3: 0}
+          - wait: 100
+          - set: {L4: 135, L2: 90, R4: 0, R1: 180}
+          - wait: 100
+          - set: {R2: 45, L1: 90}
+          - wait: 100
+          - set: {R4: 45, L4: 180}
+          - wait: 100
+          - set: {R3: 180, L3: 45, R2: 90, L1: 0}
+          - wait: 100
+          - set: {L2: 135, R1: 90}
+          - wait: 100
+    - pose: stand
+
+  walk_backward:
+    - wait: 100
+    - repeat:
+        count: 10
+        steps:
+          - set: {R3: 135, L3: 0}
+          - wait: 100
+          - set: {L4: 135, L2: 135, R4: 0, R1: 90}
+          - wait: 100
+          - set: {R2: 90, L1: 0}
+          - wait: 100
+          - set: {R4: 45, L4: 180}
+          - wait: 100
+          - set: {R3: 180, L3: 45, R2: 45, L1: 90}
+          - wait: 100
+          - set: {L2: 90, R1: 180}
+          - wait: 100
+    - pose: stand
+
+  turn_left:
+    - repeat:
+        count: 10
+        steps:
+          - set: {R3: 135, L4: 135}
+          - wait: 100
+          - set: {R1: 180, L2: 180}
+          - wait: 100
+          - set: {R3: 180, L4: 180}
+          - wait: 100
+          - set: {R1: 135, L2: 135}
+          - wait: 100
+          - set: {R4: 45, L3: 45}
+          - wait: 100
+          - set: {R2: 90, L1: 90}
+          - wait: 100
+          - set: {R4: 0, L3: 0}
+          - wait: 100
+          - set: {R2: 45, L1: 45}
+          - wait: 100
+    - pose: stand
+
+  turn_right:
+    - repeat:
+        count: 10
+        steps:
+          - set: {R4: 45, L3: 45}
+          - wait: 100
+          - set: {R2: 0, L1: 0}
+          - wait: 100
+          - set: {R4: 0, L3: 0}
+          - wait: 100
+          - set: {R2: 45, L1: 45}
+          - wait: 100
+          - set: {R3: 135, L4: 135}
+          - wait: 100
+          - set: {R1: 90, L2: 90}
+          - wait: 100
+          - set: {R3: 180, L4: 180}
+          - wait: 100
+          - set: {R1: 135, L2: 135}
+          - wait: 100
+    - pose: stand
