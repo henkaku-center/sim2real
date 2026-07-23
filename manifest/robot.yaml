@@ -1,0 +1,128 @@
+# APS-owned canonical robot manifest for the Sesame quadruped.
+#
+# This file is the single source of truth for joint order, pin map, angle
+# conventions, limits, and calibration. MJCF/URDF/GLB are generated from or
+# validated against it — never fork these facts into other files.
+#
+# Provenance: extracted 2026-07-23 from dorianborian/sesame-robot @ main
+# (Apache-2.0): firmware/sesame-firmware-main.ino, firmware/movement-sequences.h,
+# software/sesame-studio/sesame_studio.py, docs/build-guide/assets/sesame-angle-guide.png.
+# Items marked `status: unmeasured-nominal` or `assumed` await physical
+# confirmation (see HANDOVER.md open questions; log answers in DECISIONS.md).
+
+schema_version: 1
+robot: sesame
+hardware_revision:
+  printed_parts: "legs v117, frame/covers v121" # frozen; verify with instructor
+  upstream_ref: "dorianborian/sesame-robot@main (reviewed 2026-07-23)"
+
+conventions:
+  # Simulation-side conventions (our choice, frozen here):
+  frame: z-up, x-forward, y-left, right-handed
+  units: SI # meters, kilograms, seconds, newtons
+  angles_internal: radians # everything inside sim/ and models/
+  angles_firmware: degrees # 0..180 at the serial/PWM boundary
+  # Internal joint angle q relates to firmware angle by:
+  #   q = deg2rad(firmware_deg - 90) * sign
+  # so q = 0 is the rest pose (all servos at 90°) for every joint.
+  # Per-joint `sign` below is ASSUMED from the upstream angle guide
+  # (status: assumed) until confirmed on the physical robot.
+  firmware_neutral_deg: 90
+
+mcu:
+  board: lolin_esp32_s2_mini
+  note: two-brain architecture — MCU does real-time PWM only (aps DECISIONS.md D1)
+
+servo_bus:
+  pwm_hz: 50
+  pulse_us: [732, 2929] # ESP32Servo attach(pin, 732, 2929) ↔ 0..180°
+  angle_range_deg: [0, 180]
+
+servo_model:
+  type: MG90S
+  status: unmeasured-nominal # replace every value below with measurements
+  mass_kg: 0.0134
+  speed_s_per_60deg_at_4v8: 0.10
+  stall_torque_Nm_at_4v8: 0.176 # 1.8 kg·cm nominal; prior-art sim halves this with a TODO — measure, don't inherit
+  note: high unit failure rate (aps D17); per-unit variation expected
+
+# Joint list. ORDER IS CANONICAL: list index == firmware servo channel.
+# Firmware enum (movement-sequences.h): R1=0 R2=1 L1=2 L2=3 R4=4 R3=5 L3=6 L4=7.
+# gpio_pin: LOLIN S2 Mini hand-wired baseline (sesame-firmware-main.ino).
+# limits_deg: [soft_lo, soft_hi] from Sesame Studio input validation; hard
+# limits are the servo's 0..180.
+# sign: internal positive direction multiplier (status: assumed, see conventions).
+joints:
+  - name: R1
+    channel: 0
+    gpio_pin: 1
+    leg: front_right
+    role: hip
+    limits_deg: [45, 180]
+    sign: 1
+  - name: R2
+    channel: 1
+    gpio_pin: 2
+    leg: back_right
+    role: hip
+    limits_deg: [0, 135]
+    sign: 1
+  - name: L1
+    channel: 2
+    gpio_pin: 4
+    leg: front_left
+    role: hip
+    limits_deg: [0, 135]
+    sign: -1
+  - name: L2
+    channel: 3
+    gpio_pin: 6
+    leg: back_left
+    role: hip
+    limits_deg: [45, 180]
+    sign: -1
+  - name: R4
+    channel: 4
+    gpio_pin: 8
+    leg: back_right
+    role: foot
+    limits_deg: [0, 180]
+    sign: 1
+  - name: R3
+    channel: 5
+    gpio_pin: 10
+    leg: front_right
+    role: foot
+    limits_deg: [0, 180]
+    sign: 1
+  - name: L3
+    channel: 6
+    gpio_pin: 13
+    leg: front_left
+    role: foot
+    limits_deg: [0, 180]
+    sign: -1
+  - name: L4
+    channel: 7
+    gpio_pin: 14
+    leg: back_left
+    role: foot
+    limits_deg: [0, 180]
+    sign: -1
+
+# Per-servo calibration offsets in firmware degrees (servoSubtrim).
+# All zero until measured on the physical robot (NEEDS-HARDWARE).
+calibration:
+  status: uncalibrated
+  subtrim_deg: {R1: 0, R2: 0, L1: 0, L2: 0, R4: 0, R3: 0, L3: 0, L4: 0}
+
+# Named poses in firmware degrees, from upstream movement-sequences.h.
+poses:
+  rest: {R1: 90, R2: 90, L1: 90, L2: 90, R4: 90, R3: 90, L3: 90, L4: 90}
+  stand: {R1: 135, R2: 45, L1: 45, L2: 135, R4: 0, R3: 180, L3: 0, L4: 180}
+
+power:
+  status: unmeasured-nominal
+  supply_v: 5.0
+  budget_note: full walking may draw 5–8 A at 5 V (aps D15/D16); model as
+    torque/velocity constraint eventually
