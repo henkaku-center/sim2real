@@ -15,15 +15,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # --- Python (uv) ---
-      - uses: astral-sh/setup-uv@v5
-        with:
-          enable-cache: true
-      - name: Sync Python env from lockfile
-        run: uv sync --locked
-      - name: Run pytest
-        run: uv run pytest -v
-
       # --- Web (Vite + @mujoco/mujoco) ---
       - uses: actions/setup-node@v4
         with:
@@ -36,3 +27,23 @@ jobs:
       - name: Type-check and build web
         run: npm run build
         working-directory: web
+
+      # --- Python (uv) — includes the CDP browser smoke test, which needs
+      # web/node_modules and the runner's system Chrome ---
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+      - name: Sync Python env from lockfile
+        run: uv sync --locked
+      - name: Run pytest
+        run: uv run pytest -v
+        env:
+          REQUIRE_BROWSER_TESTS: "1"
+
+      - name: Upload browser test artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: browser-artifacts-${{ matrix.os }}
+          path: tests/artifacts/
+          if-no-files-found: ignore
