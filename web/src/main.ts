@@ -29,6 +29,7 @@ app.innerHTML = `
       <div id="motions"></div>
       <h2>debug</h2>
       <label id="skeleton-toggle"><input type="checkbox" id="show-skeleton"> show skeleton</label>
+      <div id="telemetry"></div>
     </aside>
   </main>`;
 
@@ -184,7 +185,53 @@ function sitePos(name: string, out: pc.Vec3): pc.Vec3 {
   return mjRoot.getWorldTransform().transformPoint(out, out);
 }
 
+// ---------- Live telemetry (from the skeleton stream) ----------
+const PAWS = ["front_left_paw", "front_right_paw", "back_left_paw", "back_right_paw"];
+const GROUND_EPS = 0.012; // paddle half-height + margin: below this = grounded
+let telemetryEls: Record<string, HTMLElement> = {};
+
+function buildTelemetry() {
+  const el = document.querySelector<HTMLDivElement>("#telemetry")!;
+  el.innerHTML =
+    `<div class="trow" id="t-torso"></div><div class="trow" id="t-att"></div>` +
+    PAWS.map((p) => `<div class="trow paw" id="t-${p}"></div>`).join("");
+  telemetryEls = Object.fromEntries(
+    ["t-torso", "t-att", ...PAWS.map((p) => `t-${p}`)].map((id) => [
+      id,
+      document.querySelector<HTMLElement>(`#${id}`)!,
+    ]),
+  );
+}
+
+function site3(name: string): [number, number, number] {
+  const i = siteNames.indexOf(name);
+  return [latestSites![3 * i], latestSites![3 * i + 1], latestSites![3 * i + 2]];
+}
+
+function updateTelemetry() {
+  if (!latestSites || siteNames.length === 0) return;
+  const [cx, cy, cz] = site3("torso_center");
+  const face = site3("face");
+  const rear = site3("rear");
+  const pitch = face[2] - rear[2];
+  const yawDeg = (Math.atan2(face[1] - rear[1], face[0] - rear[0]) * 180) / Math.PI;
+  telemetryEls["t-torso"].textContent =
+    `torso xyz ${cx.toFixed(3)} ${cy.toFixed(3)} ${cz.toFixed(3)}`;
+  telemetryEls["t-att"].textContent =
+    `yaw ${yawDeg.toFixed(0)}\u00b0  pitch(f-r) ${(pitch * 1000).toFixed(0)}mm`;
+  for (const p of PAWS) {
+    const z = site3(p)[2];
+    const grounded = z < GROUND_EPS;
+    const el = telemetryEls[`t-${p}`];
+    el.textContent = `${p.replace("_paw", "").replaceAll("_", " ")} ${(z * 1000)
+      .toFixed(0)
+      .padStart(3)}mm ${grounded ? "\u25a0 ground" : "\u25a1 air"}`;
+    el.classList.toggle("grounded", grounded);
+  }
+}
+
 pcApp.on("update", () => {
+  updateTelemetry();
   if (!showSkeleton || !latestSites) return;
   for (const chain of BONE_CHAINS) {
     for (let i = 0; i + 1 < chain.length; i++) {
@@ -324,6 +371,7 @@ worker.onmessage = (ev: MessageEvent<WorkerResponse>) => {
       sliderInputs.push(input);
     }
     makeSiteEntities(msg.siteNames);
+    buildTelemetry();
     resize();
     readyResolve?.();
   } else if (msg.type === "frame") {

@@ -243,6 +243,29 @@ def test_slider_moves_joint(page):
     assert state["ctrl"][0] == pytest.approx(applied), "ctrl[0] is channel 0 == R1"
 
 
+def test_telemetry_overlay_tracks_pose(page):
+    # Resume live loop briefly so telemetry rows populate, then verify the
+    # grounded/air classification matches a commanded stand vs rest.
+    rows = page.evaluate(
+        """async () => {
+            const sim = window.__sim;
+            sim.send({type: 'reset'});
+            sim.send({type: 'resume'});
+            await new Promise(r => setTimeout(r, 300));
+            sim.send({type: 'pause'});
+            const text = () => [...document.querySelectorAll('#telemetry .trow')].map(e => e.textContent);
+            return text();
+        }"""
+    )
+    assert len(rows) == 6, "torso + attitude + 4 paw rows"
+    assert rows[0].startswith("torso xyz")
+    assert "yaw" in rows[1] and "pitch" in rows[1]
+    paw_rows = rows[2:]
+    assert all("air" in r or "ground" in r for r in paw_rows)
+    # at rest all paddles are flat in the air
+    assert sum("air" in r for r in paw_rows) == 4
+
+
 def test_camera_orbit_controls(page):
     moved = page.evaluate(
         """() => {

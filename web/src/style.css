@@ -106,3 +106,15 @@ main {
   color: #9c9;
   cursor: pointer;
 }
+
+#telemetry {
+  margin-top: 12px;
+  font-size: 11px;
+  line-height: 1.7;
+  color: #aaa;
+  white-space: pre;
+}
+
+#telemetry .paw.grounded {
+  color: #6c6;
+}
