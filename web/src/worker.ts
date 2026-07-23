@@ -91,9 +91,27 @@ function stepLoop() {
   post(msg, transfer);
 }
 
+// Mesh files referenced by the MJCF, served by Vite and mounted into the
+// MuJoCo virtual filesystem before model compilation.
+const stlUrls = import.meta.glob("../../assets/mesh/*.stl", {
+  query: "?url",
+  import: "default",
+  eager: true,
+}) as Record<string, string>;
+
 async function init() {
   mj = await MainModuleFactory();
-  model = mj.MjModel.from_xml_string(modelXml);
+  const vfs = new mj.MjVFS();
+  await Promise.all(
+    Object.entries(stlUrls).map(async ([path, url]) => {
+      const buf = new Uint8Array(await (await fetch(url)).arrayBuffer());
+      const base = path.split("/").pop()!;
+      // the compiler resolves meshdir-relative paths; register both forms
+      vfs.addBuffer(`../assets/mesh/${base}`, buf);
+      vfs.addBuffer(base, buf);
+    }),
+  );
+  model = mj.MjModel.from_xml_string(modelXml, vfs);
   data = new mj.MjData(model);
   mj.mj_forward(model, data);
 
@@ -109,14 +127,27 @@ async function init() {
   }
   const geoms = [];
   const gtype = asNumbers(model.geom_type, model.ngeom);
+  const ggroup = asNumbers(model.geom_group, model.ngeom);
   const gsize = asNumbers(model.geom_size, model.ngeom * 3);
   const grgba = asNumbers(model.geom_rgba, model.ngeom * 4);
+  const gdata = asNumbers(model.geom_dataid, model.ngeom);
+  const meshPos = asNumbers(model.mesh_pos, model.nmesh * 3);
+  const meshQuat = asNumbers(model.mesh_quat, model.nmesh * 4);
+  const MESH_TYPE = 7; // mjGEOM_MESH
   for (let g = 0; g < model.ngeom; g++) {
-    geoms.push({
+    const meta: import("./protocol").GeomMeta = {
+      name: mj.mj_id2name(model, mj.mjtObj.mjOBJ_GEOM.value, g) ?? `geom${g}`,
       type: gtype[g],
+      group: ggroup[g],
       size: gsize.slice(3 * g, 3 * g + 3) as [number, number, number],
       rgba: grgba.slice(4 * g, 4 * g + 4) as [number, number, number, number],
-    });
+    };
+    if (gtype[g] === MESH_TYPE && gdata[g] >= 0) {
+      const m = gdata[g];
+      meta.meshPos = meshPos.slice(3 * m, 3 * m + 3) as [number, number, number];
+      meta.meshQuat = meshQuat.slice(4 * m, 4 * m + 4) as [number, number, number, number];
+    }
+    geoms.push(meta);
   }
   const siteNames = [];
   for (let i = 0; i < model.nsite; i++) {

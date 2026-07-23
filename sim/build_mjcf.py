@@ -69,22 +69,32 @@ def _leg_xml(m: Manifest, hip_name: str, foot_name: str) -> str:
         <joint name="{hip.name}" type="hinge" axis="{hip_axis}"
                range="{hip_lo:.6f} {hip_hi:.6f}" damping="0.01"/>
         <site name="{hip.leg}_hip" pos="0 0 0"/>
-        <geom name="{hip.leg}_upper_geom" type="box" mass="{UPPER_MASS}"
+        <geom name="{hip.leg}_upper_geom" type="box" mass="{UPPER_MASS}" group="3"
               pos="0 {sy * UPPER_LEN / 2:.4f} 0"
               size="{UPPER_HALF[0]} {UPPER_HALF[1]} {UPPER_HALF[2]}" rgba="{LEG_RGBA}"/>
+        <geom name="{hip.leg}_upper_visual" type="mesh" mesh="{hip.leg}_upper"
+              mass="0" group="2" contype="0" conaffinity="0" rgba="{LEG_RGBA}"/>
         <body name="{hip.leg}_lower" pos="0 {sy * UPPER_LEN:.4f} 0">
           <joint name="{foot.name}" type="hinge" axis="{foot_axis}"
                  range="{foot_lo:.6f} {foot_hi:.6f}" damping="0.01"/>
           <site name="{hip.leg}_knee" pos="0 0 0"/>
           <site name="{hip.leg}_paw" pos="0 {sy * FOOT_LEN:.4f} 0"/>
-          <geom name="{hip.leg}_lower_geom" type="box" mass="{FOOT_MASS}"
+          <geom name="{hip.leg}_lower_geom" type="box" mass="{FOOT_MASS}" group="3"
                 pos="0 {sy * FOOT_LEN / 2:.4f} 0"
                 size="{FOOT_HALF[0]} {FOOT_HALF[1]} {FOOT_HALF[2]}" rgba="{LEG_RGBA}"/>
+          <geom name="{hip.leg}_lower_visual" type="mesh" mesh="{hip.leg}_lower"
+                mass="0" group="2" contype="0" conaffinity="0" rgba="{LEG_RGBA}"/>
         </body>
       </body>"""
 
 
 LEG_RGBA = "0.80 0.12 0.08 1"  # crab red
+BODY_RGBA = "0.92 0.88 0.80 1"  # printed cream
+MESH_NAMES = [
+    "torso_frame", "torso_bottom", "torso_top",
+    "front_left_upper", "front_left_lower", "front_right_upper", "front_right_lower",
+    "back_left_upper", "back_left_lower", "back_right_upper", "back_right_lower",
+]
 
 
 def build_xml(m: Manifest | None = None) -> str:
@@ -94,6 +104,11 @@ def build_xml(m: Manifest | None = None) -> str:
         by_leg[j.leg][j.role] = j.name
     legs = "".join(
         _leg_xml(m, names["hip"], names["foot"]) for names in by_leg.values()
+    )
+    meshes = "".join(
+        f"""
+    <mesh name="{name}" file="{name}.stl"/>"""
+        for name in MESH_NAMES
     )
     actuators = "".join(
         f"""
@@ -107,18 +122,26 @@ def build_xml(m: Manifest | None = None) -> str:
      Kinematics/dimensions measured from upstream v117/v121 STLs; masses estimated. -->
 <mujoco model="sesame">
   <option timestep="{TIMESTEP}"/>
-  <compiler angle="radian" autolimits="true"/>
+  <compiler angle="radian" autolimits="true" meshdir="../assets/mesh"/>
   <default>
     <geom friction="0.9 0.005 0.0001" condim="3"/>
     <site size="0.0025" rgba="0.1 0.9 0.3 0.6"/>
   </default>
+  <asset>{meshes}
+  </asset>
   <worldbody>
     <light pos="0 0 1.5" dir="0 0 -1"/>
     <geom name="floor" type="plane" size="2 2 0.05" rgba="0.85 0.85 0.85 1"/>
     <body name="torso" pos="0 0 {SPAWN_Z}">
       <freejoint name="root"/>
       <geom name="torso_geom" type="box" size="{TORSO_HALF[0]} {TORSO_HALF[1]} {TORSO_HALF[2]}"
-            mass="{TORSO_MASS}" rgba="0.9 0.75 0.5 1"/>
+            mass="{TORSO_MASS}" group="3" rgba="0.9 0.75 0.5 1"/>
+      <geom name="torso_frame_visual" type="mesh" mesh="torso_frame" mass="0"
+            group="2" contype="0" conaffinity="0" rgba="{BODY_RGBA}"/>
+      <geom name="torso_bottom_visual" type="mesh" mesh="torso_bottom" mass="0"
+            group="2" contype="0" conaffinity="0" rgba="{BODY_RGBA}"/>
+      <geom name="torso_top_visual" type="mesh" mesh="torso_top" mass="0"
+            group="2" contype="0" conaffinity="0" rgba="{BODY_RGBA}"/>
       <geom name="face_geom" type="box" size="0.002 0.016 0.011"
             pos="{TORSO_HALF[0]:.4f} 0 0.004" mass="0.001"
             contype="0" conaffinity="0" rgba="0.15 0.2 0.9 1"/>

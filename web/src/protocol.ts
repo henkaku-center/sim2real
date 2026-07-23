@@ -8,9 +8,15 @@ export interface JointInfo {
 }
 
 export interface GeomMeta {
+  name: string;
   type: number; // mjtGeom enum value
+  group: number; // 2 = visual, 3 = collision (hidden)
   size: [number, number, number];
   rgba: [number, number, number, number];
+  // for mesh geoms: MuJoCo re-centers vertices; the renderer must apply the
+  // inverse of this transform to raw GLB vertices (pos xyz, quat wxyz)
+  meshPos?: [number, number, number];
+  meshQuat?: [number, number, number, number];
 }
 
 export type WorkerRequest =

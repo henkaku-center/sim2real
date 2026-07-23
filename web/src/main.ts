@@ -9,6 +9,8 @@ const GEOM_PLANE = 0;
 const GEOM_SPHERE = 2;
 const GEOM_CAPSULE = 3;
 const GEOM_BOX = 6;
+const GEOM_MESH = 7;
+const COLLISION_GROUP = 3; // hidden, mirrors the native viewer default
 
 const worker = new Worker(new URL("./worker.ts", import.meta.url), { type: "module" });
 
@@ -248,6 +250,34 @@ function makeGeomEntity(meta: GeomMeta, index: number): pc.Entity {
   const shape = new pc.Entity("shape");
   let mesh: pc.Mesh | undefined;
   const device = pcApp.graphicsDevice;
+  if (meta.group === COLLISION_GROUP) {
+    e.addChild(shape);
+    mjRoot.addChild(e);
+    return e; // collision primitive: keep the entity for indexing, render nothing
+  }
+  if (meta.type === GEOM_MESH) {
+    // counter-apply MuJoCo's internal mesh re-centering to the raw GLB
+    const [qw, qx, qy, qz] = meta.meshQuat ?? [1, 0, 0, 0];
+    const qInv = new pc.Quat(-qx, -qy, -qz, qw);
+    const t = meta.meshPos ?? [0, 0, 0];
+    const off = qInv.transformVector(new pc.Vec3(-t[0], -t[1], -t[2]));
+    shape.setLocalRotation(qInv);
+    shape.setLocalPosition(off);
+    const base = meta.name.replace(/_visual$/, "");
+    const asset = new pc.Asset(base, "container", { url: `/meshes/${base}.glb` });
+    asset.on("load", () => {
+      const inst = (asset.resource as pc.ContainerResource).instantiateRenderEntity();
+      inst.findComponents("render").forEach((rc) => {
+        (rc as pc.RenderComponent).meshInstances.forEach((mi) => (mi.material = material));
+      });
+      shape.addChild(inst);
+    });
+    pcApp.assets.add(asset);
+    pcApp.assets.load(asset);
+    e.addChild(shape);
+    mjRoot.addChild(e);
+    return e;
+  }
   if (meta.type === GEOM_PLANE) {
     mesh = pc.Mesh.fromGeometry(device, new pc.PlaneGeometry({ halfExtents: new pc.Vec2(1, 1) }));
     shape.setLocalEulerAngles(90, 0, 0); // plane geometry is y-up; mujoco plane is z-up
