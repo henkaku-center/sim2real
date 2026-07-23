@@ -28,7 +28,7 @@
       </body>
       <body name="back_right_upper" pos="-0.0380 -0.0400 0">
         <joint name="R2" type="hinge" axis="1 0 0"
-               range="-1.570796 0.785398" damping="0.01"/>
+               range="-0.785398 1.570796" damping="0.01"/>
         <geom name="back_right_upper_geom" type="capsule" mass="0.03"
               fromto="0 0 0 0 -0.0450 0" size="0.008"/>
         <body name="back_right_lower" pos="0 -0.0450 0">
@@ -39,24 +39,24 @@
         </body>
       </body>
       <body name="front_left_upper" pos="0.0380 0.0400 0">
-        <joint name="L1" type="hinge" axis="1 0 0"
+        <joint name="L1" type="hinge" axis="-1 0 0"
                range="-0.785398 1.570796" damping="0.01"/>
         <geom name="front_left_upper_geom" type="capsule" mass="0.03"
               fromto="0 0 0 0 0.0450 0" size="0.008"/>
         <body name="front_left_lower" pos="0 0.0450 0">
-          <joint name="L3" type="hinge" axis="1 0 0"
+          <joint name="L3" type="hinge" axis="-1 0 0"
                  range="-1.570796 1.570796" damping="0.01"/>
           <geom name="front_left_lower_geom" type="capsule" mass="0.012"
                 fromto="0 0 0 0 0.0550 0" size="0.0064"/>
         </body>
       </body>
       <body name="back_left_upper" pos="-0.0380 0.0400 0">
-        <joint name="L2" type="hinge" axis="1 0 0"
-               range="-1.570796 0.785398" damping="0.01"/>
+        <joint name="L2" type="hinge" axis="-1 0 0"
+               range="-0.785398 1.570796" damping="0.01"/>
         <geom name="back_left_upper_geom" type="capsule" mass="0.03"
               fromto="0 0 0 0 0.0450 0" size="0.008"/>
         <body name="back_left_lower" pos="0 0.0450 0">
-          <joint name="L4" type="hinge" axis="1 0 0"
+          <joint name="L4" type="hinge" axis="-1 0 0"
                  range="-1.570796 1.570796" damping="0.01"/>
           <geom name="back_left_lower_geom" type="capsule" mass="0.012"
                 fromto="0 0 0 0 0.0550 0" size="0.0064"/>
@@ -70,13 +70,13 @@
               ctrlrange="-0.785398 1.570796"/>
     <position name="R2" joint="R2" kp="0.6"
               forcerange="-0.176 0.176"
-              ctrlrange="-1.570796 0.785398"/>
+              ctrlrange="-0.785398 1.570796"/>
     <position name="L1" joint="L1" kp="0.6"
               forcerange="-0.176 0.176"
               ctrlrange="-0.785398 1.570796"/>
     <position name="L2" joint="L2" kp="0.6"
               forcerange="-0.176 0.176"
-              ctrlrange="-1.570796 0.785398"/>
+              ctrlrange="-0.785398 1.570796"/>
     <position name="R4" joint="R4" kp="0.6"
               forcerange="-0.176 0.176"
               ctrlrange="-1.570796 1.570796"/>

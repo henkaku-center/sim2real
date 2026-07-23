@@ -73,10 +73,10 @@ def test_final_pose_is_left_right_symmetric(final_qpos):
         jid = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_JOINT, name)
         return final_qpos[model.jnt_qposadr[jid]]
 
-    for right, left in (("R1", "L1"), ("R2", "L2"), ("R3", "L3"), ("R4", "L4")):
-        assert q(right) == pytest.approx(q(left), abs=0.1), (
-            f"{right}/{left}: mirrored joints should settle at similar internal angles"
+    # The stand command is 4-fold symmetric (all hips +45° down, all feet
+    # +90° down), so all hips settle equal and all feet settle equal.
+    for a, b in (("R1", "L1"), ("R1", "R2"), ("R1", "L2"),
+                 ("R3", "L3"), ("R3", "R4"), ("R3", "L4")):
+        assert q(a) == pytest.approx(q(b), abs=1e-6), (
+            f"{a}/{b}: symmetric joints should settle at equal internal angles"
         )
-    # Diagonal symmetry of the placeholder model is exact: R1<->L2, R2<->L1.
-    assert q("R1") == pytest.approx(-q("L2"), abs=1e-6)
-    assert q("R2") == pytest.approx(-q("L1"), abs=1e-6)

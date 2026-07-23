@@ -39,18 +39,22 @@ def _leg_xml(m: Manifest, hip_name: str, foot_name: str) -> str:
     fx = 1.0 if "front" in hip.leg else -1.0
     sy = 1.0 if "left" in hip.leg else -1.0  # y-left frame: left = +y
     hx, hy = fx * HIP_OFFSET[0], sy * HIP_OFFSET[1]
+    # Internal convention: positive q swings the leg tip DOWN on both sides.
+    # Rotation about +x lowers a -y (right) leg but raises a +y (left) leg,
+    # so left legs hinge about -x to realize the manifest's mirror signs.
+    ax = -sy
     hip_lo, hip_hi = m.internal_range(hip)
     foot = m.joint(foot_name)
     foot_lo, foot_hi = m.internal_range(foot)
     # Hinge axes along +x (forward); mirroring handled by manifest signs.
     return f"""
       <body name="{hip.leg}_upper" pos="{hx:.4f} {hy:.4f} 0">
-        <joint name="{hip.name}" type="hinge" axis="1 0 0"
+        <joint name="{hip.name}" type="hinge" axis="{ax:.0f} 0 0"
                range="{hip_lo:.6f} {hip_hi:.6f}" damping="0.01"/>
         <geom name="{hip.leg}_upper_geom" type="capsule" mass="{UPPER_MASS}"
               fromto="0 0 0 0 {sy * UPPER_LEN:.4f} 0" size="{LEG_RADIUS}"/>
         <body name="{hip.leg}_lower" pos="0 {sy * UPPER_LEN:.4f} 0">
-          <joint name="{foot.name}" type="hinge" axis="1 0 0"
+          <joint name="{foot.name}" type="hinge" axis="{ax:.0f} 0 0"
                  range="{foot_lo:.6f} {foot_hi:.6f}" damping="0.01"/>
           <geom name="{hip.leg}_lower_geom" type="capsule" mass="{LOWER_MASS}"
                 fromto="0 0 0 0 {sy * LOWER_LEN:.4f} 0" size="{LEG_RADIUS * 0.8:.4f}"/>

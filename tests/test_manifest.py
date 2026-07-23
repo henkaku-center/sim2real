@@ -72,11 +72,28 @@ def test_limits_are_sane(joints):
         assert 0 <= lo < hi <= 180, f"{j['name']}: bad limits {lo}..{hi}"
 
 
-def test_signs_mirror_left_right(joints):
+def test_signs_encode_point_symmetric_servo_mounting(joints):
+    # From the upstream angle guide: "down" is 90->180 for {R1,L2,R3,L4} but
+    # 90->0 for {R2,L1,R4,L3}. Positive internal q = down for every joint.
     for j in joints:
         assert j["sign"] in (-1, 1)
-        expected = -1 if j["name"].startswith("L") else 1
+        expected = 1 if j["leg"] in ("front_right", "back_left") else -1
         assert j["sign"] == expected, f"{j['name']}: sign convention broken"
+
+
+def test_internal_ranges_identical_per_role(joints):
+    # With correct signs, all hips (and all feet) share one internal range.
+    def internal_range(j):
+        lo, hi = j["limits_deg"]
+        a, b = (lo - 90) * j["sign"], (hi - 90) * j["sign"]
+        return (min(a, b), max(a, b))
+
+    for role, expected in (("hip", (-45, 90)), ("foot", (-90, 90))):
+        for j in joints:
+            if j["role"] == role:
+                assert internal_range(j) == expected, (
+                    f"{j['name']}: {role} internal range mismatch"
+                )
 
 
 def test_servo_bus(manifest):
