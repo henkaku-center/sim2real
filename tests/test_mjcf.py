@@ -32,6 +32,35 @@ def test_model_loads_with_expected_dofs(model):
     assert model.nq == 15  # 7 (free) + 8 hinges
 
 
+def test_rig_sites_present(model):
+    import mujoco as mj
+
+    names = {
+        mj.mj_id2name(model, mj.mjtObj.mjOBJ_SITE, i) for i in range(model.nsite)
+    }
+    legs = {"front_left", "front_right", "back_left", "back_right"}
+    expected = {"torso_center", "face", "rear"} | {
+        f"{leg}_{part}" for leg in legs for part in ("hip", "knee", "paw")
+    }
+    assert names == expected, "skeletal rig sites drifted"
+
+
+def test_rig_forward_kinematics_at_rest(model):
+    # At rest (q=0) the rig must match the STL-measured layout: paw tips
+    # straight out sideways at hip height, wingspan = 2*(HIP_Y+UPPER+FOOT).
+    import mujoco as mj
+
+    from sim.build_mjcf import FOOT_LEN, HIP_X, HIP_Y, LEG_PLANE_DZ, SPAWN_Z, UPPER_LEN
+
+    data = mj.MjData(model)
+    mj.mj_forward(model, data)
+    span = HIP_Y + UPPER_LEN + FOOT_LEN
+    sid = mj.mj_name2id(model, mj.mjtObj.mjOBJ_SITE, "front_left_paw")
+    assert data.site_xpos[sid] == pytest.approx([HIP_X, span, SPAWN_Z + LEG_PLANE_DZ], abs=1e-9)
+    sid = mj.mj_name2id(model, mj.mjtObj.mjOBJ_SITE, "back_right_paw")
+    assert data.site_xpos[sid] == pytest.approx([-HIP_X, -span, SPAWN_Z + LEG_PLANE_DZ], abs=1e-9)
+
+
 def test_actuators_in_firmware_channel_order(model, manifest):
     names = [
         mujoco.mj_id2name(model, mujoco.mjtObj.mjOBJ_ACTUATOR, i)

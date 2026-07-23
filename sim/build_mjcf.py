@@ -68,12 +68,15 @@ def _leg_xml(m: Manifest, hip_name: str, foot_name: str) -> str:
       <body name="{hip.leg}_upper" pos="{fx * HIP_X:.4f} {sy * HIP_Y:.4f} {LEG_PLANE_DZ}">
         <joint name="{hip.name}" type="hinge" axis="{hip_axis}"
                range="{hip_lo:.6f} {hip_hi:.6f}" damping="0.01"/>
+        <site name="{hip.leg}_hip" pos="0 0 0"/>
         <geom name="{hip.leg}_upper_geom" type="box" mass="{UPPER_MASS}"
               pos="0 {sy * UPPER_LEN / 2:.4f} 0"
               size="{UPPER_HALF[0]} {UPPER_HALF[1]} {UPPER_HALF[2]}" rgba="{LEG_RGBA}"/>
         <body name="{hip.leg}_lower" pos="0 {sy * UPPER_LEN:.4f} 0">
           <joint name="{foot.name}" type="hinge" axis="{foot_axis}"
                  range="{foot_lo:.6f} {foot_hi:.6f}" damping="0.01"/>
+          <site name="{hip.leg}_knee" pos="0 0 0"/>
+          <site name="{hip.leg}_paw" pos="0 {sy * FOOT_LEN:.4f} 0"/>
           <geom name="{hip.leg}_lower_geom" type="box" mass="{FOOT_MASS}"
                 pos="0 {sy * FOOT_LEN / 2:.4f} 0"
                 size="{FOOT_HALF[0]} {FOOT_HALF[1]} {FOOT_HALF[2]}" rgba="{LEG_RGBA}"/>
@@ -107,6 +110,7 @@ def build_xml(m: Manifest | None = None) -> str:
   <compiler angle="radian" autolimits="true"/>
   <default>
     <geom friction="0.9 0.005 0.0001" condim="3"/>
+    <site size="0.0025" rgba="0.1 0.9 0.3 0.6"/>
   </default>
   <worldbody>
     <light pos="0 0 1.5" dir="0 0 -1"/>
@@ -117,7 +121,10 @@ def build_xml(m: Manifest | None = None) -> str:
             mass="{TORSO_MASS}" rgba="0.9 0.75 0.5 1"/>
       <geom name="face_geom" type="box" size="0.002 0.016 0.011"
             pos="{TORSO_HALF[0]:.4f} 0 0.004" mass="0.001"
-            contype="0" conaffinity="0" rgba="0.15 0.2 0.9 1"/>{legs}
+            contype="0" conaffinity="0" rgba="0.15 0.2 0.9 1"/>
+      <site name="torso_center" pos="0 0 0"/>
+      <site name="face" pos="{TORSO_HALF[0]:.4f} 0 0.004"/>
+      <site name="rear" pos="-{TORSO_HALF[0]:.4f} 0 0.004"/>{legs}
     </body>
   </worldbody>
   <actuator>{actuators}

@@ -28,7 +28,7 @@ from sim.manifest import load_manifest
 REPO_ROOT = Path(__file__).parent.parent
 WEB_DIR = REPO_ROOT / "web"
 ARTIFACTS = Path(__file__).parent / "artifacts"
-PORT = 5173
+PORT = 5199  # dedicated test port — must not collide with a human dev server
 STEPS = 1000
 # Native (clang/gcc x86_64/arm64) vs Emscripten WASM builds differ in
 # low-order bits; 2 s of contact dynamics amplifies them.
@@ -186,6 +186,36 @@ def test_motion_playback_matches_native(page):
         atol=BROWSER_ATOL,
         err_msg="browser motion playback diverged from native play_native('wave')",
     )
+
+
+def test_skeleton_sites_match_native(page):
+    # The rig (named site positions) must agree across backends after the
+    # same stand run — this is the coordinate-tracking contract.
+    import mujoco
+
+    from sim.telemetry import skeleton
+
+    state = browser_run(page, _stand_ctrl(), STEPS)
+    model = mujoco.MjModel.from_xml_path(str(MODEL_PATH))
+    data = mujoco.MjData(model)
+    manifest = load_manifest()
+    stand = manifest.pose_internal("stand")
+    data.ctrl[:] = [stand[j.name] for j in manifest.joints]
+    for _ in range(STEPS):
+        mujoco.mj_step(model, data)
+    native = skeleton(model, data)
+    assert set(state["skeleton"]) == set(native)
+    for name, pos in native.items():
+        np.testing.assert_allclose(
+            state["skeleton"][name], pos, atol=BROWSER_ATOL,
+            err_msg=f"site {name} diverged between browser and native",
+        )
+
+
+def _stand_ctrl() -> list[float]:
+    manifest = load_manifest()
+    stand = manifest.pose_internal("stand")
+    return [stand[j.name] for j in manifest.joints]
 
 
 def test_motion_buttons_rendered(page):

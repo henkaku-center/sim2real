@@ -57,11 +57,18 @@ function setScalar(x: unknown, i: number, value: number) {
 }
 
 function stateMessage(): WorkerResponse {
+  const skeleton: Record<string, [number, number, number]> = {};
+  const xpos = asNumbers(data.site_xpos, model.nsite * 3);
+  for (let i = 0; i < model.nsite; i++) {
+    const name = mj.mj_id2name(model, mj.mjtObj.mjOBJ_SITE.value, i);
+    skeleton[name] = [xpos[3 * i], xpos[3 * i + 1], xpos[3 * i + 2]];
+  }
   return {
     type: "state",
     qpos: asNumbers(data.qpos, model.nq),
     ctrl: asNumbers(data.ctrl, model.nu),
     time: data.time as number,
+    skeleton,
   };
 }
 

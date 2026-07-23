@@ -34,7 +34,14 @@ export type WorkerResponse =
       timestep: number;
       mujocoVersion: string;
     }
-  | { type: "state"; qpos: number[]; ctrl: number[]; time: number }
+  | {
+      type: "state";
+      qpos: number[];
+      ctrl: number[];
+      time: number;
+      // rig: world position of every named site (skeleton tracking points)
+      skeleton: Record<string, [number, number, number]>;
+    }
   | {
       type: "frame";
       // world transform per geom: 3 pos + 9 rotation-matrix floats

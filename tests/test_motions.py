@@ -108,14 +108,15 @@ def test_wave_paw_stays_off_the_ground():
     from sim.manifest import load_manifest
     from sim.motions import flatten, load_motions
 
+    from sim.telemetry import site_id
+
     man = load_manifest()
     doc = load_motions()
     events = flatten(doc["motions"]["wave"], man.raw["poses"])
     model = mujoco.MjModel.from_xml_path(str(MODEL_PATH))
     data = mujoco.MjData(model)
     sched = ctrl_schedule(events, man, model.opt.timestep)
-    lower = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_BODY, "front_left_lower")
-    tip_local = np.array([0, 0.047, 0])
+    paw = site_id(model, "front_left_paw")
     i, min_tip = 0, np.inf
     for step in range(sched[-1][0]):
         while i < len(sched) and sched[i][0] <= step:
@@ -123,8 +124,7 @@ def test_wave_paw_stays_off_the_ground():
             i += 1
         mujoco.mj_step(model, data)
         if step * model.opt.timestep * 1000 >= 700:  # during the waving loop
-            tip = data.xpos[lower] + data.xmat[lower].reshape(3, 3) @ tip_local
-            min_tip = min(min_tip, tip[2])
+            min_tip = min(min_tip, data.site_xpos[paw][2])
     assert min_tip > 0.02, f"waving paw dipped to {min_tip:.4f} m — hitting the ground"
 
 

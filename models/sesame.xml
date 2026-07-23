@@ -6,6 +6,7 @@
   <compiler angle="radian" autolimits="true"/>
   <default>
     <geom friction="0.9 0.005 0.0001" condim="3"/>
+    <site size="0.0025" rgba="0.1 0.9 0.3 0.6"/>
   </default>
   <worldbody>
     <light pos="0 0 1.5" dir="0 0 -1"/>
@@ -17,15 +18,21 @@
       <geom name="face_geom" type="box" size="0.002 0.016 0.011"
             pos="0.0396 0 0.004" mass="0.001"
             contype="0" conaffinity="0" rgba="0.15 0.2 0.9 1"/>
+      <site name="torso_center" pos="0 0 0"/>
+      <site name="face" pos="0.0396 0 0.004"/>
+      <site name="rear" pos="-0.0396 0 0.004"/>
       <body name="front_right_upper" pos="0.0245 -0.0230 -0.0018">
         <joint name="R1" type="hinge" axis="0 0 1"
                range="-0.785398 1.570796" damping="0.01"/>
+        <site name="front_right_hip" pos="0 0 0"/>
         <geom name="front_right_upper_geom" type="box" mass="0.019"
               pos="0 -0.0185 0"
               size="0.01 0.0185 0.009" rgba="0.80 0.12 0.08 1"/>
         <body name="front_right_lower" pos="0 -0.0369 0">
           <joint name="R3" type="hinge" axis="1 0 0"
                  range="-1.570796 1.570796" damping="0.01"/>
+          <site name="front_right_knee" pos="0 0 0"/>
+          <site name="front_right_paw" pos="0 -0.0470 0"/>
           <geom name="front_right_lower_geom" type="box" mass="0.005"
                 pos="0 -0.0235 0"
                 size="0.0047 0.0235 0.0095" rgba="0.80 0.12 0.08 1"/>
@@ -34,12 +41,15 @@
       <body name="back_right_upper" pos="-0.0245 -0.0230 -0.0018">
         <joint name="R2" type="hinge" axis="0 0 -1"
                range="-0.785398 1.570796" damping="0.01"/>
+        <site name="back_right_hip" pos="0 0 0"/>
         <geom name="back_right_upper_geom" type="box" mass="0.019"
               pos="0 -0.0185 0"
               size="0.01 0.0185 0.009" rgba="0.80 0.12 0.08 1"/>
         <body name="back_right_lower" pos="0 -0.0369 0">
           <joint name="R4" type="hinge" axis="1 0 0"
                  range="-1.570796 1.570796" damping="0.01"/>
+          <site name="back_right_knee" pos="0 0 0"/>
+          <site name="back_right_paw" pos="0 -0.0470 0"/>
           <geom name="back_right_lower_geom" type="box" mass="0.005"
                 pos="0 -0.0235 0"
                 size="0.0047 0.0235 0.0095" rgba="0.80 0.12 0.08 1"/>
@@ -48,12 +58,15 @@
       <body name="front_left_upper" pos="0.0245 0.0230 -0.0018">
         <joint name="L1" type="hinge" axis="0 0 -1"
                range="-0.785398 1.570796" damping="0.01"/>
+        <site name="front_left_hip" pos="0 0 0"/>
         <geom name="front_left_upper_geom" type="box" mass="0.019"
               pos="0 0.0185 0"
               size="0.01 0.0185 0.009" rgba="0.80 0.12 0.08 1"/>
         <body name="front_left_lower" pos="0 0.0369 0">
           <joint name="L3" type="hinge" axis="-1 0 0"
                  range="-1.570796 1.570796" damping="0.01"/>
+          <site name="front_left_knee" pos="0 0 0"/>
+          <site name="front_left_paw" pos="0 0.0470 0"/>
           <geom name="front_left_lower_geom" type="box" mass="0.005"
                 pos="0 0.0235 0"
                 size="0.0047 0.0235 0.0095" rgba="0.80 0.12 0.08 1"/>
@@ -62,12 +75,15 @@
       <body name="back_left_upper" pos="-0.0245 0.0230 -0.0018">
         <joint name="L2" type="hinge" axis="0 0 1"
                range="-0.785398 1.570796" damping="0.01"/>
+        <site name="back_left_hip" pos="0 0 0"/>
         <geom name="back_left_upper_geom" type="box" mass="0.019"
               pos="0 0.0185 0"
               size="0.01 0.0185 0.009" rgba="0.80 0.12 0.08 1"/>
         <body name="back_left_lower" pos="0 0.0369 0">
           <joint name="L4" type="hinge" axis="-1 0 0"
                  range="-1.570796 1.570796" damping="0.01"/>
+          <site name="back_left_knee" pos="0 0 0"/>
+          <site name="back_left_paw" pos="0 0.0470 0"/>
           <geom name="back_left_lower_geom" type="box" mass="0.005"
                 pos="0 0.0235 0"
                 size="0.0047 0.0235 0.0095" rgba="0.80 0.12 0.08 1"/>

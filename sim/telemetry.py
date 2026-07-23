@@ -27,10 +27,26 @@ from sim.manifest import load_manifest
 from sim.motions import ctrl_schedule, flatten, load_motions
 
 
+def site_id(model, name: str) -> int:
+    import mujoco
+
+    return mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_SITE, name)
+
+
+def skeleton(model, data) -> dict[str, list[float]]:
+    """All rig site positions by name (the model's skeletal layout)."""
+    import mujoco
+
+    return {
+        mujoco.mj_id2name(model, mujoco.mjtObj.mjOBJ_SITE, i): list(data.site_xpos[i])
+        for i in range(model.nsite)
+    }
+
+
 def motion_signature(motion_name: str, settle_steps: int = 500) -> dict:
     import mujoco
 
-    from sim.build_mjcf import FOOT_LEN, MODEL_PATH, TORSO_HALF
+    from sim.build_mjcf import MODEL_PATH
 
     manifest = load_manifest()
     doc = load_motions()
@@ -42,20 +58,18 @@ def motion_signature(motion_name: str, settle_steps: int = 500) -> dict:
 
     torso = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_BODY, "torso")
     floor = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_GEOM, "floor")
-    feet = {}  # foot joint name -> (body id, lower geom id, +y or -y tip)
+    face_site, rear_site = site_id(model, "face"), site_id(model, "rear")
+    feet = {}  # foot joint name -> (paw site id, lower geom id)
     for j in manifest.joints:
         if j.role != "foot":
             continue
-        body = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_BODY, f"{j.leg}_lower")
         geom = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_GEOM, f"{j.leg}_lower_geom")
-        sy = 1.0 if "left" in j.leg else -1.0
-        feet[j.name] = (body, geom, np.array([0.0, sy * FOOT_LEN, 0.0]))
+        feet[j.name] = (site_id(model, f"{j.leg}_paw"), geom)
 
     min_z, max_z = np.inf, -np.inf
     pitch_min, pitch_max = np.inf, -np.inf
     contact_steps = {name: 0 for name in feet}
     paw_max_z = {name: -np.inf for name in feet}
-    ex = np.array([TORSO_HALF[0], 0.0, 0.0])
 
     i = 0
     for step in range(total_steps):
@@ -67,24 +81,20 @@ def motion_signature(motion_name: str, settle_steps: int = 500) -> dict:
 
         min_z = min(min_z, data.qpos[2])
         max_z = max(max_z, data.qpos[2])
-        R = data.xmat[torso].reshape(3, 3)
-        c = data.xpos[torso]
-        face_z = (c + R @ ex)[2]
-        rear_z = (c - R @ ex)[2]
-        pitch_min = min(pitch_min, face_z - rear_z)
-        pitch_max = max(pitch_max, face_z - rear_z)
+        diff = data.site_xpos[face_site][2] - data.site_xpos[rear_site][2]
+        pitch_min = min(pitch_min, diff)
+        pitch_max = max(pitch_max, diff)
 
         touching = set()
         for k in range(data.ncon):
             con = data.contact[k]
-            for name, (_, geom, _) in feet.items():
+            for name, (_, geom) in feet.items():
                 if {con.geom1, con.geom2} == {geom, floor}:
                     touching.add(name)
-        for name, (body, _, tip) in feet.items():
+        for name, (paw_site, _) in feet.items():
             if name in touching:
                 contact_steps[name] += 1
-            tip_z = (data.xpos[body] + data.xmat[body].reshape(3, 3) @ tip)[2]
-            paw_max_z[name] = max(paw_max_z[name], tip_z)
+            paw_max_z[name] = max(paw_max_z[name], data.site_xpos[paw_site][2])
 
     q = data.qpos
     return {
