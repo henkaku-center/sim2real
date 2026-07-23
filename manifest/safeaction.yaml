@@ -1,0 +1,48 @@
+# SafeAction: the bounded command contract between any host-side brain
+# (policy, script, UI, agent) and the robot's servos — real OR simulated.
+#
+# This is the central safety boundary (AGENTS.md hard constraint #2): nothing
+# gets raw servo authority. The firmware implements the same vocabulary on
+# the serial/HTTP side; the simulator implements it in sim/safeaction.py.
+# Keep the two in sync via this file.
+
+schema_version: 1
+
+limits:
+  # Per-servo command rate limit. MG90S nominal slew is ~600 deg/s at 4.8 V
+  # (0.1 s / 60 deg); we cap commands well below the mechanical maximum so a
+  # runaway host cannot whip the legs. Value is per servo, firmware degrees.
+  max_rate_deg_s: 300
+  # Commands beyond the manifest soft limits are CLAMPED (not rejected):
+  # a policy mid-episode should degrade gracefully, not stop.
+  clamp_to_soft_limits: true
+  # Largest single-message target jump accepted before treating the command
+  # stream as faulty and freezing (degrees, any servo).
+  max_jump_deg: 180
+
+watchdog:
+  # If no valid command or heartbeat arrives within this window, the robot
+  # executes the failsafe action autonomously.
+  timeout_ms: 500
+  failsafe: rest # named pose from robot.yaml, approached at max_rate
+
+vocabulary:
+  # Host -> robot messages (transport: serial line/JSON or HTTP; sim: API).
+  - cmd: pose
+    args: "8 firmware degrees in channel order, optional duration_ms"
+    semantics: rate-limited move of all servos toward the clamped targets
+  - cmd: servo
+    args: "channel (0-7), firmware degrees"
+    semantics: single-servo variant of pose
+  - cmd: motion
+    args: "name from motions.yaml"
+    semantics: play a stock motion through the same rate/clamp gate
+  - cmd: stop
+    args: none
+    semantics: freeze at current position immediately; clears queued motion
+  - cmd: rest
+    args: none
+    semantics: rate-limited return to the rest pose
+  - cmd: heartbeat
+    args: none
+    semantics: feeds the watchdog without changing targets
