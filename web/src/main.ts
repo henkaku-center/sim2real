@@ -134,14 +134,14 @@ function commandPose(values: number[]) {
 
 // Test hook for CDP smoke tests (tests/, Stage 0 task 6).
 const errors: string[] = [];
-const stateWaiters: ((s: { qpos: number[]; ctrl: number[]; time: number }) => void)[] = [];
+const stateWaiters: ((s: Extract<WorkerResponse, { type: "state" }>) => void)[] = [];
 let readyResolve: (() => void) | undefined;
 const simHook = {
   ready: new Promise<void>((res) => (readyResolve = res)),
   errors,
   send,
   getState: () =>
-    new Promise<{ qpos: number[]; ctrl: number[]; time: number }>((res) => {
+    new Promise<Extract<WorkerResponse, { type: "state" }>>((res) => {
       stateWaiters.push(res);
       send({ type: "getState" });
     }),
@@ -196,7 +196,7 @@ worker.onmessage = (ev: MessageEvent<WorkerResponse>) => {
   } else if (msg.type === "frame") {
     applyFrame(msg.xpos, msg.xmat);
   } else if (msg.type === "state") {
-    stateWaiters.splice(0).forEach((w) => w({ qpos: msg.qpos, ctrl: msg.ctrl, time: msg.time }));
+    stateWaiters.splice(0).forEach((w) => w(msg));
   } else if (msg.type === "error") {
     errors.push(msg.message);
     console.error("worker error:", msg.message);
