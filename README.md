@@ -6,7 +6,17 @@ The project owns the **robot definition, safety contract, task API, evaluation t
 
 ## Status
 
-Pre-Stage 0. This repo currently contains planning and handover documents only. Start with [HANDOVER.md](HANDOVER.md), then [ROADMAP.md](ROADMAP.md).
+**Stage 0 complete.** The canonical manifest (`manifest/robot.yaml`), a manifest-generated MJCF, native viewer/benchmark, and a browser WASM shell all run from the same model, with native↔browser numerical parity CDP-tested on macOS + Linux in CI. Geometry is placeholder pending measured dimensions. Next: Stage 1 (stock motion playback, SafeAction command vocabulary) — see [ROADMAP.md](ROADMAP.md).
+
+### Quick start
+
+```bash
+uv sync                      # Python env (locked)
+uv run pytest                # full test suite
+uv run python sim/view.py    # native viewer (macOS: uv run mjpython sim/view.py)
+uv run python sim/bench.py   # physics step-rate benchmark
+cd web && npm ci && npm run dev   # browser sim at http://localhost:5173
+```
 
 ## Documents
 
