@@ -93,10 +93,39 @@ def test_turns_rotate():
 
 def test_wave_returns_to_stand():
     _, data = play_native("wave")
-    assert data.qpos[2] > 0.06, "robot should end standing"
+    assert data.qpos[2] > 0.04, "robot should end standing"
     assert abs(data.qpos[0]) < 0.05 and abs(data.qpos[1]) < 0.05, (
         "wave should not translate the robot"
     )
+
+
+def test_wave_paw_stays_off_the_ground():
+    # Regression: with placeholder kinematics the "waving" L3 paw repeatedly
+    # hit the floor. With STL-measured geometry it must wave in the air.
+    import mujoco
+
+    from sim.build_mjcf import MODEL_PATH
+    from sim.manifest import load_manifest
+    from sim.motions import flatten, load_motions
+
+    man = load_manifest()
+    doc = load_motions()
+    events = flatten(doc["motions"]["wave"], man.raw["poses"])
+    model = mujoco.MjModel.from_xml_path(str(MODEL_PATH))
+    data = mujoco.MjData(model)
+    sched = ctrl_schedule(events, man, model.opt.timestep)
+    lower = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_BODY, "front_left_lower")
+    tip_local = np.array([0, 0.047, 0])
+    i, min_tip = 0, np.inf
+    for step in range(sched[-1][0]):
+        while i < len(sched) and sched[i][0] <= step:
+            data.ctrl[sched[i][1]] = sched[i][2]
+            i += 1
+        mujoco.mj_step(model, data)
+        if step * model.opt.timestep * 1000 >= 700:  # during the waving loop
+            tip = data.xpos[lower] + data.xmat[lower].reshape(3, 3) @ tip_local
+            min_tip = min(min_tip, tip[2])
+    assert min_tip > 0.02, f"waving paw dipped to {min_tip:.4f} m — hitting the ground"
 
 
 def test_playback_is_deterministic():

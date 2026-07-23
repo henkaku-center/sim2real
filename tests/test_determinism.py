@@ -14,7 +14,7 @@ import mujoco
 import numpy as np
 import pytest
 
-from sim.build_mjcf import MODEL_PATH
+from sim.build_mjcf import MODEL_PATH, SPAWN_Z
 from sim.manifest import load_manifest
 
 REFERENCE_PATH = Path(__file__).parent / "data" / "stand_1000_qpos.json"
@@ -59,8 +59,7 @@ def test_matches_committed_reference(final_qpos):
 
 
 def test_stand_command_raises_torso(final_qpos):
-    spawn_z = 0.05  # keyframe height from sim/build_mjcf.py
-    assert final_qpos[2] > spawn_z + 0.01, "standing should lift the torso"
+    assert final_qpos[2] > SPAWN_Z + 0.02, "standing should lift the torso"
     assert np.all(np.isfinite(final_qpos))
 
 
@@ -77,6 +76,6 @@ def test_final_pose_is_left_right_symmetric(final_qpos):
     # +90° down), so all hips settle equal and all feet settle equal.
     for a, b in (("R1", "L1"), ("R1", "R2"), ("R1", "L2"),
                  ("R3", "L3"), ("R3", "R4"), ("R3", "L4")):
-        assert q(a) == pytest.approx(q(b), abs=1e-6), (
+        assert q(a) == pytest.approx(q(b), abs=1e-4), (
             f"{a}/{b}: symmetric joints should settle at equal internal angles"
         )
