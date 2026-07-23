@@ -18,48 +18,48 @@
         <joint name="R1" type="hinge" axis="1 0 0"
                range="-0.785398 1.570796" damping="0.01"/>
         <geom name="front_right_upper_geom" type="capsule" mass="0.03"
-              fromto="0 0 0 0 -0.0450 0" size="0.008"/>
+              fromto="0 0 0 0 -0.0450 0" size="0.008" rgba="0.80 0.12 0.08 1"/>
         <body name="front_right_lower" pos="0 -0.0450 0">
           <joint name="R3" type="hinge" axis="1 0 0"
                  range="-1.570796 1.570796" damping="0.01"/>
           <geom name="front_right_lower_geom" type="capsule" mass="0.012"
-                fromto="0 0 0 0 -0.0550 0" size="0.0064"/>
+                fromto="0 0 0 0 -0.0550 0" size="0.0064" rgba="0.80 0.12 0.08 1"/>
         </body>
       </body>
       <body name="back_right_upper" pos="-0.0380 -0.0400 0">
         <joint name="R2" type="hinge" axis="1 0 0"
                range="-0.785398 1.570796" damping="0.01"/>
         <geom name="back_right_upper_geom" type="capsule" mass="0.03"
-              fromto="0 0 0 0 -0.0450 0" size="0.008"/>
+              fromto="0 0 0 0 -0.0450 0" size="0.008" rgba="0.80 0.12 0.08 1"/>
         <body name="back_right_lower" pos="0 -0.0450 0">
           <joint name="R4" type="hinge" axis="1 0 0"
                  range="-1.570796 1.570796" damping="0.01"/>
           <geom name="back_right_lower_geom" type="capsule" mass="0.012"
-                fromto="0 0 0 0 -0.0550 0" size="0.0064"/>
+                fromto="0 0 0 0 -0.0550 0" size="0.0064" rgba="0.80 0.12 0.08 1"/>
         </body>
       </body>
       <body name="front_left_upper" pos="0.0380 0.0400 0">
         <joint name="L1" type="hinge" axis="-1 0 0"
                range="-0.785398 1.570796" damping="0.01"/>
         <geom name="front_left_upper_geom" type="capsule" mass="0.03"
-              fromto="0 0 0 0 0.0450 0" size="0.008"/>
+              fromto="0 0 0 0 0.0450 0" size="0.008" rgba="0.80 0.12 0.08 1"/>
         <body name="front_left_lower" pos="0 0.0450 0">
           <joint name="L3" type="hinge" axis="-1 0 0"
                  range="-1.570796 1.570796" damping="0.01"/>
           <geom name="front_left_lower_geom" type="capsule" mass="0.012"
-                fromto="0 0 0 0 0.0550 0" size="0.0064"/>
+                fromto="0 0 0 0 0.0550 0" size="0.0064" rgba="0.80 0.12 0.08 1"/>
         </body>
       </body>
       <body name="back_left_upper" pos="-0.0380 0.0400 0">
         <joint name="L2" type="hinge" axis="-1 0 0"
                range="-0.785398 1.570796" damping="0.01"/>
         <geom name="back_left_upper_geom" type="capsule" mass="0.03"
-              fromto="0 0 0 0 0.0450 0" size="0.008"/>
+              fromto="0 0 0 0 0.0450 0" size="0.008" rgba="0.80 0.12 0.08 1"/>
         <body name="back_left_lower" pos="0 0.0450 0">
           <joint name="L4" type="hinge" axis="-1 0 0"
                  range="-1.570796 1.570796" damping="0.01"/>
           <geom name="back_left_lower_geom" type="capsule" mass="0.012"
-                fromto="0 0 0 0 0.0550 0" size="0.0064"/>
+                fromto="0 0 0 0 0.0550 0" size="0.0064" rgba="0.80 0.12 0.08 1"/>
         </body>
       </body>
     </body>

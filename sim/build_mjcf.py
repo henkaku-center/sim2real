@@ -26,6 +26,7 @@ UPPER_MASS = 0.030  # printed part + foot servo carried on the segment
 LOWER_LEN = 0.055
 LOWER_MASS = 0.012
 LEG_RADIUS = 0.008
+LEG_RGBA = "0.80 0.12 0.08 1"  # crab red
 SPAWN_Z = 0.05  # torso center height at keyframe "rest" (lying, legs sprawled)
 
 TIMESTEP = 0.002
@@ -52,12 +53,12 @@ def _leg_xml(m: Manifest, hip_name: str, foot_name: str) -> str:
         <joint name="{hip.name}" type="hinge" axis="{ax:.0f} 0 0"
                range="{hip_lo:.6f} {hip_hi:.6f}" damping="0.01"/>
         <geom name="{hip.leg}_upper_geom" type="capsule" mass="{UPPER_MASS}"
-              fromto="0 0 0 0 {sy * UPPER_LEN:.4f} 0" size="{LEG_RADIUS}"/>
+              fromto="0 0 0 0 {sy * UPPER_LEN:.4f} 0" size="{LEG_RADIUS}" rgba="{LEG_RGBA}"/>
         <body name="{hip.leg}_lower" pos="0 {sy * UPPER_LEN:.4f} 0">
           <joint name="{foot.name}" type="hinge" axis="{ax:.0f} 0 0"
                  range="{foot_lo:.6f} {foot_hi:.6f}" damping="0.01"/>
           <geom name="{hip.leg}_lower_geom" type="capsule" mass="{LOWER_MASS}"
-                fromto="0 0 0 0 {sy * LOWER_LEN:.4f} 0" size="{LEG_RADIUS * 0.8:.4f}"/>
+                fromto="0 0 0 0 {sy * LOWER_LEN:.4f} 0" size="{LEG_RADIUS * 0.8:.4f}" rgba="{LEG_RGBA}"/>
         </body>
       </body>"""
 
