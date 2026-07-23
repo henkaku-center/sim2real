@@ -243,6 +243,25 @@ def test_slider_moves_joint(page):
     assert state["ctrl"][0] == pytest.approx(applied), "ctrl[0] is channel 0 == R1"
 
 
+def test_skeleton_toggle(page):
+    # Toggle on: 15 site spheres become enabled and track live site data.
+    result = page.evaluate(
+        """() => {
+            const box = document.querySelector('#show-skeleton');
+            box.checked = true;
+            box.dispatchEvent(new Event('change', {bubbles: true}));
+            const app = window.pc?.Application.getApplication?.();
+            return {checked: box.checked};
+        }"""
+    )
+    assert result["checked"]
+    state = page.evaluate("() => window.__sim.getState()")
+    assert len(state["skeleton"]) == 15
+    # paw sites must be within the robot's reach of the origin (sane coords)
+    for name, (x, y, z) in state["skeleton"].items():
+        assert abs(x) < 1 and abs(y) < 1 and -0.01 <= z < 0.3, f"{name} at {(x, y, z)}"
+
+
 def test_screenshot_artifact(page):
     ARTIFACTS.mkdir(exist_ok=True)
     page.screenshot(path=str(ARTIFACTS / "browser_shell.png"))

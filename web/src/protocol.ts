@@ -31,6 +31,7 @@ export type WorkerResponse =
       joints: JointInfo[];
       geoms: GeomMeta[];
       motions: string[];
+      siteNames: string[]; // rig site order for frame.sites
       timestep: number;
       mujocoVersion: string;
     }
@@ -47,6 +48,7 @@ export type WorkerResponse =
       // world transform per geom: 3 pos + 9 rotation-matrix floats
       xpos: Float32Array;
       xmat: Float32Array;
+      sites: Float32Array; // rig site world positions, 3 per site
       time: number;
     }
   | { type: "error"; message: string };

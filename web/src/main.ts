@@ -27,6 +27,8 @@ app.innerHTML = `
       </div>
       <h2>motions</h2>
       <div id="motions"></div>
+      <h2>debug</h2>
+      <label id="skeleton-toggle"><input type="checkbox" id="show-skeleton"> show skeleton</label>
     </aside>
   </main>`;
 
@@ -60,6 +62,51 @@ mjRoot.setEulerAngles(-90, 0, 0);
 pcApp.root.addChild(mjRoot);
 
 const geomEntities: pc.Entity[] = [];
+
+// ---------- Skeleton (rig) visualization ----------
+let siteNames: string[] = [];
+let siteEntities: pc.Entity[] = [];
+let latestSites: Float32Array | null = null;
+let showSkeleton = false;
+const BONE_CHAINS: string[][] = []; // filled once site names are known
+const boneColor = new pc.Color(0.1, 1.0, 0.4);
+const tmpA = new pc.Vec3();
+const tmpB = new pc.Vec3();
+
+function makeSiteEntities(names: string[]) {
+  siteNames = names;
+  const mat = new pc.StandardMaterial();
+  mat.emissive = new pc.Color(0.1, 1.0, 0.4);
+  mat.diffuse = new pc.Color(0, 0, 0);
+  mat.update();
+  for (const name of names) {
+    const e = new pc.Entity(`site_${name}`);
+    const mesh = pc.Mesh.fromGeometry(pcApp.graphicsDevice, new pc.SphereGeometry({ radius: 0.004 }));
+    e.addComponent("render", { meshInstances: [new pc.MeshInstance(mesh, mat)] });
+    e.enabled = false;
+    mjRoot.addChild(e);
+    siteEntities.push(e);
+  }
+  for (const leg of ["front_left", "front_right", "back_left", "back_right"]) {
+    BONE_CHAINS.push(["torso_center", `${leg}_hip`, `${leg}_knee`, `${leg}_paw`]);
+  }
+  BONE_CHAINS.push(["face", "torso_center", "rear"]);
+}
+
+function sitePos(name: string, out: pc.Vec3): pc.Vec3 {
+  const i = siteNames.indexOf(name);
+  out.set(latestSites![3 * i], latestSites![3 * i + 1], latestSites![3 * i + 2]);
+  return mjRoot.getWorldTransform().transformPoint(out, out);
+}
+
+pcApp.on("update", () => {
+  if (!showSkeleton || !latestSites) return;
+  for (const chain of BONE_CHAINS) {
+    for (let i = 0; i + 1 < chain.length; i++) {
+      pcApp.drawLine(sitePos(chain[i], tmpA), sitePos(chain[i + 1], tmpB), boneColor, false);
+    }
+  }
+});
 
 function makeGeomEntity(meta: GeomMeta, index: number): pc.Entity {
   const e = new pc.Entity(`geom${index}`);
@@ -191,10 +238,15 @@ worker.onmessage = (ev: MessageEvent<WorkerResponse>) => {
       slidersEl.append(row);
       sliderInputs.push(input);
     }
+    makeSiteEntities(msg.siteNames);
     resize();
     readyResolve?.();
   } else if (msg.type === "frame") {
     applyFrame(msg.xpos, msg.xmat);
+    latestSites = msg.sites;
+    for (let i = 0; i < siteEntities.length; i++) {
+      siteEntities[i].setLocalPosition(msg.sites[3 * i], msg.sites[3 * i + 1], msg.sites[3 * i + 2]);
+    }
   } else if (msg.type === "state") {
     stateWaiters.splice(0).forEach((w) => w(msg));
   } else if (msg.type === "error") {
@@ -202,6 +254,11 @@ worker.onmessage = (ev: MessageEvent<WorkerResponse>) => {
     console.error("worker error:", msg.message);
   }
 };
+
+document.querySelector<HTMLInputElement>("#show-skeleton")!.addEventListener("change", (ev) => {
+  showSkeleton = (ev.target as HTMLInputElement).checked;
+  siteEntities.forEach((e) => (e.enabled = showSkeleton));
+});
 
 document.querySelector("#reset")!.addEventListener("click", () => {
   send({ type: "reset" });

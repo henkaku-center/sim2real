@@ -97,3 +97,12 @@ main {
 #motions button:hover {
   background: #35353d;
 }
+
+#skeleton-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: #9c9;
+  cursor: pointer;
+}

@@ -76,9 +76,10 @@ function frameMessage(): { msg: WorkerResponse; transfer: Transferable[] } {
   const n = model.ngeom;
   const xpos = new Float32Array(asNumbers(data.geom_xpos, n * 3));
   const xmat = new Float32Array(asNumbers(data.geom_xmat, n * 9));
+  const sites = new Float32Array(asNumbers(data.site_xpos, model.nsite * 3));
   return {
-    msg: { type: "frame", xpos, xmat, time: data.time as number },
-    transfer: [xpos.buffer, xmat.buffer],
+    msg: { type: "frame", xpos, xmat, sites, time: data.time as number },
+    transfer: [xpos.buffer, xmat.buffer, sites.buffer],
   };
 }
 
@@ -117,11 +118,16 @@ async function init() {
       rgba: grgba.slice(4 * g, 4 * g + 4) as [number, number, number, number],
     });
   }
+  const siteNames = [];
+  for (let i = 0; i < model.nsite; i++) {
+    siteNames.push(mj.mj_id2name(model, mj.mjtObj.mjOBJ_SITE.value, i));
+  }
   post({
     type: "ready",
     joints,
     geoms,
     motions: motionNames,
+    siteNames,
     timestep: model.opt.timestep as number,
     mujocoVersion: mj.mj_versionString(),
   });
