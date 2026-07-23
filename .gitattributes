@@ -1,0 +1,14 @@
+# Large binaries go through Git LFS (see AGENTS.md). Requires `git lfs install`.
+*.blend filter=lfs diff=lfs merge=lfs -text
+*.ply filter=lfs diff=lfs merge=lfs -text
+*.mp4 filter=lfs diff=lfs merge=lfs -text
+*.mov filter=lfs diff=lfs merge=lfs -text
+*.glb filter=lfs diff=lfs merge=lfs -text
+*.stl filter=lfs diff=lfs merge=lfs -text
+*.parquet filter=lfs diff=lfs merge=lfs -text
+*.npz filter=lfs diff=lfs merge=lfs -text
+*.hdf5 filter=lfs diff=lfs merge=lfs -text
+
+# Lockfiles: treat as binary-ish in diffs to reduce noise? No — keep text for review.
+uv.lock linguist-generated=true
+package-lock.json linguist-generated=true

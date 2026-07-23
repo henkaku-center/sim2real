@@ -1,0 +1,18 @@
+[project]
+name = "sim2real"
+version = "0.1.0"
+description = "Portable simulation and sim-to-real platform for the Sesame quadruped (APS-II)"
+requires-python = ">=3.12"
+dependencies = [
+    "mujoco>=3.10.0",
+    "numpy>=2.5.1",
+    "pyyaml>=6.0.3",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.1.1",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

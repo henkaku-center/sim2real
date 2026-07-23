@@ -1,0 +1,21 @@
+# Chi local state and sensitive artifacts (runtime state lives under ~/.chi)
+.chi/
+
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+*.egg-info/
+
+# Node
+node_modules/
+web/dist/
+
+# Editors / OS
+.DS_Store
+.idea/
+.vscode/
+
+# Test artifacts (screenshots etc.)
+tests/artifacts/
