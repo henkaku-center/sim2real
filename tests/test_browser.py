@@ -55,25 +55,41 @@ def _skip_or_fail(reason: str):
 def dev_server():
     if not (WEB_DIR / "node_modules").exists():
         _skip_or_fail("web/node_modules missing (run: cd web && npm ci)")
+    ARTIFACTS.mkdir(exist_ok=True)
+    log_path = ARTIFACTS / "vite_dev.log"
+    log = open(log_path, "w")
     proc = subprocess.Popen(
-        ["npm", "run", "dev", "--", "--port", str(PORT), "--strictPort"],
+        ["npm", "run", "dev", "--",
+         "--host", "127.0.0.1", "--port", str(PORT), "--strictPort"],
         cwd=WEB_DIR,
-        stdout=subprocess.DEVNULL,
-        stderr=subprocess.DEVNULL,
+        stdout=log,
+        stderr=subprocess.STDOUT,
     )
     try:
-        for _ in range(100):
+        deadline = time.monotonic() + 60  # CI runners can be slow to cold-start
+        while time.monotonic() < deadline:
+            if proc.poll() is not None:
+                break
             try:
                 with socket.create_connection(("127.0.0.1", PORT), timeout=0.2):
                     break
             except OSError:
-                time.sleep(0.1)
+                time.sleep(0.2)
         else:
-            pytest.fail("vite dev server did not start")
+            pass
+        try:
+            socket.create_connection(("127.0.0.1", PORT), timeout=1).close()
+        except OSError:
+            log.flush()
+            pytest.fail(
+                "vite dev server did not start; log tail:\n"
+                + "\n".join(log_path.read_text().splitlines()[-20:])
+            )
         yield f"http://127.0.0.1:{PORT}"
     finally:
         proc.terminate()
         proc.wait(timeout=10)
+        log.close()
 
 
 @pytest.fixture(scope="module")
