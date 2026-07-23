@@ -243,6 +243,30 @@ def test_slider_moves_joint(page):
     assert state["ctrl"][0] == pytest.approx(applied), "ctrl[0] is channel 0 == R1"
 
 
+def test_camera_orbit_controls(page):
+    moved = page.evaluate(
+        """() => {
+            const canvas = document.querySelector('#view');
+            const before = window.__view.cameraPos();
+            // orbit: left-drag
+            canvas.dispatchEvent(new PointerEvent('pointerdown', {button: 0, clientX: 100, clientY: 100, bubbles: true}));
+            canvas.dispatchEvent(new PointerEvent('pointermove', {clientX: 160, clientY: 120, bubbles: true}));
+            canvas.dispatchEvent(new PointerEvent('pointerup', {button: 0, bubbles: true}));
+            const afterOrbit = window.__view.cameraPos();
+            // zoom: wheel
+            const distBefore = window.__view.orbit.dist;
+            canvas.dispatchEvent(new WheelEvent('wheel', {deltaY: -400, bubbles: true, cancelable: true}));
+            return {before, afterOrbit, distBefore, distAfter: window.__view.orbit.dist};
+        }"""
+    )
+    assert result_moved(moved["before"], moved["afterOrbit"]), "drag should orbit the camera"
+    assert moved["distAfter"] < moved["distBefore"], "wheel up should zoom in"
+
+
+def result_moved(a, b, eps=1e-6):
+    return sum((x - y) ** 2 for x, y in zip(a, b)) > eps
+
+
 def test_skeleton_toggle(page):
     # Toggle on: 15 site spheres become enabled and track live site data.
     result = page.evaluate(

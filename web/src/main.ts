@@ -46,9 +46,94 @@ pcApp.start();
 
 const camera = new pc.Entity("camera");
 camera.addComponent("camera", { clearColor: new pc.Color(0.12, 0.12, 0.14) });
-camera.setPosition(0.35, 0.25, 0.45);
-camera.lookAt(0, 0.03, 0);
 pcApp.root.addChild(camera);
+
+// ---------- Orbit camera: left-drag rotate, right/shift-drag pan, wheel zoom
+const orbit = {
+  yawDeg: 38,
+  pitchDeg: -28,
+  dist: 0.55,
+  target: new pc.Vec3(0, 0.03, 0),
+};
+
+function updateCamera() {
+  const yaw = (orbit.yawDeg * Math.PI) / 180;
+  const pitch = (orbit.pitchDeg * Math.PI) / 180;
+  const cp = Math.cos(pitch);
+  camera.setPosition(
+    orbit.target.x + orbit.dist * cp * Math.sin(yaw),
+    orbit.target.y - orbit.dist * Math.sin(pitch),
+    orbit.target.z + orbit.dist * cp * Math.cos(yaw),
+  );
+  camera.lookAt(orbit.target);
+}
+updateCamera();
+
+let dragButton = -1;
+let lastX = 0;
+let lastY = 0;
+canvas.addEventListener("contextmenu", (e) => e.preventDefault());
+canvas.addEventListener("pointerdown", (e) => {
+  dragButton = e.button;
+  lastX = e.clientX;
+  lastY = e.clientY;
+  try {
+    canvas.setPointerCapture(e.pointerId);
+  } catch {
+    /* synthetic events (tests) have no active pointer */
+  }
+});
+canvas.addEventListener("pointerup", (e) => {
+  dragButton = -1;
+  try {
+    canvas.releasePointerCapture(e.pointerId);
+  } catch {
+    /* see above */
+  }
+});
+canvas.addEventListener("pointermove", (e) => {
+  if (dragButton < 0) return;
+  const dx = e.clientX - lastX;
+  const dy = e.clientY - lastY;
+  lastX = e.clientX;
+  lastY = e.clientY;
+  if (dragButton === 0 && !e.shiftKey) {
+    orbit.yawDeg -= dx * 0.4;
+    orbit.pitchDeg = Math.max(-89, Math.min(89, orbit.pitchDeg - dy * 0.4));
+  } else {
+    // pan in the camera's screen plane
+    const scale = orbit.dist * 0.002;
+    const right = camera.right;
+    const up = camera.up;
+    orbit.target.x -= (right.x * dx - up.x * dy) * scale;
+    orbit.target.y -= (right.y * dx - up.y * dy) * scale;
+    orbit.target.z -= (right.z * dx - up.z * dy) * scale;
+  }
+  updateCamera();
+});
+canvas.addEventListener(
+  "wheel",
+  (e) => {
+    e.preventDefault();
+    orbit.dist = Math.max(0.1, Math.min(3, orbit.dist * Math.pow(1.0015, e.deltaY)));
+    updateCamera();
+  },
+  { passive: false },
+);
+
+// Test hook for camera QC (CDP)
+declare global {
+  interface Window {
+    __view: { orbit: typeof orbit; cameraPos: () => number[] };
+  }
+}
+window.__view = {
+  orbit,
+  cameraPos: () => {
+    const p = camera.getPosition();
+    return [p.x, p.y, p.z];
+  },
+};
 
 const light = new pc.Entity("light");
 light.addComponent("light", { type: "directional", intensity: 1.2, castShadows: false });
