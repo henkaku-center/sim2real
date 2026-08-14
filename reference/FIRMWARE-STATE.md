@@ -137,3 +137,23 @@ Next tests should focus on:
 - flashing the generated firmware images through raw `socket://` with `--no-stub`,
 - stricter RFC2217/telnet escaping tests with binary payloads containing `0xff`,
 - automatic bridge restart after `/dev/bus/usb` re-enumeration.
+
+## First full app firmware flash through Karasu (2026-08-14)
+
+After putting Sesame in ROM bootloader mode and starting the raw Karasu bridge on TCP `7777`, calcifer successfully flashed the compiled Sesame app image through Karasu:
+
+```sh
+esptool --before no-reset --after no-reset \
+  --port 'socket://100.77.51.88:7777' \
+  --chip esp32s2 \
+  write-flash 0x10000 /tmp/sesame-build/sesame-fw.ino.bin
+```
+
+Result:
+
+```text
+Wrote 1106832 bytes (697875 compressed) at 0x00010000 in 15.5 seconds (569.8 kbit/s).
+Hash of data verified.
+```
+
+This is the first successful full application firmware write over the calcifer → Tailscale → Karasu → USB OTG → Sesame path. Bootloader and partition-table flashing with `--no-stub` failed at SPI flash pin configuration, but app-only flashing with the stub already running through the raw socket bridge succeeded.
