@@ -6,6 +6,17 @@ Guidance for AI coding agents (any harness — Claude Code, Codex, Gemini CLI, p
 
 Portable simulation and sim-to-real platform for the Sesame quadruped (8× MG90S servos, LOLIN ESP32-S2 Mini). MuJoCo is the cross-platform reference core; accelerated/vendor backends are adapters. Read `HANDOVER.md` first for current state and next tasks, and `ROADMAP.md` for the full plan and its rationale.
 
+## APS-II dogfooding context
+
+Everything in this repository that touches the Sesame robot, Karasu phone bridge, firmware flashing, SafeAction interface, simulator, calibration, hardware bring-up, or robot-control workflow is **current APS-II course dogfooding for the coming Fall course**, not speculative "next year" work. Treat findings as course-critical operational knowledge unless explicitly marked as long-term research.
+
+When recording Sesame/Karasu/firmware discoveries:
+
+- put durable technical state in this repo (`reference/`, `tools/`, `DECISIONS.md`, or the relevant source tree),
+- cross-link APS-facing course notes in `../aps/` when useful,
+- avoid filing active APS-II robot work under `next-year/` in the APS repo,
+- keep the student-facing goal in mind: a reliable hand-built robot that performs two tricks and demonstrates the two-brain architecture.
+
 ## Hard constraints (do not violate)
 
 1. **macOS + Linux parity for anything student-facing.** Before adding a dependency, verify it installs on both. CUDA-only paths (MuJoCo Warp, MJX-GPU, Isaac, Genesis, Newton-GPU) live behind optional extras and are workstation-only.
