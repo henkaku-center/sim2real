@@ -76,17 +76,21 @@ fc happy
 
 Goal: phone sends firmware updates directly to Sesame over USB OTG.
 
-Status: possible in principle, not yet implemented.
+Status: partially implemented as an experimental RFC2217 bridge in `tools/karasu-usb-bridge/`.
 
 Blockers:
 
 - Android grants raw USB device access through `termux-usb`, not a POSIX serial tty.
 - Stock `esptool.py` expects pyserial over `/dev/ttyACM*`/`/dev/ttyUSB*` and cannot directly use the Termux USB file descriptor.
-- A working phone flasher likely requires one of:
-  1. a pyserial backend adapted to Android raw USB / `termux-usb`,
-  2. a USB-serial-to-TCP bridge app plus `socat`/pty and esptool,
-  3. root/kernel support exposing a real tty device, or
-  4. adding OTA/web firmware update support to Sesame and using Wi-Fi instead of USB for firmware updates.
+- The experimental bridge solves the serial transport by exposing Karasu's raw USB CDC device as RFC2217 TCP serial, but bootloader entry remains unresolved.
+- ESP32-S2/S3 native USB CDC DTR/RTS are virtual line states. They do not guarantee hardware EN/GPIO0 boot mode entry unless the board/firmware maps them accordingly.
+- USB reset/reboot re-enumerates the Android device path (`/dev/bus/usb/001/00N`), invalidating the old `termux-usb` file descriptor. Android permission may need to be granted again unless the OS offers and honors an always-allow choice.
+- A fully reliable phone flasher likely requires one of:
+  1. manual BOOT/GPIO0 + RESET during the bridge session,
+  2. firmware-assisted reboot-to-bootloader command or 1200-bps touch support,
+  3. bridge auto-reopen after re-enumeration plus persistent Android USB permission,
+  4. root/kernel support exposing a real tty device, or
+  5. adding OTA/web firmware update support to Sesame and using Wi-Fi instead of USB for firmware updates.
 
 Near-term recommendation:
 
