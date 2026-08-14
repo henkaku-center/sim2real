@@ -115,7 +115,7 @@ class UsbCdcSerial:
         data = bytes(data)
         off = 0
         while off < len(data):
-            chunk = data[off:off + 4096]
+            chunk = data[off:off + 64]
             buf = ctypes.create_string_buffer(chunk)
             b = Bulk(0x03, len(chunk), 1000, ctypes.cast(buf, ctypes.c_void_p))
             try:
@@ -124,6 +124,8 @@ class UsbCdcSerial:
                 print("usb write", e, file=sys.stderr, flush=True)
                 raise
             off += n if n > 0 else len(chunk)
+            # CDC ACM over Android usbfs is more reliable if we avoid huge
+            # back-to-back bulk submissions through the Termux fd bridge.
         return len(data)
 
     def read(self, size=4096, timeout_ms=1):
@@ -134,6 +136,7 @@ class UsbCdcSerial:
         except OSError as e:
             if e.errno in (errno.ETIMEDOUT, errno.EAGAIN, errno.EPIPE, 110):
                 return b""
+            print("usb read", e, "errno", getattr(e, "errno", None), file=sys.stderr, flush=True)
             return b""
         return buf.raw[:max(0, n)]
 
@@ -175,6 +178,9 @@ def handle(sock, ser):
                 d = sock.recv(4096)
             except socket.timeout:
                 continue
+            except OSError as e:
+                print("tcp recv", e, file=sys.stderr, flush=True)
+                break
             if not d:
                 break
             out = b"".join(pm.filter(d))

@@ -119,10 +119,21 @@ MAC observed: 48:27:e2:59:51:3c
 
 `esptool` can now sync through the Karasu RFC2217 bridge and read registers. This proves the calcifer → Tailscale → Karasu → USB OTG → Sesame bootloader path.
 
-Remaining issue: uploading the esptool flasher stub currently fails with a ROM response checksum error during `MEM_DATA`. This likely points to a bridge robustness issue for large binary writes / escaping / chunking rather than basic connectivity. Next tests should focus on:
+Follow-up result: reducing RFC2217 USB bulk OUT writes to 64-byte chunks allowed the flasher stub to upload and run, but RFC2217 remains less reliable for large binary operations. Switching to the raw socket bridge once the board is already in ROM bootloader mode avoids telnet/RFC2217 escaping and is the current recommended flashing path.
 
-- using `--no-stub` write/read operations,
-- smaller USB bulk OUT chunk sizes,
+First successful write through Karasu:
+
+```sh
+esptool --no-stub --before no-reset --after no-reset \
+  --port 'socket://100.77.51.88:7777' \
+  write-flash 0x3F0000 sector-ff.bin
+```
+
+Result: 4096 bytes erased/written at `0x003f0000`; esptool verification hash passed. This is a bridge flash smoke test, not a full firmware update.
+
+Next tests should focus on:
+
+- compiling the APS-local Sesame firmware on calcifer,
+- flashing the generated firmware images through raw `socket://` with `--no-stub`,
 - stricter RFC2217/telnet escaping tests with binary payloads containing `0xff`,
-- direct socket transport once the board is already in bootloader mode,
 - automatic bridge restart after `/dev/bus/usb` re-enumeration.
