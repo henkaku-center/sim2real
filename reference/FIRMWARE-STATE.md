@@ -157,3 +157,41 @@ Hash of data verified.
 ```
 
 This is the first successful full application firmware write over the calcifer → Tailscale → Karasu → USB OTG → Sesame path. Bootloader and partition-table flashing with `--no-stub` failed at SPI flash pin configuration, but app-only flashing with the stub already running through the raw socket bridge succeeded.
+
+## Confirmed USB face-command firmware test (2026-08-14)
+
+After the app-only flash through Karasu, Sesame was reset back into application firmware. Android re-enumerated it as another app USB CDC device (`303a:80c2`, observed path `/dev/bus/usb/001/007`). After granting Termux USB permission, the new Serial CLI face commands were tested through Karasu USB OTG:
+
+```text
+face happy
+face surprised
+face love
+face thinking
+face sleepy
+```
+
+Each command returned an acknowledgement such as:
+
+```text
+Face set to happy
+```
+
+The OLED visibly changed faces; `happy` and `sleepy` were explicitly confirmed by the human observer, and a second slower sequence confirmed the feature working. This validates the upstream Sesame PR's `face <name>` / `fc <name>` serial-command path on real hardware after flashing through Karasu.
+
+Current practical workflow:
+
+1. Build firmware on calcifer with `TMPDIR=/tmp arduino-cli compile --fqbn esp32:esp32:lolin_s2_mini ...`.
+2. Put Sesame into ROM bootloader manually with BOOT + RESET.
+3. Grant Karasu Termux USB permission for the bootloader device.
+4. Start Karasu raw bridge (`socket://...:7777`).
+5. Flash app image at `0x10000` from calcifer.
+6. Reset Sesame into application firmware.
+7. Grant Karasu Termux USB permission for the app device.
+8. Send face/control serial commands from Karasu over USB OTG.
+
+Open problems before this is a polished field tool:
+
+- automate bridge restart/reopen after USB re-enumeration,
+- avoid repeated Android USB permission prompts where possible,
+- add firmware-assisted bootloader entry so manual BOOT + RESET is not required,
+- capture APS-local servo orientation/range changes in a dedicated firmware source tree rather than relying on upstream clone state.
