@@ -2,6 +2,12 @@
 
 Date: 2026-08-14
 
+Related upstream activity:
+
+- Sesame firmware PR for USB Serial face commands: <https://github.com/dorianborian/sesame-robot/pull/76>
+- pySerial PR to keep `list_ports` importable on Android/Termux: <https://github.com/pyserial/pyserial/pull/873>
+- esptool Android/Termux findings added to existing issue: <https://github.com/espressif/esptool/issues/665#issuecomment-5290556615>
+
 This note records the firmware/hardware state observed during phone-to-Sesame tests with Karasu III (Android/Termux) and the APS-local firmware changes we intend to carry. Do not treat the upstream clone as the working source of truth; upstream `dorianborian/sesame-robot` remains a reference only.
 
 ## Observed hardware / transport state
@@ -84,7 +90,15 @@ Blockers:
 
 Near-term recommendation:
 
-- Use calcifer or Artemis for flashing until the APS firmware state is captured cleanly.
 - Use Karasu for HTTP face/control tests now.
 - Add the serial `face` command in APS-local firmware, flash once from laptop, then use Karasu USB serial for face-only commands.
-- Investigate phone-based flashing separately as a transport project, not as part of the first OLED command success test.
+- Treat phone-based flashing as the next transport project.
+
+Preferred flashing architecture:
+
+1. Calcifer/Artemis performs complex development work: Arduino build, dependency management, tests, artifact storage.
+2. Karasu stays on normal Wi-Fi/cellular/Tailscale for internet reachability while physically connected to Sesame over USB OTG.
+3. Karasu runs a small USB CDC ACM bridge that maps the Termux-granted raw USB file descriptor to a serial protocol usable by the host.
+4. Calcifer runs `esptool` against Karasu over the network, ideally through pySerial's existing `rfc2217://` support so DTR/RTS/baud-rate control can be forwarded to USB CDC control requests.
+
+This keeps the phone as the carried field device and USB bridge, without forcing all firmware builds to happen on Android.
