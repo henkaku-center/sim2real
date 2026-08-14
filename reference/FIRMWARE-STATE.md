@@ -106,3 +106,23 @@ Preferred flashing architecture:
 4. Calcifer runs `esptool` against Karasu over the network, ideally through pySerial's existing `rfc2217://` support so DTR/RTS/baud-rate control can be forwarded to USB CDC control requests.
 
 This keeps the phone as the carried field device and USB bridge, without forcing all firmware builds to happen on Android.
+
+## Latest bridge test result (2026-08-14)
+
+With Sesame manually placed into ROM bootloader mode (hold BOOT/GPIO0, tap RESET, release BOOT), Karasu re-enumerated the device as the ROM bootloader:
+
+```text
+VID:PID 303a:0002
+Chip detected by esptool: ESP32-S2 / ESP32-S2FNR2
+MAC observed: 48:27:e2:59:51:3c
+```
+
+`esptool` can now sync through the Karasu RFC2217 bridge and read registers. This proves the calcifer → Tailscale → Karasu → USB OTG → Sesame bootloader path.
+
+Remaining issue: uploading the esptool flasher stub currently fails with a ROM response checksum error during `MEM_DATA`. This likely points to a bridge robustness issue for large binary writes / escaping / chunking rather than basic connectivity. Next tests should focus on:
+
+- using `--no-stub` write/read operations,
+- smaller USB bulk OUT chunk sizes,
+- stricter RFC2217/telnet escaping tests with binary payloads containing `0xff`,
+- direct socket transport once the board is already in bootloader mode,
+- automatic bridge restart after `/dev/bus/usb` re-enumeration.
