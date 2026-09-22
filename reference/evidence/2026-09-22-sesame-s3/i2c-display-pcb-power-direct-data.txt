@@ -1,0 +1,20 @@
+Sesame diagnostic: SDA=2 SCL=3; GPIO18/OE held HIGH
+  ACK at 0x3C (expected OLED address)
+Scan complete: 1 responding address(es)
+
+Sesame diagnostic: SDA=2 SCL=3; GPIO18/OE held HIGH
+  ACK at 0x3C (expected OLED address)
+Scan complete: 1 responding address(es)
+
+Sesame diagnostic: SDA=2 SCL=3; GPIO18/OE held HIGH
+  ACK at 0x3C (expected OLED address)
+Scan complete: 1 responding address(es)
+
+Sesame diagnostic: SDA=2 SCL=3; GPIO18/OE held HIGH
+  ACK at 0x3C (expected OLED address)
+Scan complete: 1 responding address(es)
+
+Sesame diagnostic: SDA=2 SCL=3; GPIO18/OE held HIGH
+  ACK at 0x3C (expected OLED address)
+Scan complete: 1 responding address(es)
+

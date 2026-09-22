@@ -1,5 +1,12 @@
 # Karasu USB CDC bridges
 
+**S3 update (2026-09-22):** the course's new S3 SuperMini uses serial endpoints `0x01`/`0x81`,
+not the old S2 bridge's `0x03`/`0x84`. The tested S3 snapshot with 64-byte bulk transfers is at
+`firmware-tests/sesame-s3-bringup/sesame-s3-cdc-bridge.c` from the repo root. See
+[`reference/SESAME-S3-BUILD-STATE.md`](../../reference/SESAME-S3-BUILD-STATE.md) for results and limitations.
+Direct Artemis USB is the current working programming route. The commands/results below describe
+the earlier S2 workflow; do not reuse device paths, endpoints or chip targets without identification.
+
 Experimental Android/Termux bridges for using Karasu as a USB-OTG field adapter between a workstation and a Sesame ESP32-S2/S3-class USB CDC device.
 
 Two bridge modes are useful:

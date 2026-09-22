@@ -1,5 +1,18 @@
 # HANDOVER
 
+## Current hardware handoff — 2026-09-22
+
+The instructor selected **S3 SuperMini + PCA9685 perfboard** as the APS-II default build.
+Read `reference/SESAME-S3-BUILD-STATE.md` before touching hardware. The robot currently runs
+`servo-load-test`; its small-range simultaneous battery trial completed. The physical servo order
+is wrong and must be verified/corrected before gaits or manifest changes. Circuit-board materials
+are expected 2026-09-23. Direct Artemis USB is the working programming route; Wi-Fi is not visible.
+
+The S2 direct-pin facts and initial project tasks below are historical. `manifest/robot.yaml` remains
+the simulator baseline, not a verified S3 physical channel map.
+
+## Original simulation handover — historical
+
 **Written:** 2026-07-23
 **For:** the CLI agent (and human) taking over this repository with `sim2real/` as the working directory.
 **State:** empty repo except planning documents. Nothing has been built yet. Your job is Stage 0 and the two-day vertical slice.

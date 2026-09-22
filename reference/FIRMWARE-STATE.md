@@ -1,6 +1,11 @@
 # Sesame firmware state and APS deltas
 
-Date: 2026-08-14
+**Current hardware state (2026-09-22):** see [SESAME-S3-BUILD-STATE.md](SESAME-S3-BUILD-STATE.md).
+The course default is now the S3 SuperMini + PCA9685 perfboard build. Its installed image is the
+temporary `servo-load-test`; battery simultaneous-motion completion is instructor-confirmed, while
+physical joint order and Wi-Fi remain unresolved. Do not apply the old S2 flashing target below.
+
+## Historical S2 state — 2026-08-14
 
 Related upstream activity:
 

@@ -4,7 +4,7 @@ Guidance for AI coding agents (any harness — Claude Code, Codex, Gemini CLI, p
 
 ## Project overview
 
-Portable simulation and sim-to-real platform for the Sesame quadruped (8× MG90S servos, LOLIN ESP32-S2 Mini). MuJoCo is the cross-platform reference core; accelerated/vendor backends are adapters. Read `HANDOVER.md` first for current state and next tasks, and `ROADMAP.md` for the full plan and its rationale.
+Portable simulation and sim-to-real platform for the Sesame quadruped (8× MG90S servos). The course hardware default is now ESP32-S3 SuperMini + PCA9685; see `reference/SESAME-S3-BUILD-STATE.md`. The simulator manifest retains its S2-era baseline until the new physical joint mapping is verified. MuJoCo is the cross-platform reference core; accelerated/vendor backends are adapters. Read `HANDOVER.md` first for current state and next tasks, and `ROADMAP.md` for the full plan and its rationale.
 
 ## APS-II dogfooding context
 

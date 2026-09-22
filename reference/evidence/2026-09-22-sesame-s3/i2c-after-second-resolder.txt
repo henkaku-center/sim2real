@@ -1,0 +1,31 @@
+Sesame diagnostic: SDA=2 SCL=3; GPIO18/OE held HIGH
+  ACK at 0x3C (expected OLED address)
+  ACK at 0x40 (expected PCA9685 address)
+  ACK at 0x70 (possible PCA9685 all-call address)
+Scan complete: 3 responding address(es)
+
+Sesame diagnostic: SDA=2 SCL=3; GPIO18/OE held HIGH
+  ACK at 0x3C (expected OLED address)
+  ACK at 0x40 (expected PCA9685 address)
+  ACK at 0x70 (possible PCA9685 all-call address)
+Scan complete: 3 responding address(es)
+
+Sesame diagnostic: SDA=2 SCL=3; GPIO18/OE held HIGH
+  ACK at 0x3C (expected OLED address)
+  ACK at 0x40 (expected PCA9685 address)
+  ACK at 0x70 (possible PCA9685 all-call address)
+Scan complete: 3 responding address(es)
+
+Sesame diagnostic: SDA=2 SCL=3; GPIO18/OE held HIGH
+  ACK at 0x3C (expected OLED address)
+  ACK at 0x40 (expected PCA9685 address)
+  ACK at 0x70 (possible PCA9685 all-call address)
+Scan complete: 3 responding address(es)
+
+Sesame diagnostic: SDA=2 SCL=3; GPIO18/OE held HIGH
+  ACK at 0x3C (expected OLED address)
+  ACK at 0x40 (expected PCA9685 address)
+  ACK at 0x70 (possible PCA9685 all-call address)
+Scan complete: 3 responding address(es)
+
+Sesame di

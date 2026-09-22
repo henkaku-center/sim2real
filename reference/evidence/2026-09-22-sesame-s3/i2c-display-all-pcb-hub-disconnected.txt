@@ -1,0 +1,15 @@
+Sesame diagnostic: SDA=2 SCL=3; GPIO18/OE held HIGH
+Scan complete: 0 responding address(es)
+
+Sesame diagnostic: SDA=2 SCL=3; GPIO18/OE held HIGH
+Scan complete: 0 responding address(es)
+
+Sesame diagnostic: SDA=2 SCL=3; GPIO18/OE held HIGH
+Scan complete: 0 responding address(es)
+
+Sesame diagnostic: SDA=2 SCL=3; GPIO18/OE held HIGH
+Scan complete: 0 responding address(es)
+
+Sesame diagnostic: SDA=2 SCL=3; GPIO18/OE held HIGH
+Scan complete: 0 responding address(es)
+
