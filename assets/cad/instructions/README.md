@@ -18,7 +18,8 @@ and viewer implementation are deferred.** These files preserve the inputs now.
   construction, symmetric long-on-both-sides male headers, added spacers and
   carrier-mounted female sockets. The hub reference is placed at confirmed socket
   addresses and an approximate 14 mm elevation; the detailed header/socket parts
-  remain to be modeled. The snapshot also includes the hub's native bindings.
+  use editable provisional dimensions. The snapshot includes individual pins,
+  original/donor spacers, female sockets, contacts, tails and solder.
 - [`../../../reference/ELECTRONICS-CAD-SOURCES.md`](../../../reference/ELECTRONICS-CAD-SOURCES.md):
   dimensional evidence, model modifications and unresolved details.
 

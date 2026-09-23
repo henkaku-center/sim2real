@@ -349,13 +349,42 @@ solid, not recovered native design history.
 local circuitry comparison at **Z=15.6 mm**, with all twelve terminal centers
 aligned to **A3–A8/X3–X8**. The model's gold-screw-to-hub distance is approximately
 **0.984 mm**, consistent with slight clearance but not an independent physical
-clearance measurement. Symmetric male headers, the two-spacer stacks, female
-sockets and hub solder remain to be modeled; the displayed hub is a positioned
-reference rather than a completed support assembly.
+clearance measurement. At this placement milestone, symmetric male headers,
+two-spacer stacks, female sockets and hub solder were still pending; their
+subsequent provisional geometry is recorded below.
 Saved-document checks verified a valid corrected body, all twelve actual terminal
 bores aligned to the carrier, the model screw clearance, and response to a temporary
 14 → 14.5 mm height edit (not saved). The uploaded STEP's SHA-256 is unchanged.
 The refreshed instruction snapshot includes 37 native bindings and the hub parameters.
+
+### Detachable header geometry — 2026-09-24
+
+`tools/add_servo_hub_headers.py` adds two six-position female sockets and two
+hub-mounted symmetric male strips at A3–A8/X3–X8. The existing GUI document is
+preserved; native Part primitives, cuts and expressions expose the dimensions in
+`HubInstallation`. `HubMaleHeaders` belongs to the removable hub, while
+`HubFemaleSockets` stays on the carrier. Original and donor plastic spacers are
+separate native objects for future assembly instructions.
+
+**Provisional visualization dimensions, not purchased-part specifications:**
+8.5 mm female body, two 2.5 mm spacers, 0.64 mm square pins, and 6 mm equal exposed
+pin lengths beyond the original spacer (14.5 mm total metal length). At the
+confirmed approximate 14 mm separation, this leaves a 0.5 mm socket-to-donor gap
+and 3 mm engagement. The untrimmed upper pins extend 4.4 mm above the hub PCB;
+actual upper trimming remains unknown. The female cavities are 5 mm deep with
+simplified hollow metal sleeves, not reconstructed spring contacts. Socket tails
+extend a provisional 0.8 mm below the carrier. Twelve hub-top and twelve
+carrier-underside solder fillets are illustrative; internal bore solder is omitted.
+
+The saved-document check `tools/check_servo_hub_headers.py` verified all 66 finished
+features, twelve terminal alignments, symmetry about the original spacers, 3 mm
+engagement, and no male-pin volume overlap with the housing, spacers, sleeves or
+tails. A temporary 10 mm hub lift clears the sockets and leaves their geometry
+fixed; test edits are not saved. Results are in
+`assets/cad/reports/servo-hub-headers-check.json`.
+The instruction snapshot now contains 105 native bindings. A local native milestone
+copy is retained as `LM2596-comparison-headers-2026-09-24.FCStd` alongside the active
+comparison; both remain local-only with the imported candidate geometry.
 
 ## Model construction plan
 

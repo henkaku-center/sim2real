@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "captured_at_utc": "2026-09-23T16:46:23.450603+00:00",
+  "captured_at_utc": "2026-09-23T17:06:02.297275+00:00",
   "source": "Read-only live GUI snapshot; caller must save documents before export.",
   "units": {
     "length": "mm",
@@ -25,7 +25,7 @@
     },
     "comparison": {
       "path": "assets/cad/upstream/lm2596-yaaj/LM2596-comparison.FCStd",
-      "saved_file_sha256": "11c9ca9c56d78f052c997e4f4aab3dff9ff1b7c2a212b24348d090a24168e470",
+      "saved_file_sha256": "389e6b49249f447c98bb4ae4ca39bd750f7674cc4d0e1b3160feccc99131ca83",
       "distribution": "local_only_ignored_candidate"
     }
   },
@@ -85,6 +85,34 @@
       "value_mm": 1.6,
       "evidence": "Saved carrier top datum."
     },
+    "ContactOpening": {
+      "value_mm": 0.72,
+      "evidence": "Simplified receptacle opening; spring geometry not reconstructed."
+    },
+    "DonorSpacerHeight": {
+      "value_mm": 2.5,
+      "evidence": "Provisional added plastic thickness."
+    },
+    "HeaderPinWidth": {
+      "value_mm": 0.64,
+      "evidence": "Provisional square pin width."
+    },
+    "HeaderPitch": {
+      "value_mm": 2.54,
+      "evidence": "Pitch retained from reference and carrier."
+    },
+    "HeaderSolderHeight": {
+      "value_mm": 0.5,
+      "evidence": "Illustrative top solder height."
+    },
+    "HubPCBThickness": {
+      "value_mm": 1.6,
+      "evidence": "Reference PCB thickness."
+    },
+    "OriginalSpacerHeight": {
+      "value_mm": 2.5,
+      "evidence": "Provisional original plastic thickness."
+    },
     "PCBSeparation": {
       "value_mm": 14.0,
       "evidence": "Instructor estimate: carrier TOP to hub PCB UNDERSIDE, just clearing gold screw."
@@ -92,6 +120,34 @@
     "RequiredRowSpan": {
       "value_mm": 58.42000000000001,
       "evidence": "Confirmed carrier columns A and X."
+    },
+    "SocketCavityDepth": {
+      "value_mm": 5.0,
+      "evidence": "Illustrative blind cavity depth."
+    },
+    "SocketCavityWidth": {
+      "value_mm": 1.0,
+      "evidence": "Illustrative square housing cavity."
+    },
+    "SocketHeight": {
+      "value_mm": 8.5,
+      "evidence": "Provisional female housing height."
+    },
+    "SocketSolderHeight": {
+      "value_mm": 1.0,
+      "evidence": "Illustrative carrier underside solder, not measured per joint."
+    },
+    "SocketTailProjection": {
+      "value_mm": 0.8,
+      "evidence": "Provisional tail below carrier; trimming unconfirmed."
+    },
+    "SocketWidth": {
+      "value_mm": 2.54,
+      "evidence": "Provisional housing/strip width."
+    },
+    "SymmetricExposedLength": {
+      "value_mm": 6.0,
+      "evidence": "Provisional equal metal length beyond each side of ORIGINAL spacer; no upper trimming assumed."
     }
   },
   "objects": [
@@ -4309,7 +4365,8 @@
       },
       "parent_coordinate_group": null,
       "members": [
-        "PCA9685"
+        "PCA9685",
+        "HubMaleHeaders"
       ],
       "expressions": [
         [
@@ -5768,6 +5825,6224 @@
       },
       "parent_coordinate_group": "PCA9685",
       "solid_count": 1,
+      "expressions": []
+    },
+    {
+      "id": "hub.male_pin.A3",
+      "document": "comparison",
+      "native_object": "HubMalePin_A3",
+      "label": "HubMalePin_A3",
+      "type": "Part::Box",
+      "cad_dependents": [
+        "HubHeaderSolder_A3",
+        "OriginalSpacer_ATools",
+        "DonorSpacer_ATools",
+        "HubMaleHeaders"
+      ],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Flat Lines",
+        "LineWidth": 2.0,
+        "LineColor": [
+          0.09803921729326248,
+          0.09803921729326248,
+          0.09803921729326248,
+          1.0
+        ],
+        "materials": [
+          {
+            "DiffuseColor": [
+              0.8199999928474426,
+              0.6899999976158142,
+              0.3199999928474426,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          }
+        ],
+        "material_assignment": "uniform"
+      },
+      "local_pose": {
+        "translation_mm": [
+          28.890000000000004,
+          -6.67,
+          -8.5
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          63.89,
+          8.170000000000003,
+          7.1
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "parent_coordinate_group": "HubMaleHeaders",
+      "solid_count": 1,
+      "expressions": [
+        [
+          ".Placement.Base.x",
+          "1 * HubInstallation.RequiredRowSpan / 2 - HubInstallation.HeaderPinWidth / 2"
+        ],
+        [
+          ".Placement.Base.y",
+          "-2.5 * HubInstallation.HeaderPitch - HubInstallation.HeaderPinWidth / 2"
+        ],
+        [
+          ".Placement.Base.z",
+          "-HubInstallation.OriginalSpacerHeight - HubInstallation.SymmetricExposedLength"
+        ],
+        [
+          "Height",
+          "HubInstallation.OriginalSpacerHeight + 2 * HubInstallation.SymmetricExposedLength"
+        ],
+        [
+          "Length",
+          "HubInstallation.HeaderPinWidth"
+        ],
+        [
+          "Width",
+          "HubInstallation.HeaderPinWidth"
+        ]
+      ]
+    },
+    {
+      "id": "HubHeaderSolder_A3",
+      "document": "comparison",
+      "native_object": "HubHeaderSolder_A3",
+      "label": "HubHeaderSolder_A3",
+      "type": "Part::Cut",
+      "cad_dependents": [
+        "HubMaleHeaders"
+      ],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Flat Lines",
+        "LineWidth": 2.0,
+        "LineColor": [
+          0.09803921729326248,
+          0.09803921729326248,
+          0.09803921729326248,
+          1.0
+        ],
+        "materials": [
+          {
+            "DiffuseColor": [
+              0.699999988079071,
+              0.7200000286102295,
+              0.7400000095367432,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          }
+        ],
+        "material_assignment": "uniform"
+      },
+      "local_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          35.0,
+          14.840000000000003,
+          15.6
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "parent_coordinate_group": "HubMaleHeaders",
+      "solid_count": 1,
+      "expressions": []
+    },
+    {
+      "id": "hub.socket_contact.A3",
+      "document": "comparison",
+      "native_object": "SocketContact_A3",
+      "label": "SocketContact_A3",
+      "type": "Part::Cut",
+      "cad_dependents": [
+        "HubFemaleSockets"
+      ],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Flat Lines",
+        "LineWidth": 2.0,
+        "LineColor": [
+          0.09803921729326248,
+          0.09803921729326248,
+          0.09803921729326248,
+          1.0
+        ],
+        "materials": [
+          {
+            "DiffuseColor": [
+              0.8199999928474426,
+              0.6899999976158142,
+              0.3199999928474426,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          }
+        ],
+        "material_assignment": "uniform"
+      },
+      "local_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "parent_coordinate_group": "HubFemaleSockets",
+      "solid_count": 1,
+      "expressions": []
+    },
+    {
+      "id": "hub.socket_tail.A3",
+      "document": "comparison",
+      "native_object": "SocketTail_A3",
+      "label": "SocketTail_A3",
+      "type": "Part::Box",
+      "cad_dependents": [
+        "SocketBottomSolder_A3",
+        "HubFemaleSockets"
+      ],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Flat Lines",
+        "LineWidth": 2.0,
+        "LineColor": [
+          0.09803921729326248,
+          0.09803921729326248,
+          0.09803921729326248,
+          1.0
+        ],
+        "materials": [
+          {
+            "DiffuseColor": [
+              0.7599999904632568,
+              0.7699999809265137,
+              0.7900000214576721,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          }
+        ],
+        "material_assignment": "uniform"
+      },
+      "local_pose": {
+        "translation_mm": [
+          63.89000000000001,
+          8.170000000000003,
+          -0.8
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          63.89000000000001,
+          8.170000000000003,
+          -0.8
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "parent_coordinate_group": "HubFemaleSockets",
+      "solid_count": 1,
+      "expressions": [
+        [
+          ".Placement.Base.x",
+          "35 mm + 1 * HubInstallation.RequiredRowSpan / 2 - HubInstallation.HeaderPinWidth / 2"
+        ],
+        [
+          ".Placement.Base.y",
+          "14.84 mm + -2.5 * HubInstallation.HeaderPitch - HubInstallation.HeaderPinWidth / 2"
+        ],
+        [
+          ".Placement.Base.z",
+          "-HubInstallation.SocketTailProjection"
+        ],
+        [
+          "Height",
+          "HubInstallation.SocketTailProjection + HubInstallation.CarrierTopZ + HubInstallation.SocketHeight - HubInstallation.SocketCavityDepth"
+        ],
+        [
+          "Length",
+          "HubInstallation.HeaderPinWidth"
+        ],
+        [
+          "Width",
+          "HubInstallation.HeaderPinWidth"
+        ]
+      ]
+    },
+    {
+      "id": "SocketBottomSolder_A3",
+      "document": "comparison",
+      "native_object": "SocketBottomSolder_A3",
+      "label": "SocketBottomSolder_A3",
+      "type": "Part::Cut",
+      "cad_dependents": [
+        "HubFemaleSockets"
+      ],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Flat Lines",
+        "LineWidth": 2.0,
+        "LineColor": [
+          0.09803921729326248,
+          0.09803921729326248,
+          0.09803921729326248,
+          1.0
+        ],
+        "materials": [
+          {
+            "DiffuseColor": [
+              0.699999988079071,
+              0.7200000286102295,
+              0.7400000095367432,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          }
+        ],
+        "material_assignment": "uniform"
+      },
+      "local_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "parent_coordinate_group": "HubFemaleSockets",
+      "solid_count": 1,
+      "expressions": []
+    },
+    {
+      "id": "hub.male_pin.A4",
+      "document": "comparison",
+      "native_object": "HubMalePin_A4",
+      "label": "HubMalePin_A4",
+      "type": "Part::Box",
+      "cad_dependents": [
+        "HubHeaderSolder_A4",
+        "OriginalSpacer_ATools",
+        "DonorSpacer_ATools",
+        "HubMaleHeaders"
+      ],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Flat Lines",
+        "LineWidth": 2.0,
+        "LineColor": [
+          0.09803921729326248,
+          0.09803921729326248,
+          0.09803921729326248,
+          1.0
+        ],
+        "materials": [
+          {
+            "DiffuseColor": [
+              0.8199999928474426,
+              0.6899999976158142,
+              0.3199999928474426,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          }
+        ],
+        "material_assignment": "uniform"
+      },
+      "local_pose": {
+        "translation_mm": [
+          28.890000000000004,
+          -4.13,
+          -8.5
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          63.89,
+          10.710000000000004,
+          7.1
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "parent_coordinate_group": "HubMaleHeaders",
+      "solid_count": 1,
+      "expressions": [
+        [
+          ".Placement.Base.x",
+          "1 * HubInstallation.RequiredRowSpan / 2 - HubInstallation.HeaderPinWidth / 2"
+        ],
+        [
+          ".Placement.Base.y",
+          "-1.5 * HubInstallation.HeaderPitch - HubInstallation.HeaderPinWidth / 2"
+        ],
+        [
+          ".Placement.Base.z",
+          "-HubInstallation.OriginalSpacerHeight - HubInstallation.SymmetricExposedLength"
+        ],
+        [
+          "Height",
+          "HubInstallation.OriginalSpacerHeight + 2 * HubInstallation.SymmetricExposedLength"
+        ],
+        [
+          "Length",
+          "HubInstallation.HeaderPinWidth"
+        ],
+        [
+          "Width",
+          "HubInstallation.HeaderPinWidth"
+        ]
+      ]
+    },
+    {
+      "id": "HubHeaderSolder_A4",
+      "document": "comparison",
+      "native_object": "HubHeaderSolder_A4",
+      "label": "HubHeaderSolder_A4",
+      "type": "Part::Cut",
+      "cad_dependents": [
+        "HubMaleHeaders"
+      ],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Flat Lines",
+        "LineWidth": 2.0,
+        "LineColor": [
+          0.09803921729326248,
+          0.09803921729326248,
+          0.09803921729326248,
+          1.0
+        ],
+        "materials": [
+          {
+            "DiffuseColor": [
+              0.699999988079071,
+              0.7200000286102295,
+              0.7400000095367432,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          }
+        ],
+        "material_assignment": "uniform"
+      },
+      "local_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          35.0,
+          14.840000000000003,
+          15.6
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "parent_coordinate_group": "HubMaleHeaders",
+      "solid_count": 1,
+      "expressions": []
+    },
+    {
+      "id": "hub.socket_contact.A4",
+      "document": "comparison",
+      "native_object": "SocketContact_A4",
+      "label": "SocketContact_A4",
+      "type": "Part::Cut",
+      "cad_dependents": [
+        "HubFemaleSockets"
+      ],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Flat Lines",
+        "LineWidth": 2.0,
+        "LineColor": [
+          0.09803921729326248,
+          0.09803921729326248,
+          0.09803921729326248,
+          1.0
+        ],
+        "materials": [
+          {
+            "DiffuseColor": [
+              0.8199999928474426,
+              0.6899999976158142,
+              0.3199999928474426,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          }
+        ],
+        "material_assignment": "uniform"
+      },
+      "local_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "parent_coordinate_group": "HubFemaleSockets",
+      "solid_count": 1,
+      "expressions": []
+    },
+    {
+      "id": "hub.socket_tail.A4",
+      "document": "comparison",
+      "native_object": "SocketTail_A4",
+      "label": "SocketTail_A4",
+      "type": "Part::Box",
+      "cad_dependents": [
+        "SocketBottomSolder_A4",
+        "HubFemaleSockets"
+      ],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Flat Lines",
+        "LineWidth": 2.0,
+        "LineColor": [
+          0.09803921729326248,
+          0.09803921729326248,
+          0.09803921729326248,
+          1.0
+        ],
+        "materials": [
+          {
+            "DiffuseColor": [
+              0.7599999904632568,
+              0.7699999809265137,
+              0.7900000214576721,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          }
+        ],
+        "material_assignment": "uniform"
+      },
+      "local_pose": {
+        "translation_mm": [
+          63.89000000000001,
+          10.710000000000003,
+          -0.8
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          63.89000000000001,
+          10.710000000000003,
+          -0.8
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "parent_coordinate_group": "HubFemaleSockets",
+      "solid_count": 1,
+      "expressions": [
+        [
+          ".Placement.Base.x",
+          "35 mm + 1 * HubInstallation.RequiredRowSpan / 2 - HubInstallation.HeaderPinWidth / 2"
+        ],
+        [
+          ".Placement.Base.y",
+          "14.84 mm + -1.5 * HubInstallation.HeaderPitch - HubInstallation.HeaderPinWidth / 2"
+        ],
+        [
+          ".Placement.Base.z",
+          "-HubInstallation.SocketTailProjection"
+        ],
+        [
+          "Height",
+          "HubInstallation.SocketTailProjection + HubInstallation.CarrierTopZ + HubInstallation.SocketHeight - HubInstallation.SocketCavityDepth"
+        ],
+        [
+          "Length",
+          "HubInstallation.HeaderPinWidth"
+        ],
+        [
+          "Width",
+          "HubInstallation.HeaderPinWidth"
+        ]
+      ]
+    },
+    {
+      "id": "SocketBottomSolder_A4",
+      "document": "comparison",
+      "native_object": "SocketBottomSolder_A4",
+      "label": "SocketBottomSolder_A4",
+      "type": "Part::Cut",
+      "cad_dependents": [
+        "HubFemaleSockets"
+      ],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Flat Lines",
+        "LineWidth": 2.0,
+        "LineColor": [
+          0.09803921729326248,
+          0.09803921729326248,
+          0.09803921729326248,
+          1.0
+        ],
+        "materials": [
+          {
+            "DiffuseColor": [
+              0.699999988079071,
+              0.7200000286102295,
+              0.7400000095367432,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          }
+        ],
+        "material_assignment": "uniform"
+      },
+      "local_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "parent_coordinate_group": "HubFemaleSockets",
+      "solid_count": 1,
+      "expressions": []
+    },
+    {
+      "id": "hub.male_pin.A5",
+      "document": "comparison",
+      "native_object": "HubMalePin_A5",
+      "label": "HubMalePin_A5",
+      "type": "Part::Box",
+      "cad_dependents": [
+        "HubHeaderSolder_A5",
+        "OriginalSpacer_ATools",
+        "DonorSpacer_ATools",
+        "HubMaleHeaders"
+      ],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Flat Lines",
+        "LineWidth": 2.0,
+        "LineColor": [
+          0.09803921729326248,
+          0.09803921729326248,
+          0.09803921729326248,
+          1.0
+        ],
+        "materials": [
+          {
+            "DiffuseColor": [
+              0.8199999928474426,
+              0.6899999976158142,
+              0.3199999928474426,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          }
+        ],
+        "material_assignment": "uniform"
+      },
+      "local_pose": {
+        "translation_mm": [
+          28.890000000000004,
+          -1.59,
+          -8.5
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          63.89,
+          13.250000000000004,
+          7.1
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "parent_coordinate_group": "HubMaleHeaders",
+      "solid_count": 1,
+      "expressions": [
+        [
+          ".Placement.Base.x",
+          "1 * HubInstallation.RequiredRowSpan / 2 - HubInstallation.HeaderPinWidth / 2"
+        ],
+        [
+          ".Placement.Base.y",
+          "-0.5 * HubInstallation.HeaderPitch - HubInstallation.HeaderPinWidth / 2"
+        ],
+        [
+          ".Placement.Base.z",
+          "-HubInstallation.OriginalSpacerHeight - HubInstallation.SymmetricExposedLength"
+        ],
+        [
+          "Height",
+          "HubInstallation.OriginalSpacerHeight + 2 * HubInstallation.SymmetricExposedLength"
+        ],
+        [
+          "Length",
+          "HubInstallation.HeaderPinWidth"
+        ],
+        [
+          "Width",
+          "HubInstallation.HeaderPinWidth"
+        ]
+      ]
+    },
+    {
+      "id": "HubHeaderSolder_A5",
+      "document": "comparison",
+      "native_object": "HubHeaderSolder_A5",
+      "label": "HubHeaderSolder_A5",
+      "type": "Part::Cut",
+      "cad_dependents": [
+        "HubMaleHeaders"
+      ],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Flat Lines",
+        "LineWidth": 2.0,
+        "LineColor": [
+          0.09803921729326248,
+          0.09803921729326248,
+          0.09803921729326248,
+          1.0
+        ],
+        "materials": [
+          {
+            "DiffuseColor": [
+              0.699999988079071,
+              0.7200000286102295,
+              0.7400000095367432,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          }
+        ],
+        "material_assignment": "uniform"
+      },
+      "local_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          35.0,
+          14.840000000000003,
+          15.6
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "parent_coordinate_group": "HubMaleHeaders",
+      "solid_count": 1,
+      "expressions": []
+    },
+    {
+      "id": "hub.socket_contact.A5",
+      "document": "comparison",
+      "native_object": "SocketContact_A5",
+      "label": "SocketContact_A5",
+      "type": "Part::Cut",
+      "cad_dependents": [
+        "HubFemaleSockets"
+      ],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Flat Lines",
+        "LineWidth": 2.0,
+        "LineColor": [
+          0.09803921729326248,
+          0.09803921729326248,
+          0.09803921729326248,
+          1.0
+        ],
+        "materials": [
+          {
+            "DiffuseColor": [
+              0.8199999928474426,
+              0.6899999976158142,
+              0.3199999928474426,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          }
+        ],
+        "material_assignment": "uniform"
+      },
+      "local_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "parent_coordinate_group": "HubFemaleSockets",
+      "solid_count": 1,
+      "expressions": []
+    },
+    {
+      "id": "hub.socket_tail.A5",
+      "document": "comparison",
+      "native_object": "SocketTail_A5",
+      "label": "SocketTail_A5",
+      "type": "Part::Box",
+      "cad_dependents": [
+        "SocketBottomSolder_A5",
+        "HubFemaleSockets"
+      ],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Flat Lines",
+        "LineWidth": 2.0,
+        "LineColor": [
+          0.09803921729326248,
+          0.09803921729326248,
+          0.09803921729326248,
+          1.0
+        ],
+        "materials": [
+          {
+            "DiffuseColor": [
+              0.7599999904632568,
+              0.7699999809265137,
+              0.7900000214576721,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          }
+        ],
+        "material_assignment": "uniform"
+      },
+      "local_pose": {
+        "translation_mm": [
+          63.89000000000001,
+          13.250000000000004,
+          -0.8
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          63.89000000000001,
+          13.250000000000004,
+          -0.8
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "parent_coordinate_group": "HubFemaleSockets",
+      "solid_count": 1,
+      "expressions": [
+        [
+          ".Placement.Base.x",
+          "35 mm + 1 * HubInstallation.RequiredRowSpan / 2 - HubInstallation.HeaderPinWidth / 2"
+        ],
+        [
+          ".Placement.Base.y",
+          "14.84 mm + -0.5 * HubInstallation.HeaderPitch - HubInstallation.HeaderPinWidth / 2"
+        ],
+        [
+          ".Placement.Base.z",
+          "-HubInstallation.SocketTailProjection"
+        ],
+        [
+          "Height",
+          "HubInstallation.SocketTailProjection + HubInstallation.CarrierTopZ + HubInstallation.SocketHeight - HubInstallation.SocketCavityDepth"
+        ],
+        [
+          "Length",
+          "HubInstallation.HeaderPinWidth"
+        ],
+        [
+          "Width",
+          "HubInstallation.HeaderPinWidth"
+        ]
+      ]
+    },
+    {
+      "id": "SocketBottomSolder_A5",
+      "document": "comparison",
+      "native_object": "SocketBottomSolder_A5",
+      "label": "SocketBottomSolder_A5",
+      "type": "Part::Cut",
+      "cad_dependents": [
+        "HubFemaleSockets"
+      ],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Flat Lines",
+        "LineWidth": 2.0,
+        "LineColor": [
+          0.09803921729326248,
+          0.09803921729326248,
+          0.09803921729326248,
+          1.0
+        ],
+        "materials": [
+          {
+            "DiffuseColor": [
+              0.699999988079071,
+              0.7200000286102295,
+              0.7400000095367432,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          }
+        ],
+        "material_assignment": "uniform"
+      },
+      "local_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "parent_coordinate_group": "HubFemaleSockets",
+      "solid_count": 1,
+      "expressions": []
+    },
+    {
+      "id": "hub.male_pin.A6",
+      "document": "comparison",
+      "native_object": "HubMalePin_A6",
+      "label": "HubMalePin_A6",
+      "type": "Part::Box",
+      "cad_dependents": [
+        "HubHeaderSolder_A6",
+        "OriginalSpacer_ATools",
+        "DonorSpacer_ATools",
+        "HubMaleHeaders"
+      ],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Flat Lines",
+        "LineWidth": 2.0,
+        "LineColor": [
+          0.09803921729326248,
+          0.09803921729326248,
+          0.09803921729326248,
+          1.0
+        ],
+        "materials": [
+          {
+            "DiffuseColor": [
+              0.8199999928474426,
+              0.6899999976158142,
+              0.3199999928474426,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          }
+        ],
+        "material_assignment": "uniform"
+      },
+      "local_pose": {
+        "translation_mm": [
+          28.890000000000004,
+          0.95,
+          -8.5
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          63.89,
+          15.790000000000003,
+          7.1
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "parent_coordinate_group": "HubMaleHeaders",
+      "solid_count": 1,
+      "expressions": [
+        [
+          ".Placement.Base.x",
+          "1 * HubInstallation.RequiredRowSpan / 2 - HubInstallation.HeaderPinWidth / 2"
+        ],
+        [
+          ".Placement.Base.y",
+          "0.5 * HubInstallation.HeaderPitch - HubInstallation.HeaderPinWidth / 2"
+        ],
+        [
+          ".Placement.Base.z",
+          "-HubInstallation.OriginalSpacerHeight - HubInstallation.SymmetricExposedLength"
+        ],
+        [
+          "Height",
+          "HubInstallation.OriginalSpacerHeight + 2 * HubInstallation.SymmetricExposedLength"
+        ],
+        [
+          "Length",
+          "HubInstallation.HeaderPinWidth"
+        ],
+        [
+          "Width",
+          "HubInstallation.HeaderPinWidth"
+        ]
+      ]
+    },
+    {
+      "id": "HubHeaderSolder_A6",
+      "document": "comparison",
+      "native_object": "HubHeaderSolder_A6",
+      "label": "HubHeaderSolder_A6",
+      "type": "Part::Cut",
+      "cad_dependents": [
+        "HubMaleHeaders"
+      ],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Flat Lines",
+        "LineWidth": 2.0,
+        "LineColor": [
+          0.09803921729326248,
+          0.09803921729326248,
+          0.09803921729326248,
+          1.0
+        ],
+        "materials": [
+          {
+            "DiffuseColor": [
+              0.699999988079071,
+              0.7200000286102295,
+              0.7400000095367432,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          }
+        ],
+        "material_assignment": "uniform"
+      },
+      "local_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          35.0,
+          14.840000000000003,
+          15.6
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "parent_coordinate_group": "HubMaleHeaders",
+      "solid_count": 1,
+      "expressions": []
+    },
+    {
+      "id": "hub.socket_contact.A6",
+      "document": "comparison",
+      "native_object": "SocketContact_A6",
+      "label": "SocketContact_A6",
+      "type": "Part::Cut",
+      "cad_dependents": [
+        "HubFemaleSockets"
+      ],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Flat Lines",
+        "LineWidth": 2.0,
+        "LineColor": [
+          0.09803921729326248,
+          0.09803921729326248,
+          0.09803921729326248,
+          1.0
+        ],
+        "materials": [
+          {
+            "DiffuseColor": [
+              0.8199999928474426,
+              0.6899999976158142,
+              0.3199999928474426,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          }
+        ],
+        "material_assignment": "uniform"
+      },
+      "local_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "parent_coordinate_group": "HubFemaleSockets",
+      "solid_count": 1,
+      "expressions": []
+    },
+    {
+      "id": "hub.socket_tail.A6",
+      "document": "comparison",
+      "native_object": "SocketTail_A6",
+      "label": "SocketTail_A6",
+      "type": "Part::Box",
+      "cad_dependents": [
+        "SocketBottomSolder_A6",
+        "HubFemaleSockets"
+      ],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Flat Lines",
+        "LineWidth": 2.0,
+        "LineColor": [
+          0.09803921729326248,
+          0.09803921729326248,
+          0.09803921729326248,
+          1.0
+        ],
+        "materials": [
+          {
+            "DiffuseColor": [
+              0.7599999904632568,
+              0.7699999809265137,
+              0.7900000214576721,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          }
+        ],
+        "material_assignment": "uniform"
+      },
+      "local_pose": {
+        "translation_mm": [
+          63.89000000000001,
+          15.790000000000003,
+          -0.8
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          63.89000000000001,
+          15.790000000000003,
+          -0.8
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "parent_coordinate_group": "HubFemaleSockets",
+      "solid_count": 1,
+      "expressions": [
+        [
+          ".Placement.Base.x",
+          "35 mm + 1 * HubInstallation.RequiredRowSpan / 2 - HubInstallation.HeaderPinWidth / 2"
+        ],
+        [
+          ".Placement.Base.y",
+          "14.84 mm + 0.5 * HubInstallation.HeaderPitch - HubInstallation.HeaderPinWidth / 2"
+        ],
+        [
+          ".Placement.Base.z",
+          "-HubInstallation.SocketTailProjection"
+        ],
+        [
+          "Height",
+          "HubInstallation.SocketTailProjection + HubInstallation.CarrierTopZ + HubInstallation.SocketHeight - HubInstallation.SocketCavityDepth"
+        ],
+        [
+          "Length",
+          "HubInstallation.HeaderPinWidth"
+        ],
+        [
+          "Width",
+          "HubInstallation.HeaderPinWidth"
+        ]
+      ]
+    },
+    {
+      "id": "SocketBottomSolder_A6",
+      "document": "comparison",
+      "native_object": "SocketBottomSolder_A6",
+      "label": "SocketBottomSolder_A6",
+      "type": "Part::Cut",
+      "cad_dependents": [
+        "HubFemaleSockets"
+      ],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Flat Lines",
+        "LineWidth": 2.0,
+        "LineColor": [
+          0.09803921729326248,
+          0.09803921729326248,
+          0.09803921729326248,
+          1.0
+        ],
+        "materials": [
+          {
+            "DiffuseColor": [
+              0.699999988079071,
+              0.7200000286102295,
+              0.7400000095367432,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          }
+        ],
+        "material_assignment": "uniform"
+      },
+      "local_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "parent_coordinate_group": "HubFemaleSockets",
+      "solid_count": 1,
+      "expressions": []
+    },
+    {
+      "id": "hub.male_pin.A7",
+      "document": "comparison",
+      "native_object": "HubMalePin_A7",
+      "label": "HubMalePin_A7",
+      "type": "Part::Box",
+      "cad_dependents": [
+        "HubHeaderSolder_A7",
+        "OriginalSpacer_ATools",
+        "DonorSpacer_ATools",
+        "HubMaleHeaders"
+      ],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Flat Lines",
+        "LineWidth": 2.0,
+        "LineColor": [
+          0.09803921729326248,
+          0.09803921729326248,
+          0.09803921729326248,
+          1.0
+        ],
+        "materials": [
+          {
+            "DiffuseColor": [
+              0.8199999928474426,
+              0.6899999976158142,
+              0.3199999928474426,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          }
+        ],
+        "material_assignment": "uniform"
+      },
+      "local_pose": {
+        "translation_mm": [
+          28.890000000000004,
+          3.49,
+          -8.5
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          63.89,
+          18.330000000000005,
+          7.1
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "parent_coordinate_group": "HubMaleHeaders",
+      "solid_count": 1,
+      "expressions": [
+        [
+          ".Placement.Base.x",
+          "1 * HubInstallation.RequiredRowSpan / 2 - HubInstallation.HeaderPinWidth / 2"
+        ],
+        [
+          ".Placement.Base.y",
+          "1.5 * HubInstallation.HeaderPitch - HubInstallation.HeaderPinWidth / 2"
+        ],
+        [
+          ".Placement.Base.z",
+          "-HubInstallation.OriginalSpacerHeight - HubInstallation.SymmetricExposedLength"
+        ],
+        [
+          "Height",
+          "HubInstallation.OriginalSpacerHeight + 2 * HubInstallation.SymmetricExposedLength"
+        ],
+        [
+          "Length",
+          "HubInstallation.HeaderPinWidth"
+        ],
+        [
+          "Width",
+          "HubInstallation.HeaderPinWidth"
+        ]
+      ]
+    },
+    {
+      "id": "HubHeaderSolder_A7",
+      "document": "comparison",
+      "native_object": "HubHeaderSolder_A7",
+      "label": "HubHeaderSolder_A7",
+      "type": "Part::Cut",
+      "cad_dependents": [
+        "HubMaleHeaders"
+      ],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Flat Lines",
+        "LineWidth": 2.0,
+        "LineColor": [
+          0.09803921729326248,
+          0.09803921729326248,
+          0.09803921729326248,
+          1.0
+        ],
+        "materials": [
+          {
+            "DiffuseColor": [
+              0.699999988079071,
+              0.7200000286102295,
+              0.7400000095367432,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          }
+        ],
+        "material_assignment": "uniform"
+      },
+      "local_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          35.0,
+          14.840000000000003,
+          15.6
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "parent_coordinate_group": "HubMaleHeaders",
+      "solid_count": 1,
+      "expressions": []
+    },
+    {
+      "id": "hub.socket_contact.A7",
+      "document": "comparison",
+      "native_object": "SocketContact_A7",
+      "label": "SocketContact_A7",
+      "type": "Part::Cut",
+      "cad_dependents": [
+        "HubFemaleSockets"
+      ],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Flat Lines",
+        "LineWidth": 2.0,
+        "LineColor": [
+          0.09803921729326248,
+          0.09803921729326248,
+          0.09803921729326248,
+          1.0
+        ],
+        "materials": [
+          {
+            "DiffuseColor": [
+              0.8199999928474426,
+              0.6899999976158142,
+              0.3199999928474426,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          }
+        ],
+        "material_assignment": "uniform"
+      },
+      "local_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "parent_coordinate_group": "HubFemaleSockets",
+      "solid_count": 1,
+      "expressions": []
+    },
+    {
+      "id": "hub.socket_tail.A7",
+      "document": "comparison",
+      "native_object": "SocketTail_A7",
+      "label": "SocketTail_A7",
+      "type": "Part::Box",
+      "cad_dependents": [
+        "SocketBottomSolder_A7",
+        "HubFemaleSockets"
+      ],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Flat Lines",
+        "LineWidth": 2.0,
+        "LineColor": [
+          0.09803921729326248,
+          0.09803921729326248,
+          0.09803921729326248,
+          1.0
+        ],
+        "materials": [
+          {
+            "DiffuseColor": [
+              0.7599999904632568,
+              0.7699999809265137,
+              0.7900000214576721,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          }
+        ],
+        "material_assignment": "uniform"
+      },
+      "local_pose": {
+        "translation_mm": [
+          63.89000000000001,
+          18.330000000000002,
+          -0.8
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          63.89000000000001,
+          18.330000000000002,
+          -0.8
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "parent_coordinate_group": "HubFemaleSockets",
+      "solid_count": 1,
+      "expressions": [
+        [
+          ".Placement.Base.x",
+          "35 mm + 1 * HubInstallation.RequiredRowSpan / 2 - HubInstallation.HeaderPinWidth / 2"
+        ],
+        [
+          ".Placement.Base.y",
+          "14.84 mm + 1.5 * HubInstallation.HeaderPitch - HubInstallation.HeaderPinWidth / 2"
+        ],
+        [
+          ".Placement.Base.z",
+          "-HubInstallation.SocketTailProjection"
+        ],
+        [
+          "Height",
+          "HubInstallation.SocketTailProjection + HubInstallation.CarrierTopZ + HubInstallation.SocketHeight - HubInstallation.SocketCavityDepth"
+        ],
+        [
+          "Length",
+          "HubInstallation.HeaderPinWidth"
+        ],
+        [
+          "Width",
+          "HubInstallation.HeaderPinWidth"
+        ]
+      ]
+    },
+    {
+      "id": "SocketBottomSolder_A7",
+      "document": "comparison",
+      "native_object": "SocketBottomSolder_A7",
+      "label": "SocketBottomSolder_A7",
+      "type": "Part::Cut",
+      "cad_dependents": [
+        "HubFemaleSockets"
+      ],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Flat Lines",
+        "LineWidth": 2.0,
+        "LineColor": [
+          0.09803921729326248,
+          0.09803921729326248,
+          0.09803921729326248,
+          1.0
+        ],
+        "materials": [
+          {
+            "DiffuseColor": [
+              0.699999988079071,
+              0.7200000286102295,
+              0.7400000095367432,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          }
+        ],
+        "material_assignment": "uniform"
+      },
+      "local_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "parent_coordinate_group": "HubFemaleSockets",
+      "solid_count": 1,
+      "expressions": []
+    },
+    {
+      "id": "hub.male_pin.A8",
+      "document": "comparison",
+      "native_object": "HubMalePin_A8",
+      "label": "HubMalePin_A8",
+      "type": "Part::Box",
+      "cad_dependents": [
+        "HubHeaderSolder_A8",
+        "OriginalSpacer_ATools",
+        "DonorSpacer_ATools",
+        "HubMaleHeaders"
+      ],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Flat Lines",
+        "LineWidth": 2.0,
+        "LineColor": [
+          0.09803921729326248,
+          0.09803921729326248,
+          0.09803921729326248,
+          1.0
+        ],
+        "materials": [
+          {
+            "DiffuseColor": [
+              0.8199999928474426,
+              0.6899999976158142,
+              0.3199999928474426,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          }
+        ],
+        "material_assignment": "uniform"
+      },
+      "local_pose": {
+        "translation_mm": [
+          28.890000000000004,
+          6.029999999999999,
+          -8.5
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          63.89,
+          20.870000000000005,
+          7.1
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "parent_coordinate_group": "HubMaleHeaders",
+      "solid_count": 1,
+      "expressions": [
+        [
+          ".Placement.Base.x",
+          "1 * HubInstallation.RequiredRowSpan / 2 - HubInstallation.HeaderPinWidth / 2"
+        ],
+        [
+          ".Placement.Base.y",
+          "2.5 * HubInstallation.HeaderPitch - HubInstallation.HeaderPinWidth / 2"
+        ],
+        [
+          ".Placement.Base.z",
+          "-HubInstallation.OriginalSpacerHeight - HubInstallation.SymmetricExposedLength"
+        ],
+        [
+          "Height",
+          "HubInstallation.OriginalSpacerHeight + 2 * HubInstallation.SymmetricExposedLength"
+        ],
+        [
+          "Length",
+          "HubInstallation.HeaderPinWidth"
+        ],
+        [
+          "Width",
+          "HubInstallation.HeaderPinWidth"
+        ]
+      ]
+    },
+    {
+      "id": "HubHeaderSolder_A8",
+      "document": "comparison",
+      "native_object": "HubHeaderSolder_A8",
+      "label": "HubHeaderSolder_A8",
+      "type": "Part::Cut",
+      "cad_dependents": [
+        "HubMaleHeaders"
+      ],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Flat Lines",
+        "LineWidth": 2.0,
+        "LineColor": [
+          0.09803921729326248,
+          0.09803921729326248,
+          0.09803921729326248,
+          1.0
+        ],
+        "materials": [
+          {
+            "DiffuseColor": [
+              0.699999988079071,
+              0.7200000286102295,
+              0.7400000095367432,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          }
+        ],
+        "material_assignment": "uniform"
+      },
+      "local_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          35.0,
+          14.840000000000003,
+          15.6
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "parent_coordinate_group": "HubMaleHeaders",
+      "solid_count": 1,
+      "expressions": []
+    },
+    {
+      "id": "hub.socket_contact.A8",
+      "document": "comparison",
+      "native_object": "SocketContact_A8",
+      "label": "SocketContact_A8",
+      "type": "Part::Cut",
+      "cad_dependents": [
+        "HubFemaleSockets"
+      ],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Flat Lines",
+        "LineWidth": 2.0,
+        "LineColor": [
+          0.09803921729326248,
+          0.09803921729326248,
+          0.09803921729326248,
+          1.0
+        ],
+        "materials": [
+          {
+            "DiffuseColor": [
+              0.8199999928474426,
+              0.6899999976158142,
+              0.3199999928474426,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          }
+        ],
+        "material_assignment": "uniform"
+      },
+      "local_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "parent_coordinate_group": "HubFemaleSockets",
+      "solid_count": 1,
+      "expressions": []
+    },
+    {
+      "id": "hub.socket_tail.A8",
+      "document": "comparison",
+      "native_object": "SocketTail_A8",
+      "label": "SocketTail_A8",
+      "type": "Part::Box",
+      "cad_dependents": [
+        "SocketBottomSolder_A8",
+        "HubFemaleSockets"
+      ],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Flat Lines",
+        "LineWidth": 2.0,
+        "LineColor": [
+          0.09803921729326248,
+          0.09803921729326248,
+          0.09803921729326248,
+          1.0
+        ],
+        "materials": [
+          {
+            "DiffuseColor": [
+              0.7599999904632568,
+              0.7699999809265137,
+              0.7900000214576721,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          }
+        ],
+        "material_assignment": "uniform"
+      },
+      "local_pose": {
+        "translation_mm": [
+          63.89000000000001,
+          20.870000000000005,
+          -0.8
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          63.89000000000001,
+          20.870000000000005,
+          -0.8
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "parent_coordinate_group": "HubFemaleSockets",
+      "solid_count": 1,
+      "expressions": [
+        [
+          ".Placement.Base.x",
+          "35 mm + 1 * HubInstallation.RequiredRowSpan / 2 - HubInstallation.HeaderPinWidth / 2"
+        ],
+        [
+          ".Placement.Base.y",
+          "14.84 mm + 2.5 * HubInstallation.HeaderPitch - HubInstallation.HeaderPinWidth / 2"
+        ],
+        [
+          ".Placement.Base.z",
+          "-HubInstallation.SocketTailProjection"
+        ],
+        [
+          "Height",
+          "HubInstallation.SocketTailProjection + HubInstallation.CarrierTopZ + HubInstallation.SocketHeight - HubInstallation.SocketCavityDepth"
+        ],
+        [
+          "Length",
+          "HubInstallation.HeaderPinWidth"
+        ],
+        [
+          "Width",
+          "HubInstallation.HeaderPinWidth"
+        ]
+      ]
+    },
+    {
+      "id": "SocketBottomSolder_A8",
+      "document": "comparison",
+      "native_object": "SocketBottomSolder_A8",
+      "label": "SocketBottomSolder_A8",
+      "type": "Part::Cut",
+      "cad_dependents": [
+        "HubFemaleSockets"
+      ],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Flat Lines",
+        "LineWidth": 2.0,
+        "LineColor": [
+          0.09803921729326248,
+          0.09803921729326248,
+          0.09803921729326248,
+          1.0
+        ],
+        "materials": [
+          {
+            "DiffuseColor": [
+              0.699999988079071,
+              0.7200000286102295,
+              0.7400000095367432,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          }
+        ],
+        "material_assignment": "uniform"
+      },
+      "local_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "parent_coordinate_group": "HubFemaleSockets",
+      "solid_count": 1,
+      "expressions": []
+    },
+    {
+      "id": "hub.OriginalSpacer.A",
+      "document": "comparison",
+      "native_object": "OriginalSpacer_A",
+      "label": "OriginalSpacer_A",
+      "type": "Part::Cut",
+      "cad_dependents": [
+        "HubMaleHeaders"
+      ],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Flat Lines",
+        "LineWidth": 2.0,
+        "LineColor": [
+          0.09803921729326248,
+          0.09803921729326248,
+          0.09803921729326248,
+          1.0
+        ],
+        "materials": [
+          {
+            "DiffuseColor": [
+              0.10000000149011612,
+              0.10000000149011612,
+              0.10999999940395355,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          }
+        ],
+        "material_assignment": "uniform"
+      },
+      "local_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          35.0,
+          14.840000000000003,
+          15.6
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "parent_coordinate_group": "HubMaleHeaders",
+      "solid_count": 1,
+      "expressions": []
+    },
+    {
+      "id": "hub.DonorSpacer.A",
+      "document": "comparison",
+      "native_object": "DonorSpacer_A",
+      "label": "DonorSpacer_A",
+      "type": "Part::Cut",
+      "cad_dependents": [
+        "HubMaleHeaders"
+      ],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Flat Lines",
+        "LineWidth": 2.0,
+        "LineColor": [
+          0.09803921729326248,
+          0.09803921729326248,
+          0.09803921729326248,
+          1.0
+        ],
+        "materials": [
+          {
+            "DiffuseColor": [
+              0.10000000149011612,
+              0.10000000149011612,
+              0.10999999940395355,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          }
+        ],
+        "material_assignment": "uniform"
+      },
+      "local_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          35.0,
+          14.840000000000003,
+          15.6
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "parent_coordinate_group": "HubMaleHeaders",
+      "solid_count": 1,
+      "expressions": []
+    },
+    {
+      "id": "hub.socket_housing.A",
+      "document": "comparison",
+      "native_object": "SocketHousing_A",
+      "label": "SocketHousing_A",
+      "type": "Part::Cut",
+      "cad_dependents": [
+        "HubFemaleSockets"
+      ],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Flat Lines",
+        "LineWidth": 2.0,
+        "LineColor": [
+          0.09803921729326248,
+          0.09803921729326248,
+          0.09803921729326248,
+          1.0
+        ],
+        "materials": [
+          {
+            "DiffuseColor": [
+              0.07999999821186066,
+              0.07999999821186066,
+              0.09000000357627869,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          }
+        ],
+        "material_assignment": "uniform"
+      },
+      "local_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "parent_coordinate_group": "HubFemaleSockets",
+      "solid_count": 1,
+      "expressions": []
+    },
+    {
+      "id": "hub.male_pin.X3",
+      "document": "comparison",
+      "native_object": "HubMalePin_X3",
+      "label": "HubMalePin_X3",
+      "type": "Part::Box",
+      "cad_dependents": [
+        "HubHeaderSolder_X3",
+        "OriginalSpacer_XTools",
+        "DonorSpacer_XTools",
+        "HubMaleHeaders"
+      ],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Flat Lines",
+        "LineWidth": 2.0,
+        "LineColor": [
+          0.09803921729326248,
+          0.09803921729326248,
+          0.09803921729326248,
+          1.0
+        ],
+        "materials": [
+          {
+            "DiffuseColor": [
+              0.8199999928474426,
+              0.6899999976158142,
+              0.3199999928474426,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          }
+        ],
+        "material_assignment": "uniform"
+      },
+      "local_pose": {
+        "translation_mm": [
+          -29.530000000000005,
+          -6.67,
+          -8.5
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          5.469999999999995,
+          8.170000000000003,
+          7.1
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "parent_coordinate_group": "HubMaleHeaders",
+      "solid_count": 1,
+      "expressions": [
+        [
+          ".Placement.Base.x",
+          "-1 * HubInstallation.RequiredRowSpan / 2 - HubInstallation.HeaderPinWidth / 2"
+        ],
+        [
+          ".Placement.Base.y",
+          "-2.5 * HubInstallation.HeaderPitch - HubInstallation.HeaderPinWidth / 2"
+        ],
+        [
+          ".Placement.Base.z",
+          "-HubInstallation.OriginalSpacerHeight - HubInstallation.SymmetricExposedLength"
+        ],
+        [
+          "Height",
+          "HubInstallation.OriginalSpacerHeight + 2 * HubInstallation.SymmetricExposedLength"
+        ],
+        [
+          "Length",
+          "HubInstallation.HeaderPinWidth"
+        ],
+        [
+          "Width",
+          "HubInstallation.HeaderPinWidth"
+        ]
+      ]
+    },
+    {
+      "id": "HubHeaderSolder_X3",
+      "document": "comparison",
+      "native_object": "HubHeaderSolder_X3",
+      "label": "HubHeaderSolder_X3",
+      "type": "Part::Cut",
+      "cad_dependents": [
+        "HubMaleHeaders"
+      ],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Flat Lines",
+        "LineWidth": 2.0,
+        "LineColor": [
+          0.09803921729326248,
+          0.09803921729326248,
+          0.09803921729326248,
+          1.0
+        ],
+        "materials": [
+          {
+            "DiffuseColor": [
+              0.699999988079071,
+              0.7200000286102295,
+              0.7400000095367432,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          }
+        ],
+        "material_assignment": "uniform"
+      },
+      "local_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          35.0,
+          14.840000000000003,
+          15.6
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "parent_coordinate_group": "HubMaleHeaders",
+      "solid_count": 1,
+      "expressions": []
+    },
+    {
+      "id": "hub.socket_contact.X3",
+      "document": "comparison",
+      "native_object": "SocketContact_X3",
+      "label": "SocketContact_X3",
+      "type": "Part::Cut",
+      "cad_dependents": [
+        "HubFemaleSockets"
+      ],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Flat Lines",
+        "LineWidth": 2.0,
+        "LineColor": [
+          0.09803921729326248,
+          0.09803921729326248,
+          0.09803921729326248,
+          1.0
+        ],
+        "materials": [
+          {
+            "DiffuseColor": [
+              0.8199999928474426,
+              0.6899999976158142,
+              0.3199999928474426,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          }
+        ],
+        "material_assignment": "uniform"
+      },
+      "local_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "parent_coordinate_group": "HubFemaleSockets",
+      "solid_count": 1,
+      "expressions": []
+    },
+    {
+      "id": "hub.socket_tail.X3",
+      "document": "comparison",
+      "native_object": "SocketTail_X3",
+      "label": "SocketTail_X3",
+      "type": "Part::Box",
+      "cad_dependents": [
+        "SocketBottomSolder_X3",
+        "HubFemaleSockets"
+      ],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Flat Lines",
+        "LineWidth": 2.0,
+        "LineColor": [
+          0.09803921729326248,
+          0.09803921729326248,
+          0.09803921729326248,
+          1.0
+        ],
+        "materials": [
+          {
+            "DiffuseColor": [
+              0.7599999904632568,
+              0.7699999809265137,
+              0.7900000214576721,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          }
+        ],
+        "material_assignment": "uniform"
+      },
+      "local_pose": {
+        "translation_mm": [
+          5.469999999999995,
+          8.170000000000003,
+          -0.8
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          5.469999999999995,
+          8.170000000000003,
+          -0.8
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "parent_coordinate_group": "HubFemaleSockets",
+      "solid_count": 1,
+      "expressions": [
+        [
+          ".Placement.Base.x",
+          "35 mm + -1 * HubInstallation.RequiredRowSpan / 2 - HubInstallation.HeaderPinWidth / 2"
+        ],
+        [
+          ".Placement.Base.y",
+          "14.84 mm + -2.5 * HubInstallation.HeaderPitch - HubInstallation.HeaderPinWidth / 2"
+        ],
+        [
+          ".Placement.Base.z",
+          "-HubInstallation.SocketTailProjection"
+        ],
+        [
+          "Height",
+          "HubInstallation.SocketTailProjection + HubInstallation.CarrierTopZ + HubInstallation.SocketHeight - HubInstallation.SocketCavityDepth"
+        ],
+        [
+          "Length",
+          "HubInstallation.HeaderPinWidth"
+        ],
+        [
+          "Width",
+          "HubInstallation.HeaderPinWidth"
+        ]
+      ]
+    },
+    {
+      "id": "SocketBottomSolder_X3",
+      "document": "comparison",
+      "native_object": "SocketBottomSolder_X3",
+      "label": "SocketBottomSolder_X3",
+      "type": "Part::Cut",
+      "cad_dependents": [
+        "HubFemaleSockets"
+      ],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Flat Lines",
+        "LineWidth": 2.0,
+        "LineColor": [
+          0.09803921729326248,
+          0.09803921729326248,
+          0.09803921729326248,
+          1.0
+        ],
+        "materials": [
+          {
+            "DiffuseColor": [
+              0.699999988079071,
+              0.7200000286102295,
+              0.7400000095367432,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          }
+        ],
+        "material_assignment": "uniform"
+      },
+      "local_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "parent_coordinate_group": "HubFemaleSockets",
+      "solid_count": 1,
+      "expressions": []
+    },
+    {
+      "id": "hub.male_pin.X4",
+      "document": "comparison",
+      "native_object": "HubMalePin_X4",
+      "label": "HubMalePin_X4",
+      "type": "Part::Box",
+      "cad_dependents": [
+        "HubHeaderSolder_X4",
+        "OriginalSpacer_XTools",
+        "DonorSpacer_XTools",
+        "HubMaleHeaders"
+      ],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Flat Lines",
+        "LineWidth": 2.0,
+        "LineColor": [
+          0.09803921729326248,
+          0.09803921729326248,
+          0.09803921729326248,
+          1.0
+        ],
+        "materials": [
+          {
+            "DiffuseColor": [
+              0.8199999928474426,
+              0.6899999976158142,
+              0.3199999928474426,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          }
+        ],
+        "material_assignment": "uniform"
+      },
+      "local_pose": {
+        "translation_mm": [
+          -29.530000000000005,
+          -4.13,
+          -8.5
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          5.469999999999995,
+          10.710000000000004,
+          7.1
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "parent_coordinate_group": "HubMaleHeaders",
+      "solid_count": 1,
+      "expressions": [
+        [
+          ".Placement.Base.x",
+          "-1 * HubInstallation.RequiredRowSpan / 2 - HubInstallation.HeaderPinWidth / 2"
+        ],
+        [
+          ".Placement.Base.y",
+          "-1.5 * HubInstallation.HeaderPitch - HubInstallation.HeaderPinWidth / 2"
+        ],
+        [
+          ".Placement.Base.z",
+          "-HubInstallation.OriginalSpacerHeight - HubInstallation.SymmetricExposedLength"
+        ],
+        [
+          "Height",
+          "HubInstallation.OriginalSpacerHeight + 2 * HubInstallation.SymmetricExposedLength"
+        ],
+        [
+          "Length",
+          "HubInstallation.HeaderPinWidth"
+        ],
+        [
+          "Width",
+          "HubInstallation.HeaderPinWidth"
+        ]
+      ]
+    },
+    {
+      "id": "HubHeaderSolder_X4",
+      "document": "comparison",
+      "native_object": "HubHeaderSolder_X4",
+      "label": "HubHeaderSolder_X4",
+      "type": "Part::Cut",
+      "cad_dependents": [
+        "HubMaleHeaders"
+      ],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Flat Lines",
+        "LineWidth": 2.0,
+        "LineColor": [
+          0.09803921729326248,
+          0.09803921729326248,
+          0.09803921729326248,
+          1.0
+        ],
+        "materials": [
+          {
+            "DiffuseColor": [
+              0.699999988079071,
+              0.7200000286102295,
+              0.7400000095367432,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          }
+        ],
+        "material_assignment": "uniform"
+      },
+      "local_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          35.0,
+          14.840000000000003,
+          15.6
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "parent_coordinate_group": "HubMaleHeaders",
+      "solid_count": 1,
+      "expressions": []
+    },
+    {
+      "id": "hub.socket_contact.X4",
+      "document": "comparison",
+      "native_object": "SocketContact_X4",
+      "label": "SocketContact_X4",
+      "type": "Part::Cut",
+      "cad_dependents": [
+        "HubFemaleSockets"
+      ],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Flat Lines",
+        "LineWidth": 2.0,
+        "LineColor": [
+          0.09803921729326248,
+          0.09803921729326248,
+          0.09803921729326248,
+          1.0
+        ],
+        "materials": [
+          {
+            "DiffuseColor": [
+              0.8199999928474426,
+              0.6899999976158142,
+              0.3199999928474426,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          }
+        ],
+        "material_assignment": "uniform"
+      },
+      "local_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "parent_coordinate_group": "HubFemaleSockets",
+      "solid_count": 1,
+      "expressions": []
+    },
+    {
+      "id": "hub.socket_tail.X4",
+      "document": "comparison",
+      "native_object": "SocketTail_X4",
+      "label": "SocketTail_X4",
+      "type": "Part::Box",
+      "cad_dependents": [
+        "SocketBottomSolder_X4",
+        "HubFemaleSockets"
+      ],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Flat Lines",
+        "LineWidth": 2.0,
+        "LineColor": [
+          0.09803921729326248,
+          0.09803921729326248,
+          0.09803921729326248,
+          1.0
+        ],
+        "materials": [
+          {
+            "DiffuseColor": [
+              0.7599999904632568,
+              0.7699999809265137,
+              0.7900000214576721,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          }
+        ],
+        "material_assignment": "uniform"
+      },
+      "local_pose": {
+        "translation_mm": [
+          5.469999999999995,
+          10.710000000000003,
+          -0.8
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          5.469999999999995,
+          10.710000000000003,
+          -0.8
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "parent_coordinate_group": "HubFemaleSockets",
+      "solid_count": 1,
+      "expressions": [
+        [
+          ".Placement.Base.x",
+          "35 mm + -1 * HubInstallation.RequiredRowSpan / 2 - HubInstallation.HeaderPinWidth / 2"
+        ],
+        [
+          ".Placement.Base.y",
+          "14.84 mm + -1.5 * HubInstallation.HeaderPitch - HubInstallation.HeaderPinWidth / 2"
+        ],
+        [
+          ".Placement.Base.z",
+          "-HubInstallation.SocketTailProjection"
+        ],
+        [
+          "Height",
+          "HubInstallation.SocketTailProjection + HubInstallation.CarrierTopZ + HubInstallation.SocketHeight - HubInstallation.SocketCavityDepth"
+        ],
+        [
+          "Length",
+          "HubInstallation.HeaderPinWidth"
+        ],
+        [
+          "Width",
+          "HubInstallation.HeaderPinWidth"
+        ]
+      ]
+    },
+    {
+      "id": "SocketBottomSolder_X4",
+      "document": "comparison",
+      "native_object": "SocketBottomSolder_X4",
+      "label": "SocketBottomSolder_X4",
+      "type": "Part::Cut",
+      "cad_dependents": [
+        "HubFemaleSockets"
+      ],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Flat Lines",
+        "LineWidth": 2.0,
+        "LineColor": [
+          0.09803921729326248,
+          0.09803921729326248,
+          0.09803921729326248,
+          1.0
+        ],
+        "materials": [
+          {
+            "DiffuseColor": [
+              0.699999988079071,
+              0.7200000286102295,
+              0.7400000095367432,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          }
+        ],
+        "material_assignment": "uniform"
+      },
+      "local_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "parent_coordinate_group": "HubFemaleSockets",
+      "solid_count": 1,
+      "expressions": []
+    },
+    {
+      "id": "hub.male_pin.X5",
+      "document": "comparison",
+      "native_object": "HubMalePin_X5",
+      "label": "HubMalePin_X5",
+      "type": "Part::Box",
+      "cad_dependents": [
+        "HubHeaderSolder_X5",
+        "OriginalSpacer_XTools",
+        "DonorSpacer_XTools",
+        "HubMaleHeaders"
+      ],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Flat Lines",
+        "LineWidth": 2.0,
+        "LineColor": [
+          0.09803921729326248,
+          0.09803921729326248,
+          0.09803921729326248,
+          1.0
+        ],
+        "materials": [
+          {
+            "DiffuseColor": [
+              0.8199999928474426,
+              0.6899999976158142,
+              0.3199999928474426,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          }
+        ],
+        "material_assignment": "uniform"
+      },
+      "local_pose": {
+        "translation_mm": [
+          -29.530000000000005,
+          -1.59,
+          -8.5
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          5.469999999999995,
+          13.250000000000004,
+          7.1
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "parent_coordinate_group": "HubMaleHeaders",
+      "solid_count": 1,
+      "expressions": [
+        [
+          ".Placement.Base.x",
+          "-1 * HubInstallation.RequiredRowSpan / 2 - HubInstallation.HeaderPinWidth / 2"
+        ],
+        [
+          ".Placement.Base.y",
+          "-0.5 * HubInstallation.HeaderPitch - HubInstallation.HeaderPinWidth / 2"
+        ],
+        [
+          ".Placement.Base.z",
+          "-HubInstallation.OriginalSpacerHeight - HubInstallation.SymmetricExposedLength"
+        ],
+        [
+          "Height",
+          "HubInstallation.OriginalSpacerHeight + 2 * HubInstallation.SymmetricExposedLength"
+        ],
+        [
+          "Length",
+          "HubInstallation.HeaderPinWidth"
+        ],
+        [
+          "Width",
+          "HubInstallation.HeaderPinWidth"
+        ]
+      ]
+    },
+    {
+      "id": "HubHeaderSolder_X5",
+      "document": "comparison",
+      "native_object": "HubHeaderSolder_X5",
+      "label": "HubHeaderSolder_X5",
+      "type": "Part::Cut",
+      "cad_dependents": [
+        "HubMaleHeaders"
+      ],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Flat Lines",
+        "LineWidth": 2.0,
+        "LineColor": [
+          0.09803921729326248,
+          0.09803921729326248,
+          0.09803921729326248,
+          1.0
+        ],
+        "materials": [
+          {
+            "DiffuseColor": [
+              0.699999988079071,
+              0.7200000286102295,
+              0.7400000095367432,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          }
+        ],
+        "material_assignment": "uniform"
+      },
+      "local_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          35.0,
+          14.840000000000003,
+          15.6
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "parent_coordinate_group": "HubMaleHeaders",
+      "solid_count": 1,
+      "expressions": []
+    },
+    {
+      "id": "hub.socket_contact.X5",
+      "document": "comparison",
+      "native_object": "SocketContact_X5",
+      "label": "SocketContact_X5",
+      "type": "Part::Cut",
+      "cad_dependents": [
+        "HubFemaleSockets"
+      ],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Flat Lines",
+        "LineWidth": 2.0,
+        "LineColor": [
+          0.09803921729326248,
+          0.09803921729326248,
+          0.09803921729326248,
+          1.0
+        ],
+        "materials": [
+          {
+            "DiffuseColor": [
+              0.8199999928474426,
+              0.6899999976158142,
+              0.3199999928474426,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          }
+        ],
+        "material_assignment": "uniform"
+      },
+      "local_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "parent_coordinate_group": "HubFemaleSockets",
+      "solid_count": 1,
+      "expressions": []
+    },
+    {
+      "id": "hub.socket_tail.X5",
+      "document": "comparison",
+      "native_object": "SocketTail_X5",
+      "label": "SocketTail_X5",
+      "type": "Part::Box",
+      "cad_dependents": [
+        "SocketBottomSolder_X5",
+        "HubFemaleSockets"
+      ],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Flat Lines",
+        "LineWidth": 2.0,
+        "LineColor": [
+          0.09803921729326248,
+          0.09803921729326248,
+          0.09803921729326248,
+          1.0
+        ],
+        "materials": [
+          {
+            "DiffuseColor": [
+              0.7599999904632568,
+              0.7699999809265137,
+              0.7900000214576721,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          }
+        ],
+        "material_assignment": "uniform"
+      },
+      "local_pose": {
+        "translation_mm": [
+          5.469999999999995,
+          13.250000000000004,
+          -0.8
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          5.469999999999995,
+          13.250000000000004,
+          -0.8
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "parent_coordinate_group": "HubFemaleSockets",
+      "solid_count": 1,
+      "expressions": [
+        [
+          ".Placement.Base.x",
+          "35 mm + -1 * HubInstallation.RequiredRowSpan / 2 - HubInstallation.HeaderPinWidth / 2"
+        ],
+        [
+          ".Placement.Base.y",
+          "14.84 mm + -0.5 * HubInstallation.HeaderPitch - HubInstallation.HeaderPinWidth / 2"
+        ],
+        [
+          ".Placement.Base.z",
+          "-HubInstallation.SocketTailProjection"
+        ],
+        [
+          "Height",
+          "HubInstallation.SocketTailProjection + HubInstallation.CarrierTopZ + HubInstallation.SocketHeight - HubInstallation.SocketCavityDepth"
+        ],
+        [
+          "Length",
+          "HubInstallation.HeaderPinWidth"
+        ],
+        [
+          "Width",
+          "HubInstallation.HeaderPinWidth"
+        ]
+      ]
+    },
+    {
+      "id": "SocketBottomSolder_X5",
+      "document": "comparison",
+      "native_object": "SocketBottomSolder_X5",
+      "label": "SocketBottomSolder_X5",
+      "type": "Part::Cut",
+      "cad_dependents": [
+        "HubFemaleSockets"
+      ],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Flat Lines",
+        "LineWidth": 2.0,
+        "LineColor": [
+          0.09803921729326248,
+          0.09803921729326248,
+          0.09803921729326248,
+          1.0
+        ],
+        "materials": [
+          {
+            "DiffuseColor": [
+              0.699999988079071,
+              0.7200000286102295,
+              0.7400000095367432,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          }
+        ],
+        "material_assignment": "uniform"
+      },
+      "local_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "parent_coordinate_group": "HubFemaleSockets",
+      "solid_count": 1,
+      "expressions": []
+    },
+    {
+      "id": "hub.male_pin.X6",
+      "document": "comparison",
+      "native_object": "HubMalePin_X6",
+      "label": "HubMalePin_X6",
+      "type": "Part::Box",
+      "cad_dependents": [
+        "HubHeaderSolder_X6",
+        "OriginalSpacer_XTools",
+        "DonorSpacer_XTools",
+        "HubMaleHeaders"
+      ],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Flat Lines",
+        "LineWidth": 2.0,
+        "LineColor": [
+          0.09803921729326248,
+          0.09803921729326248,
+          0.09803921729326248,
+          1.0
+        ],
+        "materials": [
+          {
+            "DiffuseColor": [
+              0.8199999928474426,
+              0.6899999976158142,
+              0.3199999928474426,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          }
+        ],
+        "material_assignment": "uniform"
+      },
+      "local_pose": {
+        "translation_mm": [
+          -29.530000000000005,
+          0.95,
+          -8.5
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          5.469999999999995,
+          15.790000000000003,
+          7.1
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "parent_coordinate_group": "HubMaleHeaders",
+      "solid_count": 1,
+      "expressions": [
+        [
+          ".Placement.Base.x",
+          "-1 * HubInstallation.RequiredRowSpan / 2 - HubInstallation.HeaderPinWidth / 2"
+        ],
+        [
+          ".Placement.Base.y",
+          "0.5 * HubInstallation.HeaderPitch - HubInstallation.HeaderPinWidth / 2"
+        ],
+        [
+          ".Placement.Base.z",
+          "-HubInstallation.OriginalSpacerHeight - HubInstallation.SymmetricExposedLength"
+        ],
+        [
+          "Height",
+          "HubInstallation.OriginalSpacerHeight + 2 * HubInstallation.SymmetricExposedLength"
+        ],
+        [
+          "Length",
+          "HubInstallation.HeaderPinWidth"
+        ],
+        [
+          "Width",
+          "HubInstallation.HeaderPinWidth"
+        ]
+      ]
+    },
+    {
+      "id": "HubHeaderSolder_X6",
+      "document": "comparison",
+      "native_object": "HubHeaderSolder_X6",
+      "label": "HubHeaderSolder_X6",
+      "type": "Part::Cut",
+      "cad_dependents": [
+        "HubMaleHeaders"
+      ],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Flat Lines",
+        "LineWidth": 2.0,
+        "LineColor": [
+          0.09803921729326248,
+          0.09803921729326248,
+          0.09803921729326248,
+          1.0
+        ],
+        "materials": [
+          {
+            "DiffuseColor": [
+              0.699999988079071,
+              0.7200000286102295,
+              0.7400000095367432,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          }
+        ],
+        "material_assignment": "uniform"
+      },
+      "local_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          35.0,
+          14.840000000000003,
+          15.6
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "parent_coordinate_group": "HubMaleHeaders",
+      "solid_count": 1,
+      "expressions": []
+    },
+    {
+      "id": "hub.socket_contact.X6",
+      "document": "comparison",
+      "native_object": "SocketContact_X6",
+      "label": "SocketContact_X6",
+      "type": "Part::Cut",
+      "cad_dependents": [
+        "HubFemaleSockets"
+      ],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Flat Lines",
+        "LineWidth": 2.0,
+        "LineColor": [
+          0.09803921729326248,
+          0.09803921729326248,
+          0.09803921729326248,
+          1.0
+        ],
+        "materials": [
+          {
+            "DiffuseColor": [
+              0.8199999928474426,
+              0.6899999976158142,
+              0.3199999928474426,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          }
+        ],
+        "material_assignment": "uniform"
+      },
+      "local_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "parent_coordinate_group": "HubFemaleSockets",
+      "solid_count": 1,
+      "expressions": []
+    },
+    {
+      "id": "hub.socket_tail.X6",
+      "document": "comparison",
+      "native_object": "SocketTail_X6",
+      "label": "SocketTail_X6",
+      "type": "Part::Box",
+      "cad_dependents": [
+        "SocketBottomSolder_X6",
+        "HubFemaleSockets"
+      ],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Flat Lines",
+        "LineWidth": 2.0,
+        "LineColor": [
+          0.09803921729326248,
+          0.09803921729326248,
+          0.09803921729326248,
+          1.0
+        ],
+        "materials": [
+          {
+            "DiffuseColor": [
+              0.7599999904632568,
+              0.7699999809265137,
+              0.7900000214576721,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          }
+        ],
+        "material_assignment": "uniform"
+      },
+      "local_pose": {
+        "translation_mm": [
+          5.469999999999995,
+          15.790000000000003,
+          -0.8
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          5.469999999999995,
+          15.790000000000003,
+          -0.8
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "parent_coordinate_group": "HubFemaleSockets",
+      "solid_count": 1,
+      "expressions": [
+        [
+          ".Placement.Base.x",
+          "35 mm + -1 * HubInstallation.RequiredRowSpan / 2 - HubInstallation.HeaderPinWidth / 2"
+        ],
+        [
+          ".Placement.Base.y",
+          "14.84 mm + 0.5 * HubInstallation.HeaderPitch - HubInstallation.HeaderPinWidth / 2"
+        ],
+        [
+          ".Placement.Base.z",
+          "-HubInstallation.SocketTailProjection"
+        ],
+        [
+          "Height",
+          "HubInstallation.SocketTailProjection + HubInstallation.CarrierTopZ + HubInstallation.SocketHeight - HubInstallation.SocketCavityDepth"
+        ],
+        [
+          "Length",
+          "HubInstallation.HeaderPinWidth"
+        ],
+        [
+          "Width",
+          "HubInstallation.HeaderPinWidth"
+        ]
+      ]
+    },
+    {
+      "id": "SocketBottomSolder_X6",
+      "document": "comparison",
+      "native_object": "SocketBottomSolder_X6",
+      "label": "SocketBottomSolder_X6",
+      "type": "Part::Cut",
+      "cad_dependents": [
+        "HubFemaleSockets"
+      ],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Flat Lines",
+        "LineWidth": 2.0,
+        "LineColor": [
+          0.09803921729326248,
+          0.09803921729326248,
+          0.09803921729326248,
+          1.0
+        ],
+        "materials": [
+          {
+            "DiffuseColor": [
+              0.699999988079071,
+              0.7200000286102295,
+              0.7400000095367432,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          }
+        ],
+        "material_assignment": "uniform"
+      },
+      "local_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "parent_coordinate_group": "HubFemaleSockets",
+      "solid_count": 1,
+      "expressions": []
+    },
+    {
+      "id": "hub.male_pin.X7",
+      "document": "comparison",
+      "native_object": "HubMalePin_X7",
+      "label": "HubMalePin_X7",
+      "type": "Part::Box",
+      "cad_dependents": [
+        "HubHeaderSolder_X7",
+        "OriginalSpacer_XTools",
+        "DonorSpacer_XTools",
+        "HubMaleHeaders"
+      ],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Flat Lines",
+        "LineWidth": 2.0,
+        "LineColor": [
+          0.09803921729326248,
+          0.09803921729326248,
+          0.09803921729326248,
+          1.0
+        ],
+        "materials": [
+          {
+            "DiffuseColor": [
+              0.8199999928474426,
+              0.6899999976158142,
+              0.3199999928474426,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          }
+        ],
+        "material_assignment": "uniform"
+      },
+      "local_pose": {
+        "translation_mm": [
+          -29.530000000000005,
+          3.49,
+          -8.5
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          5.469999999999995,
+          18.330000000000005,
+          7.1
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "parent_coordinate_group": "HubMaleHeaders",
+      "solid_count": 1,
+      "expressions": [
+        [
+          ".Placement.Base.x",
+          "-1 * HubInstallation.RequiredRowSpan / 2 - HubInstallation.HeaderPinWidth / 2"
+        ],
+        [
+          ".Placement.Base.y",
+          "1.5 * HubInstallation.HeaderPitch - HubInstallation.HeaderPinWidth / 2"
+        ],
+        [
+          ".Placement.Base.z",
+          "-HubInstallation.OriginalSpacerHeight - HubInstallation.SymmetricExposedLength"
+        ],
+        [
+          "Height",
+          "HubInstallation.OriginalSpacerHeight + 2 * HubInstallation.SymmetricExposedLength"
+        ],
+        [
+          "Length",
+          "HubInstallation.HeaderPinWidth"
+        ],
+        [
+          "Width",
+          "HubInstallation.HeaderPinWidth"
+        ]
+      ]
+    },
+    {
+      "id": "HubHeaderSolder_X7",
+      "document": "comparison",
+      "native_object": "HubHeaderSolder_X7",
+      "label": "HubHeaderSolder_X7",
+      "type": "Part::Cut",
+      "cad_dependents": [
+        "HubMaleHeaders"
+      ],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Flat Lines",
+        "LineWidth": 2.0,
+        "LineColor": [
+          0.09803921729326248,
+          0.09803921729326248,
+          0.09803921729326248,
+          1.0
+        ],
+        "materials": [
+          {
+            "DiffuseColor": [
+              0.699999988079071,
+              0.7200000286102295,
+              0.7400000095367432,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          }
+        ],
+        "material_assignment": "uniform"
+      },
+      "local_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          35.0,
+          14.840000000000003,
+          15.6
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "parent_coordinate_group": "HubMaleHeaders",
+      "solid_count": 1,
+      "expressions": []
+    },
+    {
+      "id": "hub.socket_contact.X7",
+      "document": "comparison",
+      "native_object": "SocketContact_X7",
+      "label": "SocketContact_X7",
+      "type": "Part::Cut",
+      "cad_dependents": [
+        "HubFemaleSockets"
+      ],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Flat Lines",
+        "LineWidth": 2.0,
+        "LineColor": [
+          0.09803921729326248,
+          0.09803921729326248,
+          0.09803921729326248,
+          1.0
+        ],
+        "materials": [
+          {
+            "DiffuseColor": [
+              0.8199999928474426,
+              0.6899999976158142,
+              0.3199999928474426,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          }
+        ],
+        "material_assignment": "uniform"
+      },
+      "local_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "parent_coordinate_group": "HubFemaleSockets",
+      "solid_count": 1,
+      "expressions": []
+    },
+    {
+      "id": "hub.socket_tail.X7",
+      "document": "comparison",
+      "native_object": "SocketTail_X7",
+      "label": "SocketTail_X7",
+      "type": "Part::Box",
+      "cad_dependents": [
+        "SocketBottomSolder_X7",
+        "HubFemaleSockets"
+      ],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Flat Lines",
+        "LineWidth": 2.0,
+        "LineColor": [
+          0.09803921729326248,
+          0.09803921729326248,
+          0.09803921729326248,
+          1.0
+        ],
+        "materials": [
+          {
+            "DiffuseColor": [
+              0.7599999904632568,
+              0.7699999809265137,
+              0.7900000214576721,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          }
+        ],
+        "material_assignment": "uniform"
+      },
+      "local_pose": {
+        "translation_mm": [
+          5.469999999999995,
+          18.330000000000002,
+          -0.8
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          5.469999999999995,
+          18.330000000000002,
+          -0.8
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "parent_coordinate_group": "HubFemaleSockets",
+      "solid_count": 1,
+      "expressions": [
+        [
+          ".Placement.Base.x",
+          "35 mm + -1 * HubInstallation.RequiredRowSpan / 2 - HubInstallation.HeaderPinWidth / 2"
+        ],
+        [
+          ".Placement.Base.y",
+          "14.84 mm + 1.5 * HubInstallation.HeaderPitch - HubInstallation.HeaderPinWidth / 2"
+        ],
+        [
+          ".Placement.Base.z",
+          "-HubInstallation.SocketTailProjection"
+        ],
+        [
+          "Height",
+          "HubInstallation.SocketTailProjection + HubInstallation.CarrierTopZ + HubInstallation.SocketHeight - HubInstallation.SocketCavityDepth"
+        ],
+        [
+          "Length",
+          "HubInstallation.HeaderPinWidth"
+        ],
+        [
+          "Width",
+          "HubInstallation.HeaderPinWidth"
+        ]
+      ]
+    },
+    {
+      "id": "SocketBottomSolder_X7",
+      "document": "comparison",
+      "native_object": "SocketBottomSolder_X7",
+      "label": "SocketBottomSolder_X7",
+      "type": "Part::Cut",
+      "cad_dependents": [
+        "HubFemaleSockets"
+      ],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Flat Lines",
+        "LineWidth": 2.0,
+        "LineColor": [
+          0.09803921729326248,
+          0.09803921729326248,
+          0.09803921729326248,
+          1.0
+        ],
+        "materials": [
+          {
+            "DiffuseColor": [
+              0.699999988079071,
+              0.7200000286102295,
+              0.7400000095367432,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          }
+        ],
+        "material_assignment": "uniform"
+      },
+      "local_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "parent_coordinate_group": "HubFemaleSockets",
+      "solid_count": 1,
+      "expressions": []
+    },
+    {
+      "id": "hub.male_pin.X8",
+      "document": "comparison",
+      "native_object": "HubMalePin_X8",
+      "label": "HubMalePin_X8",
+      "type": "Part::Box",
+      "cad_dependents": [
+        "HubHeaderSolder_X8",
+        "OriginalSpacer_XTools",
+        "DonorSpacer_XTools",
+        "HubMaleHeaders"
+      ],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Flat Lines",
+        "LineWidth": 2.0,
+        "LineColor": [
+          0.09803921729326248,
+          0.09803921729326248,
+          0.09803921729326248,
+          1.0
+        ],
+        "materials": [
+          {
+            "DiffuseColor": [
+              0.8199999928474426,
+              0.6899999976158142,
+              0.3199999928474426,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          }
+        ],
+        "material_assignment": "uniform"
+      },
+      "local_pose": {
+        "translation_mm": [
+          -29.530000000000005,
+          6.029999999999999,
+          -8.5
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          5.469999999999995,
+          20.870000000000005,
+          7.1
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "parent_coordinate_group": "HubMaleHeaders",
+      "solid_count": 1,
+      "expressions": [
+        [
+          ".Placement.Base.x",
+          "-1 * HubInstallation.RequiredRowSpan / 2 - HubInstallation.HeaderPinWidth / 2"
+        ],
+        [
+          ".Placement.Base.y",
+          "2.5 * HubInstallation.HeaderPitch - HubInstallation.HeaderPinWidth / 2"
+        ],
+        [
+          ".Placement.Base.z",
+          "-HubInstallation.OriginalSpacerHeight - HubInstallation.SymmetricExposedLength"
+        ],
+        [
+          "Height",
+          "HubInstallation.OriginalSpacerHeight + 2 * HubInstallation.SymmetricExposedLength"
+        ],
+        [
+          "Length",
+          "HubInstallation.HeaderPinWidth"
+        ],
+        [
+          "Width",
+          "HubInstallation.HeaderPinWidth"
+        ]
+      ]
+    },
+    {
+      "id": "HubHeaderSolder_X8",
+      "document": "comparison",
+      "native_object": "HubHeaderSolder_X8",
+      "label": "HubHeaderSolder_X8",
+      "type": "Part::Cut",
+      "cad_dependents": [
+        "HubMaleHeaders"
+      ],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Flat Lines",
+        "LineWidth": 2.0,
+        "LineColor": [
+          0.09803921729326248,
+          0.09803921729326248,
+          0.09803921729326248,
+          1.0
+        ],
+        "materials": [
+          {
+            "DiffuseColor": [
+              0.699999988079071,
+              0.7200000286102295,
+              0.7400000095367432,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          }
+        ],
+        "material_assignment": "uniform"
+      },
+      "local_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          35.0,
+          14.840000000000003,
+          15.6
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "parent_coordinate_group": "HubMaleHeaders",
+      "solid_count": 1,
+      "expressions": []
+    },
+    {
+      "id": "hub.socket_contact.X8",
+      "document": "comparison",
+      "native_object": "SocketContact_X8",
+      "label": "SocketContact_X8",
+      "type": "Part::Cut",
+      "cad_dependents": [
+        "HubFemaleSockets"
+      ],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Flat Lines",
+        "LineWidth": 2.0,
+        "LineColor": [
+          0.09803921729326248,
+          0.09803921729326248,
+          0.09803921729326248,
+          1.0
+        ],
+        "materials": [
+          {
+            "DiffuseColor": [
+              0.8199999928474426,
+              0.6899999976158142,
+              0.3199999928474426,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          }
+        ],
+        "material_assignment": "uniform"
+      },
+      "local_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "parent_coordinate_group": "HubFemaleSockets",
+      "solid_count": 1,
+      "expressions": []
+    },
+    {
+      "id": "hub.socket_tail.X8",
+      "document": "comparison",
+      "native_object": "SocketTail_X8",
+      "label": "SocketTail_X8",
+      "type": "Part::Box",
+      "cad_dependents": [
+        "SocketBottomSolder_X8",
+        "HubFemaleSockets"
+      ],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Flat Lines",
+        "LineWidth": 2.0,
+        "LineColor": [
+          0.09803921729326248,
+          0.09803921729326248,
+          0.09803921729326248,
+          1.0
+        ],
+        "materials": [
+          {
+            "DiffuseColor": [
+              0.7599999904632568,
+              0.7699999809265137,
+              0.7900000214576721,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          }
+        ],
+        "material_assignment": "uniform"
+      },
+      "local_pose": {
+        "translation_mm": [
+          5.469999999999995,
+          20.870000000000005,
+          -0.8
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          5.469999999999995,
+          20.870000000000005,
+          -0.8
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "parent_coordinate_group": "HubFemaleSockets",
+      "solid_count": 1,
+      "expressions": [
+        [
+          ".Placement.Base.x",
+          "35 mm + -1 * HubInstallation.RequiredRowSpan / 2 - HubInstallation.HeaderPinWidth / 2"
+        ],
+        [
+          ".Placement.Base.y",
+          "14.84 mm + 2.5 * HubInstallation.HeaderPitch - HubInstallation.HeaderPinWidth / 2"
+        ],
+        [
+          ".Placement.Base.z",
+          "-HubInstallation.SocketTailProjection"
+        ],
+        [
+          "Height",
+          "HubInstallation.SocketTailProjection + HubInstallation.CarrierTopZ + HubInstallation.SocketHeight - HubInstallation.SocketCavityDepth"
+        ],
+        [
+          "Length",
+          "HubInstallation.HeaderPinWidth"
+        ],
+        [
+          "Width",
+          "HubInstallation.HeaderPinWidth"
+        ]
+      ]
+    },
+    {
+      "id": "SocketBottomSolder_X8",
+      "document": "comparison",
+      "native_object": "SocketBottomSolder_X8",
+      "label": "SocketBottomSolder_X8",
+      "type": "Part::Cut",
+      "cad_dependents": [
+        "HubFemaleSockets"
+      ],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Flat Lines",
+        "LineWidth": 2.0,
+        "LineColor": [
+          0.09803921729326248,
+          0.09803921729326248,
+          0.09803921729326248,
+          1.0
+        ],
+        "materials": [
+          {
+            "DiffuseColor": [
+              0.699999988079071,
+              0.7200000286102295,
+              0.7400000095367432,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          }
+        ],
+        "material_assignment": "uniform"
+      },
+      "local_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "parent_coordinate_group": "HubFemaleSockets",
+      "solid_count": 1,
+      "expressions": []
+    },
+    {
+      "id": "hub.OriginalSpacer.X",
+      "document": "comparison",
+      "native_object": "OriginalSpacer_X",
+      "label": "OriginalSpacer_X",
+      "type": "Part::Cut",
+      "cad_dependents": [
+        "HubMaleHeaders"
+      ],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Flat Lines",
+        "LineWidth": 2.0,
+        "LineColor": [
+          0.09803921729326248,
+          0.09803921729326248,
+          0.09803921729326248,
+          1.0
+        ],
+        "materials": [
+          {
+            "DiffuseColor": [
+              0.10000000149011612,
+              0.10000000149011612,
+              0.10999999940395355,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          }
+        ],
+        "material_assignment": "uniform"
+      },
+      "local_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          35.0,
+          14.840000000000003,
+          15.6
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "parent_coordinate_group": "HubMaleHeaders",
+      "solid_count": 1,
+      "expressions": []
+    },
+    {
+      "id": "hub.DonorSpacer.X",
+      "document": "comparison",
+      "native_object": "DonorSpacer_X",
+      "label": "DonorSpacer_X",
+      "type": "Part::Cut",
+      "cad_dependents": [
+        "HubMaleHeaders"
+      ],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Flat Lines",
+        "LineWidth": 2.0,
+        "LineColor": [
+          0.09803921729326248,
+          0.09803921729326248,
+          0.09803921729326248,
+          1.0
+        ],
+        "materials": [
+          {
+            "DiffuseColor": [
+              0.10000000149011612,
+              0.10000000149011612,
+              0.10999999940395355,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          }
+        ],
+        "material_assignment": "uniform"
+      },
+      "local_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          35.0,
+          14.840000000000003,
+          15.6
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "parent_coordinate_group": "HubMaleHeaders",
+      "solid_count": 1,
+      "expressions": []
+    },
+    {
+      "id": "hub.socket_housing.X",
+      "document": "comparison",
+      "native_object": "SocketHousing_X",
+      "label": "SocketHousing_X",
+      "type": "Part::Cut",
+      "cad_dependents": [
+        "HubFemaleSockets"
+      ],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Flat Lines",
+        "LineWidth": 2.0,
+        "LineColor": [
+          0.09803921729326248,
+          0.09803921729326248,
+          0.09803921729326248,
+          1.0
+        ],
+        "materials": [
+          {
+            "DiffuseColor": [
+              0.07999999821186066,
+              0.07999999821186066,
+              0.09000000357627869,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          }
+        ],
+        "material_assignment": "uniform"
+      },
+      "local_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "parent_coordinate_group": "HubFemaleSockets",
+      "solid_count": 1,
+      "expressions": []
+    },
+    {
+      "id": "HubMaleHeaders",
+      "document": "comparison",
+      "native_object": "HubMaleHeaders",
+      "label": "Removable hub headers — symmetric pins and doubled spacers",
+      "type": "App::Part",
+      "cad_dependents": [
+        "ServoHubCandidate"
+      ],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Group"
+      },
+      "local_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          35.0,
+          14.840000000000003,
+          15.6
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "parent_coordinate_group": "ServoHubCandidate",
+      "members": [
+        "HubMalePin_A3",
+        "HubHeaderSolder_A3Blank",
+        "HubHeaderSolder_A3",
+        "HubMalePin_A4",
+        "HubHeaderSolder_A4Blank",
+        "HubHeaderSolder_A4",
+        "HubMalePin_A5",
+        "HubHeaderSolder_A5Blank",
+        "HubHeaderSolder_A5",
+        "HubMalePin_A6",
+        "HubHeaderSolder_A6Blank",
+        "HubHeaderSolder_A6",
+        "HubMalePin_A7",
+        "HubHeaderSolder_A7Blank",
+        "HubHeaderSolder_A7",
+        "HubMalePin_A8",
+        "HubHeaderSolder_A8Blank",
+        "HubHeaderSolder_A8",
+        "OriginalSpacerBlank_A",
+        "OriginalSpacer_ATools",
+        "OriginalSpacer_A",
+        "DonorSpacerBlank_A",
+        "DonorSpacer_ATools",
+        "DonorSpacer_A",
+        "HubMalePin_X3",
+        "HubHeaderSolder_X3Blank",
+        "HubHeaderSolder_X3",
+        "HubMalePin_X4",
+        "HubHeaderSolder_X4Blank",
+        "HubHeaderSolder_X4",
+        "HubMalePin_X5",
+        "HubHeaderSolder_X5Blank",
+        "HubHeaderSolder_X5",
+        "HubMalePin_X6",
+        "HubHeaderSolder_X6Blank",
+        "HubHeaderSolder_X6",
+        "HubMalePin_X7",
+        "HubHeaderSolder_X7Blank",
+        "HubHeaderSolder_X7",
+        "HubMalePin_X8",
+        "HubHeaderSolder_X8Blank",
+        "HubHeaderSolder_X8",
+        "OriginalSpacerBlank_X",
+        "OriginalSpacer_XTools",
+        "OriginalSpacer_X",
+        "DonorSpacerBlank_X",
+        "DonorSpacer_XTools",
+        "DonorSpacer_X"
+      ],
+      "expressions": []
+    },
+    {
+      "id": "HubFemaleSockets",
+      "document": "comparison",
+      "native_object": "HubFemaleSockets",
+      "label": "Carrier-fixed female sockets and solder",
+      "type": "App::Part",
+      "cad_dependents": [],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Group"
+      },
+      "local_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "parent_coordinate_group": null,
+      "members": [
+        "SocketCavity_A3",
+        "SocketContactBlank_A3",
+        "SocketContactBore_A3",
+        "SocketContact_A3",
+        "SocketTail_A3",
+        "SocketBottomSolder_A3Blank",
+        "SocketBottomSolder_A3",
+        "SocketCavity_A4",
+        "SocketContactBlank_A4",
+        "SocketContactBore_A4",
+        "SocketContact_A4",
+        "SocketTail_A4",
+        "SocketBottomSolder_A4Blank",
+        "SocketBottomSolder_A4",
+        "SocketCavity_A5",
+        "SocketContactBlank_A5",
+        "SocketContactBore_A5",
+        "SocketContact_A5",
+        "SocketTail_A5",
+        "SocketBottomSolder_A5Blank",
+        "SocketBottomSolder_A5",
+        "SocketCavity_A6",
+        "SocketContactBlank_A6",
+        "SocketContactBore_A6",
+        "SocketContact_A6",
+        "SocketTail_A6",
+        "SocketBottomSolder_A6Blank",
+        "SocketBottomSolder_A6",
+        "SocketCavity_A7",
+        "SocketContactBlank_A7",
+        "SocketContactBore_A7",
+        "SocketContact_A7",
+        "SocketTail_A7",
+        "SocketBottomSolder_A7Blank",
+        "SocketBottomSolder_A7",
+        "SocketCavity_A8",
+        "SocketContactBlank_A8",
+        "SocketContactBore_A8",
+        "SocketContact_A8",
+        "SocketTail_A8",
+        "SocketBottomSolder_A8Blank",
+        "SocketBottomSolder_A8",
+        "SocketHousingBlank_A",
+        "SocketHousing_ATools",
+        "SocketHousing_A",
+        "SocketCavity_X3",
+        "SocketContactBlank_X3",
+        "SocketContactBore_X3",
+        "SocketContact_X3",
+        "SocketTail_X3",
+        "SocketBottomSolder_X3Blank",
+        "SocketBottomSolder_X3",
+        "SocketCavity_X4",
+        "SocketContactBlank_X4",
+        "SocketContactBore_X4",
+        "SocketContact_X4",
+        "SocketTail_X4",
+        "SocketBottomSolder_X4Blank",
+        "SocketBottomSolder_X4",
+        "SocketCavity_X5",
+        "SocketContactBlank_X5",
+        "SocketContactBore_X5",
+        "SocketContact_X5",
+        "SocketTail_X5",
+        "SocketBottomSolder_X5Blank",
+        "SocketBottomSolder_X5",
+        "SocketCavity_X6",
+        "SocketContactBlank_X6",
+        "SocketContactBore_X6",
+        "SocketContact_X6",
+        "SocketTail_X6",
+        "SocketBottomSolder_X6Blank",
+        "SocketBottomSolder_X6",
+        "SocketCavity_X7",
+        "SocketContactBlank_X7",
+        "SocketContactBore_X7",
+        "SocketContact_X7",
+        "SocketTail_X7",
+        "SocketBottomSolder_X7Blank",
+        "SocketBottomSolder_X7",
+        "SocketCavity_X8",
+        "SocketContactBlank_X8",
+        "SocketContactBore_X8",
+        "SocketContact_X8",
+        "SocketTail_X8",
+        "SocketBottomSolder_X8Blank",
+        "SocketBottomSolder_X8",
+        "SocketHousingBlank_X",
+        "SocketHousing_XTools",
+        "SocketHousing_X"
+      ],
       "expressions": []
     }
   ]

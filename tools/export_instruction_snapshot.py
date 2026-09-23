@@ -79,6 +79,12 @@ def main():
                          ('servo_hub.reference', 'comparison', imported.Name),
                          ('servo_hub.body', 'comparison', body.Name)])
     records = []
+    for obj in docs['comparison'].Objects:
+        if 'InstructionId' in obj.PropertiesList:
+            bindings.append((obj.InstructionId, 'comparison', obj.Name))
+    for name in ['HubMaleHeaders', 'HubFemaleSockets']:
+        if docs['comparison'].getObject(name):
+            bindings.append((name, 'comparison', name))
     for semantic, document, name in bindings:
         obj = docs[document].getObject(name)
         assert obj is not None, name

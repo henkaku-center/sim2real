@@ -1,0 +1,61 @@
+{
+  "status": "PASS",
+  "finished_features": 66,
+  "saved_document_reopened": true,
+  "terminals": [
+    {
+      "address": "A3",
+      "engagement_mm": 3.0
+    },
+    {
+      "address": "A4",
+      "engagement_mm": 3.0
+    },
+    {
+      "address": "A5",
+      "engagement_mm": 3.0
+    },
+    {
+      "address": "A6",
+      "engagement_mm": 3.0
+    },
+    {
+      "address": "A7",
+      "engagement_mm": 3.0
+    },
+    {
+      "address": "A8",
+      "engagement_mm": 3.0
+    },
+    {
+      "address": "X3",
+      "engagement_mm": 3.0
+    },
+    {
+      "address": "X4",
+      "engagement_mm": 3.0
+    },
+    {
+      "address": "X5",
+      "engagement_mm": 3.0
+    },
+    {
+      "address": "X6",
+      "engagement_mm": 3.0
+    },
+    {
+      "address": "X7",
+      "engagement_mm": 3.0
+    },
+    {
+      "address": "X8",
+      "engagement_mm": 3.0
+    }
+  ],
+  "symmetric_about_original_spacer": true,
+  "male_housing_spacer_contact_tail_overlap_mm3": 0,
+  "temporary_lift_mm": 10,
+  "carrier_sockets_stayed_fixed": true,
+  "test_edits_saved": false,
+  "limitations": "Provisional dimensions; simplified contact sleeves, not spring/contact-force simulation; upper pins modeled untrimmed."
+}
