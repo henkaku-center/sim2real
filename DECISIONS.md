@@ -59,3 +59,24 @@ Git LFS. Start from the confirmed 70 × 50 mm carrier outline; distinguish publi
 dimensions from measurements and leave unknown component placements unresolved.
 Native document properties are authoritative after initial creation so human edits
 survive subsequent agent sessions. The older full-robot CAD remains a reference.
+
+## D6. Preserve assembly data for interactive student instructions (2026-09-24)
+
+**Decision:** Instructor wants these as-built models and construction details to
+support future animations and rotatable, stepwise student instructions. Record
+the necessary information during co-design; defer animation/viewer implementation.
+
+Maintain stable semantic part/step IDs, exact native CAD bindings, coordinate
+frames and units, measured-versus-assumed dimensions, source evidence, ordered
+before/after states, and suggested inspection views. Preserve removable and
+consumed intermediates conceptually: plastic spacers, uncut pins, offcuts, tape
+layers and solder additions. Explicitly identify intermediate geometry not yet
+modeled. Do not flatten the assembly or imply the final model alone reproduces
+its construction history.
+
+**Initial records:** `assets/cad/instructions/README.md`,
+`converter-installation.json`, and `converter-cad-snapshot.json` in that directory.
+The snapshot is observational; native CAD remains authoritative as in D5. Preserve
+the distinction between the versioned carrier and the local, ignored converter
+comparison with unresolved upstream redistribution permission. This decision
+does not change the simulator manifest, calibration or current course viewer.

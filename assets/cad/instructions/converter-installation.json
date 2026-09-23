@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "id": "sesame-s3.converter-installation",
+  "recorded_on": "2026-09-24",
+  "status": "recording_only_animation_deferred",
+  "scope": "Physical converter installation; not electrical setup or complete robot instructions",
+  "cad_snapshot": "converter-cad-snapshot.json",
+  "units": {"length": "mm", "rotation": "quaternion_xyzw"},
+  "frames": {
+    "carrier": "Right-handed; X along 70 mm edge, Y along 50 mm edge, +Z toward component side; underside Z=0 in present CAD. A1 bottom-right, X18 top-left in top view.",
+    "converter": "Pinned STEP datum: IN+ (0,0,0), IN- (0,-17.78,0), OUT+ (40.64,0,0), OUT- (40.64,-17.78,0); Z=0 nominal PCB underside.",
+    "assembly_transform": "Resolve CandidateModule native placement from snapshot; do not infer coordinates from legacy carrier object names."
+  },
+  "evidence": {
+    "instructor_construction": {"kind": "instructor_report", "date": "2026-09-24", "record": "../../../reference/ELECTRONICS-CAD-SOURCES.md#installed-converter-pins-and-underside-solder-2026-09-24"},
+    "instructor_dimensions": {"kind": "physical_estimates", "date": "2026-09-24", "note": "0.5 mm installed insulated separation; capacitor top 11.5 mm from converter underside; roughly 1 mm screw protrusion; underside solder typically 1 mm, not a maximum."},
+    "album": {"kind": "photo_observations", "url": "https://photos.app.goo.gl/ekx75uje2vnPG2wUA", "numbering": "Downloaded 25-image sequence reviewed on 2026-09-23; local photo-03.jpg etc., not durable Google Photos image IDs.", "local_cache": "External temporary s3-component-research directory; photos not bundled in repository.", "images": {"03": "Plastic spacer removal and bare pins", "04": "Central underside tape with corner pads exposed", "05": "Converter seated on carrier; top solder", "06": "Underside pin clipping", "07": "Four finished underside solder mounds"}},
+    "cad_candidate": {"kind": "reference_geometry", "repository": "yet-another-average-joe/KiCad-Chinese_Modules", "revision": "82e7b5806c70ca289d5c9fb9ed6e5a2209b806d2", "archive_sha256": "d8a7836b10bd3a2ca68ff85d6a6060c038f0c991fc9c01d57ccc444d6c3428ee", "redistribution_status": "license_not_located_local_comparison_only"}
+  },
+  "photo_sha256": {
+    "03": "5e2ace0fb3d76014f68112c2135af53472a0fc198d0fb8a789b7fd78a7a45fa6",
+    "04": "e50120b32ec42e040776fd7ccdfee4fb9720656211d93c89c7399be5c28404f8",
+    "05": "49d9b1b11b6e8fb556c99f426f607e7d72d589b4c04e69f3e024bed8d065758a",
+    "06": "2ebed8d491eb1419fa47758c026b27f21bb8ce53dc07c9fddbe73c6bda78c65d",
+    "07": "65c998368f4836653f6cdd7fc5dd6fe9436dfcc66ada6c017d895761e03be564"
+  },
+  "parts": {
+    "carrier": {"asin": "B071JYD6QP", "geometry": "native_versioned"},
+    "converter": {"asin": "B07NVSVW1N", "geometry": "local_adapted_reference"},
+    "pins": {"quantity": 4, "geometry": "finished_native_boxes", "purchase_identity": null},
+    "spacers": {"quantity": 4, "geometry": "not_modeled", "final_state": "removed"},
+    "tape": {"layers": 3, "geometry": "combined_envelope_only", "individual_thickness_mm": null},
+    "top_solder": {"quantity": 4, "geometry": "illustrative_native_cones"},
+    "converter_hole_fill": {"quantity": 4, "geometry": "native_cylinder_minus_pin"},
+    "carrier_hole_fill": {"quantity": 4, "geometry": "native_cylinder_minus_pin"},
+    "bottom_solder": {"quantity": 4, "geometry": "illustrative_native_cones", "typical_projection_mm": 1, "maximum_projection_mm": null},
+    "offcuts": {"quantity": 4, "geometry": "not_modeled"}
+  },
+  "connections": [
+    {"id": "converter.in_positive", "terminal": "IN+", "carrier_address": "O17", "converter_xy_mm": [0, 0]},
+    {"id": "converter.in_negative", "terminal": "IN-", "carrier_address": "V17", "converter_xy_mm": [0, -17.78]},
+    {"id": "converter.out_positive", "terminal": "OUT+", "carrier_address": "O1", "converter_xy_mm": [40.64, 0]},
+    {"id": "converter.out_negative", "terminal": "OUT-", "carrier_address": "V1", "converter_xy_mm": [40.64, -17.78]}
+  ],
+  "initial_state": {
+    "pins": "loose_uncut", "top_solder": "absent", "converter_hole_fill": "absent",
+    "spacers": "on_pins", "tape": "unapplied", "converter": "separate",
+    "offcuts": "absent", "carrier_hole_fill": "absent", "bottom_solder": "absent"
+  },
+  "step_semantics": "Apply after state deltas in dependency order to initial_state. before contains required state values. Starting states must be reconstructed for arbitrary step navigation; these events are not an executable motion system.",
+  "steps": [
+    {"id": "insert_short_ends", "depends_on": [], "instruction": "Insert the four short pin ends from beneath the converter until their black plastic spacers sit against its underside.", "operation": "insert", "targets": ["converter", "pins", "spacers"], "before": {"pins": "loose_uncut", "spacers": "on_pins"}, "after": {"pins": "short_ends_inserted_uncut", "spacers": "against_converter_underside"}, "evidence": ["instructor_construction"], "inspection": "Converter underside and side; highlight all four corner terminals.", "motion": {"frame": "converter", "direction": [0, 0, 1], "distance_mm": null}},
+    {"id": "solder_converter", "depends_on": ["insert_short_ends"], "instruction": "Solder each short pin end on the converter's top face.", "operation": "add_solder", "targets": ["pins", "top_solder", "converter_hole_fill"], "before": {"pins": "short_ends_inserted_uncut", "top_solder": "absent", "converter_hole_fill": "absent"}, "after": {"pins": "fixed_to_converter_uncut", "top_solder": "present", "converter_hole_fill": "present"}, "evidence": ["instructor_construction", "album"], "photos": ["05"], "inspection": "Top-side close-up; reveal solder only at this step."},
+    {"id": "remove_spacers", "depends_on": ["solder_converter"], "instruction": "Remove the four black plastic spacers with pliers, leaving the soldered metal pins in place.", "operation": "remove", "targets": ["spacers", "pins"], "before": {"pins": "fixed_to_converter_uncut", "spacers": "against_converter_underside"}, "after": {"spacers": "removed"}, "evidence": ["instructor_construction", "album"], "photos": ["03"], "inspection": "Underside/side; distinguish removable plastic from retained metal.", "motion": {"trajectory": null}},
+    {"id": "tape_layer_1", "depends_on": ["remove_spacers"], "instruction": "Apply the first insulating tape layer under the converter, keeping the corner terminal pads exposed.", "operation": "apply_insulation", "targets": ["tape", "converter"], "before": {"spacers": "removed", "tape": "unapplied"}, "after": {"tape": "one_layer"}, "evidence": ["instructor_construction", "album"], "photos": ["04"], "inspection": "Underside; layer footprint remains to be authored."},
+    {"id": "tape_layer_2", "depends_on": ["tape_layer_1"], "instruction": "Add the second layer of insulating tape.", "operation": "apply_insulation", "targets": ["tape"], "before": {"tape": "one_layer"}, "after": {"tape": "two_layers"}, "evidence": ["instructor_construction"], "inspection": "Underside; exact overlap is unmeasured."},
+    {"id": "tape_layer_3", "depends_on": ["tape_layer_2"], "instruction": "Add the third layer, keeping the four terminal pads exposed.", "operation": "apply_insulation", "targets": ["tape"], "before": {"tape": "two_layers"}, "after": {"tape": "three_layers"}, "evidence": ["instructor_construction", "album"], "photos": ["04"], "inspection": "Underside and edge; do not imply measured individual layer thickness."},
+    {"id": "seat_converter", "depends_on": ["tape_layer_3"], "instruction": "Insert the long pin ends into the carrier: OUT− V1, OUT+ O1, IN− V17, IN+ O17. Seat the insulated converter approximately 0.5 mm above the carrier top.", "operation": "insert", "targets": ["converter", "pins", "carrier", "tape"], "before": {"converter": "separate", "pins": "fixed_to_converter_uncut", "tape": "three_layers"}, "after": {"converter": "seated", "pins": "through_carrier_uncut"}, "evidence": ["instructor_construction", "instructor_dimensions", "album"], "photos": ["05"], "inspection": "Top to confirm addresses, then side to inspect the insulated separation.", "motion": {"frame": "carrier", "direction": [0, 0, -1], "distance_mm": null}},
+    {"id": "clip_pins", "depends_on": ["seat_converter"], "instruction": "Clip all four pin ends flush with the carrier underside.", "operation": "replace_geometry", "targets": ["pins", "offcuts"], "before": {"pins": "through_carrier_uncut", "offcuts": "absent"}, "after": {"pins": "clipped_flush", "offcuts": "removed"}, "evidence": ["instructor_construction", "album"], "photos": ["06"], "inspection": "Underside close-up; show clipping as a shape change, not shortened-pin translation."},
+    {"id": "solder_carrier", "depends_on": ["clip_pins"], "instruction": "Solder the four carrier connections, filling the holes around the clipped pins.", "operation": "add_solder", "targets": ["carrier_hole_fill", "bottom_solder", "pins"], "before": {"pins": "clipped_flush", "carrier_hole_fill": "absent", "bottom_solder": "absent"}, "after": {"carrier_hole_fill": "present", "bottom_solder": "present"}, "evidence": ["instructor_construction", "instructor_dimensions", "album"], "photos": ["07"], "inspection": "Underside and side: metal ends flush, solder mounds typically about 1 mm below the carrier."}
+  ],
+  "future_presentation": {"free_orbit": true, "step_scrubbing": true, "part_highlighting": true, "durations_seconds": null, "camera_keyframes": null, "implementation_status": "not_started"},
+  "missing_intermediate_assets": ["uncut_pin_lengths", "plastic_spacer_geometry", "pin_offcuts", "individual_tape_layers", "optional_tool_models"],
+  "authoring_rule": "Preserve measured/report/photo/assumption status. Keep native CAD authoritative. Never present unknown intermediate geometry or illustrative solder profiles as measured facts."
+}

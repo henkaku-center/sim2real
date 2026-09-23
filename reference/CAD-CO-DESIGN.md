@@ -5,6 +5,13 @@ not an instructor-approved replacement of the existing simulation asset pipeline
 
 ## Recommendation
 
+**2026-09-24 follow-up:** preserve stepwise assembly information for future animated,
+freely rotatable APS-II student instructions. This is a data-recording decision;
+viewer/animation implementation is deferred. The [authoring records](../assets/cad/instructions/README.md)
+retain ordered actions, semantic identities, native bindings, before/after states,
+evidence and missing intermediate geometry. Keep these distinct from finished-part
+geometry and update snapshots after saving native edits.
+
 Use **FreeCAD as the main interactive mechanical design environment**, with its
 Python API/macros for agent-driven operations on the same document. Add an MCP
 bridge when live document inspection and GUI feedback are needed. Start with the

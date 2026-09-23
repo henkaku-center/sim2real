@@ -5,6 +5,16 @@
 
 **Priorities (confirmed):** macOS + Linux compatibility for students, AI-agent-friendly toolchains, fast iteration, and CV-legible industry frameworks. A pure web-based stack is a long-term stretch achievement, not a milestone — it must never block educational outcomes or displace well-known sim2real tooling from student CVs.
 
+## Recorded follow-up: interactive build instructions (2026-09-24)
+
+Instructor-requested future work: stepwise assembly animations that students can
+pause, rotate and inspect from different angles. **Implementation deferred.**
+Capture ordered construction operations and semantic/native part bindings during
+current CAD co-design; retain intermediate-state gaps and measurement evidence.
+The converter pilot record is in [assets/cad/instructions/](assets/cad/instructions/README.md).
+See decision D6. This is a later presentation layer over the as-built records,
+not a new prerequisite for circuitry validation or enclosure redesign.
+
 ## Executive assessment
 
 The realistic goal is to own the **robot definition, data, safety contract, task API, evaluation tests, browser experience, and backend adapters** while building on replaceable open-source engines. That gives APS-II meaningful control and portability without spending the course writing collision detection, GPU kernels, renderers, and training infrastructure.

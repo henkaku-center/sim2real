@@ -4,6 +4,15 @@ Downloaded and inspected **2026-09-23**. See
 [CAD workflow recommendation](../../reference/CAD-CO-DESIGN.md) and
 [component/CAD source research](../../reference/ELECTRONICS-CAD-SOURCES.md).
 
+## Future interactive assembly instructions
+
+The instructor requested that our as-built work preserve the data needed for
+future animated, freely rotatable student instructions. Implementation is deferred.
+See [assembly authoring records](instructions/README.md) for the converter's ordered
+construction steps, physical state changes, evidence, missing intermediate assets,
+and a snapshot of native CAD identities/transforms/materials. Update those records
+alongside future assembly work; native CAD remains authoritative.
+
 ## Fetch / verify
 
 From the repository root, using Python 3.9 or newer (standard library only):

@@ -1,0 +1,4256 @@
+{
+  "schema_version": 1,
+  "captured_at_utc": "2026-09-23T15:48:07.933267+00:00",
+  "source": "Read-only live GUI snapshot; caller must save documents before export.",
+  "units": {
+    "length": "mm",
+    "rotation": "quaternion_xyzw"
+  },
+  "freecad_version": [
+    "1",
+    "1",
+    "3",
+    "20260725 (Git shallow)",
+    "Unknown",
+    "2026/07/25 04:52:02",
+    "grafted,grafted",
+    "145529fe741292ff0b3977a01195bf0247425794"
+  ],
+  "authority": "Native CAD is authoritative. Saved-file hashes identify disk artifacts, not a substitute for saving live edits.",
+  "documents": {
+    "carrier": {
+      "path": "assets/cad/work/Sesame-S3-circuitry.FCStd",
+      "saved_file_sha256": "7cb5bf6aed079034d21a859e4e9a94253037be515c7e199666be668435df10c0",
+      "distribution": "Git LFS"
+    },
+    "comparison": {
+      "path": "assets/cad/upstream/lm2596-yaaj/LM2596-comparison.FCStd",
+      "saved_file_sha256": "e2df1a337b0dee14902c9e1c146c9788798442ab49e27bcd296cae5ed07ee64b",
+      "distribution": "local_only_ignored_candidate"
+    }
+  },
+  "placement_note": "Transforms act on native object-local geometry. Shape data can already contain nonzero vertex coordinates; do not recenter exported meshes without updating transforms.",
+  "parameters": {
+    "BottomSolderProjection": {
+      "value_mm": 1.0,
+      "evidence": "Instructor: underside solder typically ~1 mm. Applied uniformly to these four joints; not individually measured or a maximum."
+    },
+    "BottomSolderRadius": {
+      "value_mm": 0.95,
+      "evidence": "Photo 07 shows solder covering pads; radius illustrative, not measured."
+    },
+    "CarrierBoreRadius": {
+      "value_mm": 0.5,
+      "evidence": "Existing carrier 1 mm bore model."
+    },
+    "CarrierThickness": {
+      "value_mm": 1.6,
+      "evidence": "Existing carrier thickness from purchased listing."
+    },
+    "ConverterBoreRadius": {
+      "value_mm": 0.499,
+      "evidence": "Imported terminal hole radius from geometry audit."
+    },
+    "ConverterThickness": {
+      "value_mm": 1.6,
+      "evidence": "Candidate CAD nominal thickness; not measured."
+    },
+    "InsulatedSeparation": {
+      "value_mm": 0.5,
+      "evidence": ""
+    },
+    "PinTopProjection": {
+      "value_mm": 0.3,
+      "evidence": "Illustrative short end within top solder mound; not measured."
+    },
+    "PinWidth": {
+      "value_mm": 0.64,
+      "evidence": "Illustrative square width; not physically measured."
+    },
+    "TopSolderHeight": {
+      "value_mm": 0.4,
+      "evidence": "Illustrative solder fillet height; not measured."
+    },
+    "TopSolderRadius": {
+      "value_mm": 0.9,
+      "evidence": "Illustrative solder fillet radius; not measured."
+    }
+  },
+  "objects": [
+    {
+      "id": "carrier",
+      "document": "carrier",
+      "native_object": "PerforatedCarrier",
+      "label": "Carrier — 432 signal + 4 provisional mounting holes",
+      "type": "Part::Cut",
+      "cad_dependents": [
+        "Circuitry"
+      ],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Flat Lines",
+        "LineWidth": 2.0,
+        "LineColor": [
+          0.09803921729326248,
+          0.09803921729326248,
+          0.09803921729326248,
+          1.0
+        ],
+        "materials": [
+          {
+            "DiffuseColor": [
+              0.0784313753247261,
+              0.41960784792900085,
+              0.239215686917305,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          }
+        ],
+        "material_assignment": "uniform"
+      },
+      "local_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "parent_coordinate_group": "Circuitry",
+      "solid_count": 1,
+      "expressions": []
+    },
+    {
+      "id": "carrier.display",
+      "document": "comparison",
+      "native_object": "PerfboardReference",
+      "label": "Perfboard — copied reference in assembly-local coordinates",
+      "type": "Part::Feature",
+      "cad_dependents": [],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Flat Lines",
+        "LineWidth": 2.0,
+        "LineColor": [
+          0.09803921729326248,
+          0.09803921729326248,
+          0.09803921729326248,
+          1.0
+        ],
+        "materials": [
+          {
+            "DiffuseColor": [
+              0.0784313753247261,
+              0.41960784792900085,
+              0.239215686917305,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          }
+        ],
+        "material_assignment": "uniform"
+      },
+      "local_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "parent_coordinate_group": null,
+      "solid_count": 1,
+      "expressions": []
+    },
+    {
+      "id": "carrier.rings",
+      "document": "comparison",
+      "native_object": "CarrierRings",
+      "label": "CarrierRings — 864 copied features",
+      "type": "Part::Feature",
+      "cad_dependents": [],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Flat Lines",
+        "LineWidth": 2.0,
+        "LineColor": [
+          0.4000000059604645,
+          0.41960784792900085,
+          0.43921568989753723,
+          1.0
+        ],
+        "materials": [
+          {
+            "DiffuseColor": [
+              0.7803921699523926,
+              0.800000011920929,
+              0.8196078538894653,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          }
+        ],
+        "material_assignment": "uniform"
+      },
+      "local_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "parent_coordinate_group": null,
+      "solid_count": 864,
+      "expressions": []
+    },
+    {
+      "id": "carrier.capsules",
+      "document": "comparison",
+      "native_object": "CarrierCapsules",
+      "label": "CarrierCapsules — 64 copied features",
+      "type": "Part::Feature",
+      "cad_dependents": [],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Flat Lines",
+        "LineWidth": 2.0,
+        "LineColor": [
+          0.4000000059604645,
+          0.41960784792900085,
+          0.43921568989753723,
+          1.0
+        ],
+        "materials": [
+          {
+            "DiffuseColor": [
+              0.7803921699523926,
+              0.800000011920929,
+              0.8196078538894653,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          }
+        ],
+        "material_assignment": "uniform"
+      },
+      "local_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "parent_coordinate_group": null,
+      "solid_count": 64,
+      "expressions": []
+    },
+    {
+      "id": "carrier.lettering",
+      "document": "comparison",
+      "native_object": "CarrierLettering",
+      "label": "CarrierLettering — 42 copied features",
+      "type": "Part::Feature",
+      "cad_dependents": [],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Wireframe",
+        "LineWidth": 1.0,
+        "LineColor": [
+          0.6499999761581421,
+          0.8500000238418579,
+          0.550000011920929,
+          1.0
+        ],
+        "materials": [
+          {
+            "DiffuseColor": [
+              0.6509804129600525,
+              0.8509804010391235,
+              0.5490196347236633,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          }
+        ],
+        "material_assignment": "uniform"
+      },
+      "local_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "parent_coordinate_group": null,
+      "solid_count": 0,
+      "expressions": []
+    },
+    {
+      "id": "converter",
+      "document": "comparison",
+      "native_object": "CandidateModule",
+      "label": "YAAJ reference — exact pin spacing; different capacitors?",
+      "type": "App::Part",
+      "cad_dependents": [],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Group"
+      },
+      "local_pose": {
+        "translation_mm": [
+          28.65,
+          44.050000000000004,
+          2.1
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.7071067811865476,
+          -0.7071067811865475
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          28.65,
+          44.050000000000004,
+          2.1
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.7071067811865476,
+          -0.7071067811865475
+        ]
+      },
+      "parent_coordinate_group": null,
+      "members": [
+        "YAAJ_DCDC_StepDown_LM2596_cp",
+        "InsulationEnvelope",
+        "ConverterPins",
+        "ConverterPin_O17",
+        "ConverterHoleSolder_O17Blank",
+        "ConverterHoleSolder_O17",
+        "CarrierHoleSolder_O17Blank",
+        "CarrierHoleSolder_O17",
+        "BottomSolder_O17",
+        "TopSolderBlank_O17",
+        "TopSolder_O17",
+        "ConverterPin_V17",
+        "ConverterHoleSolder_V17Blank",
+        "ConverterHoleSolder_V17",
+        "CarrierHoleSolder_V17Blank",
+        "CarrierHoleSolder_V17",
+        "BottomSolder_V17",
+        "TopSolderBlank_V17",
+        "TopSolder_V17",
+        "ConverterPin_O1",
+        "ConverterHoleSolder_O1Blank",
+        "ConverterHoleSolder_O1",
+        "CarrierHoleSolder_O1Blank",
+        "CarrierHoleSolder_O1",
+        "BottomSolder_O1",
+        "TopSolderBlank_O1",
+        "TopSolder_O1",
+        "ConverterPin_V1",
+        "ConverterHoleSolder_V1Blank",
+        "ConverterHoleSolder_V1",
+        "CarrierHoleSolder_V1Blank",
+        "CarrierHoleSolder_V1",
+        "BottomSolder_V1",
+        "TopSolderBlank_V1",
+        "TopSolder_V1"
+      ],
+      "expressions": [
+        [
+          ".Placement.Base.z",
+          "1.6 mm + Installation.InsulatedSeparation"
+        ]
+      ]
+    },
+    {
+      "id": "converter.reference_group",
+      "document": "comparison",
+      "native_object": "YAAJ_DCDC_StepDown_LM2596_cp",
+      "label": "YAAJ_DCDC_StepDown_LM2596_cp080",
+      "type": "App::Part",
+      "cad_dependents": [
+        "CandidateModule"
+      ],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Group"
+      },
+      "local_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          28.65,
+          44.050000000000004,
+          2.1
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.7071067811865476,
+          -0.7071067811865475
+        ]
+      },
+      "parent_coordinate_group": "CandidateModule",
+      "members": [
+        "Part__Feature",
+        "Part__Feature001",
+        "Part__Feature002",
+        "Part__Feature003",
+        "Part__Feature004",
+        "Part__Feature005",
+        "Part__Feature006",
+        "Part__Feature007",
+        "Part__Feature008",
+        "Part__Feature009",
+        "Part__Feature010",
+        "Part__Feature011",
+        "Part__Feature012",
+        "Part__Feature013",
+        "Part__Feature014",
+        "Part__Feature015",
+        "Part__Feature016",
+        "Part__Feature017",
+        "Part__Feature018",
+        "Part__Feature019",
+        "Part__Feature020",
+        "Part__Feature021",
+        "Part__Feature022",
+        "Part__Feature023",
+        "Part__Feature024",
+        "Part__Feature025",
+        "Part__Feature026",
+        "Part__Feature027",
+        "Part__Feature028",
+        "Part__Feature029",
+        "Part__Feature030",
+        "Part__Feature031",
+        "Part__Feature032",
+        "Part__Feature033",
+        "Part__Feature034",
+        "Part__Feature035",
+        "Part__Feature036",
+        "Part__Feature037",
+        "Part__Feature038",
+        "Part__Feature039",
+        "Part__Feature040",
+        "Part__Feature041",
+        "Part__Feature042",
+        "Part__Feature043",
+        "Part__Feature044",
+        "Part__Feature045",
+        "Part__Feature046",
+        "Part__Feature047",
+        "Part__Feature048",
+        "Part__Feature049",
+        "Part__Feature050",
+        "Part__Feature051",
+        "Part__Feature052",
+        "Part__Feature053",
+        "Part__Feature054",
+        "Part__Feature055",
+        "Part__Feature056",
+        "Part__Feature057",
+        "Part__Feature058",
+        "Part__Feature059",
+        "Part__Feature060",
+        "Part__Feature061",
+        "Part__Feature062",
+        "Part__Feature063",
+        "Part__Feature064",
+        "Part__Feature065",
+        "Part__Feature066",
+        "Part__Feature067",
+        "Part__Feature068",
+        "Part__Feature069",
+        "Part__Feature070",
+        "Part__Feature071",
+        "Part__Feature072",
+        "Part__Feature073",
+        "Part__Feature074",
+        "Part__Feature075",
+        "Part__Feature076",
+        "Part__Feature077",
+        "Part__Feature078",
+        "Part__Feature079",
+        "MeasuredCapacitor1",
+        "MeasuredCapacitor2",
+        "MeasuredAdjustmentScrew"
+      ],
+      "expressions": []
+    },
+    {
+      "id": "converter.pcb",
+      "document": "comparison",
+      "native_object": "Part__Feature",
+      "label": "YAAJ_DCDC_StepDown_LM2596_cp",
+      "type": "Part::Feature",
+      "cad_dependents": [
+        "YAAJ_DCDC_StepDown_LM2596_cp"
+      ],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Flat Lines",
+        "LineWidth": 2.0,
+        "LineColor": [
+          0.09803921729326248,
+          0.09803921729326248,
+          0.09803921729326248,
+          1.0
+        ],
+        "materials": [
+          {
+            "DiffuseColor": [
+              0.19607843458652496,
+              0.2980392277240753,
+              0.20392157137393951,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          },
+          {
+            "DiffuseColor": [
+              0.8980392217636108,
+              0.8980392217636108,
+              0.8980392217636108,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          },
+          {
+            "DiffuseColor": [
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          }
+        ],
+        "material_assignment": [
+          0,
+          0,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          0,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          0,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          0,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          0,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          0,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          0,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          0,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          0,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          0,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          0,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          0,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2
+        ]
+      },
+      "local_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          28.65,
+          44.050000000000004,
+          2.1
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.7071067811865476,
+          -0.7071067811865475
+        ]
+      },
+      "parent_coordinate_group": "YAAJ_DCDC_StepDown_LM2596_cp",
+      "solid_count": 1,
+      "expressions": []
+    },
+    {
+      "id": "converter.trimmer_body",
+      "document": "comparison",
+      "native_object": "Part__Feature002",
+      "label": "YAAJ_DCDC_StepDown_LM2596_cp002",
+      "type": "Part::Feature",
+      "cad_dependents": [
+        "YAAJ_DCDC_StepDown_LM2596_cp"
+      ],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Flat Lines",
+        "LineWidth": 2.0,
+        "LineColor": [
+          0.09803921729326248,
+          0.09803921729326248,
+          0.09803921729326248,
+          1.0
+        ],
+        "materials": [
+          {
+            "DiffuseColor": [
+              0.007843137718737125,
+              0.239215686917305,
+              0.8235294222831726,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          },
+          {
+            "DiffuseColor": [
+              0.003921568859368563,
+              0.23529411852359772,
+              0.8235294222831726,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          },
+          {
+            "DiffuseColor": [
+              0.8980392217636108,
+              0.8980392217636108,
+              0.8980392217636108,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          },
+          {
+            "DiffuseColor": [
+              0.0,
+              0.0,
+              0.7529411911964417,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          }
+        ],
+        "material_assignment": [
+          0,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          0,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          0,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3
+        ]
+      },
+      "local_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          28.65,
+          44.050000000000004,
+          2.1
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.7071067811865476,
+          -0.7071067811865475
+        ]
+      },
+      "parent_coordinate_group": "YAAJ_DCDC_StepDown_LM2596_cp",
+      "solid_count": 1,
+      "expressions": []
+    },
+    {
+      "id": "converter.adjustment_screw",
+      "document": "comparison",
+      "native_object": "MeasuredAdjustmentScrew",
+      "label": "Gold adjustment screw — 1 mm protrusion",
+      "type": "Part::Feature",
+      "cad_dependents": [
+        "YAAJ_DCDC_StepDown_LM2596_cp"
+      ],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Flat Lines",
+        "LineWidth": 2.0,
+        "LineColor": [
+          0.4000000059604645,
+          0.28999999165534973,
+          0.07000000029802322,
+          1.0
+        ],
+        "materials": [
+          {
+            "DiffuseColor": [
+              0.8299999833106995,
+              0.6399999856948853,
+              0.1899999976158142,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.949999988079071,
+              0.8199999928474426,
+              0.44999998807907104,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.800000011920929,
+            "Transparency": 0.0
+          }
+        ],
+        "material_assignment": "uniform"
+      },
+      "local_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          -0.5199999999999996
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          28.65,
+          44.050000000000004,
+          1.5800000000000005
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.7071067811865476,
+          -0.7071067811865475
+        ]
+      },
+      "parent_coordinate_group": "YAAJ_DCDC_StepDown_LM2596_cp",
+      "solid_count": 1,
+      "expressions": []
+    },
+    {
+      "id": "converter.capacitor_1",
+      "document": "comparison",
+      "native_object": "MeasuredCapacitor1",
+      "label": "Capacitor 1 — top 11.5 mm from PCB underside",
+      "type": "Part::Feature",
+      "cad_dependents": [
+        "YAAJ_DCDC_StepDown_LM2596_cp"
+      ],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Flat Lines",
+        "LineWidth": 2.0,
+        "LineColor": [
+          0.09803921729326248,
+          0.09803921729326248,
+          0.09803921729326248,
+          1.0
+        ],
+        "materials": [
+          {
+            "DiffuseColor": [
+              0.6666666865348816,
+              0.6980392336845398,
+              0.7686274647712708,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          },
+          {
+            "DiffuseColor": [
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          },
+          {
+            "DiffuseColor": [
+              0.10196078568696976,
+              0.10196078568696976,
+              0.10196078568696976,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          },
+          {
+            "DiffuseColor": [
+              0.6666666865348816,
+              0.6666666865348816,
+              0.6666666865348816,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          }
+        ],
+        "material_assignment": [
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          2,
+          0,
+          2,
+          1,
+          1,
+          0,
+          1,
+          1,
+          1,
+          2,
+          1,
+          2,
+          1,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          3,
+          3,
+          0,
+          0
+        ]
+      },
+      "local_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          28.65,
+          44.050000000000004,
+          2.1
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.7071067811865476,
+          -0.7071067811865475
+        ]
+      },
+      "parent_coordinate_group": "YAAJ_DCDC_StepDown_LM2596_cp",
+      "solid_count": 1,
+      "expressions": []
+    },
+    {
+      "id": "converter.capacitor_2",
+      "document": "comparison",
+      "native_object": "MeasuredCapacitor2",
+      "label": "Capacitor 2 — top 11.5 mm from PCB underside",
+      "type": "Part::Feature",
+      "cad_dependents": [
+        "YAAJ_DCDC_StepDown_LM2596_cp"
+      ],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Flat Lines",
+        "LineWidth": 2.0,
+        "LineColor": [
+          0.09803921729326248,
+          0.09803921729326248,
+          0.09803921729326248,
+          1.0
+        ],
+        "materials": [
+          {
+            "DiffuseColor": [
+              0.6666666865348816,
+              0.6980392336845398,
+              0.7686274647712708,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          },
+          {
+            "DiffuseColor": [
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          },
+          {
+            "DiffuseColor": [
+              0.10196078568696976,
+              0.10196078568696976,
+              0.10196078568696976,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          },
+          {
+            "DiffuseColor": [
+              0.6666666865348816,
+              0.6666666865348816,
+              0.6666666865348816,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          }
+        ],
+        "material_assignment": [
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          2,
+          0,
+          2,
+          1,
+          1,
+          0,
+          1,
+          1,
+          1,
+          2,
+          1,
+          2,
+          1,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          3,
+          3,
+          0,
+          0
+        ]
+      },
+      "local_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          28.65,
+          44.050000000000004,
+          2.1
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.7071067811865476,
+          -0.7071067811865475
+        ]
+      },
+      "parent_coordinate_group": "YAAJ_DCDC_StepDown_LM2596_cp",
+      "solid_count": 1,
+      "expressions": []
+    },
+    {
+      "id": "tape",
+      "document": "comparison",
+      "native_object": "InsulationEnvelope",
+      "label": "3 tape layers — central patch; corner terminals exposed",
+      "type": "Part::Box",
+      "cad_dependents": [
+        "CandidateModule"
+      ],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Flat Lines",
+        "LineWidth": 2.0,
+        "LineColor": [
+          0.09803921729326248,
+          0.09803921729326248,
+          0.09803921729326248,
+          1.0
+        ],
+        "materials": [
+          {
+            "DiffuseColor": [
+              0.07999999821186066,
+              0.07999999821186066,
+              0.07999999821186066,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          }
+        ],
+        "material_assignment": "uniform"
+      },
+      "local_pose": {
+        "translation_mm": [
+          1.52,
+          -19.04,
+          -0.5
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          9.61,
+          42.53000000000001,
+          1.6
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.7071067811865476,
+          -0.7071067811865475
+        ]
+      },
+      "parent_coordinate_group": "CandidateModule",
+      "solid_count": 1,
+      "expressions": [
+        [
+          ".Placement.Base.z",
+          "-Installation.InsulatedSeparation"
+        ],
+        [
+          "Height",
+          "Installation.InsulatedSeparation"
+        ]
+      ]
+    },
+    {
+      "id": "pins",
+      "document": "comparison",
+      "native_object": "ConverterPins",
+      "label": "4 clipped square pins — plastic removed; solder illustrative",
+      "type": "App::DocumentObjectGroup",
+      "cad_dependents": [
+        "CandidateModule"
+      ],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": ""
+      },
+      "parent_coordinate_group": "CandidateModule",
+      "members": [
+        "ConverterPin_O17",
+        "ConverterHoleSolder_O17Blank",
+        "ConverterHoleSolder_O17",
+        "CarrierHoleSolder_O17Blank",
+        "CarrierHoleSolder_O17",
+        "BottomSolder_O17",
+        "TopSolderBlank_O17",
+        "TopSolder_O17",
+        "ConverterPin_V17",
+        "ConverterHoleSolder_V17Blank",
+        "ConverterHoleSolder_V17",
+        "CarrierHoleSolder_V17Blank",
+        "CarrierHoleSolder_V17",
+        "BottomSolder_V17",
+        "TopSolderBlank_V17",
+        "TopSolder_V17",
+        "ConverterPin_O1",
+        "ConverterHoleSolder_O1Blank",
+        "ConverterHoleSolder_O1",
+        "CarrierHoleSolder_O1Blank",
+        "CarrierHoleSolder_O1",
+        "BottomSolder_O1",
+        "TopSolderBlank_O1",
+        "TopSolder_O1",
+        "ConverterPin_V1",
+        "ConverterHoleSolder_V1Blank",
+        "ConverterHoleSolder_V1",
+        "CarrierHoleSolder_V1Blank",
+        "CarrierHoleSolder_V1",
+        "BottomSolder_V1",
+        "TopSolderBlank_V1",
+        "TopSolder_V1"
+      ],
+      "solid_count": 20,
+      "expressions": []
+    },
+    {
+      "id": "pins.O17",
+      "document": "comparison",
+      "native_object": "ConverterPin_O17",
+      "label": "IN+ → O17 — square pin, clipped flush",
+      "type": "Part::Box",
+      "cad_dependents": [
+        "ConverterHoleSolder_O17",
+        "CarrierHoleSolder_O17",
+        "TopSolder_O17",
+        "CandidateModule",
+        "ConverterPins"
+      ],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Flat Lines",
+        "LineWidth": 2.0,
+        "LineColor": [
+          0.09803921729326248,
+          0.09803921729326248,
+          0.09803921729326248,
+          1.0
+        ],
+        "materials": [
+          {
+            "DiffuseColor": [
+              0.7599999904632568,
+              0.7699999809265137,
+              0.7900000214576721,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          }
+        ],
+        "material_assignment": "uniform"
+      },
+      "local_pose": {
+        "translation_mm": [
+          -0.32,
+          -0.32,
+          -2.1
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          28.33,
+          44.370000000000005,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.7071067811865476,
+          -0.7071067811865475
+        ]
+      },
+      "parent_coordinate_group": "CandidateModule",
+      "solid_count": 1,
+      "expressions": [
+        [
+          ".Placement.Base.x",
+          "0 mm - Installation.PinWidth / 2"
+        ],
+        [
+          ".Placement.Base.y",
+          "0 mm - Installation.PinWidth / 2"
+        ],
+        [
+          ".Placement.Base.z",
+          "-Installation.CarrierThickness - Installation.InsulatedSeparation"
+        ],
+        [
+          "Height",
+          "Installation.CarrierThickness + Installation.InsulatedSeparation + Installation.ConverterThickness + Installation.PinTopProjection"
+        ],
+        [
+          "Length",
+          "Installation.PinWidth"
+        ],
+        [
+          "Width",
+          "Installation.PinWidth"
+        ]
+      ]
+    },
+    {
+      "id": "top_solder.O17",
+      "document": "comparison",
+      "native_object": "TopSolder_O17",
+      "label": "TopSolder_O17",
+      "type": "Part::Cut",
+      "cad_dependents": [
+        "CandidateModule",
+        "ConverterPins"
+      ],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Flat Lines",
+        "LineWidth": 2.0,
+        "LineColor": [
+          0.09803921729326248,
+          0.09803921729326248,
+          0.09803921729326248,
+          1.0
+        ],
+        "materials": [
+          {
+            "DiffuseColor": [
+              0.699999988079071,
+              0.7200000286102295,
+              0.7400000095367432,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          }
+        ],
+        "material_assignment": "uniform"
+      },
+      "local_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          28.65,
+          44.050000000000004,
+          2.1
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.7071067811865476,
+          -0.7071067811865475
+        ]
+      },
+      "parent_coordinate_group": "CandidateModule",
+      "solid_count": 1,
+      "expressions": []
+    },
+    {
+      "id": "converter_hole_fill.O17",
+      "document": "comparison",
+      "native_object": "ConverterHoleSolder_O17",
+      "label": "ConverterHoleSolder_O17",
+      "type": "Part::Cut",
+      "cad_dependents": [
+        "CandidateModule",
+        "ConverterPins"
+      ],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Flat Lines",
+        "LineWidth": 2.0,
+        "LineColor": [
+          0.09803921729326248,
+          0.09803921729326248,
+          0.09803921729326248,
+          1.0
+        ],
+        "materials": [
+          {
+            "DiffuseColor": [
+              0.699999988079071,
+              0.7200000286102295,
+              0.7400000095367432,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          }
+        ],
+        "material_assignment": "uniform"
+      },
+      "local_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          28.65,
+          44.050000000000004,
+          2.1
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.7071067811865476,
+          -0.7071067811865475
+        ]
+      },
+      "parent_coordinate_group": "CandidateModule",
+      "solid_count": 1,
+      "expressions": []
+    },
+    {
+      "id": "carrier_hole_fill.O17",
+      "document": "comparison",
+      "native_object": "CarrierHoleSolder_O17",
+      "label": "CarrierHoleSolder_O17",
+      "type": "Part::Cut",
+      "cad_dependents": [
+        "CandidateModule",
+        "ConverterPins"
+      ],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Flat Lines",
+        "LineWidth": 2.0,
+        "LineColor": [
+          0.09803921729326248,
+          0.09803921729326248,
+          0.09803921729326248,
+          1.0
+        ],
+        "materials": [
+          {
+            "DiffuseColor": [
+              0.699999988079071,
+              0.7200000286102295,
+              0.7400000095367432,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          }
+        ],
+        "material_assignment": "uniform"
+      },
+      "local_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          28.65,
+          44.050000000000004,
+          2.1
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.7071067811865476,
+          -0.7071067811865475
+        ]
+      },
+      "parent_coordinate_group": "CandidateModule",
+      "solid_count": 1,
+      "expressions": []
+    },
+    {
+      "id": "bottom_solder.O17",
+      "document": "comparison",
+      "native_object": "BottomSolder_O17",
+      "label": "O17 underside solder mound — photo-observed; size assumed",
+      "type": "Part::Cone",
+      "cad_dependents": [
+        "CandidateModule",
+        "ConverterPins"
+      ],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Flat Lines",
+        "LineWidth": 2.0,
+        "LineColor": [
+          0.09803921729326248,
+          0.09803921729326248,
+          0.09803921729326248,
+          1.0
+        ],
+        "materials": [
+          {
+            "DiffuseColor": [
+              0.699999988079071,
+              0.7200000286102295,
+              0.7400000095367432,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          }
+        ],
+        "material_assignment": "uniform"
+      },
+      "local_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          -3.1
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          28.65,
+          44.050000000000004,
+          -1.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.7071067811865476,
+          -0.7071067811865475
+        ]
+      },
+      "parent_coordinate_group": "CandidateModule",
+      "solid_count": 1,
+      "expressions": [
+        [
+          ".Placement.Base.z",
+          "-Installation.CarrierThickness - Installation.InsulatedSeparation - Installation.BottomSolderProjection"
+        ],
+        [
+          "Height",
+          "Installation.BottomSolderProjection"
+        ],
+        [
+          "Radius1",
+          "Installation.BottomSolderRadius * 0.5"
+        ],
+        [
+          "Radius2",
+          "Installation.BottomSolderRadius"
+        ]
+      ]
+    },
+    {
+      "id": "pins.V17",
+      "document": "comparison",
+      "native_object": "ConverterPin_V17",
+      "label": "IN- → V17 — square pin, clipped flush",
+      "type": "Part::Box",
+      "cad_dependents": [
+        "ConverterHoleSolder_V17",
+        "CarrierHoleSolder_V17",
+        "TopSolder_V17",
+        "CandidateModule",
+        "ConverterPins"
+      ],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Flat Lines",
+        "LineWidth": 2.0,
+        "LineColor": [
+          0.09803921729326248,
+          0.09803921729326248,
+          0.09803921729326248,
+          1.0
+        ],
+        "materials": [
+          {
+            "DiffuseColor": [
+              0.7599999904632568,
+              0.7699999809265137,
+              0.7900000214576721,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          }
+        ],
+        "material_assignment": "uniform"
+      },
+      "local_pose": {
+        "translation_mm": [
+          -0.32,
+          -18.1,
+          -2.1
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          10.549999999999997,
+          44.37000000000001,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.7071067811865476,
+          -0.7071067811865475
+        ]
+      },
+      "parent_coordinate_group": "CandidateModule",
+      "solid_count": 1,
+      "expressions": [
+        [
+          ".Placement.Base.x",
+          "0 mm - Installation.PinWidth / 2"
+        ],
+        [
+          ".Placement.Base.y",
+          "-17.78 mm - Installation.PinWidth / 2"
+        ],
+        [
+          ".Placement.Base.z",
+          "-Installation.CarrierThickness - Installation.InsulatedSeparation"
+        ],
+        [
+          "Height",
+          "Installation.CarrierThickness + Installation.InsulatedSeparation + Installation.ConverterThickness + Installation.PinTopProjection"
+        ],
+        [
+          "Length",
+          "Installation.PinWidth"
+        ],
+        [
+          "Width",
+          "Installation.PinWidth"
+        ]
+      ]
+    },
+    {
+      "id": "top_solder.V17",
+      "document": "comparison",
+      "native_object": "TopSolder_V17",
+      "label": "TopSolder_V17",
+      "type": "Part::Cut",
+      "cad_dependents": [
+        "CandidateModule",
+        "ConverterPins"
+      ],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Flat Lines",
+        "LineWidth": 2.0,
+        "LineColor": [
+          0.09803921729326248,
+          0.09803921729326248,
+          0.09803921729326248,
+          1.0
+        ],
+        "materials": [
+          {
+            "DiffuseColor": [
+              0.699999988079071,
+              0.7200000286102295,
+              0.7400000095367432,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          }
+        ],
+        "material_assignment": "uniform"
+      },
+      "local_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          28.65,
+          44.050000000000004,
+          2.1
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.7071067811865476,
+          -0.7071067811865475
+        ]
+      },
+      "parent_coordinate_group": "CandidateModule",
+      "solid_count": 1,
+      "expressions": []
+    },
+    {
+      "id": "converter_hole_fill.V17",
+      "document": "comparison",
+      "native_object": "ConverterHoleSolder_V17",
+      "label": "ConverterHoleSolder_V17",
+      "type": "Part::Cut",
+      "cad_dependents": [
+        "CandidateModule",
+        "ConverterPins"
+      ],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Flat Lines",
+        "LineWidth": 2.0,
+        "LineColor": [
+          0.09803921729326248,
+          0.09803921729326248,
+          0.09803921729326248,
+          1.0
+        ],
+        "materials": [
+          {
+            "DiffuseColor": [
+              0.699999988079071,
+              0.7200000286102295,
+              0.7400000095367432,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          }
+        ],
+        "material_assignment": "uniform"
+      },
+      "local_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          28.65,
+          44.050000000000004,
+          2.1
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.7071067811865476,
+          -0.7071067811865475
+        ]
+      },
+      "parent_coordinate_group": "CandidateModule",
+      "solid_count": 1,
+      "expressions": []
+    },
+    {
+      "id": "carrier_hole_fill.V17",
+      "document": "comparison",
+      "native_object": "CarrierHoleSolder_V17",
+      "label": "CarrierHoleSolder_V17",
+      "type": "Part::Cut",
+      "cad_dependents": [
+        "CandidateModule",
+        "ConverterPins"
+      ],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Flat Lines",
+        "LineWidth": 2.0,
+        "LineColor": [
+          0.09803921729326248,
+          0.09803921729326248,
+          0.09803921729326248,
+          1.0
+        ],
+        "materials": [
+          {
+            "DiffuseColor": [
+              0.699999988079071,
+              0.7200000286102295,
+              0.7400000095367432,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          }
+        ],
+        "material_assignment": "uniform"
+      },
+      "local_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          28.65,
+          44.050000000000004,
+          2.1
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.7071067811865476,
+          -0.7071067811865475
+        ]
+      },
+      "parent_coordinate_group": "CandidateModule",
+      "solid_count": 1,
+      "expressions": []
+    },
+    {
+      "id": "bottom_solder.V17",
+      "document": "comparison",
+      "native_object": "BottomSolder_V17",
+      "label": "V17 underside solder mound — photo-observed; size assumed",
+      "type": "Part::Cone",
+      "cad_dependents": [
+        "CandidateModule",
+        "ConverterPins"
+      ],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Flat Lines",
+        "LineWidth": 2.0,
+        "LineColor": [
+          0.09803921729326248,
+          0.09803921729326248,
+          0.09803921729326248,
+          1.0
+        ],
+        "materials": [
+          {
+            "DiffuseColor": [
+              0.699999988079071,
+              0.7200000286102295,
+              0.7400000095367432,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          }
+        ],
+        "material_assignment": "uniform"
+      },
+      "local_pose": {
+        "translation_mm": [
+          0.0,
+          -17.78,
+          -3.1
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          10.869999999999997,
+          44.05000000000001,
+          -1.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.7071067811865476,
+          -0.7071067811865475
+        ]
+      },
+      "parent_coordinate_group": "CandidateModule",
+      "solid_count": 1,
+      "expressions": [
+        [
+          ".Placement.Base.z",
+          "-Installation.CarrierThickness - Installation.InsulatedSeparation - Installation.BottomSolderProjection"
+        ],
+        [
+          "Height",
+          "Installation.BottomSolderProjection"
+        ],
+        [
+          "Radius1",
+          "Installation.BottomSolderRadius * 0.5"
+        ],
+        [
+          "Radius2",
+          "Installation.BottomSolderRadius"
+        ]
+      ]
+    },
+    {
+      "id": "pins.O1",
+      "document": "comparison",
+      "native_object": "ConverterPin_O1",
+      "label": "OUT+ → O1 — square pin, clipped flush",
+      "type": "Part::Box",
+      "cad_dependents": [
+        "ConverterHoleSolder_O1",
+        "CarrierHoleSolder_O1",
+        "TopSolder_O1",
+        "CandidateModule",
+        "ConverterPins"
+      ],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Flat Lines",
+        "LineWidth": 2.0,
+        "LineColor": [
+          0.09803921729326248,
+          0.09803921729326248,
+          0.09803921729326248,
+          1.0
+        ],
+        "materials": [
+          {
+            "DiffuseColor": [
+              0.7599999904632568,
+              0.7699999809265137,
+              0.7900000214576721,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          }
+        ],
+        "material_assignment": "uniform"
+      },
+      "local_pose": {
+        "translation_mm": [
+          40.32,
+          -0.32,
+          -2.1
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          28.32999999999999,
+          3.730000000000004,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.7071067811865476,
+          -0.7071067811865475
+        ]
+      },
+      "parent_coordinate_group": "CandidateModule",
+      "solid_count": 1,
+      "expressions": [
+        [
+          ".Placement.Base.x",
+          "40.64 mm - Installation.PinWidth / 2"
+        ],
+        [
+          ".Placement.Base.y",
+          "0 mm - Installation.PinWidth / 2"
+        ],
+        [
+          ".Placement.Base.z",
+          "-Installation.CarrierThickness - Installation.InsulatedSeparation"
+        ],
+        [
+          "Height",
+          "Installation.CarrierThickness + Installation.InsulatedSeparation + Installation.ConverterThickness + Installation.PinTopProjection"
+        ],
+        [
+          "Length",
+          "Installation.PinWidth"
+        ],
+        [
+          "Width",
+          "Installation.PinWidth"
+        ]
+      ]
+    },
+    {
+      "id": "top_solder.O1",
+      "document": "comparison",
+      "native_object": "TopSolder_O1",
+      "label": "TopSolder_O1",
+      "type": "Part::Cut",
+      "cad_dependents": [
+        "CandidateModule",
+        "ConverterPins"
+      ],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Flat Lines",
+        "LineWidth": 2.0,
+        "LineColor": [
+          0.09803921729326248,
+          0.09803921729326248,
+          0.09803921729326248,
+          1.0
+        ],
+        "materials": [
+          {
+            "DiffuseColor": [
+              0.699999988079071,
+              0.7200000286102295,
+              0.7400000095367432,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          }
+        ],
+        "material_assignment": "uniform"
+      },
+      "local_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          28.65,
+          44.050000000000004,
+          2.1
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.7071067811865476,
+          -0.7071067811865475
+        ]
+      },
+      "parent_coordinate_group": "CandidateModule",
+      "solid_count": 1,
+      "expressions": []
+    },
+    {
+      "id": "converter_hole_fill.O1",
+      "document": "comparison",
+      "native_object": "ConverterHoleSolder_O1",
+      "label": "ConverterHoleSolder_O1",
+      "type": "Part::Cut",
+      "cad_dependents": [
+        "CandidateModule",
+        "ConverterPins"
+      ],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Flat Lines",
+        "LineWidth": 2.0,
+        "LineColor": [
+          0.09803921729326248,
+          0.09803921729326248,
+          0.09803921729326248,
+          1.0
+        ],
+        "materials": [
+          {
+            "DiffuseColor": [
+              0.699999988079071,
+              0.7200000286102295,
+              0.7400000095367432,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          }
+        ],
+        "material_assignment": "uniform"
+      },
+      "local_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          28.65,
+          44.050000000000004,
+          2.1
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.7071067811865476,
+          -0.7071067811865475
+        ]
+      },
+      "parent_coordinate_group": "CandidateModule",
+      "solid_count": 1,
+      "expressions": []
+    },
+    {
+      "id": "carrier_hole_fill.O1",
+      "document": "comparison",
+      "native_object": "CarrierHoleSolder_O1",
+      "label": "CarrierHoleSolder_O1",
+      "type": "Part::Cut",
+      "cad_dependents": [
+        "CandidateModule",
+        "ConverterPins"
+      ],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Flat Lines",
+        "LineWidth": 2.0,
+        "LineColor": [
+          0.09803921729326248,
+          0.09803921729326248,
+          0.09803921729326248,
+          1.0
+        ],
+        "materials": [
+          {
+            "DiffuseColor": [
+              0.699999988079071,
+              0.7200000286102295,
+              0.7400000095367432,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          }
+        ],
+        "material_assignment": "uniform"
+      },
+      "local_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          28.65,
+          44.050000000000004,
+          2.1
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.7071067811865476,
+          -0.7071067811865475
+        ]
+      },
+      "parent_coordinate_group": "CandidateModule",
+      "solid_count": 1,
+      "expressions": []
+    },
+    {
+      "id": "bottom_solder.O1",
+      "document": "comparison",
+      "native_object": "BottomSolder_O1",
+      "label": "O1 underside solder mound — photo-observed; size assumed",
+      "type": "Part::Cone",
+      "cad_dependents": [
+        "CandidateModule",
+        "ConverterPins"
+      ],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Flat Lines",
+        "LineWidth": 2.0,
+        "LineColor": [
+          0.09803921729326248,
+          0.09803921729326248,
+          0.09803921729326248,
+          1.0
+        ],
+        "materials": [
+          {
+            "DiffuseColor": [
+              0.699999988079071,
+              0.7200000286102295,
+              0.7400000095367432,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          }
+        ],
+        "material_assignment": "uniform"
+      },
+      "local_pose": {
+        "translation_mm": [
+          40.64,
+          0.0,
+          -3.1
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          28.649999999999988,
+          3.4100000000000037,
+          -1.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.7071067811865476,
+          -0.7071067811865475
+        ]
+      },
+      "parent_coordinate_group": "CandidateModule",
+      "solid_count": 1,
+      "expressions": [
+        [
+          ".Placement.Base.z",
+          "-Installation.CarrierThickness - Installation.InsulatedSeparation - Installation.BottomSolderProjection"
+        ],
+        [
+          "Height",
+          "Installation.BottomSolderProjection"
+        ],
+        [
+          "Radius1",
+          "Installation.BottomSolderRadius * 0.5"
+        ],
+        [
+          "Radius2",
+          "Installation.BottomSolderRadius"
+        ]
+      ]
+    },
+    {
+      "id": "pins.V1",
+      "document": "comparison",
+      "native_object": "ConverterPin_V1",
+      "label": "OUT- → V1 — square pin, clipped flush",
+      "type": "Part::Box",
+      "cad_dependents": [
+        "ConverterHoleSolder_V1",
+        "CarrierHoleSolder_V1",
+        "CandidateModule",
+        "ConverterPins",
+        "TopSolder_V1"
+      ],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Flat Lines",
+        "LineWidth": 2.0,
+        "LineColor": [
+          0.09803921729326248,
+          0.09803921729326248,
+          0.09803921729326248,
+          1.0
+        ],
+        "materials": [
+          {
+            "DiffuseColor": [
+              0.7599999904632568,
+              0.7699999809265137,
+              0.7900000214576721,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          }
+        ],
+        "material_assignment": "uniform"
+      },
+      "local_pose": {
+        "translation_mm": [
+          40.32,
+          -18.1,
+          -2.1
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          10.549999999999986,
+          3.730000000000011,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.7071067811865476,
+          -0.7071067811865475
+        ]
+      },
+      "parent_coordinate_group": "CandidateModule",
+      "solid_count": 1,
+      "expressions": [
+        [
+          ".Placement.Base.x",
+          "40.64 mm - Installation.PinWidth / 2"
+        ],
+        [
+          ".Placement.Base.y",
+          "-17.78 mm - Installation.PinWidth / 2"
+        ],
+        [
+          ".Placement.Base.z",
+          "-Installation.CarrierThickness - Installation.InsulatedSeparation"
+        ],
+        [
+          "Height",
+          "Installation.CarrierThickness + Installation.InsulatedSeparation + Installation.ConverterThickness + Installation.PinTopProjection"
+        ],
+        [
+          "Length",
+          "Installation.PinWidth"
+        ],
+        [
+          "Width",
+          "Installation.PinWidth"
+        ]
+      ]
+    },
+    {
+      "id": "top_solder.V1",
+      "document": "comparison",
+      "native_object": "TopSolder_V1",
+      "label": "TopSolder_V1",
+      "type": "Part::Cut",
+      "cad_dependents": [
+        "CandidateModule",
+        "ConverterPins"
+      ],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Flat Lines",
+        "LineWidth": 2.0,
+        "LineColor": [
+          0.09803921729326248,
+          0.09803921729326248,
+          0.09803921729326248,
+          1.0
+        ],
+        "materials": [
+          {
+            "DiffuseColor": [
+              0.699999988079071,
+              0.7200000286102295,
+              0.7400000095367432,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          }
+        ],
+        "material_assignment": "uniform"
+      },
+      "local_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          28.65,
+          44.050000000000004,
+          2.1
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.7071067811865476,
+          -0.7071067811865475
+        ]
+      },
+      "parent_coordinate_group": "CandidateModule",
+      "solid_count": 1,
+      "expressions": []
+    },
+    {
+      "id": "converter_hole_fill.V1",
+      "document": "comparison",
+      "native_object": "ConverterHoleSolder_V1",
+      "label": "ConverterHoleSolder_V1",
+      "type": "Part::Cut",
+      "cad_dependents": [
+        "CandidateModule",
+        "ConverterPins"
+      ],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Flat Lines",
+        "LineWidth": 2.0,
+        "LineColor": [
+          0.09803921729326248,
+          0.09803921729326248,
+          0.09803921729326248,
+          1.0
+        ],
+        "materials": [
+          {
+            "DiffuseColor": [
+              0.699999988079071,
+              0.7200000286102295,
+              0.7400000095367432,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          }
+        ],
+        "material_assignment": "uniform"
+      },
+      "local_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          28.65,
+          44.050000000000004,
+          2.1
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.7071067811865476,
+          -0.7071067811865475
+        ]
+      },
+      "parent_coordinate_group": "CandidateModule",
+      "solid_count": 1,
+      "expressions": []
+    },
+    {
+      "id": "carrier_hole_fill.V1",
+      "document": "comparison",
+      "native_object": "CarrierHoleSolder_V1",
+      "label": "CarrierHoleSolder_V1",
+      "type": "Part::Cut",
+      "cad_dependents": [
+        "CandidateModule",
+        "ConverterPins"
+      ],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Flat Lines",
+        "LineWidth": 2.0,
+        "LineColor": [
+          0.09803921729326248,
+          0.09803921729326248,
+          0.09803921729326248,
+          1.0
+        ],
+        "materials": [
+          {
+            "DiffuseColor": [
+              0.699999988079071,
+              0.7200000286102295,
+              0.7400000095367432,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          }
+        ],
+        "material_assignment": "uniform"
+      },
+      "local_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          28.65,
+          44.050000000000004,
+          2.1
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.7071067811865476,
+          -0.7071067811865475
+        ]
+      },
+      "parent_coordinate_group": "CandidateModule",
+      "solid_count": 1,
+      "expressions": []
+    },
+    {
+      "id": "bottom_solder.V1",
+      "document": "comparison",
+      "native_object": "BottomSolder_V1",
+      "label": "V1 underside solder mound — photo-observed; size assumed",
+      "type": "Part::Cone",
+      "cad_dependents": [
+        "CandidateModule",
+        "ConverterPins"
+      ],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Flat Lines",
+        "LineWidth": 2.0,
+        "LineColor": [
+          0.09803921729326248,
+          0.09803921729326248,
+          0.09803921729326248,
+          1.0
+        ],
+        "materials": [
+          {
+            "DiffuseColor": [
+              0.699999988079071,
+              0.7200000286102295,
+              0.7400000095367432,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          }
+        ],
+        "material_assignment": "uniform"
+      },
+      "local_pose": {
+        "translation_mm": [
+          40.64,
+          -17.78,
+          -3.1
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          10.869999999999987,
+          3.410000000000011,
+          -1.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.7071067811865476,
+          -0.7071067811865475
+        ]
+      },
+      "parent_coordinate_group": "CandidateModule",
+      "solid_count": 1,
+      "expressions": [
+        [
+          ".Placement.Base.z",
+          "-Installation.CarrierThickness - Installation.InsulatedSeparation - Installation.BottomSolderProjection"
+        ],
+        [
+          "Height",
+          "Installation.BottomSolderProjection"
+        ],
+        [
+          "Radius1",
+          "Installation.BottomSolderRadius * 0.5"
+        ],
+        [
+          "Radius2",
+          "Installation.BottomSolderRadius"
+        ]
+      ]
+    }
+  ]
+}
