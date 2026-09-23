@@ -124,4 +124,6 @@ No electrical load ratings are validated by these geometry observations.
   for connector/header identity where needed. **NEEDS-HARDWARE**.
 
 This research does not change calibrated joint mapping or the current simulator
-manifest. No third-party CAD assets have yet been imported or fit-validated.
+manifest. [Upstream CAD downloads](../assets/cad/README.md) now include the Sesame
+assembly and three Adafruit comparison models; file integrity was checked, but CAD
+import and fit validation remain pending. See the [co-design workflow recommendation](CAD-CO-DESIGN.md).

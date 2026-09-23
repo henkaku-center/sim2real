@@ -1,0 +1,127 @@
+{
+  "schema_version": 1,
+  "retrieved": "2026-09-23",
+  "files": [
+    {
+      "path": "sesame/LICENSE",
+      "repository": "dorianborian/sesame-robot",
+      "revision": "d106cbc8e158c982f408db421134f23273c5f51f",
+      "source_path": "LICENSE",
+      "url": "https://raw.githubusercontent.com/dorianborian/sesame-robot/d106cbc8e158c982f408db421134f23273c5f51f/LICENSE",
+      "bytes": 11357,
+      "git_blob_sha1": "261eeb9e9f8b2b4b0d119366dda99c6fd7d35c64",
+      "license": "Apache-2.0",
+      "applicability": "Original upstream robot baseline; not the verified S3 assembly"
+    },
+    {
+      "path": "sesame/hardware/cad/README.md",
+      "repository": "dorianborian/sesame-robot",
+      "revision": "d106cbc8e158c982f408db421134f23273c5f51f",
+      "source_path": "hardware/cad/README.md",
+      "url": "https://raw.githubusercontent.com/dorianborian/sesame-robot/d106cbc8e158c982f408db421134f23273c5f51f/hardware/cad/README.md",
+      "bytes": 1603,
+      "git_blob_sha1": "c2f3f079347fff25f8629a5bc3d44436151697cf",
+      "license": "Apache-2.0",
+      "applicability": "Original upstream robot baseline; not the verified S3 assembly"
+    },
+    {
+      "path": "sesame/hardware/cad/Sesame-ESP32-v122.f3z",
+      "repository": "dorianborian/sesame-robot",
+      "revision": "d106cbc8e158c982f408db421134f23273c5f51f",
+      "source_path": "hardware/cad/Sesame-ESP32-v122.f3z",
+      "url": "https://raw.githubusercontent.com/dorianborian/sesame-robot/d106cbc8e158c982f408db421134f23273c5f51f/hardware/cad/Sesame-ESP32-v122.f3z",
+      "bytes": 41557195,
+      "git_blob_sha1": "624f632e35c4ec11026e0e9e63996d2f00330e28",
+      "license": "Apache-2.0",
+      "applicability": "Original upstream robot baseline; not the verified S3 assembly"
+    },
+    {
+      "path": "sesame/hardware/cad/Sesame-ESP32-v122.step",
+      "repository": "dorianborian/sesame-robot",
+      "revision": "d106cbc8e158c982f408db421134f23273c5f51f",
+      "source_path": "hardware/cad/Sesame-ESP32-v122.step",
+      "url": "https://raw.githubusercontent.com/dorianborian/sesame-robot/d106cbc8e158c982f408db421134f23273c5f51f/hardware/cad/Sesame-ESP32-v122.step",
+      "bytes": 30977899,
+      "git_blob_sha1": "984f8b88d6855bcd9e5d08a7dee3984fe53813ff",
+      "license": "Apache-2.0",
+      "applicability": "Original upstream robot baseline; not the verified S3 assembly"
+    },
+    {
+      "path": "adafruit/1143 Micro Servo - High Torque Metal Gear/1143 Micro Servo High Torque Metal Gear.f3d",
+      "repository": "adafruit/Adafruit_CAD_Parts",
+      "revision": "6f52ee4d48df0e7118d2d82f485cb572051a24fe",
+      "source_path": "1143 Micro Servo - High Torque Metal Gear/1143 Micro Servo High Torque Metal Gear.f3d",
+      "url": "https://raw.githubusercontent.com/adafruit/Adafruit_CAD_Parts/6f52ee4d48df0e7118d2d82f485cb572051a24fe/1143%20Micro%20Servo%20-%20High%20Torque%20Metal%20Gear/1143%20Micro%20Servo%20High%20Torque%20Metal%20Gear.f3d",
+      "bytes": 359692,
+      "git_blob_sha1": "c6f1a01b59eca2868204f20c4878c851e4f1a037",
+      "license": "MIT",
+      "applicability": "Comparison candidate only; purchased-variant match unverified"
+    },
+    {
+      "path": "adafruit/1143 Micro Servo - High Torque Metal Gear/1143 Micro Servo High Torque Metal Gear.step",
+      "repository": "adafruit/Adafruit_CAD_Parts",
+      "revision": "6f52ee4d48df0e7118d2d82f485cb572051a24fe",
+      "source_path": "1143 Micro Servo - High Torque Metal Gear/1143 Micro Servo High Torque Metal Gear.step",
+      "url": "https://raw.githubusercontent.com/adafruit/Adafruit_CAD_Parts/6f52ee4d48df0e7118d2d82f485cb572051a24fe/1143%20Micro%20Servo%20-%20High%20Torque%20Metal%20Gear/1143%20Micro%20Servo%20High%20Torque%20Metal%20Gear.step",
+      "bytes": 136339,
+      "git_blob_sha1": "d03ce99e2205de94c9ad9576dd4b293c59e5aed5",
+      "license": "MIT",
+      "applicability": "Comparison candidate only; purchased-variant match unverified"
+    },
+    {
+      "path": "adafruit/3221 Toggle Switch/3221 Toggle Switch.f3d",
+      "repository": "adafruit/Adafruit_CAD_Parts",
+      "revision": "6f52ee4d48df0e7118d2d82f485cb572051a24fe",
+      "source_path": "3221 Toggle Switch/3221 Toggle Switch.f3d",
+      "url": "https://raw.githubusercontent.com/adafruit/Adafruit_CAD_Parts/6f52ee4d48df0e7118d2d82f485cb572051a24fe/3221%20Toggle%20Switch/3221%20Toggle%20Switch.f3d",
+      "bytes": 426262,
+      "git_blob_sha1": "0ce802127b6fac454595368cd5be686ff5f55b61",
+      "license": "MIT",
+      "applicability": "Comparison candidate only; purchased-variant match unverified"
+    },
+    {
+      "path": "adafruit/3221 Toggle Switch/3221 Toggle Switch.step",
+      "repository": "adafruit/Adafruit_CAD_Parts",
+      "revision": "6f52ee4d48df0e7118d2d82f485cb572051a24fe",
+      "source_path": "3221 Toggle Switch/3221 Toggle Switch.step",
+      "url": "https://raw.githubusercontent.com/adafruit/Adafruit_CAD_Parts/6f52ee4d48df0e7118d2d82f485cb572051a24fe/3221%20Toggle%20Switch/3221%20Toggle%20Switch.step",
+      "bytes": 678213,
+      "git_blob_sha1": "f8e0d1fe8a877418e54fcebe676b424a46983d8c",
+      "license": "MIT",
+      "applicability": "Comparison candidate only; purchased-variant match unverified"
+    },
+    {
+      "path": "adafruit/815 Servo Driver 16 Channel/815 Servo Driver 16 Channel.f3d",
+      "repository": "adafruit/Adafruit_CAD_Parts",
+      "revision": "6f52ee4d48df0e7118d2d82f485cb572051a24fe",
+      "source_path": "815 Servo Driver 16 Channel/815 Servo Driver 16 Channel.f3d",
+      "url": "https://raw.githubusercontent.com/adafruit/Adafruit_CAD_Parts/6f52ee4d48df0e7118d2d82f485cb572051a24fe/815%20Servo%20Driver%2016%20Channel/815%20Servo%20Driver%2016%20Channel.f3d",
+      "bytes": 1057165,
+      "git_blob_sha1": "b181d9d2c70e4b237520672f80cf1283d8594775",
+      "license": "MIT",
+      "applicability": "Comparison candidate only; purchased-variant match unverified"
+    },
+    {
+      "path": "adafruit/815 Servo Driver 16 Channel/815 Servo Driver 16 Channel.step",
+      "repository": "adafruit/Adafruit_CAD_Parts",
+      "revision": "6f52ee4d48df0e7118d2d82f485cb572051a24fe",
+      "source_path": "815 Servo Driver 16 Channel/815 Servo Driver 16 Channel.step",
+      "url": "https://raw.githubusercontent.com/adafruit/Adafruit_CAD_Parts/6f52ee4d48df0e7118d2d82f485cb572051a24fe/815%20Servo%20Driver%2016%20Channel/815%20Servo%20Driver%2016%20Channel.step",
+      "bytes": 1803975,
+      "git_blob_sha1": "320f8f0fff5eb2ca594e2c3e1092ced7f4f1b4e2",
+      "license": "MIT",
+      "applicability": "Comparison candidate only; purchased-variant match unverified"
+    },
+    {
+      "path": "adafruit/LICENSE",
+      "repository": "adafruit/Adafruit_CAD_Parts",
+      "revision": "6f52ee4d48df0e7118d2d82f485cb572051a24fe",
+      "source_path": "LICENSE",
+      "url": "https://raw.githubusercontent.com/adafruit/Adafruit_CAD_Parts/6f52ee4d48df0e7118d2d82f485cb572051a24fe/LICENSE",
+      "bytes": 1076,
+      "git_blob_sha1": "19a9cd8546f62f1fe25919da52882cb67c52dbba",
+      "license": "MIT",
+      "applicability": "Comparison candidate only; purchased-variant match unverified"
+    }
+  ]
+}

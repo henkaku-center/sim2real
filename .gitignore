@@ -19,3 +19,6 @@ web/dist/
 
 # Test artifacts (screenshots etc.)
 tests/artifacts/
+
+# Reproducible, checksum-verified upstream CAD downloads (see assets/cad/README.md)
+assets/cad/upstream/
