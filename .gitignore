@@ -22,3 +22,6 @@ tests/artifacts/
 
 # Reproducible, checksum-verified upstream CAD downloads (see assets/cad/README.md)
 assets/cad/upstream/
+
+# Local CAD documents and viewport exports, reproducible initial import only
+assets/cad/work/

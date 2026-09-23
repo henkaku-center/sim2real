@@ -122,6 +122,127 @@
       "git_blob_sha1": "19a9cd8546f62f1fe25919da52882cb67c52dbba",
       "license": "MIT",
       "applicability": "Comparison candidate only; purchased-variant match unverified"
+    },
+    {
+      "path": "sesame/hardware/printing/stl/Bottom-Cover-v121.stl",
+      "repository": "dorianborian/sesame-robot",
+      "revision": "d106cbc8e158c982f408db421134f23273c5f51f",
+      "source_path": "hardware/printing/stl/Bottom-Cover-v121.stl",
+      "url": "https://raw.githubusercontent.com/dorianborian/sesame-robot/d106cbc8e158c982f408db421134f23273c5f51f/hardware/printing/stl/Bottom-Cover-v121.stl",
+      "bytes": 85184,
+      "git_blob_sha1": "12a134b1242c853847e8a3e509b003dd40baacc9",
+      "license": "Apache-2.0",
+      "applicability": "Comparison mesh; verify SHA-256 against simulator Git LFS pointer before comparison"
+    },
+    {
+      "path": "sesame/hardware/printing/stl/Internal-Frame-v121.stl",
+      "repository": "dorianborian/sesame-robot",
+      "revision": "d106cbc8e158c982f408db421134f23273c5f51f",
+      "source_path": "hardware/printing/stl/Internal-Frame-v121.stl",
+      "url": "https://raw.githubusercontent.com/dorianborian/sesame-robot/d106cbc8e158c982f408db421134f23273c5f51f/hardware/printing/stl/Internal-Frame-v121.stl",
+      "bytes": 389084,
+      "git_blob_sha1": "73ac6caa55ffdbb0f92806dfb6e7cef364d129af",
+      "license": "Apache-2.0",
+      "applicability": "Comparison mesh; verify SHA-256 against simulator Git LFS pointer before comparison"
+    },
+    {
+      "path": "sesame/hardware/printing/stl/L1-v117.stl",
+      "repository": "dorianborian/sesame-robot",
+      "revision": "d106cbc8e158c982f408db421134f23273c5f51f",
+      "source_path": "hardware/printing/stl/L1-v117.stl",
+      "url": "https://raw.githubusercontent.com/dorianborian/sesame-robot/d106cbc8e158c982f408db421134f23273c5f51f/hardware/printing/stl/L1-v117.stl",
+      "bytes": 359384,
+      "git_blob_sha1": "d524e0e8cefd7acfad283c5bc12099606753518c",
+      "license": "Apache-2.0",
+      "applicability": "Comparison mesh; verify SHA-256 against simulator Git LFS pointer before comparison"
+    },
+    {
+      "path": "sesame/hardware/printing/stl/L2-v117.stl",
+      "repository": "dorianborian/sesame-robot",
+      "revision": "d106cbc8e158c982f408db421134f23273c5f51f",
+      "source_path": "hardware/printing/stl/L2-v117.stl",
+      "url": "https://raw.githubusercontent.com/dorianborian/sesame-robot/d106cbc8e158c982f408db421134f23273c5f51f/hardware/printing/stl/L2-v117.stl",
+      "bytes": 383384,
+      "git_blob_sha1": "93b935a55bc927b88aa81be70504b1cb4763b1d8",
+      "license": "Apache-2.0",
+      "applicability": "Comparison mesh; verify SHA-256 against simulator Git LFS pointer before comparison"
+    },
+    {
+      "path": "sesame/hardware/printing/stl/L3-v117.stl",
+      "repository": "dorianborian/sesame-robot",
+      "revision": "d106cbc8e158c982f408db421134f23273c5f51f",
+      "source_path": "hardware/printing/stl/L3-v117.stl",
+      "url": "https://raw.githubusercontent.com/dorianborian/sesame-robot/d106cbc8e158c982f408db421134f23273c5f51f/hardware/printing/stl/L3-v117.stl",
+      "bytes": 102684,
+      "git_blob_sha1": "7fcafeb7faac60cde3f6fd140cce0bfeea977a04",
+      "license": "Apache-2.0",
+      "applicability": "Comparison mesh; verify SHA-256 against simulator Git LFS pointer before comparison"
+    },
+    {
+      "path": "sesame/hardware/printing/stl/L4-v117.stl",
+      "repository": "dorianborian/sesame-robot",
+      "revision": "d106cbc8e158c982f408db421134f23273c5f51f",
+      "source_path": "hardware/printing/stl/L4-v117.stl",
+      "url": "https://raw.githubusercontent.com/dorianborian/sesame-robot/d106cbc8e158c982f408db421134f23273c5f51f/hardware/printing/stl/L4-v117.stl",
+      "bytes": 91384,
+      "git_blob_sha1": "a0912f6817bf89a30c29b9eaae053d2278d0950f",
+      "license": "Apache-2.0",
+      "applicability": "Comparison mesh; verify SHA-256 against simulator Git LFS pointer before comparison"
+    },
+    {
+      "path": "sesame/hardware/printing/stl/R1-v117.stl",
+      "repository": "dorianborian/sesame-robot",
+      "revision": "d106cbc8e158c982f408db421134f23273c5f51f",
+      "source_path": "hardware/printing/stl/R1-v117.stl",
+      "url": "https://raw.githubusercontent.com/dorianborian/sesame-robot/d106cbc8e158c982f408db421134f23273c5f51f/hardware/printing/stl/R1-v117.stl",
+      "bytes": 379784,
+      "git_blob_sha1": "56116865753791974902f604997f8ac5ca6af979",
+      "license": "Apache-2.0",
+      "applicability": "Comparison mesh; verify SHA-256 against simulator Git LFS pointer before comparison"
+    },
+    {
+      "path": "sesame/hardware/printing/stl/R2-v117.stl",
+      "repository": "dorianborian/sesame-robot",
+      "revision": "d106cbc8e158c982f408db421134f23273c5f51f",
+      "source_path": "hardware/printing/stl/R2-v117.stl",
+      "url": "https://raw.githubusercontent.com/dorianborian/sesame-robot/d106cbc8e158c982f408db421134f23273c5f51f/hardware/printing/stl/R2-v117.stl",
+      "bytes": 378984,
+      "git_blob_sha1": "08b88204b1f7482e8417527085d065970667c5d0",
+      "license": "Apache-2.0",
+      "applicability": "Comparison mesh; verify SHA-256 against simulator Git LFS pointer before comparison"
+    },
+    {
+      "path": "sesame/hardware/printing/stl/R3-v117.stl",
+      "repository": "dorianborian/sesame-robot",
+      "revision": "d106cbc8e158c982f408db421134f23273c5f51f",
+      "source_path": "hardware/printing/stl/R3-v117.stl",
+      "url": "https://raw.githubusercontent.com/dorianborian/sesame-robot/d106cbc8e158c982f408db421134f23273c5f51f/hardware/printing/stl/R3-v117.stl",
+      "bytes": 105884,
+      "git_blob_sha1": "ba6168d833bb57bee1f0dbb0b3da9e4984c7cf8b",
+      "license": "Apache-2.0",
+      "applicability": "Comparison mesh; verify SHA-256 against simulator Git LFS pointer before comparison"
+    },
+    {
+      "path": "sesame/hardware/printing/stl/R4-v117.stl",
+      "repository": "dorianborian/sesame-robot",
+      "revision": "d106cbc8e158c982f408db421134f23273c5f51f",
+      "source_path": "hardware/printing/stl/R4-v117.stl",
+      "url": "https://raw.githubusercontent.com/dorianborian/sesame-robot/d106cbc8e158c982f408db421134f23273c5f51f/hardware/printing/stl/R4-v117.stl",
+      "bytes": 94584,
+      "git_blob_sha1": "ba4b3cf9b77415deb2dd25c16ddff6c38d367a09",
+      "license": "Apache-2.0",
+      "applicability": "Comparison mesh; verify SHA-256 against simulator Git LFS pointer before comparison"
+    },
+    {
+      "path": "sesame/hardware/printing/stl/top-covers/Top-Cover-Enclosed-v117.stl",
+      "repository": "dorianborian/sesame-robot",
+      "revision": "d106cbc8e158c982f408db421134f23273c5f51f",
+      "source_path": "hardware/printing/stl/top-covers/Top-Cover-Enclosed-v117.stl",
+      "url": "https://raw.githubusercontent.com/dorianborian/sesame-robot/d106cbc8e158c982f408db421134f23273c5f51f/hardware/printing/stl/top-covers/Top-Cover-Enclosed-v117.stl",
+      "bytes": 184184,
+      "git_blob_sha1": "6310e1364d1a8f67b2f7a020c025d6790e7213a2",
+      "license": "Apache-2.0",
+      "applicability": "Comparison mesh; verify SHA-256 against simulator Git LFS pointer before comparison"
     }
   ]
 }

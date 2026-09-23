@@ -1,0 +1,1394 @@
+{
+  "freecad_version": [
+    "1",
+    "1",
+    "3",
+    "20260725 (Git shallow)",
+    "Unknown",
+    "2026/07/25 04:52:02",
+    "grafted,grafted",
+    "145529fe741292ff0b3977a01195bf0247425794"
+  ],
+  "occt_version": "7.8.1",
+  "units": {
+    "length": "mm",
+    "volume": "mm^3"
+  },
+  "scope": "Imported STEP geometry; not hardware fit verification. Containers and links may duplicate geometry; do not sum object volumes.",
+  "sources": [
+    {
+      "object_count": 1167,
+      "shape_object_count": 567,
+      "invalid_shape_objects": [
+        "Part__Feature443",
+        "KCD1_B2_3P_On_v1",
+        "Sesame_ESP32_v123"
+      ],
+      "objects": [
+        {
+          "name": "Part__Feature056",
+          "label": "femurjoint-R2",
+          "type": "Part::Feature",
+          "dependencies": [],
+          "global_placement": {
+            "translation_mm": [
+              32.57083984827511,
+              -1.97e-14,
+              -7.818571524377341
+            ],
+            "quaternion_xyzw": [
+              0.0,
+              -0.38268343236508956,
+              0.0,
+              0.9238795325112868
+            ]
+          },
+          "valid": true,
+          "solids": 1,
+          "faces": 166,
+          "volume_mm3": 5190.981061,
+          "shape_bounds": {
+            "min_mm": [
+              36.869989,
+              8.877757,
+              -62.889105
+            ],
+            "max_mm": [
+              73.631142,
+              39.918222,
+              -16.332243
+            ],
+            "size_mm": [
+              36.761153,
+              31.040465,
+              46.556862
+            ]
+          },
+          "object_bounds": {
+            "min_mm": [
+              -13.007194,
+              8.877757,
+              -66.196766
+            ],
+            "max_mm": [
+              8.246247,
+              39.918222,
+              -16.332243
+            ],
+            "size_mm": [
+              21.253441,
+              31.040465,
+              49.864523
+            ]
+          }
+        },
+        {
+          "name": "Part__Feature057",
+          "label": "foot-joint-R4",
+          "type": "Part::Feature",
+          "dependencies": [],
+          "global_placement": {
+            "translation_mm": [
+              64.12070456632676,
+              75.07452278141639,
+              -39.369514442217245
+            ],
+            "quaternion_xyzw": [
+              -0.6532814824381886,
+              -0.27059805007309934,
+              -0.27059805007309784,
+              0.653281482438188
+            ]
+          },
+          "valid": true,
+          "solids": 1,
+          "faces": 128,
+          "volume_mm3": 4698.535726,
+          "shape_bounds": {
+            "min_mm": [
+              71.352773,
+              -32.359898,
+              -53.672746
+            ],
+            "max_mm": [
+              90.480719,
+              26.587757,
+              -34.5448
+            ],
+            "size_mm": [
+              19.127946,
+              58.947654,
+              19.127946
+            ]
+          },
+          "object_bounds": {
+            "min_mm": [
+              3.762933,
+              5.702757,
+              -107.43442
+            ],
+            "max_mm": [
+              13.287933,
+              24.842161,
+              -48.486766
+            ],
+            "size_mm": [
+              9.525,
+              19.139404,
+              58.947654
+            ]
+          }
+        },
+        {
+          "name": "Part__Feature072",
+          "label": "femur-joint-L2",
+          "type": "Part::Feature",
+          "dependencies": [],
+          "global_placement": {
+            "translation_mm": [
+              32.57083984827536,
+              3.79e-14,
+              12.58502688073039
+            ],
+            "quaternion_xyzw": [
+              0.0,
+              0.38268343236508956,
+              0.0,
+              0.9238795325112868
+            ]
+          },
+          "valid": true,
+          "solids": 1,
+          "faces": 152,
+          "volume_mm3": 5209.385628,
+          "shape_bounds": {
+            "min_mm": [
+              36.869989,
+              8.877757,
+              21.098698
+            ],
+            "max_mm": [
+              73.631142,
+              39.918222,
+              67.65556
+            ],
+            "size_mm": [
+              36.761153,
+              31.040465,
+              46.556862
+            ]
+          },
+          "object_bounds": {
+            "min_mm": [
+              -13.007194,
+              8.877757,
+              16.332243
+            ],
+            "max_mm": [
+              8.2078,
+              39.918222,
+              66.196766
+            ],
+            "size_mm": [
+              21.214995,
+              31.040465,
+              49.864523
+            ]
+          }
+        },
+        {
+          "name": "Part__Feature073",
+          "label": "foot-joint-L4",
+          "type": "Part::Feature",
+          "dependencies": [],
+          "global_placement": {
+            "translation_mm": [
+              64.120704566327,
+              75.07452278141639,
+              44.135969798569405
+            ],
+            "quaternion_xyzw": [
+              0.6532814824381878,
+              0.27059805007309834,
+              -0.2705980500730991,
+              0.6532814824381886
+            ]
+          },
+          "valid": true,
+          "solids": 1,
+          "faces": 120,
+          "volume_mm3": 4713.075388,
+          "shape_bounds": {
+            "min_mm": [
+              71.352773,
+              -32.359898,
+              39.311256
+            ],
+            "max_mm": [
+              90.480719,
+              26.587757,
+              58.695364
+            ],
+            "size_mm": [
+              19.127946,
+              58.947654,
+              19.384108
+            ]
+          },
+          "object_bounds": {
+            "min_mm": [
+              3.762933,
+              5.702757,
+              48.486766
+            ],
+            "max_mm": [
+              13.287933,
+              25.657515,
+              107.43442
+            ],
+            "size_mm": [
+              9.525,
+              19.954758,
+              58.947654
+            ]
+          }
+        },
+        {
+          "name": "Part__Feature105",
+          "label": "femur-joint-L1",
+          "type": "Part::Feature",
+          "dependencies": [],
+          "global_placement": {
+            "translation_mm": [
+              18.87570141253587,
+              -1.027e-13,
+              12.585026880730467
+            ],
+            "quaternion_xyzw": [
+              1.2010433922646726e-15,
+              0.9238795325112867,
+              -2.3096988312782164e-15,
+              0.38268343236508984
+            ]
+          },
+          "valid": true,
+          "solids": 1,
+          "faces": 139,
+          "volume_mm3": 5212.190591,
+          "shape_bounds": {
+            "min_mm": [
+              -22.184601,
+              8.877757,
+              21.098698
+            ],
+            "max_mm": [
+              14.576552,
+              39.918222,
+              67.65556
+            ],
+            "size_mm": [
+              36.761153,
+              31.040465,
+              46.556862
+            ]
+          },
+          "object_bounds": {
+            "min_mm": [
+              -13.007194,
+              8.877757,
+              -66.196766
+            ],
+            "max_mm": [
+              8.2078,
+              39.918222,
+              -16.332243
+            ],
+            "size_mm": [
+              21.214995,
+              31.040465,
+              49.864523
+            ]
+          }
+        },
+        {
+          "name": "Part__Feature106",
+          "label": "foot-joint-L3",
+          "type": "Part::Feature",
+          "dependencies": [],
+          "global_placement": {
+            "translation_mm": [
+              -12.896095839858438,
+              75.26227308894322,
+              43.91403726422657
+            ],
+            "quaternion_xyzw": [
+              -0.2705980500730994,
+              0.6532814824381894,
+              0.6532814824381853,
+              0.27059805007310234
+            ]
+          },
+          "valid": true,
+          "solids": 1,
+          "faces": 129,
+          "volume_mm3": 4693.974616,
+          "shape_bounds": {
+            "min_mm": [
+              -39.395446,
+              -32.172147,
+              39.089323
+            ],
+            "max_mm": [
+              -20.128165,
+              26.775507,
+              58.217269
+            ],
+            "size_mm": [
+              19.267282,
+              58.947654,
+              19.127946
+            ]
+          },
+          "object_bounds": {
+            "min_mm": [
+              3.762933,
+              5.702757,
+              -107.43442
+            ],
+            "max_mm": [
+              13.287933,
+              25.403878,
+              -48.486766
+            ],
+            "size_mm": [
+              9.525,
+              19.701121,
+              58.947654
+            ]
+          }
+        },
+        {
+          "name": "Part__Feature133",
+          "label": "femur-joint-R1",
+          "type": "Part::Feature",
+          "dependencies": [],
+          "global_placement": {
+            "translation_mm": [
+              18.87570141253572,
+              1.006e-13,
+              -7.818571524377442
+            ],
+            "quaternion_xyzw": [
+              0.0,
+              0.9238795325112867,
+              0.0,
+              -0.3826834323650897
+            ]
+          },
+          "valid": true,
+          "solids": 1,
+          "faces": 153,
+          "volume_mm3": 5207.852013,
+          "shape_bounds": {
+            "min_mm": [
+              -22.184601,
+              8.877757,
+              -62.889105
+            ],
+            "max_mm": [
+              14.576552,
+              39.918222,
+              -16.332243
+            ],
+            "size_mm": [
+              36.761153,
+              31.040465,
+              46.556862
+            ]
+          },
+          "object_bounds": {
+            "min_mm": [
+              -13.007194,
+              8.877757,
+              16.332243
+            ],
+            "max_mm": [
+              8.246247,
+              39.918222,
+              66.196766
+            ],
+            "size_mm": [
+              21.253441,
+              31.040465,
+              49.864523
+            ]
+          }
+        },
+        {
+          "name": "Part__Feature134",
+          "label": "foot-joint-R3",
+          "type": "Part::Feature",
+          "dependencies": [],
+          "global_placement": {
+            "translation_mm": [
+              -13.018892003479612,
+              75.26227308894347,
+              -39.02478574425235
+            ],
+            "quaternion_xyzw": [
+              -0.2705980500730999,
+              0.6532814824381895,
+              -0.6532814824381868,
+              -0.2705980500730975
+            ]
+          },
+          "valid": true,
+          "solids": 1,
+          "faces": 137,
+          "volume_mm3": 4712.903836,
+          "shape_bounds": {
+            "min_mm": [
+              -39.378906,
+              -32.172147,
+              -53.328017
+            ],
+            "max_mm": [
+              -20.250961,
+              26.775507,
+              -34.200072
+            ],
+            "size_mm": [
+              19.127946,
+              58.947654,
+              19.127946
+            ]
+          },
+          "object_bounds": {
+            "min_mm": [
+              3.762933,
+              5.702757,
+              48.486766
+            ],
+            "max_mm": [
+              13.287933,
+              25.006757,
+              107.43442
+            ],
+            "size_mm": [
+              9.525,
+              19.304,
+              58.947654
+            ]
+          }
+        },
+        {
+          "name": "Part__Feature443",
+          "label": "KCD1-B2_Rocker",
+          "type": "Part::Feature",
+          "dependencies": [],
+          "global_placement": {
+            "translation_mm": [
+              59.55953825977538,
+              48.1382447942718,
+              2.383227678176539
+            ],
+            "quaternion_xyzw": [
+              0.11574347147252688,
+              -0.04779320173507913,
+              -0.3786612127153109,
+              0.917025051274156
+            ]
+          },
+          "valid": false,
+          "solids": 1,
+          "faces": 52,
+          "volume_mm3": 492.910201,
+          "shape_bounds": {
+            "min_mm": [
+              -5.9,
+              -7.437252,
+              -40.385566
+            ],
+            "max_mm": [
+              5.9,
+              65.952042,
+              67.503564
+            ],
+            "size_mm": [
+              11.8,
+              73.389294,
+              107.88913
+            ]
+          },
+          "object_bounds": {
+            "min_mm": [
+              -5.9,
+              -6.3,
+              -55.64674
+            ],
+            "max_mm": [
+              5.9,
+              58.187821,
+              55.64674
+            ],
+            "size_mm": [
+              11.8,
+              64.487821,
+              111.29348
+            ]
+          }
+        },
+        {
+          "name": "KCD1_B2_3P_On_v1",
+          "label": "KCD1-B2-3P-On v1",
+          "type": "App::Part",
+          "dependencies": [
+            "Origin142",
+            "KCD1_B2_Base",
+            "Part__Feature443",
+            "Part__Feature444",
+            "KCD1_B2_Pin"
+          ],
+          "global_placement": {
+            "translation_mm": [
+              60.1945306841327,
+              48.77604148680701,
+              2.3832276781765356
+            ],
+            "quaternion_xyzw": [
+              0.0,
+              0.0,
+              -0.38166543483412263,
+              0.9243005441158628
+            ]
+          },
+          "valid": false,
+          "solids": 8,
+          "faces": 1542,
+          "volume_mm3": 2294.671876,
+          "shape_bounds": {
+            "min_mm": [
+              44.347519,
+              32.871075,
+              -38.002339
+            ],
+            "max_mm": [
+              109.415529,
+              98.188631,
+              69.886791
+            ],
+            "size_mm": [
+              65.06801,
+              65.317556,
+              107.88913
+            ]
+          },
+          "object_bounds": {
+            "min_mm": [
+              -7.5,
+              -21.0,
+              -40.385566
+            ],
+            "max_mm": [
+              7.5,
+              65.952042,
+              67.503564
+            ],
+            "size_mm": [
+              15.0,
+              86.952042,
+              107.88913
+            ]
+          }
+        },
+        {
+          "name": "Part__Feature479",
+          "label": "Bottom-Cover",
+          "type": "Part::Feature",
+          "dependencies": [],
+          "global_placement": {
+            "translation_mm": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "quaternion_xyzw": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          },
+          "valid": true,
+          "solids": 1,
+          "faces": 70,
+          "volume_mm3": 16967.010418,
+          "shape_bounds": {
+            "min_mm": [
+              -13.592833,
+              -1.001983,
+              -24.738348
+            ],
+            "max_mm": [
+              65.632556,
+              6.268017,
+              29.504803
+            ],
+            "size_mm": [
+              79.225389,
+              7.27,
+              54.243151
+            ]
+          },
+          "object_bounds": {
+            "min_mm": [
+              -13.592833,
+              -1.001983,
+              -24.738348
+            ],
+            "max_mm": [
+              65.632556,
+              6.268017,
+              29.504803
+            ],
+            "size_mm": [
+              79.225389,
+              7.27,
+              54.243151
+            ]
+          }
+        },
+        {
+          "name": "Part__Feature480",
+          "label": "Internal-Frame",
+          "type": "Part::Feature",
+          "dependencies": [],
+          "global_placement": {
+            "translation_mm": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "quaternion_xyzw": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          },
+          "valid": true,
+          "solids": 1,
+          "faces": 263,
+          "volume_mm3": 36256.734598,
+          "shape_bounds": {
+            "min_mm": [
+              -13.592833,
+              5.762815,
+              -31.656772
+            ],
+            "max_mm": [
+              65.632556,
+              21.967757,
+              36.423228
+            ],
+            "size_mm": [
+              79.225389,
+              16.204942,
+              68.08
+            ]
+          },
+          "object_bounds": {
+            "min_mm": [
+              -13.592833,
+              5.762815,
+              -31.656772
+            ],
+            "max_mm": [
+              65.632556,
+              21.967757,
+              36.423228
+            ],
+            "size_mm": [
+              79.225389,
+              16.204942,
+              68.08
+            ]
+          }
+        },
+        {
+          "name": "Sesame_ESP32_v123",
+          "label": "Sesame-ESP32 v123",
+          "type": "App::Part",
+          "dependencies": [
+            "Origin148",
+            "SG90___Micro_Servo_9g___Tower_Pro_v4",
+            "SG90___Micro_Servo_9g___Tower_Pro_v001",
+            "SG90___Micro_Servo_9g___Tower_Pro_v002",
+            "SG90___Micro_Servo_9g___Tower_Pro_v003",
+            "Part__Feature056",
+            "Part__Feature057",
+            "SG90___Micro_Servo_9g___Tower_Pro_v004",
+            "Part__Feature072",
+            "Part__Feature073",
+            "SG90___Micro_Servo_9g___Tower_Pro_v005",
+            "Display_OLED_0_96_128x64_v5",
+            "Part__Feature105",
+            "Part__Feature106",
+            "SG90___Micro_Servo_9g___Tower_Pro_1_Pe_a_Mirror___1_",
+            "SG90___Micro_Servo_9g___Tower_Pro_1_Pe_a_Mirror___1_001",
+            "Part__Feature133",
+            "Part__Feature134",
+            "S2_Mini_Board_no_hdr_v1",
+            "KCD1_B2_3P_On_v1",
+            "Part__Feature447",
+            "Part__Feature448",
+            "Part__Feature449",
+            "Part__Feature450",
+            "Part__Feature451",
+            "Part__Feature452",
+            "Part__Feature453",
+            "Part__Feature454",
+            "Part__Feature455",
+            "Part__Feature456",
+            "Part__Feature457",
+            "Part__Feature458",
+            "Part__Feature459",
+            "Part__Feature460",
+            "Part__Feature461",
+            "Part__Feature462",
+            "Part__Feature463",
+            "Part__Feature464",
+            "Part__Feature465",
+            "Part__Feature466",
+            "Part__Feature467",
+            "Part__Feature468",
+            "Part__Feature469",
+            "Part__Feature470",
+            "Part__Feature471",
+            "Part__Feature472",
+            "Part__Feature473",
+            "Part__Feature474",
+            "Part__Feature475",
+            "Part__Feature476",
+            "Part__Feature477",
+            "Part__Feature478",
+            "Part__Feature479",
+            "Part__Feature480",
+            "OLED_128x64_0_96_v1",
+            "Part__Feature489",
+            "COMPOUND"
+          ],
+          "global_placement": {
+            "translation_mm": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "quaternion_xyzw": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          },
+          "valid": false,
+          "solids": 492,
+          "faces": 19647,
+          "volume_mm3": 192457.997517,
+          "shape_bounds": {
+            "min_mm": [
+              -41.869085,
+              -32.359898,
+              -62.889105
+            ],
+            "max_mm": [
+              109.415529,
+              98.188631,
+              69.886791
+            ],
+            "size_mm": [
+              151.284614,
+              130.548528,
+              132.775896
+            ]
+          },
+          "object_bounds": {
+            "min_mm": [
+              -41.869085,
+              -32.359898,
+              -62.889105
+            ],
+            "max_mm": [
+              109.415529,
+              98.188631,
+              69.886791
+            ],
+            "size_mm": [
+              151.284614,
+              130.548528,
+              132.775896
+            ]
+          }
+        }
+      ],
+      "source_path": "sesame/hardware/cad/Sesame-ESP32-v122.step",
+      "revision": "d106cbc8e158c982f408db421134f23273c5f51f",
+      "git_blob_sha1": "984f8b88d6855bcd9e5d08a7dee3984fe53813ff",
+      "native_file_sha256": "408eb6a9028fea50291eefdbd48c378d9b279ca86b5ab0e792fff21ba5547733"
+    },
+    {
+      "object_count": 33,
+      "shape_object_count": 9,
+      "invalid_shape_objects": [],
+      "objects": [],
+      "source_path": "adafruit/1143 Micro Servo - High Torque Metal Gear/1143 Micro Servo High Torque Metal Gear.step",
+      "revision": "6f52ee4d48df0e7118d2d82f485cb572051a24fe",
+      "git_blob_sha1": "d03ce99e2205de94c9ad9576dd4b293c59e5aed5",
+      "native_file_sha256": "233470285f03525d4adc70ac153db8be3051fde5dbe733d9a0e89d30020b8023"
+    },
+    {
+      "object_count": 19,
+      "shape_object_count": 11,
+      "invalid_shape_objects": [
+        "Part__Feature",
+        "Part__Feature001",
+        "Part__Feature002",
+        "_3221_Mini_Panel_Mount_Switch_v2"
+      ],
+      "objects": [
+        {
+          "name": "Part__Feature",
+          "label": "3221 Mini Panel Mount Switch v2",
+          "type": "Part::Feature",
+          "dependencies": [],
+          "global_placement": {
+            "translation_mm": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "quaternion_xyzw": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          },
+          "valid": false,
+          "solids": 1,
+          "faces": 37,
+          "volume_mm3": 261.363572,
+          "shape_bounds": {
+            "min_mm": [
+              -3.477549,
+              -3.526255,
+              0.0
+            ],
+            "max_mm": [
+              3.478492,
+              3.47912,
+              19.832779
+            ],
+            "size_mm": [
+              6.956041,
+              7.005375,
+              19.832779
+            ]
+          },
+          "object_bounds": {
+            "min_mm": [
+              -3.477549,
+              -3.526255,
+              0.0
+            ],
+            "max_mm": [
+              3.478492,
+              3.47912,
+              19.832779
+            ],
+            "size_mm": [
+              6.956041,
+              7.005375,
+              19.832779
+            ]
+          }
+        },
+        {
+          "name": "Part__Feature001",
+          "label": "3221 Mini Panel Mount Switch v001",
+          "type": "Part::Feature",
+          "dependencies": [],
+          "global_placement": {
+            "translation_mm": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "quaternion_xyzw": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          },
+          "valid": false,
+          "solids": 1,
+          "faces": 20,
+          "volume_mm3": 69.12313,
+          "shape_bounds": {
+            "min_mm": [
+              -4.896969,
+              -4.896969,
+              3.758379
+            ],
+            "max_mm": [
+              4.896969,
+              4.896969,
+              6.241621
+            ],
+            "size_mm": [
+              9.793939,
+              9.793939,
+              2.483242
+            ]
+          },
+          "object_bounds": {
+            "min_mm": [
+              -4.896969,
+              -4.896969,
+              3.758379
+            ],
+            "max_mm": [
+              4.896969,
+              4.896969,
+              6.241621
+            ],
+            "size_mm": [
+              9.793939,
+              9.793939,
+              2.483242
+            ]
+          }
+        },
+        {
+          "name": "Part__Feature002",
+          "label": "3221 Mini Panel Mount Switch v002",
+          "type": "Part::Feature",
+          "dependencies": [],
+          "global_placement": {
+            "translation_mm": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "quaternion_xyzw": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          },
+          "valid": false,
+          "solids": 1,
+          "faces": 20,
+          "volume_mm3": 69.123034,
+          "shape_bounds": {
+            "min_mm": [
+              -4.896969,
+              -4.896969,
+              0.258379
+            ],
+            "max_mm": [
+              4.896969,
+              4.896969,
+              2.741621
+            ],
+            "size_mm": [
+              9.793939,
+              9.793939,
+              2.483242
+            ]
+          },
+          "object_bounds": {
+            "min_mm": [
+              -4.896969,
+              -4.896969,
+              0.258379
+            ],
+            "max_mm": [
+              4.896969,
+              4.896969,
+              2.741621
+            ],
+            "size_mm": [
+              9.793939,
+              9.793939,
+              2.483242
+            ]
+          }
+        },
+        {
+          "name": "_3221_Mini_Panel_Mount_Switch_v2",
+          "label": "3221 Mini Panel Mount Switch v010",
+          "type": "App::Part",
+          "dependencies": [
+            "Origin",
+            "Part__Feature",
+            "Part__Feature001",
+            "Part__Feature002",
+            "Part__Feature003",
+            "Part__Feature004",
+            "Part__Feature005",
+            "Part__Feature006",
+            "Part__Feature007",
+            "Part__Feature008",
+            "Part__Feature009"
+          ],
+          "global_placement": {
+            "translation_mm": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "quaternion_xyzw": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          },
+          "valid": false,
+          "solids": 10,
+          "faces": 219,
+          "volume_mm3": 1383.261873,
+          "shape_bounds": {
+            "min_mm": [
+              -5.411961,
+              -6.6,
+              -13.5
+            ],
+            "max_mm": [
+              5.411961,
+              6.6,
+              19.832779
+            ],
+            "size_mm": [
+              10.823922,
+              13.2,
+              33.332779
+            ]
+          },
+          "object_bounds": {
+            "min_mm": [
+              -5.411961,
+              -6.6,
+              -13.5
+            ],
+            "max_mm": [
+              5.411961,
+              6.6,
+              19.832779
+            ],
+            "size_mm": [
+              10.823922,
+              13.2,
+              33.332779
+            ]
+          }
+        }
+      ],
+      "source_path": "adafruit/3221 Toggle Switch/3221 Toggle Switch.step",
+      "revision": "6f52ee4d48df0e7118d2d82f485cb572051a24fe",
+      "git_blob_sha1": "f8e0d1fe8a877418e54fcebe676b424a46983d8c",
+      "native_file_sha256": "ba990f67a2153664c6e9733a3d442c74f802c166f0cd14c11ca6ca7881f605d2"
+    },
+    {
+      "object_count": 172,
+      "shape_object_count": 108,
+      "invalid_shape_objects": [],
+      "objects": [],
+      "source_path": "adafruit/815 Servo Driver 16 Channel/815 Servo Driver 16 Channel.step",
+      "revision": "6f52ee4d48df0e7118d2d82f485cb572051a24fe",
+      "git_blob_sha1": "320f8f0fff5eb2ca594e2c3e1092ced7f4f1b4e2",
+      "native_file_sha256": "f41a9c1f5245c2edff9e38735a85d96ef939ecf263f42d2bcce62fc05eaa10b6"
+    }
+  ],
+  "existing_stl_meshes": [
+    {
+      "path": "assets/stl/upstream/Bottom-Cover-v121.stl",
+      "sha256": "6c2cce125cea714c0e710ee904b82a9e51f02c815f523cc73b0b3b949d96f0c7",
+      "matches_simulator_asset": true,
+      "closed": true,
+      "facets": 1702,
+      "volume_mm3": 16976.523438,
+      "bounds": {
+        "min_mm": [
+          -13.592834,
+          -1.001983,
+          -24.738348
+        ],
+        "max_mm": [
+          65.632553,
+          6.268017,
+          29.504803
+        ],
+        "size_mm": [
+          79.225387,
+          7.27,
+          54.243151
+        ]
+      }
+    },
+    {
+      "path": "assets/stl/upstream/Internal-Frame-v121.stl",
+      "sha256": "6df1f1f0fc60da4498de36412be317fc953dc52c33a9933733e2c967c200c916",
+      "matches_simulator_asset": true,
+      "closed": true,
+      "facets": 7780,
+      "volume_mm3": 36287.414062,
+      "bounds": {
+        "min_mm": [
+          -13.592834,
+          6.268017,
+          -31.656773
+        ],
+        "max_mm": [
+          65.632553,
+          21.967756,
+          36.423229
+        ],
+        "size_mm": [
+          79.225387,
+          15.699739,
+          68.080002
+        ]
+      }
+    },
+    {
+      "path": "assets/stl/upstream/L1-v117.stl",
+      "sha256": "081896568cc9776393c038d05ecc8caf01090c6971efebe799d064def4c92558",
+      "matches_simulator_asset": true,
+      "closed": true,
+      "facets": 7186,
+      "volume_mm3": 5211.483398,
+      "bounds": {
+        "min_mm": [
+          -12.44673,
+          8.877757,
+          -66.187454
+        ],
+        "max_mm": [
+          7.873271,
+          39.357758,
+          -16.666773
+        ],
+        "size_mm": [
+          20.32,
+          30.48,
+          49.520681
+        ]
+      }
+    },
+    {
+      "path": "assets/stl/upstream/L2-v117.stl",
+      "sha256": "4e47eef40bf523aa0d7b0ac285f3086b3e6c5ccd347525f5c93bbf0c5bcd1fbf",
+      "matches_simulator_asset": true,
+      "closed": true,
+      "facets": 7666,
+      "volume_mm3": 5208.726562,
+      "bounds": {
+        "min_mm": [
+          -12.44673,
+          8.877757,
+          16.666773
+        ],
+        "max_mm": [
+          7.873271,
+          39.357758,
+          66.187454
+        ],
+        "size_mm": [
+          20.32,
+          30.48,
+          49.520681
+        ]
+      }
+    },
+    {
+      "path": "assets/stl/upstream/L3-v117.stl",
+      "sha256": "136b0f28814629c654a45da1ebed93f496399c0d97007c6c02e1df4422be56a3",
+      "matches_simulator_asset": true,
+      "closed": true,
+      "facets": 2052,
+      "volume_mm3": 4693.603027,
+      "bounds": {
+        "min_mm": [
+          3.762933,
+          5.702757,
+          -106.906769
+        ],
+        "max_mm": [
+          13.287933,
+          24.752756,
+          -48.486767
+        ],
+        "size_mm": [
+          9.525,
+          19.049999,
+          58.420002
+        ]
+      }
+    },
+    {
+      "path": "assets/stl/upstream/L4-v117.stl",
+      "sha256": "731819f13cd34efb4ab1b9121e9fae835a463ae11f6689670f7800113ec7b470",
+      "matches_simulator_asset": true,
+      "closed": true,
+      "facets": 1826,
+      "volume_mm3": 4712.662109,
+      "bounds": {
+        "min_mm": [
+          3.762933,
+          5.702757,
+          48.486767
+        ],
+        "max_mm": [
+          13.287933,
+          24.752756,
+          106.906769
+        ],
+        "size_mm": [
+          9.525,
+          19.049999,
+          58.420002
+        ]
+      }
+    },
+    {
+      "path": "assets/stl/upstream/R1-v117.stl",
+      "sha256": "443f956016ad416699d8d5e56ab2fb0e36b10d42f02ff47ea02ae5986180e871",
+      "matches_simulator_asset": true,
+      "closed": true,
+      "facets": 7594,
+      "volume_mm3": 5207.186035,
+      "bounds": {
+        "min_mm": [
+          -12.44673,
+          8.877757,
+          16.666773
+        ],
+        "max_mm": [
+          7.873271,
+          39.357758,
+          66.187454
+        ],
+        "size_mm": [
+          20.32,
+          30.48,
+          49.520681
+        ]
+      }
+    },
+    {
+      "path": "assets/stl/upstream/R2-v117.stl",
+      "sha256": "fab2770d0d7f1384c4888e2b3a25cd7a6729c2b4230894b4771a177b73c6452c",
+      "matches_simulator_asset": true,
+      "closed": true,
+      "facets": 7578,
+      "volume_mm3": 5190.330566,
+      "bounds": {
+        "min_mm": [
+          -12.44673,
+          8.877757,
+          -66.187454
+        ],
+        "max_mm": [
+          7.873271,
+          39.357758,
+          -16.666773
+        ],
+        "size_mm": [
+          20.32,
+          30.48,
+          49.520681
+        ]
+      }
+    },
+    {
+      "path": "assets/stl/upstream/R3-v117.stl",
+      "sha256": "c2c35b4c948849878649d99e512af6702b5fcbbd2b30578bbec87ab15b8ec99e",
+      "matches_simulator_asset": true,
+      "closed": true,
+      "facets": 2116,
+      "volume_mm3": 4712.57959,
+      "bounds": {
+        "min_mm": [
+          3.762933,
+          5.702757,
+          48.486767
+        ],
+        "max_mm": [
+          13.287933,
+          24.752756,
+          106.906769
+        ],
+        "size_mm": [
+          9.525,
+          19.049999,
+          58.420002
+        ]
+      }
+    },
+    {
+      "path": "assets/stl/upstream/R4-v117.stl",
+      "sha256": "131348a19491edad32f29d7a64109fdfadc3a03e01feedbf08dc1769e050938a",
+      "matches_simulator_asset": true,
+      "closed": true,
+      "facets": 1890,
+      "volume_mm3": 4698.196289,
+      "bounds": {
+        "min_mm": [
+          3.762933,
+          5.702757,
+          -106.906769
+        ],
+        "max_mm": [
+          13.287933,
+          24.752756,
+          -48.486767
+        ],
+        "size_mm": [
+          9.525,
+          19.049999,
+          58.420002
+        ]
+      }
+    },
+    {
+      "path": "assets/stl/upstream/Top-Cover-Enclosed-v117.stl",
+      "sha256": "07bf63aefab29fdde65b706b0b5fd62e283c62c8381022089598e00f32870a26",
+      "matches_simulator_asset": true,
+      "closed": false,
+      "facets": 3682,
+      "volume_mm3": 14571.530273,
+      "bounds": {
+        "min_mm": [
+          -13.592834,
+          21.967756,
+          -16.308773
+        ],
+        "max_mm": [
+          65.632553,
+          60.155609,
+          21.075228
+        ],
+        "size_mm": [
+          79.225387,
+          38.187853,
+          37.384001
+        ]
+      }
+    }
+  ],
+  "detail": "Selected frame/leg and invalid objects; complete hierarchy is in the local work/freecad-import-full.json."
+}

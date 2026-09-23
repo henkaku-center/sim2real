@@ -96,6 +96,46 @@ physical calibration or component fit is implied by downloading a CAD assembly.
 
 ## Primary sources reviewed
 
+### Follow-up: fengyuGbt/freecad-ai
+
+Reviewed README, repository tree, `modeling.py` and `agent.py` at commit
+`944fc5279d7077af6206f0b64df4be75640e98c5` on 2026-09-23:
+[repository](https://github.com/fengyuGbt/freecad-ai).
+
+Useful patterns: named modeling operations, object references by name, numeric
+argument handling, and feedback containing volume/bounds after a geometry operation.
+Its semantic-tool examples support keeping complex geometric construction inside
+ordinary code rather than requiring an LLM to invent long coordinate arrays.
+
+It is a headless Python modeling/agent-loop project, not the live GUI MCP bridge
+we discussed. README's verified environment is Windows FreeCAD 1.0.2; that is not
+evidence of a tested macOS course workflow. Sketch/constraint repair and assembly
+integration are listed as roadmap work. Its fillet/chamfer helpers explicitly
+return non-parametric `Part::Feature` objects, so they are not a solution for
+preserving interactive feature history throughout a model.
+
+The cut-quality heuristic flags removal of less than 90% of the cutting tool's
+volume; this can flag legitimate through-cuts whose tools extend beyond a part.
+Use design-specific geometric assertions rather than adopting that heuristic as
+a general correctness test. The reviewed source also resolves every matching
+string argument as an object, not only object-reference parameters; a name
+argument can therefore be misinterpreted. These are source-review observations,
+not results of executing the package.
+
+README says **license TBD** and the inspected tree has no LICENSE. Recommendation:
+treat it as a useful research reference, not a dependency to vendor into this repo.
+No package installation, code copying or external LLM calls were made. Our import
+and audit scripts use FreeCAD's own API directly.
+
+### Local implementation status
+
+The installed FreeCAD 1.1.3 imported all four STEP models, saved native documents,
+reopened them for inspection and displayed the Sesame working assembly in the GUI.
+See [import results](../assets/cad/README.md#freecad-import-and-inspection).
+The working file retains upstream geometry and an empty S3-component group with
+build provenance; it does not yet position measured electronics. Python-driven
+document access is proven locally; a live MCP bridge remains uninstalled.
+
 - [FreeCAD features](https://www.freecad.org/features.php): native parametric properties,
   Python API, built-in assembly workbench, sketches and STEP support.
 - [CadQuery introduction](https://cadquery.readthedocs.io/en/latest/intro.html): Python

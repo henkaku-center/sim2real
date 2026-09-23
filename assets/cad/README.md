@@ -16,8 +16,8 @@ python3 tools/fetch_cad.py --verify-only
 `sources.json` pins upstream commit, URL, byte count, Git blob hash and declared
 repository license for every file. The downloader verifies those bytes before
 saving. Existing modified files cause an error instead of being overwritten.
-The 11-file download is **77,010,776 bytes** including licenses and the upstream
-CAD README. `upstream/` is a gitignored, reproducible local cache. Keep original
+The 22-file download is **79,565,300 bytes** including licenses, the upstream
+CAD README and 11 comparison STLs. `upstream/` is a gitignored, reproducible local cache. Keep original
 downloads intact and make working designs elsewhere. Git LFS was unavailable on
 the research machine; large downloaded assets are not committed as raw blobs.
 Authored native CAD files should follow the repository's Git LFS policy.
@@ -74,6 +74,50 @@ They are comparison candidates, not certified substitutes for RCmall/other MG90S
 KKHMF PCA9685 or ALAMSCN toggle purchases. Matching mounting datums, shaft geometry,
 connectors and assembled height is still required.
 
-FreeCAD was not found on PATH or in standard application locations during this
-session. No GUI import, topology validation, assembly placement or dimensional
-comparison has yet been performed. File integrity checks do not establish fit.
+## FreeCAD import and inspection
+
+FreeCAD **1.1.3**, revision `145529fe741292ff0b3977a01195bf0247425794`, was installed
+by the instructor and exercised on macOS on 2026-09-23. From the repository root:
+
+```sh
+/Applications/FreeCAD.app/Contents/Resources/bin/freecadcmd tools/inspect_cad.py
+open -n -a /Applications/FreeCAD.app --args "$PWD/tools/open_cad.FCMacro"
+```
+
+The importer creates native documents in ignored `work/` on first run, including
+`Sesame-S3-layout-start.FCStd`. Later runs audit existing reference documents and
+preserve the working document. The viewer macro opens the working document,
+enables model visibility, hides datum axes/planes and captures a viewport image.
+It does not save over an existing GUI document; save interactively to retain view
+changes. Avoid repeatedly launching new application instances; the macro can also
+be run from FreeCAD's Macro menu. Native documents and screenshots are local, not
+uploaded to Git. They are an initial reference workspace, not a fitted S3 assembly.
+
+### Results
+
+| Source | Part features | Invalid leaf shapes | Notes |
+|---|---:|---:|---|
+| Sesame assembly | 492 | 1 | Old KCD1-B2 rocker; its parent and assembly also report invalid |
+| Adafruit micro-servo | 6 | 0 | Candidate model only |
+| Adafruit toggle | 10 | 3 | Three solids fail validity; aggregate also reports invalid |
+| Adafruit PCA9685 | 100 | 0 | Candidate model only |
+
+The full document counts additionally include containers and generated coordinate
+systems. Do not sum nested object volumes. The report distinguishes object-local
+bounds from placements; it does not claim each bounding box is an assembly-global
+envelope. FreeCAD sanitized malformed control characters in some imported servo
+labels while saving; original STEP files remain intact.
+
+Frame, bottom cover and all eight leg-part shapes pass `isValid()`. STEP-versus-STL
+volume differences are below 0.09% (frame −0.085%, bottom cover −0.056%, legs
++0.007% to +0.014%). This supports similarity, not geometric identity or fit:
+surface registration and mounting-datum comparisons are still needed.
+
+The simulator STL checkout contained Git LFS pointers. Matching upstream files
+were downloaded into the CAD cache; all 11 SHA-256 hashes match the simulator's
+pointer identities. Empty meshes and hash mismatches are rejected by the inspector.
+
+Evidence: [compact audit](reports/freecad-import.json); complete hierarchy in local
+`work/freecad-import-full.json`; GUI viewport in local `work/sesame-isometric.png`.
+The assembly was visibly rendered in FreeCAD. No invalid geometry was silently
+repaired, and no physical fit or joint calibration was inferred from these checks.

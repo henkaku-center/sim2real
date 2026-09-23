@@ -1,0 +1,32 @@
+"""Open the local working assembly and capture an isometric viewport."""
+from pathlib import Path
+import FreeCAD as App
+import FreeCADGui as Gui
+from PySide import QtCore
+
+root = Path(__file__).resolve().parents[1]
+work = root / "assets" / "cad" / "work"
+path = work / "Sesame-S3-layout-start.FCStd"
+doc = next((d for d in App.listDocuments().values() if d.FileName == str(path)), None)
+if doc is None:
+    doc = App.openDocument(str(path))
+App.setActiveDocument(doc.Name)
+for obj in doc.Objects:
+    if obj.TypeId in ("Part::Feature", "App::Part", "App::DocumentObjectGroup"):
+        obj.ViewObject.show()
+    elif obj.TypeId in ("App::Origin", "App::Line", "App::Plane", "App::Point"):
+        obj.ViewObject.hide()
+doc.recompute()
+Gui.activeDocument().activeView().viewAxonometric()
+Gui.activeDocument().activeView().fitAll()
+
+
+def capture():
+    view = Gui.activeDocument().activeView()
+    view.viewAxonometric()
+    view.fitAll()
+    view.saveImage(str(work / "sesame-isometric.png"), 1600, 1200, "White")
+    (work / "gui-opened.txt").write_text("Opened working document and captured viewport.\n")
+
+
+QtCore.QTimer.singleShot(1500, capture)
