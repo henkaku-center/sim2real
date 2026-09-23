@@ -33,3 +33,16 @@ not visible. Current installed firmware is the temporary load diagnostic. Source
 **Manifest boundary:** preserve D2's simulator conventions and current manifest pending measured S3
 channel/joint/direction calibration. The new firmware's intended mapping is not yet verified on this
 assembly. Do not pass raw new PCA channel numbers to the simulator's logical channel interface.
+
+## D4. Assembly-model ownership and position-servo scope (2026-09-23)
+
+**Decision:** Keep component geometry and the electronics assembly model in `sim2real`,
+linked by ASIN to APS's canonical purchasing inventory. Instructor confirmed the
+70 × 50 mm carrier B071JYD6QP and the battery/converter/toggle purchases recorded in
+`reference/ELECTRONICS-CAD-SOURCES.md`. The 60 × 80 mm carrier is a mistaken purchase.
+
+Support the mixed position-controlled MG90S purchases through a shared parametric
+family with variant overrides and verified mounting geometry. The instructor excluded
+continuous-rotation HiRCgo MG90D B0FH1KZ64Y as a mistaken purchase: leg joints require
+fixed-angle positioning. This supersedes the earlier discussion's all-four-purchases
+compatibility target. Procurement quantities and available working stock are distinct.

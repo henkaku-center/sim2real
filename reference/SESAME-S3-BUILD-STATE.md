@@ -4,6 +4,9 @@
 Instructor decision: this **S3 SuperMini + PCA9685 perfboard build is the APS-II course default**.
 Course-facing record: `../aps/docs/planning/aps-ii/BUILD-STATE.md` (from this repo root).
 
+Component identities, 2026-09-23 instructor confirmations, CAD-source research and
+remaining assembly measurements: [Electronics CAD sources](ELECTRONICS-CAD-SOURCES.md).
+
 ## Start here next session
 
 **Installed firmware is `servo-load-test`, not the full Sesame controller.** It boots with all
