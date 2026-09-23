@@ -226,6 +226,60 @@ and no pin intersection with either board substrate or the tape. A temporary gap
 change from 0.5 to 0.7 mm preserved the flush ends through expressions; that test
 change was not saved. The working GUI comparison is saved with the 0.5 mm gap.
 
+## Detachable servo hub — research and assembly evidence (2026-09-24)
+
+Installed purchase: PCA9685 hub **B078YRJ8D7**, listing outline **61 × 25 mm**.
+Instructor confirmed that the two six-pin mounting/interconnect strips use
+**symmetric male headers with long metal ends on both sides**, not ordinary
+short-tail headers. Each strip receives an additional plastic spacer harvested
+from a donor header, alongside its original spacer. Dimensions of the symmetric
+pins, individual spacers and female sockets are not yet measured.
+
+Photos 08–10 show donor-spacer removal and the doubled spacer stack. Photo 11
+shows the two modified male strips below the hub and solder on its top face.
+Photos 12–13 show the female sockets being fitted; photo 15 shows the completed
+stack above the converter. The instructor confirms that the **female sockets are
+soldered to the carrier** and the hub remains **detachable**, elevated to clear
+the converter's gold potentiometer screw. The photos retain the 16 three-pin
+servo-output connectors. The desolder/replacement instruction is interpreted as
+applying to the two end interconnect headers, not those output connectors.
+
+Conditional preparation: if those end headers arrive already soldered, remove
+them before installing the symmetric double-ended header arrangement. Their
+actual as-delivered state is not established here. Preserve both possible starting
+states in future instruction authoring.
+
+Photo 14 is annotated **A → X** and **3 → 8**, suggesting six-pin sockets at
+**A3–A8 and X3–X8**. This is a **photo interpretation awaiting instructor
+confirmation**, not adopted placement coordinates. The carrier-top to hub-PCB-
+underside distance and actual clearance from the gold screw remain unknown.
+Clearance checks must include hub underside solder/tails, not only the PCB plane.
+
+### CAD search results
+
+- Official Adafruit downloads page:
+  `https://learn.adafruit.com/16-channel-pwm-servo-driver/downloads`
+  links the manufacturer's STEP/Fusion assets in `adafruit/Adafruit_CAD_Parts`,
+  directory `815 Servo Driver 16 Channel`. Existing pinned revision is
+  `6f52ee4d48df0e7118d2d82f485cb572051a24fe` (MIT; provenance already in
+  `assets/cad/sources.json`). Rechecked native `assets/cad/work/Adafruit-815.FCStd`
+  headlessly: 100 shape objects; its valid single-solid `Board` object
+  (`Part__Feature`) measures **62.23 × 25.4 × 1.57 mm**. This is a usable reference,
+  not a verified model of B078YRJ8D7. No model was scaled or substituted.
+- A search lead identifies Nelson Stoldt's *PCA9685 16 Channel 12 Bit Servo Driver
+  (Generic & Adafruit)*, reportedly with FreeCAD and STEP variants. The expected
+  primary GrabCAD page at
+  `https://grabcad.com/library/pca9685-16-channel-12-bit-servo-driver-generic-adafruit-1`
+  returned only the generic site shell through the fetch tool. File dimensions,
+  source contents and license are **not verified**; no file adopted. Aggregator
+  listings are discovery leads, not engineering evidence.
+- Another generic model search lead is Printables model 341031, *PCA9685 16 Channel
+  12 Bit Servo Driver*; direct retrieval returned HTTP 403. Not inspected/adopted.
+
+The construction record is `assets/cad/instructions/servo-hub-installation.json`.
+There is not yet an installed hub CAD object or snapshot; exact coordinates,
+stack height and candidate geometry require validation first.
+
 ## Model construction plan
 
 - Store a reusable family definition and per-ASIN overrides for position servos:

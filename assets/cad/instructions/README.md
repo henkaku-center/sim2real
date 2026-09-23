@@ -14,6 +14,10 @@ and viewer implementation are deferred.** These files preserve the inputs now.
   of the current native object bindings, transforms, dimensions, visibility and
   materials. Native GUI edits remain authoritative; refresh the snapshot after
   saving changes. It must never be used to overwrite the CAD automatically.
+- [`servo-hub-installation.json`](servo-hub-installation.json): detachable hub
+  construction, symmetric long-on-both-sides male headers, added spacers and
+  carrier-mounted female sockets. Placement/height are pending confirmation;
+  no hub CAD binding or animation is implied by this early record.
 - [`../../../reference/ELECTRONICS-CAD-SOURCES.md`](../../../reference/ELECTRONICS-CAD-SOURCES.md):
   dimensional evidence, model modifications and unresolved details.
 
