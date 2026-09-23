@@ -8,6 +8,13 @@
   "units": {"length": "mm"},
   "evidence_record": "../../../reference/ELECTRONICS-CAD-SOURCES.md#detachable-servo-hub--research-and-assembly-evidence-2026-09-24",
   "cad_snapshot": null,
+  "selected_cad_candidate": {
+    "filename": "pca9685.step",
+    "audit_record": "../reports/servo-hub-uploaded-candidates.json",
+    "starting_state": "Two end-header rows already bare; preserve servo-output headers",
+    "instructor_selection": "STEP looks better and already has end pins absent",
+    "fit_status": "Unverified: 57.46 mm row span vs 58.42 mm for inferred carrier columns A-X"
+  },
   "parts": {
     "hub": {"quantity": 1, "cad_binding": null},
     "factory_end_headers": {"quantity_if_present": 2, "as_delivered_presence": null, "final_state": "replaced_if_present"},

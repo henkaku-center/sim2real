@@ -1,0 +1,70 @@
+{
+  "schema_version": 1,
+  "inspection_date": "2026-09-24",
+  "tool": "FreeCAD 1.1.3 on macOS",
+  "source": "Two instructor-uploaded files following discussion of GrabCAD pca9685-8; exact authorship/license not established from upload",
+  "cache_directory": "assets/cad/upstream/pca9685-uploaded",
+  "selected_candidate": "pca9685.step",
+  "selection_evidence": "Instructor visual feedback: STEP looks better and end pins are already absent",
+  "installed_match_status": "unverified; header-row span discrepancy must be resolved",
+  "files": [
+    {
+      "name": "pca9685.step",
+      "bytes": 37837817,
+      "sha256": "729f86d58615fe78411c493129f28bddd675943c1f008a4d414bb4e2520f712a",
+      "header_exporter": "FreeCAD / Open CASCADE STEP processor 7.6",
+      "header_export_timestamp": "2023-05-13T20:48:13",
+      "solid_count": 321,
+      "shell_count": 321,
+      "face_count": 12681,
+      "valid_shape": true,
+      "all_solids_valid": true,
+      "native_document": "ServoHub_STEP.FCStd",
+      "native_shape_objects": 321,
+      "pcb_outline_mm": [60, 25],
+      "pcb_thickness_mm": 1.6,
+      "pcb_datum": "PCB underside Z=0; top Z=1.6; board centered at XY origin",
+      "pcb_evidence": "Large planar underside/top faces span X=-30..30 and Y=-12.5..12.5 at Z=0/1.6; not the full assembly bounding box",
+      "combined_body": {"native_object": "Part__Feature320", "label": "Platine", "note": "One combined solid includes PCB and major components; label does not imply PCB-only geometry or original native feature history"},
+      "end_headers": {
+        "populated": false,
+        "rows": 2,
+        "holes_per_row": 6,
+        "x_centers_mm": [-28.73, 28.73],
+        "y_centers_mm": [-6.35, -3.81, -1.27, 1.27, 3.81, 6.35],
+        "pitch_mm": 2.54,
+        "row_span_mm": 57.46,
+        "bore_diameter_mm": 1.0,
+        "evidence": "Analytic circular edges on combined-body terminal bores"
+      },
+      "servo_outputs": "16 three-pin output headers retained",
+      "assembly_z_bounds_mm": [-1.4629528503420002, 13.61],
+      "status": "preferred candidate; unmodified import"
+    },
+    {
+      "name": "PCA9685.IGS",
+      "bytes": 7528420,
+      "sha256": "41ba8aa02a186b815da6af9610cf382ee15d6ca88766f54790e4e9dfaed2e4a8",
+      "header_exporter": "SolidWorks 2015",
+      "solid_count": 0,
+      "shell_count": 0,
+      "face_count": 1546,
+      "valid_shape": true,
+      "validity_meaning": "Individual surface geometry validity, not a watertight solid assembly",
+      "native_document": "ServoHub_IGES.FCStd",
+      "native_shape_objects": 1546,
+      "status": "surface reference only; not selected; no sewing/repair attempted"
+    }
+  ],
+  "carrier_comparison": {
+    "inferred_addresses": ["A3-A8", "X3-X8"],
+    "addresses_confirmed": false,
+    "carrier_pitch_mm": 2.54,
+    "carrier_A_to_X_span_mm": 58.42,
+    "candidate_span_shortfall_mm": 0.96,
+    "installed_listing_outline_mm": [61, 25],
+    "conclusion": "Visual match does not establish dimensional fit. Confirm carrier addresses and installed height; do not globally scale geometry or silently bend pins to absorb discrepancy."
+  },
+  "native_storage": "Local ignored cache; no redistribution permission inferred from uploaded geometry",
+  "full_local_audits": ["step-audit.json", "igs-audit.json", "step-board-features.json", "ServoHub_STEP-objects.json", "ServoHub_IGES-objects.json"]
+}

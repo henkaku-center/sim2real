@@ -288,6 +288,36 @@ The construction record is `assets/cad/instructions/servo-hub-installation.json`
 There is not yet an installed hub CAD object or snapshot; exact coordinates,
 stack height and candidate geometry require validation first.
 
+### Uploaded candidate inspection
+
+Instructor supplied `pca9685.step` and `PCA9685.IGS` after proposing GrabCAD
+`pca9685-8`. Both were imported in the existing GUI into separate local comparison
+tabs, without changing the installed converter/carrier. Provenance, file SHA-256
+values and measurements are in
+`assets/cad/reports/servo-hub-uploaded-candidates.json`. Uploaded files and native
+comparison saves remain in ignored `assets/cad/upstream/pca9685-uploaded/`.
+`tools/preview_servo_hub_candidates.py` opens those cached inputs for comparison.
+
+**STEP selected as the candidate by the instructor:** 321 valid solids, named
+components, retained servo outputs and already-bare six-hole end rows. Its file
+header identifies a 2023-05-13 FreeCAD export, not original parametric feature
+history. The large `Platine` solid includes major components as well as the PCB;
+do not treat its entire bounding box as PCB dimensions.
+
+Direct face/edge inspection gives a **60 × 25 × 1.6 mm PCB**, with terminal-row
+centers at **X=±28.73 mm** and six holes at **2.54 mm pitch** along each row.
+Thus its row span is **57.46 mm**, **0.96 mm short** of the **58.42 mm** between
+carrier columns A and X. This also differs from the purchase listing's 61 mm
+board length. The inferred carrier socket addresses are still unconfirmed.
+No scaling, hole relocation, or pin bending has been applied to hide this discrepancy.
+Recorded Z bounds extend approximately 1.463 mm below nominal PCB underside;
+actual underside protrusions and installed clearance still need checking.
+
+**IGES not selected:** SolidWorks 2015 export, 1,546 individual faces with no
+solids or sewn shells on import. Its geometry validity result does not establish
+a closed, watertight assembly. No repair was attempted. It is a distinct model,
+not another encoding of the uploaded STEP.
+
 ## Model construction plan
 
 - Store a reusable family definition and per-ASIN overrides for position servos:
