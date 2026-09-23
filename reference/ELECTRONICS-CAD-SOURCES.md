@@ -250,9 +250,9 @@ actual as-delivered state is not established here. Preserve both possible starti
 states in future instruction authoring.
 
 Photo 14 is annotated **A → X** and **3 → 8**, suggesting six-pin sockets at
-**A3–A8 and X3–X8**. This is a **photo interpretation awaiting instructor
-confirmation**, not adopted placement coordinates. The carrier-top to hub-PCB-
-underside distance and actual clearance from the gold screw remain unknown.
+**A3–A8 and X3–X8**. This began as a photo interpretation; the instructor subsequently
+confirmed those positions and the approximate height, as recorded below.
+The actual minimum clearance from the gold screw remains unmeasured.
 Clearance checks must include hub underside solder/tails, not only the PCB plane.
 
 ### CAD search results
@@ -285,8 +285,8 @@ Clearance checks must include hub underside solder/tails, not only the PCB plane
   12 Bit Servo Driver*; direct retrieval returned HTTP 403. Not inspected/adopted.
 
 The construction record is `assets/cad/instructions/servo-hub-installation.json`.
-There is not yet an installed hub CAD object or snapshot; exact coordinates,
-stack height and candidate geometry require validation first.
+The subsequent placement confirmation and derived hub are described below;
+detailed detachable header/socket geometry remains outstanding.
 
 ### Uploaded candidate inspection
 
@@ -308,8 +308,9 @@ Direct face/edge inspection gives a **60 × 25 × 1.6 mm PCB**, with terminal-ro
 centers at **X=±28.73 mm** and six holes at **2.54 mm pitch** along each row.
 Thus its row span is **57.46 mm**, **0.96 mm short** of the **58.42 mm** between
 carrier columns A and X. This also differs from the purchase listing's 61 mm
-board length. The inferred carrier socket addresses are still unconfirmed.
-No scaling, hole relocation, or pin bending has been applied to hide this discrepancy.
+board length. The carrier addresses were unconfirmed at that inspection stage;
+the instructor subsequently confirmed them, as recorded below. No scaling,
+hole relocation, or pin bending was applied to the uploaded baseline.
 Recorded Z bounds extend approximately 1.463 mm below nominal PCB underside;
 actual underside protrusions and installed clearance still need checking.
 
@@ -317,6 +318,44 @@ actual underside protrusions and installed clearance still need checking.
 solids or sewn shells on import. Its geometry validity result does not establish
 a closed, watertight assembly. No repair was attempted. It is a distinct model,
 not another encoding of the uploaded STEP.
+
+### Confirmed hub placement update
+
+Instructor confirmed female sockets at **A3–A8 and X3–X8**, and estimates
+**14 mm from the carrier top to the hub PCB underside**, just clearing the gold
+adjustment screw. With the nominal 1.6 mm carrier, the hub underside datum is
+therefore **Z=15.6 mm** in carrier-local coordinates. This is an approximate
+installed height, not a measured minimum clearance. Earlier photo-only placement
+uncertainty is superseded; the uploaded STEP's 57.46 mm row span still conflicts
+with the confirmed 58.42 mm socket span. Resolve that model discrepancy explicitly
+before treating the hub as dimensionally fitted. Female socket body height,
+male-pin engagement and individual spacer thicknesses remain unmeasured.
+
+The instructor also reports that the **actual pins fit nicely**, with no noticed
+alignment issue. That physical evidence takes precedence over the uploaded CAD's
+narrower spacing; the discrepancy is not a diagnosed fault in the real build.
+
+`tools/fit_servo_hub_reference.py` creates a separate derived reference, preserving
+the uploaded source. It moves each end strip **0.48 mm outward** and bridges the
+PCB substrate, bringing the row span to **58.42 mm** without scaling the central
+components or the **2.54 mm** pitch. The resulting **60.96 × 25 mm** outline is an
+inferred model correction, not a measurement. End mounting holes move with the
+strips and remain unverified. A 0.035 mm surface-metal sliver crosses one split;
+no projecting pins or component bodies cross the split planes. Decorative source
+legends retain their original placements. The corrected body is a static derived
+solid, not recovered native design history.
+
+`tools/place_servo_hub_candidate.py` places that derived reference in the existing
+local circuitry comparison at **Z=15.6 mm**, with all twelve terminal centers
+aligned to **A3–A8/X3–X8**. The model's gold-screw-to-hub distance is approximately
+**0.984 mm**, consistent with slight clearance but not an independent physical
+clearance measurement. Symmetric male headers, the two-spacer stacks, female
+sockets and hub solder remain to be modeled; the displayed hub is a positioned
+reference rather than a completed support assembly.
+Saved-document checks verified a valid corrected body, all twelve actual terminal
+bores aligned to the carrier, the model screw clearance, and response to a temporary
+14 → 14.5 mm height edit (not saved). The uploaded STEP's SHA-256 is unchanged.
+The refreshed instruction snapshot includes 37 native bindings and the hub parameters.
 
 ## Model construction plan
 

@@ -6,7 +6,16 @@
   "cache_directory": "assets/cad/upstream/pca9685-uploaded",
   "selected_candidate": "pca9685.step",
   "selection_evidence": "Instructor visual feedback: STEP looks better and end pins are already absent",
-  "installed_match_status": "unverified; header-row span discrepancy must be resolved",
+  "installed_match_status": "Uploaded baseline retains span mismatch; separate derived reference is corrected and placed at confirmed sockets. Other source dimensions remain provisional.",
+  "derived_reference": {
+    "file": "ServoHub_FittedReference.FCStd",
+    "operation": "Translate end strips 0.48 mm outward and bridge PCB substrate; no uniform scaling",
+    "row_span_mm": 58.42,
+    "inferred_outline_mm": [60.96, 25],
+    "placement": "A3-A8 and X3-X8; hub underside 14 mm above carrier top",
+    "model_screw_clearance_mm": 0.9836487153819995,
+    "limitations": "Outline and moved mounting holes inferred; actual minimum clearance unmeasured; detailed headers not yet modeled"
+  },
   "files": [
     {
       "name": "pca9685.step",
@@ -58,12 +67,15 @@
   ],
   "carrier_comparison": {
     "inferred_addresses": ["A3-A8", "X3-X8"],
-    "addresses_confirmed": false,
+    "addresses_confirmed": true,
+    "installed_height_above_carrier_top_mm": 14,
+    "height_evidence": "Instructor approximate measurement; hub just clears gold screw",
+    "physical_fit_evidence": "Instructor reports the real pin/socket assembly fits nicely without noticed alignment issues",
     "carrier_pitch_mm": 2.54,
     "carrier_A_to_X_span_mm": 58.42,
     "candidate_span_shortfall_mm": 0.96,
     "installed_listing_outline_mm": [61, 25],
-    "conclusion": "Visual match does not establish dimensional fit. Confirm carrier addresses and installed height; do not globally scale geometry or silently bend pins to absorb discrepancy."
+    "conclusion": "Confirmed carrier addresses and observed physical mating take precedence over the uploaded reference's narrower span. Correct the reference explicitly; do not globally scale it or invent bent pins."
   },
   "native_storage": "Local ignored cache; no redistribution permission inferred from uploaded geometry",
   "full_local_audits": ["step-audit.json", "igs-audit.json", "step-board-features.json", "ServoHub_STEP-objects.json", "ServoHub_IGES-objects.json"]

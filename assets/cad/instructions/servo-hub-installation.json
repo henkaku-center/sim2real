@@ -2,21 +2,23 @@
   "schema_version": 1,
   "id": "sesame-s3.servo-hub-installation",
   "recorded_on": "2026-09-24",
-  "status": "construction_record_placement_pending",
+  "status": "hub_placed_header_geometry_pending",
   "scope": "Detachable PCA9685 hub mounted above the converter; animation deferred",
   "asin": "B078YRJ8D7",
   "units": {"length": "mm"},
   "evidence_record": "../../../reference/ELECTRONICS-CAD-SOURCES.md#detachable-servo-hub--research-and-assembly-evidence-2026-09-24",
-  "cad_snapshot": null,
+  "cad_snapshot": "converter-cad-snapshot.json",
   "selected_cad_candidate": {
     "filename": "pca9685.step",
     "audit_record": "../reports/servo-hub-uploaded-candidates.json",
     "starting_state": "Two end-header rows already bare; preserve servo-output headers",
     "instructor_selection": "STEP looks better and already has end pins absent",
-    "fit_status": "Unverified: 57.46 mm row span vs 58.42 mm for inferred carrier columns A-X"
+    "fit_status": "Uploaded original is 57.46 mm; derived local reference corrected to the confirmed 58.42 mm socket span, without uniform scaling",
+    "derived_file": "assets/cad/upstream/pca9685-uploaded/ServoHub_FittedReference.FCStd",
+    "correction": "Move each board end strip outward 0.48 mm; bridge PCB substrate. Inferred outline 60.96 x 25 mm; central devices and 2.54 mm row pitch unchanged. Mounting-hole positions are moved with end strips and remain unverified."
   },
   "parts": {
-    "hub": {"quantity": 1, "cad_binding": null},
+    "hub": {"quantity": 1, "cad_binding": {"snapshot_document": "comparison", "semantic_id": "servo_hub", "native_object": "ServoHubCandidate"}},
     "factory_end_headers": {"quantity_if_present": 2, "as_delivered_presence": null, "final_state": "replaced_if_present"},
     "symmetric_male_headers": {"quantity": 2, "positions_each": 6, "construction": "Long metal ends on BOTH sides of the original plastic spacer; instructor-confirmed", "metal_length_mm": null, "pitch_mm": null, "cad_binding": null},
     "original_spacers": {"quantity": 2, "positions_each": 6, "final_state": "retained_on_symmetric_headers", "thickness_mm": null},
@@ -34,11 +36,15 @@
     "clearance_target": "Converter gold adjustment screw, including any hub underside solder/tails above it"
   },
   "placement": {
-    "confirmed_socket_addresses": null,
+    "confirmed_socket_addresses": [["A3", "A4", "A5", "A6", "A7", "A8"], ["X3", "X4", "X5", "X6", "X7", "X8"]],
     "photo_inferred_socket_addresses": [["A3", "A4", "A5", "A6", "A7", "A8"], ["X3", "X4", "X5", "X6", "X7", "X8"]],
-    "inference_evidence": "Album photo 14 annotations A→X and 3→8; awaiting instructor confirmation",
-    "carrier_top_to_hub_underside_mm": null,
+    "inference_evidence": "Album photo 14 annotations A→X and 3→8, subsequently confirmed by instructor",
+    "carrier_top_to_hub_underside_mm": 14,
+    "height_evidence": "Instructor physical estimate: approximately 1.4 cm, just clearing the gold screw; exact minimum clearance not measured",
+    "physical_mating_evidence": "Instructor reports the actual pins fit nicely across the two boards with no noticed alignment issue; uploaded CAD span discrepancy is not evidence of a physical-build fault",
     "screw_clearance_mm": null,
+    "model_screw_clearance_mm": 0.9836487153819995,
+    "model_clearance_evidence": "Calculated against the placed derived hub; depends on approximate component heights, not a physical minimum-clearance measurement",
     "engagement_depth_mm": null
   },
   "steps": [
@@ -51,6 +57,6 @@
     {"id": "seat_and_check_clearance", "depends_on": ["solder_carrier_sockets"], "instruction": "Seat the hub in its sockets and check that its underside and soldered tails clear the converter's gold screw.", "before": "Hub removable above fixed sockets", "after": "Installed detachable hub", "photos": ["14", "15"], "evidence": "instructor report and photo observation", "inspection_views": ["top for socket addresses", "side at gold screw for clearance", "exploded view for detachable interface"], "animation_trajectory": null}
   ],
   "photo_numbering": "Same downloaded 25-image album sequence as converter-installation.json; no individual image permalinks captured",
-  "publication_status": "No servo-hub geometry adopted yet; verify candidate source and license before publishing course assets.",
-  "open_questions": ["Confirm inferred socket hole addresses", "Measure installed carrier-top to hub-PCB-underside height", "Identify symmetric header dimensions and female socket height/engagement", "Confirm upper-end protrusion/trimming of the hub's male pins"]
+  "publication_status": "Derived hub geometry is saved in the ignored local comparison; verify candidate source and license before publishing course assets.",
+  "open_questions": ["Verify inferred board outline and moved mounting-hole positions", "Measure exact screw-to-hub underside clearance, including solder/tails", "Identify symmetric header dimensions and female socket height/engagement", "Confirm upper-end protrusion/trimming of the hub's male pins"]
 }

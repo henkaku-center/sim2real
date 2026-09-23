@@ -71,6 +71,13 @@ def main():
                                  ('carrier_hole_fill', 'CarrierHoleSolder_'),
                                  ('bottom_solder', 'BottomSolder_')]:
             bindings.append((f'{semantic}.{address}', 'comparison', prefix + address))
+    hub = docs['comparison'].getObject('ServoHubCandidate')
+    if hub:
+        imported = next(o for o in hub.Group if o.TypeId == 'App::Part')
+        body = next(o for o in docs['comparison'].Objects if o.Label == 'Platine')
+        bindings.extend([('servo_hub', 'comparison', hub.Name),
+                         ('servo_hub.reference', 'comparison', imported.Name),
+                         ('servo_hub.body', 'comparison', body.Name)])
     records = []
     for semantic, document, name in bindings:
         obj = docs[document].getObject(name)
@@ -96,6 +103,13 @@ def main():
         if settings.getTypeIdOfProperty(name) == 'App::PropertyLength':
             parameters[name] = {'value_mm': getattr(settings, name).Value,
                                 'evidence': settings.getDocumentationOfProperty(name)}
+    hub_parameters = {}
+    hub_settings = docs['comparison'].getObject('HubInstallation')
+    if hub_settings:
+        for name in hub_settings.PropertiesList:
+            if hub_settings.getTypeIdOfProperty(name) == 'App::PropertyLength':
+                hub_parameters[name] = {'value_mm': getattr(hub_settings, name).Value,
+                                        'evidence': hub_settings.getDocumentationOfProperty(name)}
     report = {
         'schema_version': 1,
         'captured_at_utc': datetime.now(timezone.utc).isoformat(),
@@ -108,6 +122,7 @@ def main():
                       for key, path in PATHS.items()},
         'placement_note': 'Transforms act on native object-local geometry. Shape data can already contain nonzero vertex coordinates; do not recenter exported meshes without updating transforms.',
         'parameters': parameters,
+        'hub_parameters': hub_parameters,
         'objects': records,
     }
     OUT.write_text(json.dumps(report, indent=2, ensure_ascii=False) + '\n')
