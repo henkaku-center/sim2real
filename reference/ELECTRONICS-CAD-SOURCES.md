@@ -190,6 +190,42 @@ The final comparison passed save/reopen geometry checks, including both 11.5 mm
 capacitor tops, 1 mm screw protrusion, 864 rings, 64 capsules and lettering geometry.
 The earlier element-name warning did not recur in that final headless check.
 
+### Installed converter pins and underside solder (2026-09-24)
+
+Instructor-described construction: four square male header pins were inserted
+short end first from beneath the converter, with the plastic against its underside,
+then soldered on top. The plastic was removed with pliers. Long ends were inserted
+through the carrier, clipped flush beneath it, and the holes filled with solder.
+There are **no retained plastic spacers** on these four pins.
+
+Rechecked the downloaded album sequence: photo 03 shows spacer removal and bare
+pins; photo 04 shows the central tape patch leaving terminal pads exposed; photo 05
+shows top-side solder; photos 06–07 show underside clipping and the four finished
+solder mounds. These support the construction but do not supply precise dimensions.
+The instructor estimates underside solder across the carrier is **typically 1 mm**
+high. This is **not a measured maximum** or an individual measurement of each joint.
+
+`tools/add_converter_pins.py` adds four native editable square pins at O17, V17,
+O1 and V1, plus converter-hole fill, top solder, carrier-hole fill and underside
+solder for each. Their lower metal ends terminate at the carrier underside. The
+underside solder extends **1 mm below that plane**, applying the typical estimate
+uniformly. There is no modeled retained plastic. Further underside joints remain
+to be modeled as the other components are added.
+
+Native `Installation` properties expose provisional pin width **0.64 mm**, top
+projection **0.3 mm**, top solder radius/height **0.9/0.4 mm**, and bottom solder
+radius **0.95 mm**. These dimensions and the conical solder profiles are illustrative,
+not measured. Thickness values remain the carrier's 1.6 mm nominal value and the
+candidate converter's 1.6 mm. Tape coverage is now a central **37.6 × 20.3 mm**
+rectangular approximation with exposed corner pads, based qualitatively on photo 04;
+the three tape layers retain the instructor's combined approximate 0.5 mm separation.
+
+Save/reopen checks verified all four pin centers against the authoritative carrier
+addresses, flush lower pin ends, 1 mm solder projection, valid solder/pin shapes,
+and no pin intersection with either board substrate or the tape. A temporary gap
+change from 0.5 to 0.7 mm preserved the flush ends through expressions; that test
+change was not saved. The working GUI comparison is saved with the 0.5 mm gap.
+
 ## Model construction plan
 
 - Store a reusable family definition and per-ASIN overrides for position servos:
