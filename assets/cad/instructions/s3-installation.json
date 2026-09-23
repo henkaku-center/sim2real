@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "id": "sesame-s3.s3-installation",
+  "recorded_on": "2026-09-24",
+  "cad_snapshot": "converter-cad-snapshot.json",
+  "native_moving_group": "S3SuperMini",
+  "native_fixed_group": "S3FemaleSockets",
+  "footprint": {"rows": [11, 17], "columns": "ABCDEFGHI", "evidence": "Instructor specified A11-I17"},
+  "source": "Instructor upload ESP32-S3_Zero.step; 31 solid component objects retained unscaled. 18 x 23.5 mm PCB, 2.54 mm terminal pitch and 15.24 mm row spacing verified in geometry.",
+  "appearance": "Latest instructor photo: black PCB, gold terminal pads, silver USB-C shell, red antenna. Earlier WROOM upload contains no stored RGB styles; appearance is interpreted from photo, not copied from it.",
+  "headers": {
+    "style": "Long centred male headers, upper ends untrimmed for expansion",
+    "evidence": "Explicit instructor correction, 2026-09-24",
+    "reference": "Purchased PENGLIN B0FJ5NR96F; installed S3 header brand not confirmed",
+    "metal_length_mm": 15,
+    "exposed_each_side_mm": 6.25,
+    "spacer_height_mm": 2.5,
+    "modeled_square_width_mm": 0.6,
+    "width_evidence": "Provisional to fit source 0.9 mm circular bores; not a measured pin section",
+    "upper_projection_mm": 4.63
+  },
+  "socket_reference": "Youmile B0C13N6T48; installed origin unknown. Housing height 8.5 mm and cavity depth 7 mm remain provisional. Simplified hollow contacts, not recovered spring geometry.",
+  "placement": {"pcb_underside_z_mm": 12.6, "usb_direction": "Toward A / carrier outside edge; inferred", "usb_access_envelope_mm": [15, 12, 8]},
+  "steps": [
+    {"id": "prepare_s3_headers", "instruction": "Prepare two nine-pin long centred male strips. Retain original spacers and full upper ends."},
+    {"id": "solder_s3_headers", "depends_on": ["prepare_s3_headers"], "instruction": "Solder both male strips to the S3 with original spacers against its underside. Leave the upper pins available for expansion."},
+    {"id": "mount_s3_sockets", "instruction": "Fit two nine-way female sockets at A11-I11 and A17-I17 and solder underneath the carrier."},
+    {"id": "seat_s3", "depends_on": ["solder_s3_headers", "mount_s3_sockets"], "instruction": "Seat the S3 male strips in the carrier-fixed sockets, plastic-to-plastic. S3, male pins, spacers and top solder detach together."}
+  ],
+  "publication_status": "Uploaded source and native comparison retained locally; redistribution permission not established. Scripts, records and geometry checks versioned."
+}

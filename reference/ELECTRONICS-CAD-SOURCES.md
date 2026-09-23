@@ -5,6 +5,50 @@ not a validated assembly model. Component geometry and the eventual assembly bel
 in `sim2real`; purchase quantities/costs remain canonical in APS
 `docs/ii/inventory/data.json`. Link purchases by ASIN, not just generic component name.
 
+## S3, carrier connectors and underside wiring — 2026-09-24
+
+- Auxiliary strips are **X14–X17** and instructor-corrected **M12–M15**.
+  M12/M13/M14/M15 serve OLED **GND/black, VCC/red, SCL/green, SDA/blue**.
+  X14/X15 are the two switch V+ connections; X16/X17 are battery V+/GND.
+  These signal assignments are explicit instructor evidence and native CAD properties.
+- Four insulated jumpers: red L4–L13 and B3–B9, blue K5–K18, green J6–J14.
+  Native sketches/sweeps separate conductor and insulation; gauges/bends remain illustrative.
+- Instructor supplied `ESP32-S3_Zero.step` and `ESP32-S3-WROOM-1.STEP`.
+  Zero was selected for geometry: 31 valid solid component objects, an 18 × 23.5 mm
+  board, nine holes per side at 2.54 mm pitch and 15.24 mm row separation.
+  It fits **A11–I11 / A17–I17** without scaling. Original files remain local unchanged.
+  USB faces outward toward A as a placement inference. The source's diagonal IC,
+  two buttons and red antenna agree with the instructor's new component photo.
+- WROOM STEP contains no `COLOUR_RGB` records; its default FreeCAD display is not
+  a transferable material palette. The new photo supplies the finish evidence:
+  black PCB, gold pads, silver USB shell, red antenna. Source component boundaries
+  and face assignments are retained, with PCB/pad finish adjusted accordingly.
+- S3 headers are explicitly **long, centred and untrimmed**, retained for top-side
+  expansion. Use the purchased PENGLIN nominal 15 mm / 6.25 mm each exposed side /
+  2.5 mm spacer reference; installed brand remains unconfirmed. No donor spacer is
+  added to the S3. Current model gives 6.25 mm socket engagement and 4.63 mm above
+  the source board's top pad surface. Pin width is provisionally 0.6 mm square to
+  fit the source 0.9 mm bores. Female height 8.5 mm and cavity depth 7 mm remain
+  unmeasured. Modeled PCB underside is Z=12.6 mm.
+- The S3 and its male pins/spacers/top solder move together; female sockets and
+  their tails/bottom solder stay on the carrier. A temporary 10 mm lift test was
+  reverted without saving. Exact overlap checks include imported hub/converter
+  leaves; soldered wire/tail intersections are recorded as intended joints.
+- Sixteen underside bare-wire route segments are modeled in native primitives.
+  Wire diameter 0.5 mm, center Z=-0.8 mm and solder shapes are illustrative.
+  The instructor's top-view diagram resolves the three obscured photo junctions:
+  X15–X16 battery-positive bridge, M15–M18 SDA link and B10–B11 ground bridge.
+  C11 remains separate on OLED VCC. All thin-line routes and four thick jumpers
+  are accounted for; segment boundaries do not establish actual cut lengths.
+  Model topology is checked against eight distinct diagram nets; physical
+  continuity has not been tested. Geometry is not a measurement of solder shape.
+- Construction records: `assets/cad/instructions/s3-installation.json`,
+  `carrier-connections.json`, and `underside-wiring.json`; saved-geometry results
+  are in `assets/cad/reports/s3-installation-check.json` and
+  `underside-wiring-check.json`. Native comparison and source uploads remain
+  local-only pending source redistribution permission; snapshot/scripts/records
+  are committed. Native identities survive the M-strip address correction.
+
 ## Recommended sources
 
 1. **KiCad official 3D libraries** for individual connectors, headers, switches,

@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "id": "sesame-s3.underside-wiring",
+  "recorded_on": "2026-09-24",
+  "evidence": "Instructor underside photograph and statement that these are stripped single-core wires",
+  "photo_orientation": "X at top, A at bottom; numbered rows 18 at left, 1 at right",
+  "native_group": "CarrierUndersideWires",
+  "traced_routes": [
+    ["X17", "V17"], ["X14", "O14", "O17"], ["V1", "V10", "B10"],
+    ["M12", "M10"], ["M14", "J14", "E14", "E17"], ["O1", "B1", "B3", "A3"],
+    ["J6", "A6"], ["K5", "A5"], ["L4", "A4"], ["D10", "D8", "A8"],
+    ["A11", "A9", "B9"], ["M18", "K18", "D18", "D17"], ["M13", "C13", "C11"],
+    ["B10", "B11"], ["M15", "M18"], ["X15", "X16"]
+  ],
+  "unresolved": [],
+  "diagram_resolution": "Instructor top-view diagram resolves B10-B11 ground, M15-M18 SDA and X15-X16 battery-positive links. C11 remains separate on OLED VCC. Thin lines are bare underside wires; thick lines are the four insulated jumpers. Sixteen native route segments account for all thin lines; segment boundaries do not establish actual wire cutting lengths.",
+  "geometry_assumptions": {"wire_diameter_mm": 0.5, "wire_center_z_mm": -0.8, "solder_height_mm": 1, "bend_geometry": "Illustrative rounded joins between editable native cylindrical segments"},
+  "steps": [
+    {"id": "strip_wire", "instruction": "Strip insulation from the single-core wire lengths needed for each route.", "evidence": "Final bare wire confirmed; exact cutting lengths unknown"},
+    {"id": "form_and_solder", "depends_on": ["strip_wire"], "instruction": "Form and solder the clear routes underneath the carrier, preserving the photographed junctions.", "evidence": "Photo-inferred routes; soldering order unknown"},
+    {"id": "confirm_obscured_junctions", "instruction": "Add B10-B11, M15-M18 and X15-X16 as resolved by the instructor's top-view diagram.", "status": "completed"}
+  ],
+  "status": "Diagram-complete physical routing reconstruction; model topology checked against eight distinct diagram nets. Physical continuity not tested."
+}

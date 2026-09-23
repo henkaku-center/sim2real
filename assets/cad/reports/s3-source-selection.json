@@ -1,0 +1,23 @@
+{
+  "selected_geometry": "ESP32-S3_Zero.step",
+  "inputs": [
+    {
+      "file": "ESP32-S3_Zero.step",
+      "bytes": 4171328,
+      "sha256": "ed65e4f65267951585068ae9e3520d527e00234afe3aa5e13a59bcf6efa87d27",
+      "source": "Instructor upload",
+      "distribution": "local-only"
+    },
+    {
+      "file": "ESP32-S3-WROOM-1.STEP",
+      "bytes": 14923277,
+      "sha256": "290c8f1ff930f4a850d2c6a6646c16d878921c66a525cb32e09b64dc69861779",
+      "source": "Instructor upload",
+      "distribution": "local-only"
+    }
+  ],
+  "geometry": "31 valid solid component objects; 18 x 23.5 mm PCB, 2.54 mm pitch, 15.24 mm row spacing",
+  "finish_evidence": "Instructor component photograph: black PCB/gold pads/silver USB/red antenna",
+  "wroom_rgb_styles": 0,
+  "other_candidates": "Mecatron and Sklar variants had approximately 2.5019 mm pitch and 15.0368 mm row spacing; uploaded Zero fits the carrier without scaling. pcblearning candidate not selected after instructor supplied preferred Zero model."
+}

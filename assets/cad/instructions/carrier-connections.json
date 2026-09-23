@@ -4,6 +4,16 @@
   "recorded_on": "2026-09-24",
   "cad_snapshot": "converter-cad-snapshot.json",
   "native_groups": ["AuxiliaryHeaders", "CarrierJumpers"],
+  "instructor_confirmed_pinout": {
+    "M12": {"purpose": "OLED", "signal": "GND", "cable_color": "black"},
+    "M13": {"purpose": "OLED", "signal": "VCC", "cable_color": "red"},
+    "M14": {"purpose": "OLED", "signal": "SCL", "cable_color": "green"},
+    "M15": {"purpose": "OLED", "signal": "SDA", "cable_color": "blue"},
+    "X14": {"purpose": "Power", "signal": "Switch V+ terminal 1"},
+    "X15": {"purpose": "Power", "signal": "Switch V+ terminal 2"},
+    "X16": {"purpose": "Power", "signal": "Battery V+"},
+    "X17": {"purpose": "Power", "signal": "Battery GND"}
+  },
   "short_tail_headers": [
     {"addresses": ["X14", "X15", "X16", "X17"], "evidence": "Instructor-specified", "pins": 4},
     {"addresses": ["M12", "M13", "M14", "M15"], "evidence": "Instructor explicitly corrected the four-pin strip to M12-M15, superseding the initial M13-M16 inference.", "pins": 4}

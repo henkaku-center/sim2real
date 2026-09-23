@@ -1,0 +1,140 @@
+{
+  "status": "PASS",
+  "finished_features": 125,
+  "aligned_pins": 18,
+  "addresses": [
+    "A11",
+    "B11",
+    "C11",
+    "D11",
+    "E11",
+    "F11",
+    "G11",
+    "H11",
+    "I11",
+    "A17",
+    "B17",
+    "C17",
+    "D17",
+    "E17",
+    "F17",
+    "G17",
+    "H17",
+    "I17"
+  ],
+  "source_bore_intersections_mm3": 0,
+  "socket_engagement_mm": 6.25,
+  "male_pin_length_mm": 15,
+  "untrimmed_upper_projection_mm": 4.63,
+  "pcb_underside_z_mm": 12.6,
+  "plastic_mating_gap_mm": 0,
+  "lift_test_mm": 10,
+  "fixed_sockets_remain_fixed": true,
+  "existing_bound_part_intersections": [],
+  "conservative_aabb_clearance_lower_bounds_mm": {
+    "ServoHubCandidate": 0.0
+  },
+  "intended_soldered_contact_overlaps": [
+    {
+      "s3": "S3SocketTail_A11",
+      "existing": "UnderWire_11",
+      "volume_mm3": 0.05583921646493456
+    },
+    {
+      "s3": "S3SocketTail_A11",
+      "existing": "UnderWireSolder_11_0",
+      "volume_mm3": 0.3041607835350636
+    },
+    {
+      "s3": "S3BottomSolder_A11",
+      "existing": "UnderWire_11",
+      "volume_mm3": 0.03772900788696612
+    },
+    {
+      "s3": "S3BottomSolder_A11",
+      "existing": "UnderWireSolder_11_0",
+      "volume_mm3": 0.9352488731479099
+    },
+    {
+      "s3": "S3SocketTail_B11",
+      "existing": "UnderWireSegment_14_0",
+      "volume_mm3": 0.055839216464934706
+    },
+    {
+      "s3": "S3SocketTail_B11",
+      "existing": "UnderWireSolder_14_1",
+      "volume_mm3": 0.30416078353506615
+    },
+    {
+      "s3": "S3BottomSolder_B11",
+      "existing": "UnderWireSegment_14_0",
+      "volume_mm3": 0.03772900046534447
+    },
+    {
+      "s3": "S3BottomSolder_B11",
+      "existing": "UnderWireSolder_14_1",
+      "volume_mm3": 0.9352489388515193
+    },
+    {
+      "s3": "S3SocketTail_C11",
+      "existing": "UnderWire_13",
+      "volume_mm3": 0.05583921646493469
+    },
+    {
+      "s3": "S3SocketTail_C11",
+      "existing": "UnderWireSolder_13_2",
+      "volume_mm3": 0.30416078353506615
+    },
+    {
+      "s3": "S3BottomSolder_C11",
+      "existing": "UnderWire_13",
+      "volume_mm3": 0.03772901028838462
+    },
+    {
+      "s3": "S3BottomSolder_C11",
+      "existing": "UnderWireSolder_13_2",
+      "volume_mm3": 0.9352487650663855
+    },
+    {
+      "s3": "S3SocketTail_D17",
+      "existing": "UnderWire_12",
+      "volume_mm3": 0.05583921646493535
+    },
+    {
+      "s3": "S3SocketTail_D17",
+      "existing": "UnderWireSolder_12_3",
+      "volume_mm3": 0.30416078353506554
+    },
+    {
+      "s3": "S3BottomSolder_D17",
+      "existing": "UnderWire_12",
+      "volume_mm3": 0.03772901028847757
+    },
+    {
+      "s3": "S3BottomSolder_D17",
+      "existing": "UnderWireSolder_12_3",
+      "volume_mm3": 0.9352487650663915
+    },
+    {
+      "s3": "S3SocketTail_E17",
+      "existing": "UnderWire_5",
+      "volume_mm3": 0.05583921646493403
+    },
+    {
+      "s3": "S3SocketTail_E17",
+      "existing": "UnderWireSolder_5_3",
+      "volume_mm3": 0.30416078353506676
+    },
+    {
+      "s3": "S3BottomSolder_E17",
+      "existing": "UnderWire_5",
+      "volume_mm3": 0.03772900046535427
+    },
+    {
+      "s3": "S3BottomSolder_E17",
+      "existing": "UnderWireSolder_5_3",
+      "volume_mm3": 0.9352489388521202
+    }
+  ],
+  "limitations": "Socket dimensions and USB orientation provisional; source internal component overlaps not repaired."
+}

@@ -82,7 +82,7 @@ def main():
     for obj in docs['comparison'].Objects:
         if 'InstructionId' in obj.PropertiesList:
             bindings.append((obj.InstructionId, 'comparison', obj.Name))
-    for name in ['HubMaleHeaders', 'HubFemaleSockets', 'AuxiliaryHeaders', 'CarrierJumpers']:
+    for name in ['HubMaleHeaders', 'HubFemaleSockets', 'AuxiliaryHeaders', 'CarrierJumpers', 'S3SuperMini', 'S3FemaleSockets', 'CarrierUndersideWires']:
         if docs['comparison'].getObject(name):
             bindings.append((name, 'comparison', name))
     for semantic, document, name in bindings:
@@ -102,6 +102,9 @@ def main():
         if hasattr(obj, 'Shape') and obj.TypeId != 'App::Part':
             record['solid_count'] = len(obj.Shape.Solids)
         record['expressions'] = [[path, expression] for path, expression in obj.ExpressionEngine]
+        record['construction_metadata'] = {name: getattr(obj, name) for name in
+            ['Address', 'Addresses', 'ConnectorPurpose', 'Signal', 'CableColor', 'PinoutEvidence', 'SourceObject', 'Evidence']
+            if name in obj.PropertiesList}
         records.append(record)
     parameters = {}
     settings = docs['comparison'].Installation
@@ -134,7 +137,7 @@ def main():
                            'evidence': obj.getDocumentationOfProperty(name)}
                     for name in obj.PropertiesList
                     if obj.getTypeIdOfProperty(name) == 'App::PropertyLength'}
-            for group in ['CarrierConnections', 'S3Installation']
+            for group in ['CarrierConnections', 'S3Installation', 'UndersideWiring']
             if (obj := docs['comparison'].getObject(group)) is not None},
         'hub_evidence': {name: getattr(hub_settings, name) for name in
                          ['SeatingEvidence', 'PurchasedHeaderEvidence']
