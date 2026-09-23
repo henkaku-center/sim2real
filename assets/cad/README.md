@@ -191,15 +191,22 @@ The original `Carrier` box is retained as the hidden editable Boolean base.
   **PY-5cmx7cm 2.54mm 22402A-18** from the physical board. In top view, A1 is
   upper left, X18 lower right. Edge annotations label columns and rows; individual
   hidden cutters are named `Hole_A1` through `Hole_X18` for programmatic placement.
-- Signal diameter is provisionally 0.9 mm. The exact Amazon listing
+- Signal diameter is **1.0 mm**, based on the instructor's visual estimate of the
+  physical board on 2026-09-23 (not a precision measurement). It replaces the
+  initial 0.9 mm placeholder. The exact Amazon listing
   (`https://www.amazon.co.jp/dp/B071JYD6QP`) contradicts itself: bullets say 0.9 mm,
-  description says 1.0 mm. Neither is a physical measurement.
+  description says 1.0 mm.
 - Grid offsets are centered assumptions: X=5.79 mm, Y=3.41 mm from board edges
   to outer hole centers. Remove the offset expressions to enter measured offsets.
 - `MountingHoleParameters`: four corner holes, physically confirmed by instructor.
-  Initial diameter 2.5 mm and symmetric edge-to-center offsets 2.0 mm are rough
-  **photo estimates**, not published or measured dimensions. Measure before
-  designing standoffs. No verified drawing for the exact board marking was found.
+  Initial creation script used photo estimates of diameter 2.5 mm and symmetric
+  edge-to-center offsets 2.0 mm. The native document now records the instructor's
+  2026-09-23 physical estimates: **diameter about 2 mm; centers 2 mm from the short
+  (50 mm) edges**, hence `Diameter=2`, `InsetX=2`. The long-edge center distance
+  (`InsetY`) is **less than 2 mm**, exact value unresolved. Its existing 2 mm
+  geometry remains an explicitly inaccurate placeholder awaiting a numeric value.
+  Four-corner symmetry is still assumed. No verified drawing for the exact board
+  marking was found. Native values override the one-time creation script defaults.
 - `reports/carrier-hole-coordinates.csv` records the signal centers at this revision;
   it is an exported snapshot, not live-linked to subsequent native edits.
 - Pads, plated barrels and silkscreen geometry remain unmodeled. Labels are native
