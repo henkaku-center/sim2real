@@ -30,25 +30,28 @@ def main():
             params.addProperty('App::PropertyLength', name, 'Lettering')
             setattr(params, name, value)
         params.addProperty('App::PropertyString', 'Evidence', 'Evidence')
-        params.Evidence = 'Instructor 2026-09-23: top long edge A-X right to left, no skipped letters; right short edge 01-18 bottom to top. Top-face markings only; underside orientation not confirmed. Font and text dimensions are illustrative, not measured. Text is flat geometry at a visualization-only lift above board.'
+        params.Evidence = 'Instructor 2026-09-23: top long edge A-X right to left, no skipped letters; right short edge 01-18 bottom to top, numerals rotated counterclockwise 90 degrees in top view. All labels thin light-green outlines. Top-face markings only; underside orientation not confirmed. Font and text dimensions illustrative; visualization-only lift above board.'
         doc.Circuitry.addObject(params)
         labels = doc.addObject('App::DocumentObjectGroup', 'SurfaceLabels')
-        labels.Label = 'White surface lettering — physical board coordinates'
+        labels.Label = 'Light-green outline lettering — physical board coordinates'
         doc.Circuitry.addObject(labels)
         def text(value, size_expression, x_expression, y_expression):
             obj = make_shapestring(value, FONT, Size=1)
             obj.Label = 'Surface ' + value
             obj.Justification = 'Middle-Center'
             obj.JustificationReference = 'Shape Height'
+            obj.MakeFace = False
+            obj.Placement.Rotation = App.Rotation(App.Vector(0, 0, 1), 90 if value.isdigit() else 0)
             obj.setExpression('Size', size_expression)
             obj.setExpression('Placement.Base.x', x_expression)
             obj.setExpression('Placement.Base.y', y_expression)
             obj.setExpression('Placement.Base.z', 'Carrier.Placement.Base.z + Carrier.Height + SurfaceLabelParameters.DisplayLift')
             labels.addObject(obj)
             if App.GuiUp:
-                obj.ViewObject.ShapeColor = (1.0, 1.0, 1.0)
-                obj.ViewObject.LineColor = (1.0, 1.0, 1.0)
-                obj.ViewObject.DisplayMode = 'Flat Lines'
+                obj.ViewObject.ShapeColor = (0.65, 0.85, 0.55)
+                obj.ViewObject.LineColor = (0.65, 0.85, 0.55)
+                obj.ViewObject.LineWidth = 1.0
+                obj.ViewObject.DisplayMode = 'Wireframe'
             return obj
         for index in range(24):
             physical = chr(65 + index)

@@ -76,8 +76,15 @@ def main():
         doc.ValidationScope.CurrentStage = 'Carrier with signal holes, mounting holes, annular pads and edge capsule pads; offsets and metal height partly provisional, installed components pending.'
         if App.GuiUp:
             import FreeCADGui as Gui
-            capsule.ViewObject.ShapeColor = (0.78, 0.80, 0.82)
-            capsule.ViewObject.LineColor = (0.40, 0.42, 0.44)
+            # MultiFuse inherits per-face appearance from its source solids
+            # on recompute; styling only the result is not persistent.
+            finish = doc.PadRing.ViewObject
+            for obj in [middle] + ends + [capsule]:
+                obj.ViewObject.ShapeAppearance = finish.ShapeAppearance
+                obj.ViewObject.LineMaterial = finish.LineMaterial
+                obj.ViewObject.LineWidth = finish.LineWidth
+                obj.ViewObject.DisplayMode = finish.DisplayMode
+                obj.ViewObject.Lighting = finish.Lighting
             for obj in [middle] + ends + [capsule, templates]:
                 obj.ViewObject.hide()
             for group in pads.Group:

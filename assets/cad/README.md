@@ -250,15 +250,20 @@ construction. Axial height follows the same visualization-only metal thickness.
 Pad centers are provisionally 2 mm from the short edges, with their long axes
 across the board margin. Their electrical purpose has not been established.
 Native Boolean source geometry and links preserve editability without a proxy.
+The capsule source solids and fused result share the annular rings' complete
+silver appearance. Styling the fused result alone proved insufficient: FreeCAD
+restored source face colors on recompute. Source materials are now matched too;
+all 64 linked capsules were checked after forced recomputation.
 The instructor's estimated 1.5 mm gap from silver ring edge to mounting-hole edge
 is not yet reconciled: the current model measures 2.118 mm at all four corners;
 grid edge offsets remain provisional. Adding edge pads does not adjust that gap.
 
 ### Physical surface markings
 
-`tools/add_carrier_surface_labels.py` adds 42 white, planar Draft ShapeStrings to
+`tools/add_carrier_surface_labels.py` adds 42 light-green outline Draft ShapeStrings to
 the top face: **A–X from right to left along the top**, and **01–18 from bottom to
-top along the right**. No letters are skipped. Text centers track the corresponding
+top along the right**, with numbers rotated **90° counterclockwise** in top view.
+No letters are skipped. Text centers track the corresponding
 hole centers. Numeric labels sit in the gap between signal pads and edge capsules.
 The older external annotations are hidden. Underside lettering is not inferred.
 
@@ -268,3 +273,8 @@ Code Pro font and OFL license in `fonts/` allow the built-in Draft ShapeStrings 
 recompute without machine-specific font paths. Text remains editable through each
 ShapeString's `String` property. Physical hole and annular pad addresses were
 updated together; geometry and existing internal object names were preserved.
+
+The instructor reported that the board otherwise looks like the physical PCB.
+Thickness remains the listing-derived **1.6 mm**: an approximate 1.4 mm observation
+was explicitly withdrawn before any change was applied. The visual feedback does
+not resolve the recorded grid-offset and mounting-gap uncertainties.
