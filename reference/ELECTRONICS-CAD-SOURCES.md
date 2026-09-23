@@ -104,7 +104,11 @@ No electrical load ratings are validated by these geometry observations.
 
 Instructor-reported physical observations for B07NVSVW1N:
 
-- One blue screw-adjustable potentiometer; it is the tallest component.
+- One blue screw-adjustable potentiometer. Initially reported as the tallest
+  component; instructor subsequently clarified that the capacitors are very
+  close in height. Subsequent measurement resolves the ordering: capacitor top
+  **11.5 mm above converter PCB underside**, with the potentiometer tallest due
+  to a gold adjustment screw protruding approximately **1 mm** above its blue body.
 - Approximate height **13 mm**, from the underside of the converter's own PCB
   to the top of that potentiometer, including that PCB's thickness. This is a
   physical estimate, not a precision measurement. It excludes the perfboard,
@@ -120,10 +124,71 @@ Instructor-reported physical observations for B07NVSVW1N:
 - Derived approximate stack: converter underside **2.1 mm** above the perfboard
   underside (1.6 mm perfboard + 0.5 mm separation); potentiometer top **13.5 mm**
   above the perfboard top, or **15.1 mm** above its underside. These are nominal
-  sums of physical estimates, not precision measurements or service clearances.
+  sums of physical estimates, not precision measurements or service clearances;
+  the subsequent capacitor measurement supersedes the earlier height uncertainty.
 
 Use these observations to assess candidate CAD geometry; an agreement in pin
 spacing alone does not establish an exact purchased-variant match.
+
+### YAAJ converter comparison (2026-09-24)
+
+Downloaded the bare-module STEP from `yet-another-average-joe/KiCad-Chinese_Modules`
+at revision `82e7b5806c70ca289d5c9fb9ed6e5a2209b806d2`, path
+`DCDC_StepDown_LM2596/Packages3D/YAAJ_DCDC_StepDown_LM2596.zip`.
+Archive SHA-256: `d8a7836b10bd3a2ca68ff85d6a6060c038f0c991fc9c01d57ccc444d6c3428ee`.
+The root README lists the module but supplies no license; no license file was
+located in the inspected repository tree. Keep imported geometry in the ignored
+local cache while comparing, rather than redistributing it in the tracked CAD.
+
+Direct FreeCAD 1.1.3 geometry audit (model dimensions, not physical measurements):
+
+- Valid shape, 80 solids; PCB outline **43.6 × 21.3 mm**, nominal PCB thickness
+  **1.6 mm** (pad surfaces extend 0.001 mm beyond each face).
+- Four terminal centers form **40.64 × 17.78 mm**. A −90° Z rotation with source
+  IN+ at O17 aligns all four terminals to the user-specified physical addresses;
+  maximum computed XY error is below **0.0000001 mm**.
+- Original adjustment-screw top: **13.036 mm** above nominal PCB underside;
+  original capacitor tops: **14.3 mm**. These are the downloaded reference values,
+  superseded in the local comparison by the measured-height adaptations below.
+- Some component leads reach **0.85 mm below the converter PCB**. With 0.5 mm
+  separation, their unmodified reference geometry reaches into the perfboard
+  height range by 0.35 mm. Installed trimming/bending/solder is not yet modeled.
+
+`tools/preview_converter_candidate.py` opens a separate comparison tab in the
+existing GUI, aligned over a copied perforated-board reference, with editable
+`Installation.InsulatedSeparation` and a provisional full-outline tape envelope.
+It verifies the archive checksum and four terminal positions, and saves the
+comparison, preview and alignment report under `assets/cad/upstream/lm2596-yaaj/`.
+The comparison includes geometry snapshots of all **864 rings, 64 capsules and
+42 outlined labels**, with silver capsules matching rings and light-green lettering.
+Native circuitry remains the authoritative saved build; imported reference
+geometry is kept in the local comparison document. The instructor gave positive
+visual feedback, not complete dimensional validation; underside details remain open.
+Save/reopen checks passed for shape validity and a temporary 0.5 → 0.7 mm gap
+edit (not saved), including both module elevation and insulation thickness.
+FreeCAD emitted `Invalid element name string id` on reopening the copied-board
+comparison; no invalid object states or invalid shapes were found. This warning
+has not been diagnosed and is not evidence of loss-free feature-history copying.
+
+`tools/refine_converter_candidate.py` applies the instructor's subsequent height
+measurements in that comparison tab while retaining hidden imported originals:
+
+- Each capacitor is shortened by removing a **2.8 mm mid-body band** and joining
+  the remaining halves. Diameter, top, base and lead geometry are retained;
+  resulting top is **11.5 mm** above converter PCB underside. Other capacitor
+  dimensions remain unverified reference values.
+- Gold screw protrusion is reduced to **1 mm**, retaining its slotted top. The blue
+  body remains the reference height: approximately **11.516 mm** above converter
+  PCB underside. Thus screw top is approximately **12.516 mm**, consistent with
+  the earlier rough 13 mm observation but not an independently measured blue-body
+  height. The resulting installed screw top is approximately **14.616 mm** above
+  the perfboard underside; retain uncertainty for enclosure fitting.
+- All adjustment-screw faces use a gold-colored material, per instructor request.
+- Adaptations are static STEP-derived shapes with evidence properties, not recovered
+  original parametric feature history. Tape separation remains expression-driven.
+The final comparison passed save/reopen geometry checks, including both 11.5 mm
+capacitor tops, 1 mm screw protrusion, 864 rings, 64 capsules and lettering geometry.
+The earlier element-name warning did not recur in that final headless check.
 
 ## Model construction plan
 
