@@ -5,54 +5,60 @@
   "terminals": [
     {
       "address": "A3",
-      "engagement_mm": 3.0
+      "engagement_mm": 6.25
     },
     {
       "address": "A4",
-      "engagement_mm": 3.0
+      "engagement_mm": 6.25
     },
     {
       "address": "A5",
-      "engagement_mm": 3.0
+      "engagement_mm": 6.25
     },
     {
       "address": "A6",
-      "engagement_mm": 3.0
+      "engagement_mm": 6.25
     },
     {
       "address": "A7",
-      "engagement_mm": 3.0
+      "engagement_mm": 6.25
     },
     {
       "address": "A8",
-      "engagement_mm": 3.0
+      "engagement_mm": 6.25
     },
     {
       "address": "X3",
-      "engagement_mm": 3.0
+      "engagement_mm": 6.25
     },
     {
       "address": "X4",
-      "engagement_mm": 3.0
+      "engagement_mm": 6.25
     },
     {
       "address": "X5",
-      "engagement_mm": 3.0
+      "engagement_mm": 6.25
     },
     {
       "address": "X6",
-      "engagement_mm": 3.0
+      "engagement_mm": 6.25
     },
     {
       "address": "X7",
-      "engagement_mm": 3.0
+      "engagement_mm": 6.25
     },
     {
       "address": "X8",
-      "engagement_mm": 3.0
+      "engagement_mm": 6.25
     }
   ],
   "symmetric_about_original_spacer": true,
+  "purchased_male_pin_length_mm": 15,
+  "modeled_upper_projection_mm": 2.15,
+  "instructor_approximate_upper_projection_mm": 2,
+  "underside_solder_widest_at_board": true,
+  "plastic_mating_gap_mm": 0,
+  "modeled_screw_clearance_mm": 0.4836487153819995,
   "male_housing_spacer_contact_tail_overlap_mm3": 0,
   "temporary_lift_mm": 10,
   "carrier_sockets_stayed_fixed": true,

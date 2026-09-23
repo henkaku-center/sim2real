@@ -20,11 +20,11 @@
   "parts": {
     "hub": {"quantity": 1, "cad_binding": {"snapshot_document": "comparison", "semantic_id": "servo_hub", "native_object": "ServoHubCandidate"}},
     "factory_end_headers": {"quantity_if_present": 2, "as_delivered_presence": null, "final_state": "replaced_if_present"},
-    "symmetric_male_headers": {"quantity": 2, "positions_each": 6, "construction": "Long metal ends on BOTH sides of the original plastic spacer; instructor-confirmed", "metal_length_mm": null, "pitch_mm": 2.54, "cad_binding": "HubMaleHeaders", "modeled_metal_length_mm": 14.5, "modeled_upper_protrusion_mm": 4.4, "modeled_state": "Untrimmed symmetric pins; dimensions provisional"},
-    "original_spacers": {"quantity": 2, "positions_each": 6, "final_state": "retained_on_symmetric_headers", "thickness_mm": null},
+    "symmetric_male_headers": {"quantity": 2, "positions_each": 6, "construction": "Long metal ends on BOTH sides of the original plastic spacer; instructor-confirmed", "asin": "B0FJ5NR96F", "brand": "PENGLIN", "metal_length_mm": 15, "dimension_evidence": "Supplier listing and 2026-09-14 order title; nominal, not caliper measurement", "pitch_mm": 2.54, "cad_binding": "HubMaleHeaders", "modeled_metal_length_mm": 15, "modeled_upper_protrusion_mm": 2.15, "measured_approximate_upper_protrusion_mm": 2, "modeled_state": "Untrimmed as instructor confirmed; original spacer on socket side, donor on PCB side inferred from photos 10-12"},
+    "original_spacers": {"quantity": 2, "positions_each": 6, "final_state": "retained_on_symmetric_headers_socket_side", "thickness_mm": 2.5, "evidence": "15 - 2 * 6.25 mm from supplier nominal pin dimensions"},
     "donor_headers": {"quantity": 2, "purpose": "Supply one additional six-position plastic spacer per symmetric header", "metal_pin_style": "unconfirmed"},
-    "extra_spacers": {"quantity": 2, "positions_each": 6, "final_state": "stacked_with_original_spacers", "thickness_mm": null},
-    "female_sockets": {"quantity": 2, "positions_each": 6, "fixed_to": "carrier", "socket_body_height_mm": null, "cad_binding": "HubFemaleSockets", "modeled_body_height_mm": 8.5, "contact_model": "Simplified hollow sleeves and separate solder tails; spring leaves not reconstructed"},
+    "extra_spacers": {"quantity": 2, "positions_each": 6, "final_state": "stacked_on_PCB_side_of_original_spacers", "thickness_mm": null},
+    "female_sockets": {"quantity": 2, "positions_each": 6, "fixed_to": "carrier", "socket_body_height_mm": null, "cad_binding": "HubFemaleSockets", "modeled_body_height_mm": 8.5, "purchased_candidate_asin": "B0C13N6T48", "purchased_candidate_brand": "Youmile", "installed_identity_confirmed": false, "contact_model": "Simplified hollow sleeves and separate solder tails; spring leaves not reconstructed; listing does not specify cavity depth"},
     "hub_solder": {"side": "top", "geometry": "12 illustrative conical fillets, cut around male pins"},
     "carrier_socket_solder": {"side": "underside", "geometry": "12 illustrative conical fillets, cut around female socket tails"}
   },
@@ -32,7 +32,7 @@
     "removable_unit": ["hub", "symmetric_male_headers", "original_spacers", "extra_spacers", "hub_solder"],
     "carrier_fixed_parts": ["female_sockets", "carrier_socket_solder"],
     "mating_interface": "Symmetric male pins beneath the hub plug into the female sockets on the carrier; not a soldered male-to-female joint.",
-    "stack_bottom_to_top": ["carrier", "female_sockets", "two_stacked_plastic_spacers_per_header", "hub_pcb"],
+    "stack_bottom_to_top": ["carrier", "female_sockets", "original_spacers", "extra_spacers", "hub_pcb"],
     "clearance_target": "Converter gold adjustment screw, including any hub underside solder/tails above it"
   },
   "placement": {
@@ -40,24 +40,27 @@
     "photo_inferred_socket_addresses": [["A3", "A4", "A5", "A6", "A7", "A8"], ["X3", "X4", "X5", "X6", "X7", "X8"]],
     "inference_evidence": "Album photo 14 annotations A→X and 3→8, subsequently confirmed by instructor",
     "carrier_top_to_hub_underside_mm": 14,
+    "modeled_seated_carrier_top_to_hub_underside_mm": 13.5,
+    "seating_evidence": "Instructor confirms flush male-header plastic to female-socket housing. Seat by lowering hub 0.5 mm; preserve earlier approximately 14 mm physical estimate as approximate evidence.",
     "height_evidence": "Instructor physical estimate: approximately 1.4 cm, just clearing the gold screw; exact minimum clearance not measured",
     "physical_mating_evidence": "Instructor reports the actual pins fit nicely across the two boards with no noticed alignment issue; uploaded CAD span discrepancy is not evidence of a physical-build fault",
     "screw_clearance_mm": null,
-    "model_screw_clearance_mm": 0.9836487153819995,
+    "model_screw_clearance_mm": 0.4836487153819995,
     "model_clearance_evidence": "Calculated against the placed derived hub; depends on approximate component heights, not a physical minimum-clearance measurement",
     "engagement_depth_mm": null,
-    "modeled_engagement_depth_mm": 3,
-    "modeled_socket_to_donor_gap_mm": 0.5
+    "modeled_engagement_depth_mm": 6.25,
+    "modeled_socket_to_original_spacer_gap_mm": 0
   },
   "provisional_header_dimensions": {
-    "authority": "Editable HubInstallation native properties; these values are modeling assumptions, not measurements or vendor specifications",
+    "authority": "Editable HubInstallation native properties; male length and original spacer follow purchased nominal dimensions, while donor thickness and socket geometry remain provisional",
     "original_spacer_height_mm": 2.5,
     "donor_spacer_height_mm": 2.5,
-    "equal_pin_extension_beyond_original_spacer_mm": 6,
+    "equal_pin_extension_beyond_original_spacer_mm": 6.25,
     "pin_square_width_mm": 0.64,
-    "socket_cavity_depth_mm": 5,
+    "socket_cavity_depth_mm": 7,
+    "socket_cavity_evidence": "Provisional envelope, revised to accommodate nominal 6.25 mm pins in instructor-confirmed flush assembly; no supplier depth found",
     "socket_tail_below_carrier_mm": 0.8,
-    "upper_pin_trimming": "Not applied; needs instructor confirmation",
+    "upper_pin_trimming": "Instructor explicitly confirmed untrimmed; about 2 mm protrusion measured above PCB",
     "native_features": "Part primitives, cuts and expressions; each finished feature has an InstructionId for later construction animation",
     "validation_report": "../reports/servo-hub-headers-check.json"
   },
@@ -65,12 +68,12 @@
     {"id": "prepare_end_headers", "depends_on": [], "condition": "Only if the two end interconnect headers arrive soldered", "instruction": "Desolder the factory end headers before fitting the height-adjusted replacement headers.", "before": "Factory end headers present, or end holes already bare", "after": "End interconnect holes available", "evidence": "instructor instruction", "scope_note": "Photos retain the 16 three-pin servo output connectors; those are not the replacement target."},
     {"id": "harvest_spacers", "depends_on": ["prepare_end_headers"], "instruction": "Remove a six-position plastic spacer from each of two donor headers using pliers.", "before": "Extra spacers on donor pins", "after": "Two loose extra spacers", "photos": ["08", "09"], "evidence": "photo observation"},
     {"id": "double_spacers", "depends_on": ["harvest_spacers"], "instruction": "Slide one extra spacer onto each symmetric long-on-both-sides six-pin male header, alongside its original spacer.", "before": "One original spacer per symmetric header", "after": "Two adjacent plastic spacers per header", "photos": ["10"], "evidence": "photo observation plus instructor correction identifying symmetric pins"},
-    {"id": "solder_hub_headers", "depends_on": ["double_spacers"], "instruction": "Fit the two modified male strips below the hub and solder their upper ends on its top face.", "before": "Modified headers separate from hub", "after": "Two male strips attached to hub, pointing downward", "photos": ["11"], "evidence": "photo observation", "unknown": "Exact protrusion above hub and any trimming there"},
+    {"id": "solder_hub_headers", "depends_on": ["double_spacers"], "instruction": "Fit the two modified male strips below the hub, with added spacers toward the PCB, and solder their upper ends on its top face; leave pins untrimmed.", "before": "Modified headers separate from hub", "after": "Two male strips attached to hub, pointing downward", "photos": ["10", "11", "12"], "evidence": "Photo-inferred spacer orientation, purchased 15 mm symmetric pin dimensions, instructor-confirmed untrimmed ends and approximately 2 mm upper protrusion"},
     {"id": "fit_female_sockets", "depends_on": ["solder_hub_headers"], "instruction": "Fit the female sockets over the downward male pins to check the detachable stack.", "before": "Female sockets separate", "after": "Male/female mating demonstrated", "photos": ["12", "13"], "evidence": "photo observation; this temporary fitting is distinct from soldering"},
     {"id": "solder_carrier_sockets", "depends_on": ["fit_female_sockets"], "instruction": "Solder the female sockets to the carrier at the confirmed hole addresses.", "before": "Female sockets not fixed to carrier", "after": "Female sockets fixed to carrier; male-to-female interface remains detachable", "evidence": "instructor report", "unknown": "Exact alignment/fixturing order during soldering is not documented"},
     {"id": "seat_and_check_clearance", "depends_on": ["solder_carrier_sockets"], "instruction": "Seat the hub in its sockets and check that its underside and soldered tails clear the converter's gold screw.", "before": "Hub removable above fixed sockets", "after": "Installed detachable hub", "photos": ["14", "15"], "evidence": "instructor report and photo observation", "inspection_views": ["top for socket addresses", "side at gold screw for clearance", "exploded view for detachable interface"], "animation_trajectory": null}
   ],
   "photo_numbering": "Same downloaded 25-image album sequence as converter-installation.json; no individual image permalinks captured",
   "publication_status": "Derived hub geometry is saved in the ignored local comparison; verify candidate source and license before publishing course assets.",
-  "open_questions": ["Verify inferred board outline and moved mounting-hole positions", "Measure exact screw-to-hub underside clearance, including solder/tails", "Identify symmetric header dimensions and female socket height/engagement", "Confirm upper-end protrusion/trimming of the hub's male pins"]
+  "open_questions": ["Verify inferred board outline and moved mounting-hole positions", "Measure exact screw-to-hub underside clearance, including solder/tails", "Confirm installed female sockets are from the Youmile kit and measure housing/cavity depth", "Confirm donor spacer provenance/thickness and photo-inferred PCB-side placement"]
 }

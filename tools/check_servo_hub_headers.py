@@ -30,6 +30,7 @@ def main():
         housing = world(doc.getObject('SocketHousing_'+col))
         original = world(doc.getObject('OriginalSpacer_'+col))
         donor = world(doc.getObject('DonorSpacer_'+col))
+        assert abs(original.BoundBox.ZMin-housing.BoundBox.ZMax)<1e-7
         for row in range(3, 9):
             address = f'{col}{row}'
             pin = world(doc.getObject('HubMalePin_'+address))
@@ -39,11 +40,19 @@ def main():
                 assert abs(shape.BoundBox.Center.x-target.x)<1e-7
                 assert abs(shape.BoundBox.Center.y-target.y)<1e-7
             assert abs(pin.BoundBox.Center.z-original.BoundBox.Center.z)<1e-7
+            assert abs(pin.BoundBox.ZLength-15)<1e-7
+            pcb_top = doc.ServoHubCandidate.Placement.Base.z + doc.HubInstallation.HubPCBThickness.Value
+            assert abs(pin.BoundBox.ZMax-pcb_top-2.15)<1e-7
+            cone = doc.getObject('SocketBottomSolder_'+address+'Blank')
+            assert cone.Radius2.Value > cone.Radius1.Value
+            assert abs(cone.Placement.Base.z+cone.Height.Value)<1e-7
             for solid in [housing, original, donor, world(doc.getObject('SocketContact_'+address)), tail]:
                 assert pin.common(solid).Volume < 1e-7, address
             engagement = housing.BoundBox.ZMax-pin.BoundBox.ZMin
-            assert abs(engagement-3)<1e-7
+            assert abs(engagement-6.25)<1e-7
             rows.append({'address': address, 'engagement_mm': round(engagement, 6)})
+    clearance = world(doc.ServoHubCandidate).distToShape(world(doc.MeasuredAdjustmentScrew))[0]
+    assert abs(clearance-.4836487153819995)<1e-6
     # A temporary hub lift must translate male features and leave socket solids fixed.
     male = doc.HubMalePin_A3
     before_male = world(male).BoundBox.ZMin
@@ -61,12 +70,18 @@ def main():
     report = {'status': 'PASS', 'finished_features': len(finished),
               'saved_document_reopened': True, 'terminals': rows,
               'symmetric_about_original_spacer': True,
+              'purchased_male_pin_length_mm': 15,
+              'modeled_upper_projection_mm': 2.15,
+              'instructor_approximate_upper_projection_mm': 2,
+              'underside_solder_widest_at_board': True,
+              'plastic_mating_gap_mm': 0,
+              'modeled_screw_clearance_mm': clearance,
               'male_housing_spacer_contact_tail_overlap_mm3': 0,
               'temporary_lift_mm': 10, 'carrier_sockets_stayed_fixed': True,
               'test_edits_saved': False,
               'limitations': 'Provisional dimensions; simplified contact sleeves, not spring/contact-force simulation; upper pins modeled untrimmed.'}
     REPORT.write_text(json.dumps(report, indent=2)+'\n')
-    print('PASS: 66 valid features; 12 aligned symmetric pins; 3 mm engagement; sockets fixed during 10 mm hub lift. No test edits saved.')
+    print('PASS: 66 valid features; 12 aligned 15 mm symmetric pins; 2.15 mm upper projection; solder widest at board; flush seating, 6.25 mm engagement, 0.484 mm screw clearance; sockets fixed during 10 mm lift. No test edits saved.')
 
 
 main()

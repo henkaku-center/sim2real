@@ -1,7 +1,8 @@
 """Run once in the existing GUI; native primitives/expressions remain editable.
 
-Dimensions below are provisional visualization choices, not purchased-part specs.
-Original spacers center symmetric, untrimmed pins; donor spacers sit below them.
+Male pin lengths follow the purchased PENGLIN listing; other dimensions are
+provisional visualization choices except where a property explicitly says otherwise.
+Original spacers center symmetric, untrimmed pins; donor spacers sit above them.
 """
 from pathlib import Path
 import FreeCAD as App
@@ -21,13 +22,13 @@ def main():
         for name, value, note in [
             ('HeaderPitch', 2.54, 'Pitch retained from reference and carrier.'),
             ('HeaderPinWidth', .64, 'Provisional square pin width.'),
-            ('OriginalSpacerHeight', 2.5, 'Provisional original plastic thickness.'),
+            ('OriginalSpacerHeight', 2.5, 'Derived from purchased PENGLIN B0FJ5NR96F: 15 - 2*6.25 mm.'),
             ('DonorSpacerHeight', 2.5, 'Provisional added plastic thickness.'),
-            ('SymmetricExposedLength', 6, 'Provisional equal metal length beyond each side of ORIGINAL spacer; no upper trimming assumed.'),
+            ('SymmetricExposedLength', 6.25, 'Purchased PENGLIN B0FJ5NR96F listing and order title: equal exposed lengths; instructor confirms untrimmed.'),
             ('SocketHeight', 8.5, 'Provisional female housing height.'),
             ('SocketWidth', 2.54, 'Provisional housing/strip width.'),
             ('SocketCavityWidth', 1, 'Illustrative square housing cavity.'),
-            ('SocketCavityDepth', 5, 'Illustrative blind cavity depth.'),
+            ('SocketCavityDepth', 7, 'Provisional cavity depth accommodating 6.25 mm insertion; not a verified purchased socket specification.'),
             ('ContactOpening', .72, 'Simplified receptacle opening; spring geometry not reconstructed.'),
             ('SocketTailProjection', .8, 'Provisional tail below carrier; trimming unconfirmed.'),
             ('HubPCBThickness', 1.6, 'Reference PCB thickness.'),
@@ -74,7 +75,7 @@ def main():
             return result
         def solder(name, group, x, y, z, height, pin):
             cone = new('Part::Cone', name+'Blank', group)
-            cone.Radius1, cone.Radius2 = .9, .48
+            cone.Radius1, cone.Radius2 = ((.48, .9) if name.startswith('SocketBottomSolder_') else (.9, .48))
             for prop, value in [('Placement.Base.x', x), ('Placement.Base.y', y),
                                 ('Placement.Base.z', z), ('Height', height)]:
                 expr(cone, prop, value)
@@ -92,7 +93,7 @@ def main():
                 wy = f'{gy} + ({y})'
                 pin = box('HubMalePin_'+a, moving,
                           x+' - $HeaderPinWidth/2', y+' - $HeaderPinWidth/2',
-                          '-$OriginalSpacerHeight - $SymmetricExposedLength',
+                          '-$DonorSpacerHeight - $OriginalSpacerHeight - $SymmetricExposedLength',
                           '$HeaderPinWidth', '$HeaderPinWidth',
                           '$OriginalSpacerHeight + 2*$SymmetricExposedLength')
                 pins.append(pin)
@@ -120,8 +121,8 @@ def main():
                 solder('SocketBottomSolder_'+a, fixed, gx, wy,
                        '-$SocketSolderHeight', '$SocketSolderHeight', tail)
             for name, z, height in [
-                ('OriginalSpacer', '-$OriginalSpacerHeight', '$OriginalSpacerHeight'),
-                ('DonorSpacer', '-$OriginalSpacerHeight - $DonorSpacerHeight', '$DonorSpacerHeight')]:
+                ('OriginalSpacer', '-$DonorSpacerHeight - $OriginalSpacerHeight', '$OriginalSpacerHeight'),
+                ('DonorSpacer', '-$DonorSpacerHeight', '$DonorSpacerHeight')]:
                 blank = box(name+'Blank_'+col, moving, x+' - $SocketWidth/2',
                             '-3*$HeaderPitch', z, '$SocketWidth', '6*$HeaderPitch', height)
                 finish(cut(name+'_'+col, moving, blank, pins), (.10,.10,.11), 'hub.'+name+'.'+col)
@@ -129,6 +130,8 @@ def main():
                         gy+' - 3*$HeaderPitch', '$CarrierTopZ',
                         '$SocketWidth', '6*$HeaderPitch', '$SocketHeight')
             finish(cut('SocketHousing_'+col, fixed, blank, cavities), (.08,.08,.09), 'hub.socket_housing.'+col)
+        # Instructor subsequently confirmed fully seated plastic-to-plastic mating.
+        p.PCBSeparation = p.SocketHeight + p.OriginalSpacerHeight + p.DonorSpacerHeight
         doc.recompute()
         for o in visible:
             assert not o.Shape.isNull() and o.Shape.isValid(), o.Name

@@ -1,0 +1,46 @@
+{
+  "recorded_on": "2026-09-24",
+  "purchase_evidence": "Amazon order-confirmation emails dated 2026-09-14, read through Sava; ASINs extracted from ordered-item links, not recommendation links. Private account and order details intentionally excluded.",
+  "male_headers": {
+    "brand": "PENGLIN",
+    "asin": "B0FJ5NR96F",
+    "source": "https://www.amazon.co.jp/dp/B0FJ5NR96F",
+    "ordered_pack": "20 strips, 40 pins per strip",
+    "pitch_mm": 2.54,
+    "nominal_total_metal_length_mm": 15,
+    "nominal_exposed_length_each_side_mm": 6.25,
+    "derived_original_spacer_thickness_mm": 2.5,
+    "verification": "Lengths agree between purchase-confirmation title and current supplier listing; not caliper measurements. Symmetric form agrees with instructor identification."
+  },
+  "female_socket_candidate": {
+    "brand": "Youmile",
+    "asin": "B0C13N6T48",
+    "source": "https://www.amazon.co.jp/dp/B0C13N6T48",
+    "ordered_pack": "60 strips: 30 male and 30 female, 40 pins each",
+    "pitch_mm": 2.54,
+    "supplier_image": "https://m.media-amazon.com/images/I/61OTjMF4qlL._SL1200_.jpg",
+    "supplier_image_strip_length_mm": 103,
+    "supplier_housing_height_mm": null,
+    "supplier_cavity_depth_mm": null,
+    "installed_identity_confirmed": false,
+    "verification": "Purchased kit found, with square female entries and gold-colored tails in listing images. Retrieved text and inspected size/detail images do not establish socket height or internal depth."
+  },
+  "other_inventory_headers_checked": [
+    {"asin": "B0829W3T8Q", "brand": "KKHMF", "observation": "Earlier ordinary male strips; listing image is asymmetric, not the symmetric PENGLIN long-pin purchase."},
+    {"asin": "B0H8BCRGHT", "brand": "DOITOOL", "observation": "Separate female-strip purchase. Listing title says 40 pins at 2.54 mm but size graphic says 50 mm strip length; inconsistent, unsuitable as a precise dimensional drawing. 10.5 mm graphic includes tails and does not establish housing or cavity depth."}
+  ],
+  "model_reconciliation": {
+    "instructor_upper_protrusion_approx_mm": 2,
+    "instructor_upper_ends_trimmed": false,
+    "donor_spacer_location": "PCB side; inferred from construction photos 10-12 and agreement with measured upper protrusion",
+    "donor_spacer_thickness_assumed_mm": 2.5,
+    "hub_pcb_reference_thickness_mm": 1.6,
+    "calculated_upper_protrusion_mm": 2.15,
+    "calculation": "6.25 - 2.5 - 1.6",
+    "socket_body_height_assumed_mm": 8.5,
+    "socket_cavity_depth_assumed_mm": 7,
+    "cavity_note": "Illustrative internal envelope sufficient for 6.25 mm exposed mating pin; not a verified purchased-part depth or contact specification.",
+    "flush_board_separation_mm": 13.5,
+    "model_engagement_mm": 6.25
+  }
+}

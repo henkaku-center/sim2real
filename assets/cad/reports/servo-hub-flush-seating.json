@@ -1,0 +1,7 @@
+{
+  "previous_board_separation_mm": 14.0,
+  "seated_board_separation_mm": 13.5,
+  "plastic_mating_gap_mm": 0,
+  "modeled_screw_clearance_mm": 0.4836487153819995,
+  "evidence": "Instructor confirms plastic-to-plastic flush mating. Board separation derived from provisional socket/spacer dimensions; earlier physical estimate was approximately 14 mm."
+}

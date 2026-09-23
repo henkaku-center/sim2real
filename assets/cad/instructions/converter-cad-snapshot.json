@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "captured_at_utc": "2026-09-23T17:06:02.297275+00:00",
+  "captured_at_utc": "2026-09-23T17:22:51.976498+00:00",
   "source": "Read-only live GUI snapshot; caller must save documents before export.",
   "units": {
     "length": "mm",
@@ -25,7 +25,7 @@
     },
     "comparison": {
       "path": "assets/cad/upstream/lm2596-yaaj/LM2596-comparison.FCStd",
-      "saved_file_sha256": "389e6b49249f447c98bb4ae4ca39bd750f7674cc4d0e1b3160feccc99131ca83",
+      "saved_file_sha256": "797a1fddfbbaf9fdde9bd0e73f81f4c6ef63c978c76bf366b3795ecc06a871e9",
       "distribution": "local_only_ignored_candidate"
     }
   },
@@ -109,12 +109,16 @@
       "value_mm": 1.6,
       "evidence": "Reference PCB thickness."
     },
+    "MeasuredUpperProtrusion": {
+      "value_mm": 2.0,
+      "evidence": "Instructor measured ABOUT 2 mm above PCB; pins were not trimmed."
+    },
     "OriginalSpacerHeight": {
       "value_mm": 2.5,
       "evidence": "Provisional original plastic thickness."
     },
     "PCBSeparation": {
-      "value_mm": 14.0,
+      "value_mm": 13.5,
       "evidence": "Instructor estimate: carrier TOP to hub PCB UNDERSIDE, just clearing gold screw."
     },
     "RequiredRowSpan": {
@@ -122,7 +126,7 @@
       "evidence": "Confirmed carrier columns A and X."
     },
     "SocketCavityDepth": {
-      "value_mm": 5.0,
+      "value_mm": 7.0,
       "evidence": "Illustrative blind cavity depth."
     },
     "SocketCavityWidth": {
@@ -146,9 +150,13 @@
       "evidence": "Provisional housing/strip width."
     },
     "SymmetricExposedLength": {
-      "value_mm": 6.0,
+      "value_mm": 6.25,
       "evidence": "Provisional equal metal length beyond each side of ORIGINAL spacer; no upper trimming assumed."
     }
+  },
+  "hub_evidence": {
+    "SeatingEvidence": "Instructor confirms plastic-to-plastic flush mating. Board separation derived from provisional socket/spacer dimensions; earlier physical estimate was approximately 14 mm.",
+    "PurchasedHeaderEvidence": "PENGLIN B0FJ5NR96F, order 2026-09-14 and supplier listing: 15 mm total, 6.25 mm each side, implying 2.5 mm original spacer. Photos 10-12 indicate donor spacer on PCB side. Calculated upper projection 2.15 mm agrees with instructor about 2 mm, untrimmed. Female Youmile B0C13N6T48 purchased same day, installed identity not yet confirmed; 8.5 mm body and 7 mm cavity remain provisional."
   },
   "objects": [
     {
@@ -4330,7 +4338,7 @@
       "id": "servo_hub",
       "document": "comparison",
       "native_object": "ServoHubCandidate",
-      "label": "Servo hub — 14 mm elevation; corrected socket span",
+      "label": "Servo hub — flush-seated detachable headers",
       "type": "App::Part",
       "cad_dependents": [],
       "appearance": {
@@ -4341,7 +4349,7 @@
         "translation_mm": [
           35.0,
           14.840000000000003,
-          15.6
+          15.1
         ],
         "quaternion_xyzw": [
           0.0,
@@ -4354,7 +4362,7 @@
         "translation_mm": [
           35.0,
           14.840000000000003,
-          15.6
+          15.1
         ],
         "quaternion_xyzw": [
           0.0,
@@ -4405,7 +4413,7 @@
         "translation_mm": [
           35.0,
           14.840000000000003,
-          15.6
+          15.1
         ],
         "quaternion_xyzw": [
           0.0,
@@ -5814,7 +5822,7 @@
         "translation_mm": [
           35.0,
           14.840000000000003,
-          15.6
+          15.1
         ],
         "quaternion_xyzw": [
           0.0,
@@ -5885,7 +5893,7 @@
         "translation_mm": [
           28.890000000000004,
           -6.67,
-          -8.5
+          -11.25
         ],
         "quaternion_xyzw": [
           0.0,
@@ -5898,7 +5906,7 @@
         "translation_mm": [
           63.89,
           8.170000000000003,
-          7.1
+          3.8499999999999996
         ],
         "quaternion_xyzw": [
           0.0,
@@ -5920,7 +5928,7 @@
         ],
         [
           ".Placement.Base.z",
-          "-HubInstallation.OriginalSpacerHeight - HubInstallation.SymmetricExposedLength"
+          "-HubInstallation.DonorSpacerHeight - HubInstallation.OriginalSpacerHeight - HubInstallation.SymmetricExposedLength"
         ],
         [
           "Height",
@@ -6004,7 +6012,7 @@
         "translation_mm": [
           35.0,
           14.840000000000003,
-          15.6
+          15.1
         ],
         "quaternion_xyzw": [
           0.0,
@@ -6344,7 +6352,7 @@
         "translation_mm": [
           28.890000000000004,
           -4.13,
-          -8.5
+          -11.25
         ],
         "quaternion_xyzw": [
           0.0,
@@ -6357,7 +6365,7 @@
         "translation_mm": [
           63.89,
           10.710000000000004,
-          7.1
+          3.8499999999999996
         ],
         "quaternion_xyzw": [
           0.0,
@@ -6379,7 +6387,7 @@
         ],
         [
           ".Placement.Base.z",
-          "-HubInstallation.OriginalSpacerHeight - HubInstallation.SymmetricExposedLength"
+          "-HubInstallation.DonorSpacerHeight - HubInstallation.OriginalSpacerHeight - HubInstallation.SymmetricExposedLength"
         ],
         [
           "Height",
@@ -6463,7 +6471,7 @@
         "translation_mm": [
           35.0,
           14.840000000000003,
-          15.6
+          15.1
         ],
         "quaternion_xyzw": [
           0.0,
@@ -6803,7 +6811,7 @@
         "translation_mm": [
           28.890000000000004,
           -1.59,
-          -8.5
+          -11.25
         ],
         "quaternion_xyzw": [
           0.0,
@@ -6816,7 +6824,7 @@
         "translation_mm": [
           63.89,
           13.250000000000004,
-          7.1
+          3.8499999999999996
         ],
         "quaternion_xyzw": [
           0.0,
@@ -6838,7 +6846,7 @@
         ],
         [
           ".Placement.Base.z",
-          "-HubInstallation.OriginalSpacerHeight - HubInstallation.SymmetricExposedLength"
+          "-HubInstallation.DonorSpacerHeight - HubInstallation.OriginalSpacerHeight - HubInstallation.SymmetricExposedLength"
         ],
         [
           "Height",
@@ -6922,7 +6930,7 @@
         "translation_mm": [
           35.0,
           14.840000000000003,
-          15.6
+          15.1
         ],
         "quaternion_xyzw": [
           0.0,
@@ -7262,7 +7270,7 @@
         "translation_mm": [
           28.890000000000004,
           0.95,
-          -8.5
+          -11.25
         ],
         "quaternion_xyzw": [
           0.0,
@@ -7275,7 +7283,7 @@
         "translation_mm": [
           63.89,
           15.790000000000003,
-          7.1
+          3.8499999999999996
         ],
         "quaternion_xyzw": [
           0.0,
@@ -7297,7 +7305,7 @@
         ],
         [
           ".Placement.Base.z",
-          "-HubInstallation.OriginalSpacerHeight - HubInstallation.SymmetricExposedLength"
+          "-HubInstallation.DonorSpacerHeight - HubInstallation.OriginalSpacerHeight - HubInstallation.SymmetricExposedLength"
         ],
         [
           "Height",
@@ -7381,7 +7389,7 @@
         "translation_mm": [
           35.0,
           14.840000000000003,
-          15.6
+          15.1
         ],
         "quaternion_xyzw": [
           0.0,
@@ -7721,7 +7729,7 @@
         "translation_mm": [
           28.890000000000004,
           3.49,
-          -8.5
+          -11.25
         ],
         "quaternion_xyzw": [
           0.0,
@@ -7734,7 +7742,7 @@
         "translation_mm": [
           63.89,
           18.330000000000005,
-          7.1
+          3.8499999999999996
         ],
         "quaternion_xyzw": [
           0.0,
@@ -7756,7 +7764,7 @@
         ],
         [
           ".Placement.Base.z",
-          "-HubInstallation.OriginalSpacerHeight - HubInstallation.SymmetricExposedLength"
+          "-HubInstallation.DonorSpacerHeight - HubInstallation.OriginalSpacerHeight - HubInstallation.SymmetricExposedLength"
         ],
         [
           "Height",
@@ -7840,7 +7848,7 @@
         "translation_mm": [
           35.0,
           14.840000000000003,
-          15.6
+          15.1
         ],
         "quaternion_xyzw": [
           0.0,
@@ -8180,7 +8188,7 @@
         "translation_mm": [
           28.890000000000004,
           6.029999999999999,
-          -8.5
+          -11.25
         ],
         "quaternion_xyzw": [
           0.0,
@@ -8193,7 +8201,7 @@
         "translation_mm": [
           63.89,
           20.870000000000005,
-          7.1
+          3.8499999999999996
         ],
         "quaternion_xyzw": [
           0.0,
@@ -8215,7 +8223,7 @@
         ],
         [
           ".Placement.Base.z",
-          "-HubInstallation.OriginalSpacerHeight - HubInstallation.SymmetricExposedLength"
+          "-HubInstallation.DonorSpacerHeight - HubInstallation.OriginalSpacerHeight - HubInstallation.SymmetricExposedLength"
         ],
         [
           "Height",
@@ -8299,7 +8307,7 @@
         "translation_mm": [
           35.0,
           14.840000000000003,
-          15.6
+          15.1
         ],
         "quaternion_xyzw": [
           0.0,
@@ -8649,7 +8657,7 @@
         "translation_mm": [
           35.0,
           14.840000000000003,
-          15.6
+          15.1
         ],
         "quaternion_xyzw": [
           0.0,
@@ -8730,7 +8738,7 @@
         "translation_mm": [
           35.0,
           14.840000000000003,
-          15.6
+          15.1
         ],
         "quaternion_xyzw": [
           0.0,
@@ -8882,7 +8890,7 @@
         "translation_mm": [
           -29.530000000000005,
           -6.67,
-          -8.5
+          -11.25
         ],
         "quaternion_xyzw": [
           0.0,
@@ -8895,7 +8903,7 @@
         "translation_mm": [
           5.469999999999995,
           8.170000000000003,
-          7.1
+          3.8499999999999996
         ],
         "quaternion_xyzw": [
           0.0,
@@ -8917,7 +8925,7 @@
         ],
         [
           ".Placement.Base.z",
-          "-HubInstallation.OriginalSpacerHeight - HubInstallation.SymmetricExposedLength"
+          "-HubInstallation.DonorSpacerHeight - HubInstallation.OriginalSpacerHeight - HubInstallation.SymmetricExposedLength"
         ],
         [
           "Height",
@@ -9001,7 +9009,7 @@
         "translation_mm": [
           35.0,
           14.840000000000003,
-          15.6
+          15.1
         ],
         "quaternion_xyzw": [
           0.0,
@@ -9341,7 +9349,7 @@
         "translation_mm": [
           -29.530000000000005,
           -4.13,
-          -8.5
+          -11.25
         ],
         "quaternion_xyzw": [
           0.0,
@@ -9354,7 +9362,7 @@
         "translation_mm": [
           5.469999999999995,
           10.710000000000004,
-          7.1
+          3.8499999999999996
         ],
         "quaternion_xyzw": [
           0.0,
@@ -9376,7 +9384,7 @@
         ],
         [
           ".Placement.Base.z",
-          "-HubInstallation.OriginalSpacerHeight - HubInstallation.SymmetricExposedLength"
+          "-HubInstallation.DonorSpacerHeight - HubInstallation.OriginalSpacerHeight - HubInstallation.SymmetricExposedLength"
         ],
         [
           "Height",
@@ -9460,7 +9468,7 @@
         "translation_mm": [
           35.0,
           14.840000000000003,
-          15.6
+          15.1
         ],
         "quaternion_xyzw": [
           0.0,
@@ -9800,7 +9808,7 @@
         "translation_mm": [
           -29.530000000000005,
           -1.59,
-          -8.5
+          -11.25
         ],
         "quaternion_xyzw": [
           0.0,
@@ -9813,7 +9821,7 @@
         "translation_mm": [
           5.469999999999995,
           13.250000000000004,
-          7.1
+          3.8499999999999996
         ],
         "quaternion_xyzw": [
           0.0,
@@ -9835,7 +9843,7 @@
         ],
         [
           ".Placement.Base.z",
-          "-HubInstallation.OriginalSpacerHeight - HubInstallation.SymmetricExposedLength"
+          "-HubInstallation.DonorSpacerHeight - HubInstallation.OriginalSpacerHeight - HubInstallation.SymmetricExposedLength"
         ],
         [
           "Height",
@@ -9919,7 +9927,7 @@
         "translation_mm": [
           35.0,
           14.840000000000003,
-          15.6
+          15.1
         ],
         "quaternion_xyzw": [
           0.0,
@@ -10259,7 +10267,7 @@
         "translation_mm": [
           -29.530000000000005,
           0.95,
-          -8.5
+          -11.25
         ],
         "quaternion_xyzw": [
           0.0,
@@ -10272,7 +10280,7 @@
         "translation_mm": [
           5.469999999999995,
           15.790000000000003,
-          7.1
+          3.8499999999999996
         ],
         "quaternion_xyzw": [
           0.0,
@@ -10294,7 +10302,7 @@
         ],
         [
           ".Placement.Base.z",
-          "-HubInstallation.OriginalSpacerHeight - HubInstallation.SymmetricExposedLength"
+          "-HubInstallation.DonorSpacerHeight - HubInstallation.OriginalSpacerHeight - HubInstallation.SymmetricExposedLength"
         ],
         [
           "Height",
@@ -10378,7 +10386,7 @@
         "translation_mm": [
           35.0,
           14.840000000000003,
-          15.6
+          15.1
         ],
         "quaternion_xyzw": [
           0.0,
@@ -10718,7 +10726,7 @@
         "translation_mm": [
           -29.530000000000005,
           3.49,
-          -8.5
+          -11.25
         ],
         "quaternion_xyzw": [
           0.0,
@@ -10731,7 +10739,7 @@
         "translation_mm": [
           5.469999999999995,
           18.330000000000005,
-          7.1
+          3.8499999999999996
         ],
         "quaternion_xyzw": [
           0.0,
@@ -10753,7 +10761,7 @@
         ],
         [
           ".Placement.Base.z",
-          "-HubInstallation.OriginalSpacerHeight - HubInstallation.SymmetricExposedLength"
+          "-HubInstallation.DonorSpacerHeight - HubInstallation.OriginalSpacerHeight - HubInstallation.SymmetricExposedLength"
         ],
         [
           "Height",
@@ -10837,7 +10845,7 @@
         "translation_mm": [
           35.0,
           14.840000000000003,
-          15.6
+          15.1
         ],
         "quaternion_xyzw": [
           0.0,
@@ -11177,7 +11185,7 @@
         "translation_mm": [
           -29.530000000000005,
           6.029999999999999,
-          -8.5
+          -11.25
         ],
         "quaternion_xyzw": [
           0.0,
@@ -11190,7 +11198,7 @@
         "translation_mm": [
           5.469999999999995,
           20.870000000000005,
-          7.1
+          3.8499999999999996
         ],
         "quaternion_xyzw": [
           0.0,
@@ -11212,7 +11220,7 @@
         ],
         [
           ".Placement.Base.z",
-          "-HubInstallation.OriginalSpacerHeight - HubInstallation.SymmetricExposedLength"
+          "-HubInstallation.DonorSpacerHeight - HubInstallation.OriginalSpacerHeight - HubInstallation.SymmetricExposedLength"
         ],
         [
           "Height",
@@ -11296,7 +11304,7 @@
         "translation_mm": [
           35.0,
           14.840000000000003,
-          15.6
+          15.1
         ],
         "quaternion_xyzw": [
           0.0,
@@ -11646,7 +11654,7 @@
         "translation_mm": [
           35.0,
           14.840000000000003,
-          15.6
+          15.1
         ],
         "quaternion_xyzw": [
           0.0,
@@ -11727,7 +11735,7 @@
         "translation_mm": [
           35.0,
           14.840000000000003,
-          15.6
+          15.1
         ],
         "quaternion_xyzw": [
           0.0,
@@ -11851,7 +11859,7 @@
         "translation_mm": [
           35.0,
           14.840000000000003,
-          15.6
+          15.1
         ],
         "quaternion_xyzw": [
           0.0,

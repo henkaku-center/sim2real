@@ -129,6 +129,9 @@ def main():
         'placement_note': 'Transforms act on native object-local geometry. Shape data can already contain nonzero vertex coordinates; do not recenter exported meshes without updating transforms.',
         'parameters': parameters,
         'hub_parameters': hub_parameters,
+        'hub_evidence': {name: getattr(hub_settings, name) for name in
+                         ['SeatingEvidence', 'PurchasedHeaderEvidence']
+                         if hub_settings and name in hub_settings.PropertiesList},
         'objects': records,
     }
     OUT.write_text(json.dumps(report, indent=2, ensure_ascii=False) + '\n')

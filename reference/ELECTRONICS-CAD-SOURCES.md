@@ -386,6 +386,67 @@ The instruction snapshot now contains 105 native bindings. A local native milest
 copy is retained as `LM2596-comparison-headers-2026-09-24.FCStd` alongside the active
 comparison; both remain local-only with the imported candidate geometry.
 
+### Flush seating correction and connector dimensions
+
+The instructor subsequently confirmed that the male spacer stack touches the
+female socket housing in the real assembly. `tools/seat_servo_hub_headers.py`
+lowers the existing hub by 0.5 mm while preserving its native objects. The modeled
+carrier-top-to-hub-underside separation is now **13.5 mm**, derived from the
+provisional 8.5 + 2.5 + 2.5 mm plastic stack, consistent with the earlier approximate
+14 mm physical estimate. Engagement becomes **3.5 mm**, the plastic mating gap
+becomes zero, and the calculated screw clearance is approximately **0.484 mm**.
+These remain model-derived values, not new physical measurements.
+
+Manufacturer comparison (not identification of the purchased generic headers):
+Samtec TSW/HTSW uses 2.54 mm pitch and approximately 2.54 mm insulator thickness
+(for example its -07 length stack is 10.92 - 2.54 - 5.84 = 2.54 mm).
+Samtec SSW/SSQ straight sockets have an **8.51 mm housing height**, but specify
+**3.68–6.35 mm insertion depth** separately. Housing height is not usable insertion
+depth. These drawings make the chosen 2.5 mm spacer and 8.5 mm socket exterior
+plausible; they do not validate our assumed internal cavity or engagement for the
+actual parts. In particular the modeled 3.5 mm engagement is not claimed to meet
+the SSW specification, and the model is not being relabeled as a Samtec connector.
+
+Primary references checked: Samtec `catalog_english/tsw_th.pdf` and
+`catalog_english/ssw_th.pdf` on `suddendocs.samtec.com`.
+Exact spacer thickness, socket cavity/contact geometry and male length remain
+provisional pending identification or measurement of the installed parts.
+
+### Purchased long headers, spacer orientation and underside solder correction
+
+Purchase confirmations dated **2026-09-14** identify the actual symmetric long-pin
+purchase as **PENGLIN B0FJ5NR96F**, not the earlier ordinary KKHMF strip. Both the
+order title and the supplier's current listing specify **15 mm total metal length**
+and **6.25 mm exposed on each side**, implying a **2.5 mm original spacer**.
+The same day's **Youmile B0C13N6T48** order contains 30 male and 30 female strips
+at 2.54 mm pitch. Its female socket housing height and internal cavity depth could
+not be confirmed from the retrieved listing/size images, and its identity as the
+installed female socket still needs instructor confirmation. These two purchases
+were absent from the checked APS inventory rows; purchase evidence is recorded
+here without duplicating private order/account details.
+
+The instructor confirms the hub-top pins are **untrimmed** and protrude **about
+2 mm above the PCB**. Reinspection of photos 10–12 indicates the donor spacer is
+on the **PCB side**, leaving the original spacer on the **socket side**. The initial
+model had these reversed. Correcting orientation and using the purchased 15 mm
+pins gives **6.25 - 2.5 - 1.6 = 2.15 mm** upper protrusion, consistent with the
+physical estimate without inventing a cutting step. This also changes modeled
+socket engagement to **6.25 mm**; the simplified internal socket envelope is now
+**7 mm deep**, explicitly provisional rather than a supplier-confirmed dimension.
+The earlier 3/3.5 mm engagement and 5 mm cavity were initial modeling assumptions.
+
+`tools/refine_purchased_hub_headers.py` updates the existing native objects and
+reverses the twelve carrier-underside solder cones: **0.9 mm radius against the
+board, tapering to 0.48 mm away from it**. Upper solder retains its correct direction.
+Flush seating remains at 13.5 mm board separation with approximately 0.484 mm
+modeled screw clearance. The photo-inferred donor placement, donor thickness and
+socket internals remain distinguished from purchased nominal pin dimensions.
+
+Sources and confidence are recorded in
+`assets/cad/reports/purchased-hub-headers.json`, including supplier URLs. Exact
+part-match evidence for the socket is still insufficient to claim its depth is
+confirmed.
+
 ## Model construction plan
 
 - Store a reusable family definition and per-ASIN overrides for position servos:
