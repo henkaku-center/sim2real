@@ -154,6 +154,12 @@ The macro creates the document only if it is missing; subsequent runs open the
 saved document and preserve edits. Repeated `open -n` launches create additional
 FreeCAD instances: prefer the Macro menu during an interactive co-design session.
 A live same-session command bridge is a remaining workflow improvement.
+During co-design, **reuse the existing FreeCAD window** (instructor requirement).
+Run macros from its Macro menu or `runpy.run_path(...)` in its Python Console;
+do not repeatedly launch `open -n`. macOS Accessibility access was granted on
+2026-09-23. Console automation must explicitly focus the console and paste text:
+simulated typing through the active input method corrupted Python and triggered
+viewport shortcuts when focus was wrong. Verify console output after each command.
 
 Initial contents:
 
@@ -173,3 +179,33 @@ and volume, reference dimensions, hidden staging group, and a temporary 70 → 7
 70 mm length edit with successful recomputation. The verification did not save
 over the native file. The GUI preview was inspected. This is the carrier-level
 starting point, not a completed model of the hand-soldered assembly.
+
+### Carrier hole grid (2026-09-23)
+
+`tools/add_carrier_grid.FCMacro` upgrades the existing open circuitry document
+(or opens the saved document if necessary); it does not regenerate an existing
+grid. The native document now has **432 signal bores plus four mounting bores**.
+The original `Carrier` box is retained as the hidden editable Boolean base.
+
+- `HoleGrid`: 24 columns A–X, 18 rows 1–18, pitch 2.54 mm. The instructor read
+  **PY-5cmx7cm 2.54mm 22402A-18** from the physical board. In top view, A1 is
+  upper left, X18 lower right. Edge annotations label columns and rows; individual
+  hidden cutters are named `Hole_A1` through `Hole_X18` for programmatic placement.
+- Signal diameter is provisionally 0.9 mm. The exact Amazon listing
+  (`https://www.amazon.co.jp/dp/B071JYD6QP`) contradicts itself: bullets say 0.9 mm,
+  description says 1.0 mm. Neither is a physical measurement.
+- Grid offsets are centered assumptions: X=5.79 mm, Y=3.41 mm from board edges
+  to outer hole centers. Remove the offset expressions to enter measured offsets.
+- `MountingHoleParameters`: four corner holes, physically confirmed by instructor.
+  Initial diameter 2.5 mm and symmetric edge-to-center offsets 2.0 mm are rough
+  **photo estimates**, not published or measured dimensions. Measure before
+  designing standoffs. No verified drawing for the exact board marking was found.
+- `reports/carrier-hole-coordinates.csv` records the signal centers at this revision;
+  it is an exported snapshot, not live-linked to subsequent native edits.
+- Pads, plated barrels and silkscreen geometry remain unmodeled. Labels are native
+  annotations, not engraved material. Use `Circuitry.Placement` to position/rotate
+  the assembly; individual carrier rotation is not supported by the grid expressions.
+
+The upgrade checks that the result is one valid solid and that removed volume
+equals all 436 cylindrical through-bores. Top-view labels and holes were inspected
+in the GUI preview. Dimensions marked provisional remain pending physical validation.
