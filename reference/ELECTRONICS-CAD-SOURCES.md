@@ -100,6 +100,24 @@ Dimension-image identifiers: converter `61FCIdD5tlL` and `519Lg2LkglL`;
 switch `61rIy15oUuL`; OLED `61KIviiTKFL` (Amazon image CDN).
 No electrical load ratings are validated by these geometry observations.
 
+## Installed converter observations (2026-09-24)
+
+Instructor-reported physical observations for B07NVSVW1N:
+
+- One blue screw-adjustable potentiometer; it is the tallest component.
+- Approximate height **13 mm**, from the underside of the converter's own PCB
+  to the top of that potentiometer, including that PCB's thickness. This is a
+  physical estimate, not a precision measurement. It excludes the perfboard,
+  any gap beneath the converter PCB, and underside pin/solder protrusions.
+- Perfboard connections: OUT− at **V1**, OUT+ at **O1**, IN− at **V17**,
+  IN+ at **O17**. At the carrier's 2.54 mm pitch these imply a connection
+  rectangle of **17.78 × 40.64 mm**; converter hole alignment still needs checking.
+- Separation between the perfboard top surface and converter PCB underside is
+  not yet established. Keep this independent of the 13 mm module height.
+
+Use these observations to assess candidate CAD geometry; an agreement in pin
+spacing alone does not establish an exact purchased-variant match.
+
 ## Model construction plan
 
 - Store a reusable family definition and per-ASIN overrides for position servos:
