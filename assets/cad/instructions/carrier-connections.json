@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "id": "sesame-s3.carrier-connections",
+  "recorded_on": "2026-09-24",
+  "cad_snapshot": "converter-cad-snapshot.json",
+  "native_groups": ["AuxiliaryHeaders", "CarrierJumpers"],
+  "short_tail_headers": [
+    {"addresses": ["X14", "X15", "X16", "X17"], "evidence": "Instructor-specified", "pins": 4},
+    {"addresses": ["M12", "M13", "M14", "M15"], "evidence": "Instructor explicitly corrected the four-pin strip to M12-M15, superseding the initial M13-M16 inference.", "pins": 4}
+  ],
+  "header_dimensions": {
+    "pitch_mm": 2.54,
+    "plastic_height_mm": 2.5,
+    "upper_mating_end_mm": 6,
+    "lower_solder_tail_mm": 3,
+    "pin_square_width_mm": 0.64,
+    "evidence": "Ordinary short-tail male header style from purchased Youmile kit B0C13N6T48; dimensions apart from pitch provisional. Unlike hub headers these are asymmetric."
+  },
+  "jumpers": [
+    {"id": "Red_L", "color": "red", "addresses": ["L4", "L13"]},
+    {"id": "Red_B", "color": "red", "addresses": ["B3", "B9"]},
+    {"id": "Blue_K", "color": "blue", "addresses": ["K5", "K18"]},
+    {"id": "Green_J", "color": "green", "addresses": ["J6", "J14"]}
+  ],
+  "wire_evidence": "Colors and endpoints instructor-specified. Photo supports straight insulated spans with rounded downward ends; wire gauges and exact bend/strip dimensions are not measured.",
+  "wire_model": "Separate solid copper cores and insulation sleeves, native editable path/profile sketches and sweeps; bare vertical ends pass through carrier; eight underside solder fillets.",
+  "wire_assumptions_mm": {"core_radius": 0.25, "outer_radius": 0.8, "bend_radius": 1.1, "horizontal_center_z": 3.15},
+  "steps": [
+    {"id": "break_short_tail_headers", "instruction": "Break two ordinary short-tail male strips into four-pin pieces.", "after": "Two loose four-pin strips", "evidence": "Part count instructor-confirmed; break operation inferred"},
+    {"id": "solder_short_tail_headers", "depends_on": ["break_short_tail_headers"], "instruction": "Place short tails through the carrier at recorded addresses and solder underneath.", "after": "Eight header pins fixed to carrier"},
+    {"id": "form_jumpers", "instruction": "Cut, strip and bend red, blue and green insulated wire to the recorded spans.", "after": "Four formed insulated jumpers", "evidence": "Final shape observed; exact intermediate lengths not recorded"},
+    {"id": "solder_jumpers", "depends_on": ["form_jumpers"], "instruction": "Insert bare ends through the recorded holes and solder underneath.", "after": "Four insulated runs with bare lead ends and solder", "unknown": "Exact soldering order and tail trimming"}
+  ],
+  "electrical_status": "Physical endpoint record only; no invented underside net routing or claim of continuity validation."
+}

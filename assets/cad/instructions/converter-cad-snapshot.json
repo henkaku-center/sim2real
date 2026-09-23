@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "captured_at_utc": "2026-09-23T17:22:51.976498+00:00",
+  "captured_at_utc": "2026-09-23T17:41:17.072692+00:00",
   "source": "Read-only live GUI snapshot; caller must save documents before export.",
   "units": {
     "length": "mm",
@@ -25,7 +25,7 @@
     },
     "comparison": {
       "path": "assets/cad/upstream/lm2596-yaaj/LM2596-comparison.FCStd",
-      "saved_file_sha256": "797a1fddfbbaf9fdde9bd0e73f81f4c6ef63c978c76bf366b3795ecc06a871e9",
+      "saved_file_sha256": "4463397029b3b7229389d05aa7f1718226d073cb6e49fba491d2a309a771b072",
       "distribution": "local_only_ignored_candidate"
     }
   },
@@ -154,9 +154,53 @@
       "evidence": "Provisional equal metal length beyond each side of ORIGINAL spacer; no upper trimming assumed."
     }
   },
+  "additional_parameters": {
+    "CarrierConnections": {
+      "CarrierTopZ": {
+        "value_mm": 1.6,
+        "evidence": "Existing carrier thickness."
+      },
+      "HeaderTailLength": {
+        "value_mm": 3.0,
+        "evidence": "Provisional short solder tail below spacer."
+      },
+      "HeaderTopLength": {
+        "value_mm": 6.0,
+        "evidence": "Provisional long mating end above spacer."
+      },
+      "PinWidth": {
+        "value_mm": 0.64,
+        "evidence": "Provisional square section."
+      },
+      "SolderHeight": {
+        "value_mm": 1.0,
+        "evidence": "Illustrative underside projection, not a measured maximum."
+      },
+      "SpacerHeight": {
+        "value_mm": 2.5,
+        "evidence": "Provisional ordinary header spacer thickness."
+      },
+      "WireBendRadius": {
+        "value_mm": 1.1,
+        "evidence": "Illustrative rounded bends, not photo measurement."
+      },
+      "WireCenterZ": {
+        "value_mm": 3.15,
+        "evidence": "Illustrative horizontal centerline above carrier underside."
+      },
+      "WireCoreRadius": {
+        "value_mm": 0.25,
+        "evidence": "Illustrative solid conductor, gauge unverified."
+      },
+      "WireOuterRadius": {
+        "value_mm": 0.8,
+        "evidence": "Illustrative insulation outside radius."
+      }
+    }
+  },
   "hub_evidence": {
     "SeatingEvidence": "Instructor confirms plastic-to-plastic flush mating. Board separation derived from provisional socket/spacer dimensions; earlier physical estimate was approximately 14 mm.",
-    "PurchasedHeaderEvidence": "PENGLIN B0FJ5NR96F, order 2026-09-14 and supplier listing: 15 mm total, 6.25 mm each side, implying 2.5 mm original spacer. Photos 10-12 indicate donor spacer on PCB side. Calculated upper projection 2.15 mm agrees with instructor about 2 mm, untrimmed. Female Youmile B0C13N6T48 purchased same day, installed identity not yet confirmed; 8.5 mm body and 7 mm cavity remain provisional."
+    "PurchasedHeaderEvidence": "PENGLIN B0FJ5NR96F, order 2026-09-14 and supplier listing: 15 mm total, 6.25 mm each side, implying 2.5 mm original spacer. Photos 10-12 indicate donor spacer on PCB side. Calculated upper projection 2.15 mm agrees with instructor about 2 mm, untrimmed. Female Youmile B0C13N6T48 purchased same day, installed identity not yet confirmed; 8.5 mm body and 7 mm cavity remain provisional. Instructor subsequently selected an inventory/purchased socket reference: use Youmile B0C13N6T48; original installed origin unknown."
   },
   "objects": [
     {
@@ -11830,6 +11874,2988 @@
       "expressions": []
     },
     {
+      "id": "auxiliary.pin.X14",
+      "document": "comparison",
+      "native_object": "AuxPin_X14",
+      "label": "AuxPin_X14",
+      "type": "Part::Box",
+      "cad_dependents": [
+        "AuxSpacerTools_X",
+        "AuxSolder_X14",
+        "AuxiliaryHeaders"
+      ],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Flat Lines",
+        "LineWidth": 2.0,
+        "LineColor": [
+          0.09803921729326248,
+          0.09803921729326248,
+          0.09803921729326248,
+          1.0
+        ],
+        "materials": [
+          {
+            "DiffuseColor": [
+              0.7599999904632568,
+              0.7699999809265137,
+              0.7900000214576721,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          }
+        ],
+        "material_assignment": "uniform"
+      },
+      "local_pose": {
+        "translation_mm": [
+          5.469999999999999,
+          36.11000000000001,
+          -1.4
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          5.469999999999999,
+          36.11000000000001,
+          -1.4
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "parent_coordinate_group": "AuxiliaryHeaders",
+      "solid_count": 1,
+      "expressions": [
+        [
+          ".Placement.Base.x",
+          "5.79 mm - CarrierConnections.PinWidth / 2"
+        ],
+        [
+          ".Placement.Base.y",
+          "36.43 mm - CarrierConnections.PinWidth / 2"
+        ],
+        [
+          ".Placement.Base.z",
+          "CarrierConnections.CarrierTopZ - CarrierConnections.HeaderTailLength"
+        ],
+        [
+          "Height",
+          "CarrierConnections.HeaderTailLength + CarrierConnections.SpacerHeight + CarrierConnections.HeaderTopLength"
+        ],
+        [
+          "Length",
+          "CarrierConnections.PinWidth"
+        ],
+        [
+          "Width",
+          "CarrierConnections.PinWidth"
+        ]
+      ]
+    },
+    {
+      "id": "auxiliary.pin.X15",
+      "document": "comparison",
+      "native_object": "AuxPin_X15",
+      "label": "AuxPin_X15",
+      "type": "Part::Box",
+      "cad_dependents": [
+        "AuxSpacerTools_X",
+        "AuxSolder_X15",
+        "AuxiliaryHeaders"
+      ],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Flat Lines",
+        "LineWidth": 2.0,
+        "LineColor": [
+          0.09803921729326248,
+          0.09803921729326248,
+          0.09803921729326248,
+          1.0
+        ],
+        "materials": [
+          {
+            "DiffuseColor": [
+              0.7599999904632568,
+              0.7699999809265137,
+              0.7900000214576721,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          }
+        ],
+        "material_assignment": "uniform"
+      },
+      "local_pose": {
+        "translation_mm": [
+          5.469999999999999,
+          38.650000000000006,
+          -1.4
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          5.469999999999999,
+          38.650000000000006,
+          -1.4
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "parent_coordinate_group": "AuxiliaryHeaders",
+      "solid_count": 1,
+      "expressions": [
+        [
+          ".Placement.Base.x",
+          "5.79 mm - CarrierConnections.PinWidth / 2"
+        ],
+        [
+          ".Placement.Base.y",
+          "38.97 mm - CarrierConnections.PinWidth / 2"
+        ],
+        [
+          ".Placement.Base.z",
+          "CarrierConnections.CarrierTopZ - CarrierConnections.HeaderTailLength"
+        ],
+        [
+          "Height",
+          "CarrierConnections.HeaderTailLength + CarrierConnections.SpacerHeight + CarrierConnections.HeaderTopLength"
+        ],
+        [
+          "Length",
+          "CarrierConnections.PinWidth"
+        ],
+        [
+          "Width",
+          "CarrierConnections.PinWidth"
+        ]
+      ]
+    },
+    {
+      "id": "auxiliary.pin.X16",
+      "document": "comparison",
+      "native_object": "AuxPin_X16",
+      "label": "AuxPin_X16",
+      "type": "Part::Box",
+      "cad_dependents": [
+        "AuxSpacerTools_X",
+        "AuxSolder_X16",
+        "AuxiliaryHeaders"
+      ],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Flat Lines",
+        "LineWidth": 2.0,
+        "LineColor": [
+          0.09803921729326248,
+          0.09803921729326248,
+          0.09803921729326248,
+          1.0
+        ],
+        "materials": [
+          {
+            "DiffuseColor": [
+              0.7599999904632568,
+              0.7699999809265137,
+              0.7900000214576721,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          }
+        ],
+        "material_assignment": "uniform"
+      },
+      "local_pose": {
+        "translation_mm": [
+          5.469999999999999,
+          41.190000000000005,
+          -1.4
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          5.469999999999999,
+          41.190000000000005,
+          -1.4
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "parent_coordinate_group": "AuxiliaryHeaders",
+      "solid_count": 1,
+      "expressions": [
+        [
+          ".Placement.Base.x",
+          "5.79 mm - CarrierConnections.PinWidth / 2"
+        ],
+        [
+          ".Placement.Base.y",
+          "41.51 mm - CarrierConnections.PinWidth / 2"
+        ],
+        [
+          ".Placement.Base.z",
+          "CarrierConnections.CarrierTopZ - CarrierConnections.HeaderTailLength"
+        ],
+        [
+          "Height",
+          "CarrierConnections.HeaderTailLength + CarrierConnections.SpacerHeight + CarrierConnections.HeaderTopLength"
+        ],
+        [
+          "Length",
+          "CarrierConnections.PinWidth"
+        ],
+        [
+          "Width",
+          "CarrierConnections.PinWidth"
+        ]
+      ]
+    },
+    {
+      "id": "auxiliary.pin.X17",
+      "document": "comparison",
+      "native_object": "AuxPin_X17",
+      "label": "AuxPin_X17",
+      "type": "Part::Box",
+      "cad_dependents": [
+        "AuxSpacerTools_X",
+        "AuxSolder_X17",
+        "AuxiliaryHeaders"
+      ],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Flat Lines",
+        "LineWidth": 2.0,
+        "LineColor": [
+          0.09803921729326248,
+          0.09803921729326248,
+          0.09803921729326248,
+          1.0
+        ],
+        "materials": [
+          {
+            "DiffuseColor": [
+              0.7599999904632568,
+              0.7699999809265137,
+              0.7900000214576721,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          }
+        ],
+        "material_assignment": "uniform"
+      },
+      "local_pose": {
+        "translation_mm": [
+          5.469999999999999,
+          43.730000000000004,
+          -1.4
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          5.469999999999999,
+          43.730000000000004,
+          -1.4
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "parent_coordinate_group": "AuxiliaryHeaders",
+      "solid_count": 1,
+      "expressions": [
+        [
+          ".Placement.Base.x",
+          "5.79 mm - CarrierConnections.PinWidth / 2"
+        ],
+        [
+          ".Placement.Base.y",
+          "44.05 mm - CarrierConnections.PinWidth / 2"
+        ],
+        [
+          ".Placement.Base.z",
+          "CarrierConnections.CarrierTopZ - CarrierConnections.HeaderTailLength"
+        ],
+        [
+          "Height",
+          "CarrierConnections.HeaderTailLength + CarrierConnections.SpacerHeight + CarrierConnections.HeaderTopLength"
+        ],
+        [
+          "Length",
+          "CarrierConnections.PinWidth"
+        ],
+        [
+          "Width",
+          "CarrierConnections.PinWidth"
+        ]
+      ]
+    },
+    {
+      "id": "auxiliary.spacer.X",
+      "document": "comparison",
+      "native_object": "AuxSpacer_X",
+      "label": "AuxSpacer_X",
+      "type": "Part::Cut",
+      "cad_dependents": [
+        "AuxiliaryHeaders"
+      ],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Flat Lines",
+        "LineWidth": 2.0,
+        "LineColor": [
+          0.09803921729326248,
+          0.09803921729326248,
+          0.09803921729326248,
+          1.0
+        ],
+        "materials": [
+          {
+            "DiffuseColor": [
+              0.09000000357627869,
+              0.09000000357627869,
+              0.10000000149011612,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          }
+        ],
+        "material_assignment": "uniform"
+      },
+      "local_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "parent_coordinate_group": "AuxiliaryHeaders",
+      "solid_count": 1,
+      "expressions": []
+    },
+    {
+      "id": "aux.solder.X14",
+      "document": "comparison",
+      "native_object": "AuxSolder_X14",
+      "label": "AuxSolder_X14",
+      "type": "Part::Cut",
+      "cad_dependents": [
+        "AuxiliaryHeaders"
+      ],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Flat Lines",
+        "LineWidth": 2.0,
+        "LineColor": [
+          0.09803921729326248,
+          0.09803921729326248,
+          0.09803921729326248,
+          1.0
+        ],
+        "materials": [
+          {
+            "DiffuseColor": [
+              0.699999988079071,
+              0.7200000286102295,
+              0.7400000095367432,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          }
+        ],
+        "material_assignment": "uniform"
+      },
+      "local_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "parent_coordinate_group": "AuxiliaryHeaders",
+      "solid_count": 1,
+      "expressions": []
+    },
+    {
+      "id": "aux.solder.X15",
+      "document": "comparison",
+      "native_object": "AuxSolder_X15",
+      "label": "AuxSolder_X15",
+      "type": "Part::Cut",
+      "cad_dependents": [
+        "AuxiliaryHeaders"
+      ],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Flat Lines",
+        "LineWidth": 2.0,
+        "LineColor": [
+          0.09803921729326248,
+          0.09803921729326248,
+          0.09803921729326248,
+          1.0
+        ],
+        "materials": [
+          {
+            "DiffuseColor": [
+              0.699999988079071,
+              0.7200000286102295,
+              0.7400000095367432,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          }
+        ],
+        "material_assignment": "uniform"
+      },
+      "local_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "parent_coordinate_group": "AuxiliaryHeaders",
+      "solid_count": 1,
+      "expressions": []
+    },
+    {
+      "id": "aux.solder.X16",
+      "document": "comparison",
+      "native_object": "AuxSolder_X16",
+      "label": "AuxSolder_X16",
+      "type": "Part::Cut",
+      "cad_dependents": [
+        "AuxiliaryHeaders"
+      ],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Flat Lines",
+        "LineWidth": 2.0,
+        "LineColor": [
+          0.09803921729326248,
+          0.09803921729326248,
+          0.09803921729326248,
+          1.0
+        ],
+        "materials": [
+          {
+            "DiffuseColor": [
+              0.699999988079071,
+              0.7200000286102295,
+              0.7400000095367432,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          }
+        ],
+        "material_assignment": "uniform"
+      },
+      "local_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "parent_coordinate_group": "AuxiliaryHeaders",
+      "solid_count": 1,
+      "expressions": []
+    },
+    {
+      "id": "aux.solder.X17",
+      "document": "comparison",
+      "native_object": "AuxSolder_X17",
+      "label": "AuxSolder_X17",
+      "type": "Part::Cut",
+      "cad_dependents": [
+        "AuxiliaryHeaders"
+      ],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Flat Lines",
+        "LineWidth": 2.0,
+        "LineColor": [
+          0.09803921729326248,
+          0.09803921729326248,
+          0.09803921729326248,
+          1.0
+        ],
+        "materials": [
+          {
+            "DiffuseColor": [
+              0.699999988079071,
+              0.7200000286102295,
+              0.7400000095367432,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          }
+        ],
+        "material_assignment": "uniform"
+      },
+      "local_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "parent_coordinate_group": "AuxiliaryHeaders",
+      "solid_count": 1,
+      "expressions": []
+    },
+    {
+      "id": "auxiliary.pin.M12",
+      "document": "comparison",
+      "native_object": "AuxPin_M13",
+      "label": "Auxiliary pin M12",
+      "type": "Part::Box",
+      "cad_dependents": [
+        "AuxSpacerTools_M",
+        "AuxSolder_M13",
+        "AuxiliaryHeaders"
+      ],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Flat Lines",
+        "LineWidth": 2.0,
+        "LineColor": [
+          0.09803921729326248,
+          0.09803921729326248,
+          0.09803921729326248,
+          1.0
+        ],
+        "materials": [
+          {
+            "DiffuseColor": [
+              0.7599999904632568,
+              0.7699999809265137,
+              0.7900000214576721,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          }
+        ],
+        "material_assignment": "uniform"
+      },
+      "local_pose": {
+        "translation_mm": [
+          33.410000000000004,
+          31.03,
+          -1.4
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          33.410000000000004,
+          31.03,
+          -1.4
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "parent_coordinate_group": "AuxiliaryHeaders",
+      "solid_count": 1,
+      "expressions": [
+        [
+          ".Placement.Base.x",
+          "33.73 mm - CarrierConnections.PinWidth / 2"
+        ],
+        [
+          ".Placement.Base.y",
+          "31.35 mm - CarrierConnections.PinWidth / 2"
+        ],
+        [
+          ".Placement.Base.z",
+          "CarrierConnections.CarrierTopZ - CarrierConnections.HeaderTailLength"
+        ],
+        [
+          "Height",
+          "CarrierConnections.HeaderTailLength + CarrierConnections.SpacerHeight + CarrierConnections.HeaderTopLength"
+        ],
+        [
+          "Length",
+          "CarrierConnections.PinWidth"
+        ],
+        [
+          "Width",
+          "CarrierConnections.PinWidth"
+        ]
+      ]
+    },
+    {
+      "id": "auxiliary.pin.M13",
+      "document": "comparison",
+      "native_object": "AuxPin_M14",
+      "label": "Auxiliary pin M13",
+      "type": "Part::Box",
+      "cad_dependents": [
+        "AuxSpacerTools_M",
+        "AuxSolder_M14",
+        "AuxiliaryHeaders"
+      ],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Flat Lines",
+        "LineWidth": 2.0,
+        "LineColor": [
+          0.09803921729326248,
+          0.09803921729326248,
+          0.09803921729326248,
+          1.0
+        ],
+        "materials": [
+          {
+            "DiffuseColor": [
+              0.7599999904632568,
+              0.7699999809265137,
+              0.7900000214576721,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          }
+        ],
+        "material_assignment": "uniform"
+      },
+      "local_pose": {
+        "translation_mm": [
+          33.410000000000004,
+          33.57,
+          -1.4
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          33.410000000000004,
+          33.57,
+          -1.4
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "parent_coordinate_group": "AuxiliaryHeaders",
+      "solid_count": 1,
+      "expressions": [
+        [
+          ".Placement.Base.x",
+          "33.73 mm - CarrierConnections.PinWidth / 2"
+        ],
+        [
+          ".Placement.Base.y",
+          "33.89 mm - CarrierConnections.PinWidth / 2"
+        ],
+        [
+          ".Placement.Base.z",
+          "CarrierConnections.CarrierTopZ - CarrierConnections.HeaderTailLength"
+        ],
+        [
+          "Height",
+          "CarrierConnections.HeaderTailLength + CarrierConnections.SpacerHeight + CarrierConnections.HeaderTopLength"
+        ],
+        [
+          "Length",
+          "CarrierConnections.PinWidth"
+        ],
+        [
+          "Width",
+          "CarrierConnections.PinWidth"
+        ]
+      ]
+    },
+    {
+      "id": "auxiliary.pin.M14",
+      "document": "comparison",
+      "native_object": "AuxPin_M15",
+      "label": "Auxiliary pin M14",
+      "type": "Part::Box",
+      "cad_dependents": [
+        "AuxSpacerTools_M",
+        "AuxSolder_M15",
+        "AuxiliaryHeaders"
+      ],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Flat Lines",
+        "LineWidth": 2.0,
+        "LineColor": [
+          0.09803921729326248,
+          0.09803921729326248,
+          0.09803921729326248,
+          1.0
+        ],
+        "materials": [
+          {
+            "DiffuseColor": [
+              0.7599999904632568,
+              0.7699999809265137,
+              0.7900000214576721,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          }
+        ],
+        "material_assignment": "uniform"
+      },
+      "local_pose": {
+        "translation_mm": [
+          33.410000000000004,
+          36.11000000000001,
+          -1.4
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          33.410000000000004,
+          36.11000000000001,
+          -1.4
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "parent_coordinate_group": "AuxiliaryHeaders",
+      "solid_count": 1,
+      "expressions": [
+        [
+          ".Placement.Base.x",
+          "33.73 mm - CarrierConnections.PinWidth / 2"
+        ],
+        [
+          ".Placement.Base.y",
+          "36.43 mm - CarrierConnections.PinWidth / 2"
+        ],
+        [
+          ".Placement.Base.z",
+          "CarrierConnections.CarrierTopZ - CarrierConnections.HeaderTailLength"
+        ],
+        [
+          "Height",
+          "CarrierConnections.HeaderTailLength + CarrierConnections.SpacerHeight + CarrierConnections.HeaderTopLength"
+        ],
+        [
+          "Length",
+          "CarrierConnections.PinWidth"
+        ],
+        [
+          "Width",
+          "CarrierConnections.PinWidth"
+        ]
+      ]
+    },
+    {
+      "id": "auxiliary.pin.M15",
+      "document": "comparison",
+      "native_object": "AuxPin_M16",
+      "label": "Auxiliary pin M15",
+      "type": "Part::Box",
+      "cad_dependents": [
+        "AuxSpacerTools_M",
+        "AuxiliaryHeaders",
+        "AuxSolder_M16"
+      ],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Flat Lines",
+        "LineWidth": 2.0,
+        "LineColor": [
+          0.09803921729326248,
+          0.09803921729326248,
+          0.09803921729326248,
+          1.0
+        ],
+        "materials": [
+          {
+            "DiffuseColor": [
+              0.7599999904632568,
+              0.7699999809265137,
+              0.7900000214576721,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          }
+        ],
+        "material_assignment": "uniform"
+      },
+      "local_pose": {
+        "translation_mm": [
+          33.410000000000004,
+          38.650000000000006,
+          -1.4
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          33.410000000000004,
+          38.650000000000006,
+          -1.4
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "parent_coordinate_group": "AuxiliaryHeaders",
+      "solid_count": 1,
+      "expressions": [
+        [
+          ".Placement.Base.x",
+          "33.73 mm - CarrierConnections.PinWidth / 2"
+        ],
+        [
+          ".Placement.Base.y",
+          "38.97 mm - CarrierConnections.PinWidth / 2"
+        ],
+        [
+          ".Placement.Base.z",
+          "CarrierConnections.CarrierTopZ - CarrierConnections.HeaderTailLength"
+        ],
+        [
+          "Height",
+          "CarrierConnections.HeaderTailLength + CarrierConnections.SpacerHeight + CarrierConnections.HeaderTopLength"
+        ],
+        [
+          "Length",
+          "CarrierConnections.PinWidth"
+        ],
+        [
+          "Width",
+          "CarrierConnections.PinWidth"
+        ]
+      ]
+    },
+    {
+      "id": "auxiliary.spacer.M",
+      "document": "comparison",
+      "native_object": "AuxSpacer_M",
+      "label": "AuxSpacer_M",
+      "type": "Part::Cut",
+      "cad_dependents": [
+        "AuxiliaryHeaders"
+      ],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Flat Lines",
+        "LineWidth": 2.0,
+        "LineColor": [
+          0.09803921729326248,
+          0.09803921729326248,
+          0.09803921729326248,
+          1.0
+        ],
+        "materials": [
+          {
+            "DiffuseColor": [
+              0.09000000357627869,
+              0.09000000357627869,
+              0.10000000149011612,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          }
+        ],
+        "material_assignment": "uniform"
+      },
+      "local_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "parent_coordinate_group": "AuxiliaryHeaders",
+      "solid_count": 1,
+      "expressions": []
+    },
+    {
+      "id": "aux.solder.M12",
+      "document": "comparison",
+      "native_object": "AuxSolder_M13",
+      "label": "Auxiliary solder M12",
+      "type": "Part::Cut",
+      "cad_dependents": [
+        "AuxiliaryHeaders"
+      ],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Flat Lines",
+        "LineWidth": 2.0,
+        "LineColor": [
+          0.09803921729326248,
+          0.09803921729326248,
+          0.09803921729326248,
+          1.0
+        ],
+        "materials": [
+          {
+            "DiffuseColor": [
+              0.699999988079071,
+              0.7200000286102295,
+              0.7400000095367432,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          }
+        ],
+        "material_assignment": "uniform"
+      },
+      "local_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "parent_coordinate_group": "AuxiliaryHeaders",
+      "solid_count": 1,
+      "expressions": []
+    },
+    {
+      "id": "aux.solder.M13",
+      "document": "comparison",
+      "native_object": "AuxSolder_M14",
+      "label": "Auxiliary solder M13",
+      "type": "Part::Cut",
+      "cad_dependents": [
+        "AuxiliaryHeaders"
+      ],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Flat Lines",
+        "LineWidth": 2.0,
+        "LineColor": [
+          0.09803921729326248,
+          0.09803921729326248,
+          0.09803921729326248,
+          1.0
+        ],
+        "materials": [
+          {
+            "DiffuseColor": [
+              0.699999988079071,
+              0.7200000286102295,
+              0.7400000095367432,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          }
+        ],
+        "material_assignment": "uniform"
+      },
+      "local_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "parent_coordinate_group": "AuxiliaryHeaders",
+      "solid_count": 1,
+      "expressions": []
+    },
+    {
+      "id": "aux.solder.M14",
+      "document": "comparison",
+      "native_object": "AuxSolder_M15",
+      "label": "Auxiliary solder M14",
+      "type": "Part::Cut",
+      "cad_dependents": [
+        "AuxiliaryHeaders"
+      ],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Flat Lines",
+        "LineWidth": 2.0,
+        "LineColor": [
+          0.09803921729326248,
+          0.09803921729326248,
+          0.09803921729326248,
+          1.0
+        ],
+        "materials": [
+          {
+            "DiffuseColor": [
+              0.699999988079071,
+              0.7200000286102295,
+              0.7400000095367432,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          }
+        ],
+        "material_assignment": "uniform"
+      },
+      "local_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "parent_coordinate_group": "AuxiliaryHeaders",
+      "solid_count": 1,
+      "expressions": []
+    },
+    {
+      "id": "aux.solder.M15",
+      "document": "comparison",
+      "native_object": "AuxSolder_M16",
+      "label": "Auxiliary solder M15",
+      "type": "Part::Cut",
+      "cad_dependents": [
+        "AuxiliaryHeaders"
+      ],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Flat Lines",
+        "LineWidth": 2.0,
+        "LineColor": [
+          0.09803921729326248,
+          0.09803921729326248,
+          0.09803921729326248,
+          1.0
+        ],
+        "materials": [
+          {
+            "DiffuseColor": [
+              0.699999988079071,
+              0.7200000286102295,
+              0.7400000095367432,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          }
+        ],
+        "material_assignment": "uniform"
+      },
+      "local_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "parent_coordinate_group": "AuxiliaryHeaders",
+      "solid_count": 1,
+      "expressions": []
+    },
+    {
+      "id": "jumper.core.Red_L",
+      "document": "comparison",
+      "native_object": "JumperCore_Red_L",
+      "label": "JumperCore_Red_L",
+      "type": "Part::Sweep",
+      "cad_dependents": [
+        "JumperSleeve_Red_L",
+        "JumperSolder_L4",
+        "JumperSolder_L13",
+        "CarrierJumpers"
+      ],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Flat Lines",
+        "LineWidth": 2.0,
+        "LineColor": [
+          0.09803921729326248,
+          0.09803921729326248,
+          0.09803921729326248,
+          1.0
+        ],
+        "materials": [
+          {
+            "DiffuseColor": [
+              0.7200000286102295,
+              0.38999998569488525,
+              0.1599999964237213,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          }
+        ],
+        "material_assignment": "uniform"
+      },
+      "local_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "parent_coordinate_group": "CarrierJumpers",
+      "solid_count": 1,
+      "expressions": []
+    },
+    {
+      "id": "jumper.insulation.Red_L",
+      "document": "comparison",
+      "native_object": "JumperSleeve_Red_L",
+      "label": "JumperSleeve_Red_L",
+      "type": "Part::Cut",
+      "cad_dependents": [
+        "CarrierJumpers"
+      ],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Flat Lines",
+        "LineWidth": 2.0,
+        "LineColor": [
+          0.09803921729326248,
+          0.09803921729326248,
+          0.09803921729326248,
+          1.0
+        ],
+        "materials": [
+          {
+            "DiffuseColor": [
+              0.8799999952316284,
+              0.03500000014901161,
+              0.02500000037252903,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          }
+        ],
+        "material_assignment": "uniform"
+      },
+      "local_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "parent_coordinate_group": "CarrierJumpers",
+      "solid_count": 1,
+      "expressions": []
+    },
+    {
+      "id": "jumper.solder.L4",
+      "document": "comparison",
+      "native_object": "JumperSolder_L4",
+      "label": "JumperSolder_L4",
+      "type": "Part::Cut",
+      "cad_dependents": [
+        "CarrierJumpers"
+      ],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Flat Lines",
+        "LineWidth": 2.0,
+        "LineColor": [
+          0.09803921729326248,
+          0.09803921729326248,
+          0.09803921729326248,
+          1.0
+        ],
+        "materials": [
+          {
+            "DiffuseColor": [
+              0.699999988079071,
+              0.7200000286102295,
+              0.7400000095367432,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          }
+        ],
+        "material_assignment": "uniform"
+      },
+      "local_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "parent_coordinate_group": "CarrierJumpers",
+      "solid_count": 1,
+      "expressions": []
+    },
+    {
+      "id": "jumper.solder.L13",
+      "document": "comparison",
+      "native_object": "JumperSolder_L13",
+      "label": "JumperSolder_L13",
+      "type": "Part::Cut",
+      "cad_dependents": [
+        "CarrierJumpers"
+      ],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Flat Lines",
+        "LineWidth": 2.0,
+        "LineColor": [
+          0.09803921729326248,
+          0.09803921729326248,
+          0.09803921729326248,
+          1.0
+        ],
+        "materials": [
+          {
+            "DiffuseColor": [
+              0.699999988079071,
+              0.7200000286102295,
+              0.7400000095367432,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          }
+        ],
+        "material_assignment": "uniform"
+      },
+      "local_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "parent_coordinate_group": "CarrierJumpers",
+      "solid_count": 1,
+      "expressions": []
+    },
+    {
+      "id": "jumper.core.Red_B",
+      "document": "comparison",
+      "native_object": "JumperCore_Red_B",
+      "label": "JumperCore_Red_B",
+      "type": "Part::Sweep",
+      "cad_dependents": [
+        "JumperSleeve_Red_B",
+        "JumperSolder_B3",
+        "JumperSolder_B9",
+        "CarrierJumpers"
+      ],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Flat Lines",
+        "LineWidth": 2.0,
+        "LineColor": [
+          0.09803921729326248,
+          0.09803921729326248,
+          0.09803921729326248,
+          1.0
+        ],
+        "materials": [
+          {
+            "DiffuseColor": [
+              0.7200000286102295,
+              0.38999998569488525,
+              0.1599999964237213,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          }
+        ],
+        "material_assignment": "uniform"
+      },
+      "local_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "parent_coordinate_group": "CarrierJumpers",
+      "solid_count": 1,
+      "expressions": []
+    },
+    {
+      "id": "jumper.insulation.Red_B",
+      "document": "comparison",
+      "native_object": "JumperSleeve_Red_B",
+      "label": "JumperSleeve_Red_B",
+      "type": "Part::Cut",
+      "cad_dependents": [
+        "CarrierJumpers"
+      ],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Flat Lines",
+        "LineWidth": 2.0,
+        "LineColor": [
+          0.09803921729326248,
+          0.09803921729326248,
+          0.09803921729326248,
+          1.0
+        ],
+        "materials": [
+          {
+            "DiffuseColor": [
+              0.8799999952316284,
+              0.03500000014901161,
+              0.02500000037252903,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          }
+        ],
+        "material_assignment": "uniform"
+      },
+      "local_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "parent_coordinate_group": "CarrierJumpers",
+      "solid_count": 1,
+      "expressions": []
+    },
+    {
+      "id": "jumper.solder.B3",
+      "document": "comparison",
+      "native_object": "JumperSolder_B3",
+      "label": "JumperSolder_B3",
+      "type": "Part::Cut",
+      "cad_dependents": [
+        "CarrierJumpers"
+      ],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Flat Lines",
+        "LineWidth": 2.0,
+        "LineColor": [
+          0.09803921729326248,
+          0.09803921729326248,
+          0.09803921729326248,
+          1.0
+        ],
+        "materials": [
+          {
+            "DiffuseColor": [
+              0.699999988079071,
+              0.7200000286102295,
+              0.7400000095367432,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          }
+        ],
+        "material_assignment": "uniform"
+      },
+      "local_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "parent_coordinate_group": "CarrierJumpers",
+      "solid_count": 1,
+      "expressions": []
+    },
+    {
+      "id": "jumper.solder.B9",
+      "document": "comparison",
+      "native_object": "JumperSolder_B9",
+      "label": "JumperSolder_B9",
+      "type": "Part::Cut",
+      "cad_dependents": [
+        "CarrierJumpers"
+      ],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Flat Lines",
+        "LineWidth": 2.0,
+        "LineColor": [
+          0.09803921729326248,
+          0.09803921729326248,
+          0.09803921729326248,
+          1.0
+        ],
+        "materials": [
+          {
+            "DiffuseColor": [
+              0.699999988079071,
+              0.7200000286102295,
+              0.7400000095367432,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          }
+        ],
+        "material_assignment": "uniform"
+      },
+      "local_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "parent_coordinate_group": "CarrierJumpers",
+      "solid_count": 1,
+      "expressions": []
+    },
+    {
+      "id": "jumper.core.Blue_K",
+      "document": "comparison",
+      "native_object": "JumperCore_Blue_K",
+      "label": "JumperCore_Blue_K",
+      "type": "Part::Sweep",
+      "cad_dependents": [
+        "JumperSleeve_Blue_K",
+        "JumperSolder_K5",
+        "JumperSolder_K18",
+        "CarrierJumpers"
+      ],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Flat Lines",
+        "LineWidth": 2.0,
+        "LineColor": [
+          0.09803921729326248,
+          0.09803921729326248,
+          0.09803921729326248,
+          1.0
+        ],
+        "materials": [
+          {
+            "DiffuseColor": [
+              0.7200000286102295,
+              0.38999998569488525,
+              0.1599999964237213,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          }
+        ],
+        "material_assignment": "uniform"
+      },
+      "local_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "parent_coordinate_group": "CarrierJumpers",
+      "solid_count": 1,
+      "expressions": []
+    },
+    {
+      "id": "jumper.insulation.Blue_K",
+      "document": "comparison",
+      "native_object": "JumperSleeve_Blue_K",
+      "label": "JumperSleeve_Blue_K",
+      "type": "Part::Cut",
+      "cad_dependents": [
+        "CarrierJumpers"
+      ],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Flat Lines",
+        "LineWidth": 2.0,
+        "LineColor": [
+          0.09803921729326248,
+          0.09803921729326248,
+          0.09803921729326248,
+          1.0
+        ],
+        "materials": [
+          {
+            "DiffuseColor": [
+              0.02500000037252903,
+              0.10000000149011612,
+              0.6499999761581421,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          }
+        ],
+        "material_assignment": "uniform"
+      },
+      "local_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "parent_coordinate_group": "CarrierJumpers",
+      "solid_count": 1,
+      "expressions": []
+    },
+    {
+      "id": "jumper.solder.K5",
+      "document": "comparison",
+      "native_object": "JumperSolder_K5",
+      "label": "JumperSolder_K5",
+      "type": "Part::Cut",
+      "cad_dependents": [
+        "CarrierJumpers"
+      ],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Flat Lines",
+        "LineWidth": 2.0,
+        "LineColor": [
+          0.09803921729326248,
+          0.09803921729326248,
+          0.09803921729326248,
+          1.0
+        ],
+        "materials": [
+          {
+            "DiffuseColor": [
+              0.699999988079071,
+              0.7200000286102295,
+              0.7400000095367432,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          }
+        ],
+        "material_assignment": "uniform"
+      },
+      "local_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "parent_coordinate_group": "CarrierJumpers",
+      "solid_count": 1,
+      "expressions": []
+    },
+    {
+      "id": "jumper.solder.K18",
+      "document": "comparison",
+      "native_object": "JumperSolder_K18",
+      "label": "JumperSolder_K18",
+      "type": "Part::Cut",
+      "cad_dependents": [
+        "CarrierJumpers"
+      ],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Flat Lines",
+        "LineWidth": 2.0,
+        "LineColor": [
+          0.09803921729326248,
+          0.09803921729326248,
+          0.09803921729326248,
+          1.0
+        ],
+        "materials": [
+          {
+            "DiffuseColor": [
+              0.699999988079071,
+              0.7200000286102295,
+              0.7400000095367432,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          }
+        ],
+        "material_assignment": "uniform"
+      },
+      "local_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "parent_coordinate_group": "CarrierJumpers",
+      "solid_count": 1,
+      "expressions": []
+    },
+    {
+      "id": "jumper.core.Green_J",
+      "document": "comparison",
+      "native_object": "JumperCore_Green_J",
+      "label": "JumperCore_Green_J",
+      "type": "Part::Sweep",
+      "cad_dependents": [
+        "JumperSleeve_Green_J",
+        "JumperSolder_J6",
+        "CarrierJumpers",
+        "JumperSolder_J14"
+      ],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Flat Lines",
+        "LineWidth": 2.0,
+        "LineColor": [
+          0.09803921729326248,
+          0.09803921729326248,
+          0.09803921729326248,
+          1.0
+        ],
+        "materials": [
+          {
+            "DiffuseColor": [
+              0.7200000286102295,
+              0.38999998569488525,
+              0.1599999964237213,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          }
+        ],
+        "material_assignment": "uniform"
+      },
+      "local_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "parent_coordinate_group": "CarrierJumpers",
+      "solid_count": 1,
+      "expressions": []
+    },
+    {
+      "id": "jumper.insulation.Green_J",
+      "document": "comparison",
+      "native_object": "JumperSleeve_Green_J",
+      "label": "JumperSleeve_Green_J",
+      "type": "Part::Cut",
+      "cad_dependents": [
+        "CarrierJumpers"
+      ],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Flat Lines",
+        "LineWidth": 2.0,
+        "LineColor": [
+          0.09803921729326248,
+          0.09803921729326248,
+          0.09803921729326248,
+          1.0
+        ],
+        "materials": [
+          {
+            "DiffuseColor": [
+              0.014999999664723873,
+              0.550000011920929,
+              0.2800000011920929,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          }
+        ],
+        "material_assignment": "uniform"
+      },
+      "local_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "parent_coordinate_group": "CarrierJumpers",
+      "solid_count": 1,
+      "expressions": []
+    },
+    {
+      "id": "jumper.solder.J6",
+      "document": "comparison",
+      "native_object": "JumperSolder_J6",
+      "label": "JumperSolder_J6",
+      "type": "Part::Cut",
+      "cad_dependents": [
+        "CarrierJumpers"
+      ],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Flat Lines",
+        "LineWidth": 2.0,
+        "LineColor": [
+          0.09803921729326248,
+          0.09803921729326248,
+          0.09803921729326248,
+          1.0
+        ],
+        "materials": [
+          {
+            "DiffuseColor": [
+              0.699999988079071,
+              0.7200000286102295,
+              0.7400000095367432,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          }
+        ],
+        "material_assignment": "uniform"
+      },
+      "local_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "parent_coordinate_group": "CarrierJumpers",
+      "solid_count": 1,
+      "expressions": []
+    },
+    {
+      "id": "jumper.solder.J14",
+      "document": "comparison",
+      "native_object": "JumperSolder_J14",
+      "label": "JumperSolder_J14",
+      "type": "Part::Cut",
+      "cad_dependents": [
+        "CarrierJumpers"
+      ],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Flat Lines",
+        "LineWidth": 2.0,
+        "LineColor": [
+          0.09803921729326248,
+          0.09803921729326248,
+          0.09803921729326248,
+          1.0
+        ],
+        "materials": [
+          {
+            "DiffuseColor": [
+              0.699999988079071,
+              0.7200000286102295,
+              0.7400000095367432,
+              1.0
+            ],
+            "AmbientColor": [
+              0.3333333432674408,
+              0.3333333432674408,
+              0.3333333432674408,
+              1.0
+            ],
+            "SpecularColor": [
+              0.5333333611488342,
+              0.5333333611488342,
+              0.5333333611488342,
+              1.0
+            ],
+            "EmissiveColor": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "Shininess": 0.8999999761581421,
+            "Transparency": 0.0
+          }
+        ],
+        "material_assignment": "uniform"
+      },
+      "local_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "parent_coordinate_group": "CarrierJumpers",
+      "solid_count": 1,
+      "expressions": []
+    },
+    {
       "id": "HubMaleHeaders",
       "document": "comparison",
       "native_object": "HubMaleHeaders",
@@ -12050,6 +15076,164 @@
         "SocketHousingBlank_X",
         "SocketHousing_XTools",
         "SocketHousing_X"
+      ],
+      "expressions": []
+    },
+    {
+      "id": "AuxiliaryHeaders",
+      "document": "comparison",
+      "native_object": "AuxiliaryHeaders",
+      "label": "Two 4-pin short-tail headers — X14-X17 / M12-M15",
+      "type": "App::Part",
+      "cad_dependents": [],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Group"
+      },
+      "local_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "parent_coordinate_group": null,
+      "members": [
+        "AuxPin_X14",
+        "AuxPin_X15",
+        "AuxPin_X16",
+        "AuxPin_X17",
+        "AuxSpacerBlank_X",
+        "AuxSpacerTools_X",
+        "AuxSpacer_X",
+        "AuxSolderBlank_X14",
+        "AuxSolder_X14",
+        "AuxSolderBlank_X15",
+        "AuxSolder_X15",
+        "AuxSolderBlank_X16",
+        "AuxSolder_X16",
+        "AuxSolderBlank_X17",
+        "AuxSolder_X17",
+        "AuxPin_M13",
+        "AuxPin_M14",
+        "AuxPin_M15",
+        "AuxPin_M16",
+        "AuxSpacerBlank_M",
+        "AuxSpacerTools_M",
+        "AuxSpacer_M",
+        "AuxSolderBlank_M13",
+        "AuxSolder_M13",
+        "AuxSolderBlank_M14",
+        "AuxSolder_M14",
+        "AuxSolderBlank_M15",
+        "AuxSolder_M15",
+        "AuxSolderBlank_M16",
+        "AuxSolder_M16"
+      ],
+      "expressions": []
+    },
+    {
+      "id": "CarrierJumpers",
+      "document": "comparison",
+      "native_object": "CarrierJumpers",
+      "label": "Four insulated jumper wires — physical addresses confirmed",
+      "type": "App::Part",
+      "cad_dependents": [],
+      "appearance": {
+        "visible": true,
+        "DisplayMode": "Group"
+      },
+      "local_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "global_pose": {
+        "translation_mm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "quaternion_xyzw": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "parent_coordinate_group": null,
+      "members": [
+        "JumperCorePath_Red_L",
+        "JumperCoreProfile_Red_L",
+        "JumperCore_Red_L",
+        "JumperInsulationPath_Red_L",
+        "JumperInsulationProfile_Red_L",
+        "JumperInsulation_Red_L",
+        "JumperSleeve_Red_L",
+        "JumperSolderBlank_L4",
+        "JumperSolder_L4",
+        "JumperSolderBlank_L13",
+        "JumperSolder_L13",
+        "JumperCorePath_Red_B",
+        "JumperCoreProfile_Red_B",
+        "JumperCore_Red_B",
+        "JumperInsulationPath_Red_B",
+        "JumperInsulationProfile_Red_B",
+        "JumperInsulation_Red_B",
+        "JumperSleeve_Red_B",
+        "JumperSolderBlank_B3",
+        "JumperSolder_B3",
+        "JumperSolderBlank_B9",
+        "JumperSolder_B9",
+        "JumperCorePath_Blue_K",
+        "JumperCoreProfile_Blue_K",
+        "JumperCore_Blue_K",
+        "JumperInsulationPath_Blue_K",
+        "JumperInsulationProfile_Blue_K",
+        "JumperInsulation_Blue_K",
+        "JumperSleeve_Blue_K",
+        "JumperSolderBlank_K5",
+        "JumperSolder_K5",
+        "JumperSolderBlank_K18",
+        "JumperSolder_K18",
+        "JumperCorePath_Green_J",
+        "JumperCoreProfile_Green_J",
+        "JumperCore_Green_J",
+        "JumperInsulationPath_Green_J",
+        "JumperInsulationProfile_Green_J",
+        "JumperInsulation_Green_J",
+        "JumperSleeve_Green_J",
+        "JumperSolderBlank_J6",
+        "JumperSolder_J6",
+        "JumperSolderBlank_J14",
+        "JumperSolder_J14"
       ],
       "expressions": []
     }

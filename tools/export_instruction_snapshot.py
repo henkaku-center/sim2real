@@ -82,7 +82,7 @@ def main():
     for obj in docs['comparison'].Objects:
         if 'InstructionId' in obj.PropertiesList:
             bindings.append((obj.InstructionId, 'comparison', obj.Name))
-    for name in ['HubMaleHeaders', 'HubFemaleSockets']:
+    for name in ['HubMaleHeaders', 'HubFemaleSockets', 'AuxiliaryHeaders', 'CarrierJumpers']:
         if docs['comparison'].getObject(name):
             bindings.append((name, 'comparison', name))
     for semantic, document, name in bindings:
@@ -129,6 +129,13 @@ def main():
         'placement_note': 'Transforms act on native object-local geometry. Shape data can already contain nonzero vertex coordinates; do not recenter exported meshes without updating transforms.',
         'parameters': parameters,
         'hub_parameters': hub_parameters,
+        'additional_parameters': {
+            group: {name: {'value_mm': getattr(obj, name).Value,
+                           'evidence': obj.getDocumentationOfProperty(name)}
+                    for name in obj.PropertiesList
+                    if obj.getTypeIdOfProperty(name) == 'App::PropertyLength'}
+            for group in ['CarrierConnections', 'S3Installation']
+            if (obj := docs['comparison'].getObject(group)) is not None},
         'hub_evidence': {name: getattr(hub_settings, name) for name in
                          ['SeatingEvidence', 'PurchasedHeaderEvidence']
                          if hub_settings and name in hub_settings.PropertiesList},

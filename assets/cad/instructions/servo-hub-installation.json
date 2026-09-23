@@ -74,6 +74,7 @@
     {"id": "seat_and_check_clearance", "depends_on": ["solder_carrier_sockets"], "instruction": "Seat the hub in its sockets and check that its underside and soldered tails clear the converter's gold screw.", "before": "Hub removable above fixed sockets", "after": "Installed detachable hub", "photos": ["14", "15"], "evidence": "instructor report and photo observation", "inspection_views": ["top for socket addresses", "side at gold screw for clearance", "exploded view for detachable interface"], "animation_trajectory": null}
   ],
   "photo_numbering": "Same downloaded 25-image album sequence as converter-installation.json; no individual image permalinks captured",
+  "socket_reference_choice": "Instructor does not recall installed origin and accepts using inventory/purchased parts. Youmile B0C13N6T48 selected as the modeling reference; not a claim about installed provenance.",
   "publication_status": "Derived hub geometry is saved in the ignored local comparison; verify candidate source and license before publishing course assets.",
   "open_questions": ["Verify inferred board outline and moved mounting-hole positions", "Measure exact screw-to-hub underside clearance, including solder/tails", "Confirm installed female sockets are from the Youmile kit and measure housing/cavity depth", "Confirm donor spacer provenance/thickness and photo-inferred PCB-side placement"]
 }

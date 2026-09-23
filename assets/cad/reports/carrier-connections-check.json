@@ -1,0 +1,56 @@
+{
+  "status": "PASS",
+  "finished_features": 34,
+  "headers": [
+    [
+      "X14",
+      "X15",
+      "X16",
+      "X17"
+    ],
+    [
+      "M12",
+      "M13",
+      "M14",
+      "M15"
+    ]
+  ],
+  "M_header_evidence": "Instructor explicitly corrected the four-pin strip to M12-M15",
+  "jumpers": [
+    {
+      "name": "Red_L",
+      "addresses": [
+        "L4",
+        "L13"
+      ],
+      "span_mm": 22.86
+    },
+    {
+      "name": "Red_B",
+      "addresses": [
+        "B3",
+        "B9"
+      ],
+      "span_mm": 15.240000000000002
+    },
+    {
+      "name": "Blue_K",
+      "addresses": [
+        "K5",
+        "K18"
+      ],
+      "span_mm": 33.02
+    },
+    {
+      "name": "Green_J",
+      "addresses": [
+        "J6",
+        "J14"
+      ],
+      "span_mm": 20.320000000000004
+    }
+  ],
+  "native_sweeps_valid": true,
+  "wire_cores_do_not_overlap_insulation": true,
+  "new_header_wire_pair_intersections_mm3": 0
+}
