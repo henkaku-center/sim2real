@@ -231,4 +231,22 @@ is **0.01 mm for visualization only**, not a claim about copper/tin thickness.
 864 native `App::Link` objects reuse it. Centers are expression-linked to the named
 signal-hole cutters, and top/bottom heights follow the carrier thickness. These
 features remain editable without a Python proxy. The addition preserves existing
-pad objects on rerun. Side-edge conductive pads and plated barrels are still absent.
+pad objects on rerun. Plated barrels remain absent.
+
+### Short-edge capsule pads
+
+`tools/add_carrier_edge_pads.py` adds sixteen silver capsule pads along each short
+edge, aligned with rows 2–17 as observed in photo-01. They are repeated on both
+faces: 32 per face, 64 native links in total. Requested length is 3 mm. Width is
+expression-linked to the signal ring's outer diameter (currently 2 mm), so the
+semicircular ends have the **same 1 mm radius as the ring's outer edge**, per the
+instructor's clarification. `EdgePadParameters.Length` and `EdgeInset` are editable;
+`Width` follows the ring diameter. Keep length greater than width for this capsule
+construction. Axial height follows the same visualization-only metal thickness.
+
+Pad centers are provisionally 2 mm from the short edges, with their long axes
+across the board margin. Their electrical purpose has not been established.
+Native Boolean source geometry and links preserve editability without a proxy.
+The instructor's estimated 1.5 mm gap from silver ring edge to mounting-hole edge
+is not yet reconciled: the current model measures 2.118 mm at all four corners;
+grid edge offsets remain provisional. Adding edge pads does not adjust that gap.
