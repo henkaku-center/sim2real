@@ -122,13 +122,14 @@ def main():
     reports = ROOT / "assets" / "cad" / "reports"
     with (reports / "carrier-hole-coordinates.csv").open("w", newline="") as stream:
         writer = csv.writer(stream, lineterminator="\n")
-        writer.writerow(["address", "x_mm", "y_mm", "pcb_top_z_mm", "diameter_mm", "offset_status"])
-        for col in range(24):
-            for row in range(18):
-                name = f"{chr(65+col)}{row+1}"
-                pos = doc.getObject("Hole_" + name).Placement.Base
-                writer.writerow([name, round(pos.x, 6), round(pos.y, 6), doc.Carrier.Placement.Base.z + doc.Carrier.Height.Value,
-                                 doc.HoleGrid.HoleDiameter.Value, "centered assumption; not measured"])
+        writer.writerow(["address", "x_mm", "y_mm", "pcb_top_z_mm", "diameter_mm", "offset_status", "native_object"])
+        holes = [o for o in doc.HoleTools.Links if o.Name.startswith('Hole_')]
+        def address(hole):
+            return getattr(hole, 'Address', hole.Name.removeprefix('Hole_'))
+        for hole in sorted(holes, key=lambda o: (address(o)[0], int(address(o)[1:]))):
+            pos = hole.Placement.Base
+            writer.writerow([address(hole), round(pos.x, 6), round(pos.y, 6), doc.Carrier.Placement.Base.z + doc.Carrier.Height.Value,
+                             doc.HoleGrid.HoleDiameter.Value, "centered assumption; not measured", hole.Name])
     if App.GuiUp:
         import FreeCADGui as Gui
         from PySide import QtCore
@@ -141,7 +142,7 @@ def main():
         for label in doc.GridLabels.Group:
             label.ViewObject.FontSize = 12
             label.ViewObject.TextColor = (0.08, 0.08, 0.08)
-            label.ViewObject.show()
+            label.ViewObject.Visibility = not bool(doc.getObject('SurfaceLabels'))
         Gui.activeDocument().activeView().viewTop()
         Gui.activeDocument().activeView().fitAll()
         def capture():

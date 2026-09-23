@@ -188,9 +188,12 @@ grid. The native document now has **432 signal bores plus four mounting bores**.
 The original `Carrier` box is retained as the hidden editable Boolean base.
 
 - `HoleGrid`: 24 columns A–X, 18 rows 1–18, pitch 2.54 mm. The instructor read
-  **PY-5cmx7cm 2.54mm 22402A-18** from the physical board. In top view, A1 is
-  upper left, X18 lower right. Edge annotations label columns and rows; individual
-  hidden cutters are named `Hole_A1` through `Hole_X18` for programmatic placement.
+  **PY-5cmx7cm 2.54mm 22402A-18** from the physical board. The instructor later
+  clarified the surface marking direction: **A1 is bottom right, X18 top left**.
+  `Address` properties and displayed labels now use that physical convention.
+  Stable internal cutter names retain the earlier opposite orientation to preserve
+  expressions: e.g. `Hole_X18.Address == 'A1'`. Use `Address`, not the internal
+  `Name`, to look up physical hole coordinates. The CSV includes both identifiers.
 - Signal diameter is **1.0 mm**, based on the instructor's visual estimate of the
   physical board on 2026-09-23 (not a precision measurement). It replaces the
   initial 0.9 mm placeholder. The exact Amazon listing
@@ -210,8 +213,8 @@ The original `Carrier` box is retained as the hidden editable Boolean base.
   marking was found. Native values override the one-time creation script defaults.
 - `reports/carrier-hole-coordinates.csv` records the signal centers at this revision;
   it is an exported snapshot, not live-linked to subsequent native edits.
-- Plated barrels and silkscreen geometry remain unmodeled. Labels are native
-  annotations, not engraved material. Use `Circuitry.Placement` to position/rotate
+- Plated barrels remain unmodeled. Surface lettering is flat geometry, not engraved
+  material. Use `Circuitry.Placement` to position/rotate
   the assembly; individual carrier rotation is not supported by the grid expressions.
 
 The upgrade checks that the result is one valid solid and that removed volume
@@ -250,3 +253,18 @@ Native Boolean source geometry and links preserve editability without a proxy.
 The instructor's estimated 1.5 mm gap from silver ring edge to mounting-hole edge
 is not yet reconciled: the current model measures 2.118 mm at all four corners;
 grid edge offsets remain provisional. Adding edge pads does not adjust that gap.
+
+### Physical surface markings
+
+`tools/add_carrier_surface_labels.py` adds 42 white, planar Draft ShapeStrings to
+the top face: **A–X from right to left along the top**, and **01–18 from bottom to
+top along the right**. No letters are skipped. Text centers track the corresponding
+hole centers. Numeric labels sit in the gap between signal pads and edge capsules.
+The older external annotations are hidden. Underside lettering is not inferred.
+
+`SurfaceLabelParameters` controls letter/number heights and the top margin. Font,
+sizes and display lift (0.012 mm) are illustrative. The bundled unmodified Source
+Code Pro font and OFL license in `fonts/` allow the built-in Draft ShapeStrings to
+recompute without machine-specific font paths. Text remains editable through each
+ShapeString's `String` property. Physical hole and annular pad addresses were
+updated together; geometry and existing internal object names were preserved.
