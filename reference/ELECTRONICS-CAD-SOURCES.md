@@ -257,6 +257,14 @@ Clearance checks must include hub underside solder/tails, not only the PCB plane
 
 ### CAD search results
 
+- Instructor-proposed candidate: `https://grabcad.com/library/pca9685-8`.
+  Direct page and `/files` retrieval expose only the JavaScript site shell;
+  the browser tool reports no connected desktop browser, and direct retrieval of
+  the page's application script returned HTTP 403. Search confirms the listing
+  but does not expose usable geometry. Candidate appearance, dimensions, header
+  spacing, author and license remain unverified. Obtain the downloadable STEP or
+  native file before judging its suitability; no match is claimed from its name.
+
 - Official Adafruit downloads page:
   `https://learn.adafruit.com/16-channel-pwm-servo-driver/downloads`
   links the manufacturer's STEP/Fusion assets in `adafruit/Adafruit_CAD_Parts`,
