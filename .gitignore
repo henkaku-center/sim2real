@@ -23,5 +23,8 @@ tests/artifacts/
 # Reproducible, checksum-verified upstream CAD downloads (see assets/cad/README.md)
 assets/cad/upstream/
 
-# Local CAD documents and viewport exports, reproducible initial import only
-assets/cad/work/
+# Version native CAD through LFS and the small preview through regular Git.
+# Keep automatic backups, full audit output and runtime markers local.
+assets/cad/work/*
+!assets/cad/work/*.FCStd
+!assets/cad/work/sesame-isometric.png

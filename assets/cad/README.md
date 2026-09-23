@@ -18,9 +18,25 @@ repository license for every file. The downloader verifies those bytes before
 saving. Existing modified files cause an error instead of being overwritten.
 The 22-file download is **79,565,300 bytes** including licenses, the upstream
 CAD README and 11 comparison STLs. `upstream/` is a gitignored, reproducible local cache. Keep original
-downloads intact and make working designs elsewhere. Git LFS was unavailable on
-the research machine; large downloaded assets are not committed as raw blobs.
-Authored native CAD files should follow the repository's Git LFS policy.
+downloads intact and make working designs elsewhere.
+
+The five native `.FCStd` documents in `work/` are versioned with **Git LFS**;
+`work/sesame-isometric.png` is versioned with regular Git. Automatic `.FCBak`
+backups, full local audit output and runtime markers remain ignored. After cloning:
+
+```sh
+git lfs install
+git lfs pull --include="assets/cad/work/*.FCStd" --exclude=""
+```
+
+This retrieves the committed CAD documents without requiring a fresh STEP import.
+Save and commit subsequent working-document edits normally; the `.gitattributes`
+rule stores their binary contents in LFS. Original STEP/Fusion downloads remain
+available through the pinned downloader. Third-party notices for the imported
+documents are retained in `licenses/sesame-Apache-2.0.txt` and `licenses/adafruit-MIT.txt`.
+
+Git LFS 3.8.0 was installed locally from the official macOS Intel release on
+2026-09-23, with its release-asset SHA-256 verified, and Git LFS hooks initialized.
 
 ## Sesame baseline
 
@@ -84,14 +100,14 @@ by the instructor and exercised on macOS on 2026-09-23. From the repository root
 open -n -a /Applications/FreeCAD.app --args "$PWD/tools/open_cad.FCMacro"
 ```
 
-The importer creates native documents in ignored `work/` on first run, including
+The importer creates missing native documents in `work/` on first run, including
 `Sesame-S3-layout-start.FCStd`. Later runs audit existing reference documents and
 preserve the working document. The viewer macro opens the working document,
 enables model visibility, hides datum axes/planes and captures a viewport image.
 It does not save over an existing GUI document; save interactively to retain view
 changes. Avoid repeatedly launching new application instances; the macro can also
-be run from FreeCAD's Macro menu. Native documents and screenshots are local, not
-uploaded to Git. They are an initial reference workspace, not a fitted S3 assembly.
+be run from FreeCAD's Macro menu. The five native documents and the small preview
+are committed; they are an initial reference workspace, not a fitted S3 assembly.
 
 ### Results
 
