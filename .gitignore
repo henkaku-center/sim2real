@@ -28,3 +28,4 @@ assets/cad/upstream/
 assets/cad/work/*
 !assets/cad/work/*.FCStd
 !assets/cad/work/sesame-isometric.png
+!assets/cad/work/circuitry-preview.png

@@ -46,3 +46,16 @@ family with variant overrides and verified mounting geometry. The instructor exc
 continuous-rotation HiRCgo MG90D B0FH1KZ64Y as a mistaken purchase: leg joints require
 fixed-angle positioning. This supersedes the earlier discussion's all-four-purchases
 compatibility target. Procurement quantities and available working stock are distinct.
+
+## D5. Validate standalone circuitry before enclosure redesign (2026-09-23)
+
+**Decision:** Instructor knows the present circuit board will not fit the original
+printed body. Build and physically validate a separate circuitry model first;
+redesign the body after the instructor is confident in the circuitry's accuracy.
+Do not use the old enclosure as a constraint on the as-built electronics model.
+
+**Working artifact:** `assets/cad/work/Sesame-S3-circuitry.FCStd`, versioned through
+Git LFS. Start from the confirmed 70 × 50 mm carrier outline; distinguish published
+dimensions from measurements and leave unknown component placements unresolved.
+Native document properties are authoritative after initial creation so human edits
+survive subsequent agent sessions. The older full-robot CAD remains a reference.

@@ -20,8 +20,8 @@ The 22-file download is **79,565,300 bytes** including licenses, the upstream
 CAD README and 11 comparison STLs. `upstream/` is a gitignored, reproducible local cache. Keep original
 downloads intact and make working designs elsewhere.
 
-The five native `.FCStd` documents in `work/` are versioned with **Git LFS**;
-`work/sesame-isometric.png` is versioned with regular Git. Automatic `.FCBak`
+The native `.FCStd` documents in `work/` are versioned with **Git LFS**;
+`work/sesame-isometric.png` and `work/circuitry-preview.png` are versioned with regular Git. Automatic `.FCBak`
 backups, full local audit output and runtime markers remain ignored. After cloning:
 
 ```sh
@@ -106,7 +106,7 @@ preserve the working document. The viewer macro opens the working document,
 enables model visibility, hides datum axes/planes and captures a viewport image.
 It does not save over an existing GUI document; save interactively to retain view
 changes. Avoid repeatedly launching new application instances; the macro can also
-be run from FreeCAD's Macro menu. The five native documents and the small preview
+be run from FreeCAD's Macro menu. The native documents and the small previews
 are committed; they are an initial reference workspace, not a fitted S3 assembly.
 
 ### Results
@@ -137,3 +137,39 @@ Evidence: [compact audit](reports/freecad-import.json); complete hierarchy in lo
 `work/freecad-import-full.json`; GUI viewport in local `work/sesame-isometric.png`.
 The assembly was visibly rendered in FreeCAD. No invalid geometry was silently
 repaired, and no physical fit or joint calibration was inferred from these checks.
+
+## Standalone circuitry co-design
+
+**Active editing document: `work/Sesame-S3-circuitry.FCStd`.** Instructor requested
+on 2026-09-23 that circuitry be validated independently before redesigning the robot
+body to fit the larger board. The older layout document remains an upstream reference.
+
+Run `tools/open_circuitry.FCMacro` from FreeCAD's Macro menu, or launch it with:
+
+```sh
+open -n -a /Applications/FreeCAD.app --args "$PWD/tools/open_circuitry.FCMacro"
+```
+
+The macro creates the document only if it is missing; subsequent runs open the
+saved document and preserve edits. Repeated `open -n` launches create additional
+FreeCAD instances: prefer the Macro menu during an interactive co-design session.
+A live same-session command bridge is a remaining workflow improvement.
+
+Initial contents:
+
+- Native parametric `Carrier`, 70 × 50 mm outline confirmed by the instructor;
+  1.6 mm thickness is listing-derived and explicitly unmeasured. Edit Length,
+  Width and Height in its Data tab. Origin is the lower corner; X is the 70 mm edge,
+  Y the 50 mm edge, Z upward. No hole offsets or mounting-hole locations are invented.
+- Hidden `UnplacedReferences`: 2D PCA9685 and OLED PCB outlines from purchased
+  listings. Their staging positions are not assembly coordinates; no unverified
+  module heights are modeled.
+- `PendingMeasurements`: converter outline conflict, S3 dimensions/socket height,
+  and header/wire/solder geometry. These metadata objects have no invented solids.
+- `ValidationScope`: circuitry-first workflow and evidence status.
+
+Checks on FreeCAD 1.1.3/macOS: document save/reopen, valid carrier shape, dimensions
+and volume, reference dimensions, hidden staging group, and a temporary 70 → 72 →
+70 mm length edit with successful recomputation. The verification did not save
+over the native file. The GUI preview was inspected. This is the carrier-level
+starting point, not a completed model of the hand-soldered assembly.
