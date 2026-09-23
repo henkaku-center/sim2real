@@ -113,7 +113,14 @@ Instructor-reported physical observations for B07NVSVW1N:
   IN+ at **O17**. At the carrier's 2.54 mm pitch these imply a connection
   rectangle of **17.78 × 40.64 mm**; converter hole alignment still needs checking.
 - Separation between the perfboard top surface and converter PCB underside is
-  not yet established. Keep this independent of the 13 mm module height.
+  approximately **0.5 mm**, reported by the instructor. Three layers of electrical
+  tape insulate the converter underside. Treat the 0.5 mm as the total installed
+  separation including the tape, not an additional air gap; individual tape-layer
+  thickness and coverage have not been measured.
+- Derived approximate stack: converter underside **2.1 mm** above the perfboard
+  underside (1.6 mm perfboard + 0.5 mm separation); potentiometer top **13.5 mm**
+  above the perfboard top, or **15.1 mm** above its underside. These are nominal
+  sums of physical estimates, not precision measurements or service clearances.
 
 Use these observations to assess candidate CAD geometry; an agreement in pin
 spacing alone does not establish an exact purchased-variant match.
