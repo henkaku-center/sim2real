@@ -121,7 +121,7 @@ def main():
     App.setActiveDocument(doc.Name)
     reports = ROOT / "assets" / "cad" / "reports"
     with (reports / "carrier-hole-coordinates.csv").open("w", newline="") as stream:
-        writer = csv.writer(stream)
+        writer = csv.writer(stream, lineterminator="\n")
         writer.writerow(["address", "x_mm", "y_mm", "pcb_top_z_mm", "diameter_mm", "offset_status"])
         for col in range(24):
             for row in range(18):
