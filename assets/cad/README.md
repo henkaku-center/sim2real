@@ -203,16 +203,32 @@ The original `Carrier` box is retained as the hidden editable Boolean base.
   edge-to-center offsets 2.0 mm. The native document now records the instructor's
   2026-09-23 physical estimates: **diameter about 2 mm; centers 2 mm from the short
   (50 mm) edges**, hence `Diameter=2`, `InsetX=2`. The long-edge center distance
-  (`InsetY`) is **less than 2 mm**, exact value unresolved. Its existing 2 mm
-  geometry remains an explicitly inaccurate placeholder awaiting a numeric value.
+  (`InsetY`) was subsequently estimated by the instructor as **nearer 1.8 mm**;
+  the native document now uses `InsetY=1.8`. These are physical estimates, not
+  precision measurements.
   Four-corner symmetry is still assumed. No verified drawing for the exact board
   marking was found. Native values override the one-time creation script defaults.
 - `reports/carrier-hole-coordinates.csv` records the signal centers at this revision;
   it is an exported snapshot, not live-linked to subsequent native edits.
-- Pads, plated barrels and silkscreen geometry remain unmodeled. Labels are native
+- Plated barrels and silkscreen geometry remain unmodeled. Labels are native
   annotations, not engraved material. Use `Circuitry.Placement` to position/rotate
   the assembly; individual carrier rotation is not supported by the grid expressions.
 
 The upgrade checks that the result is one valid solid and that removed volume
 equals all 436 cylindrical through-bores. Top-view labels and holes were inspected
 in the GUI preview. Dimensions marked provisional remain pending physical validation.
+
+### Conductive pad rings
+
+`tools/add_carrier_pads.py` adds pads once to the existing circuitry document.
+Run it through `runpy.run_path(...)` in the existing window's Python Console.
+The instructor's requested 0.5 mm ring thickness is interpreted as **radial width**:
+1.0 mm inner diameter and 2.0 mm outer diameter. There are 432 silver-colored rings
+per face (864 total), following the double-sided board photo. The axial height
+is **0.01 mm for visualization only**, not a claim about copper/tin thickness.
+
+`PadParameters.RadialWidth` and `DisplayThickness` drive a native Boolean annulus;
+864 native `App::Link` objects reuse it. Centers are expression-linked to the named
+signal-hole cutters, and top/bottom heights follow the carrier thickness. These
+features remain editable without a Python proxy. The addition preserves existing
+pad objects on rerun. Side-edge conductive pads and plated barrels are still absent.
