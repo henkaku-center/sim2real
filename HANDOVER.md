@@ -1,5 +1,14 @@
 # HANDOVER
 
+## Current CAD handoff — 2026-09-24
+
+The complete electronics model is **`assets/cad/Sesame-S3-Assembly.FCStd`**
+(FreeCAD 1.1.3+, Git LFS). It includes the carrier construction history and all
+installed components. `tools/open_cad.FCMacro` and `open_circuitry.FCMacro` both open
+this file. Earlier carrier-only/layout-start/imported-reference files are retired.
+Preserve the native object IDs and `assets/cad/instructions/` records for future
+animated, freely rotatable student instructions. See `assets/cad/README.md`.
+
 ## Current hardware handoff — 2026-09-22
 
 The instructor selected **S3 SuperMini + PCA9685 perfboard** as the APS-II default build.

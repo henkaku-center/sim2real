@@ -1,5 +1,5 @@
-"""Create/open the standalone circuitry document without changing robot CAD."""
+"""Compatibility entry point: open the complete assembled electronics."""
 from pathlib import Path
 import runpy
 
-runpy.run_path(str(Path(__file__).resolve().parent / "create_circuitry.py"))
+runpy.run_path(str(Path(__file__).resolve().parent / "open_cad.FCMacro"))

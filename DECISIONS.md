@@ -80,3 +80,23 @@ The snapshot is observational; native CAD remains authoritative as in D5. Preser
 the distinction between the versioned carrier and the local, ignored converter
 comparison with unresolved upstream redistribution permission. This decision
 does not change the simulator manifest, calibration or current course viewer.
+
+## D7. One clearly named assembled electronics document (2026-09-24)
+
+**Decision:** Instructor requested a clear final-model filename, removal of
+unnecessary separate CAD files, and opening the full assembly by default while
+preserving metadata for future animated (potentially WebGPU) instructions.
+
+**Artifact:** `assets/cad/Sesame-S3-Assembly.FCStd` consolidates the completed
+converter/hub/S3/wiring model and editable native carrier into one self-contained
+document. Retire the carrier-only working file, layout-start and reproducible
+native reference imports. Keep construction recipes as explicitly historical
+sources, and retain source notices, hashes, evidence and authoring records.
+
+The visible assembled result and hidden editable carrier history have distinct
+groups. Stable native names, InstructionIds, placements, expressions and separate
+pin/solder/insulation objects survive the consolidation. The snapshot is now
+`assets/cad/instructions/assembly-cad-snapshot.json`, with one document binding
+and explicit effective visibility for future renderer exports. Installation step
+IDs, dependencies and state changes remain intact. No animation implementation,
+new physical validation or resolution of third-party source permissions is implied.

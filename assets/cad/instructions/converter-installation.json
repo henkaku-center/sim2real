@@ -4,7 +4,7 @@
   "recorded_on": "2026-09-24",
   "status": "recording_only_animation_deferred",
   "scope": "Physical converter installation; not electrical setup or complete robot instructions",
-  "cad_snapshot": "converter-cad-snapshot.json",
+  "cad_snapshot": "assembly-cad-snapshot.json",
   "units": {"length": "mm", "rotation": "quaternion_xyzw"},
   "frames": {
     "carrier": "Right-handed; X along 70 mm edge, Y along 50 mm edge, +Z toward component side; underside Z=0 in present CAD. A1 bottom-right, X18 top-left in top view.",
@@ -15,7 +15,7 @@
     "instructor_construction": {"kind": "instructor_report", "date": "2026-09-24", "record": "../../../reference/ELECTRONICS-CAD-SOURCES.md#installed-converter-pins-and-underside-solder-2026-09-24"},
     "instructor_dimensions": {"kind": "physical_estimates", "date": "2026-09-24", "note": "0.5 mm installed insulated separation; capacitor top 11.5 mm from converter underside; roughly 1 mm screw protrusion; underside solder typically 1 mm, not a maximum."},
     "album": {"kind": "photo_observations", "url": "https://photos.app.goo.gl/ekx75uje2vnPG2wUA", "numbering": "Downloaded 25-image sequence reviewed on 2026-09-23; local photo-03.jpg etc., not durable Google Photos image IDs.", "local_cache": "External temporary s3-component-research directory; photos not bundled in repository.", "images": {"03": "Plastic spacer removal and bare pins", "04": "Central underside tape with corner pads exposed", "05": "Converter seated on carrier; top solder", "06": "Underside pin clipping", "07": "Four finished underside solder mounds"}},
-    "cad_candidate": {"kind": "reference_geometry", "repository": "yet-another-average-joe/KiCad-Chinese_Modules", "revision": "82e7b5806c70ca289d5c9fb9ed6e5a2209b806d2", "archive_sha256": "d8a7836b10bd3a2ca68ff85d6a6060c038f0c991fc9c01d57ccc444d6c3428ee", "redistribution_status": "license_not_located_local_comparison_only"}
+    "cad_candidate": {"kind": "reference_geometry", "repository": "yet-another-average-joe/KiCad-Chinese_Modules", "revision": "82e7b5806c70ca289d5c9fb9ed6e5a2209b806d2", "archive_sha256": "d8a7836b10bd3a2ca68ff85d6a6060c038f0c991fc9c01d57ccc444d6c3428ee", "redistribution_status": "license_not_located", "native_document": "assets/cad/Sesame-S3-Assembly.FCStd"}
   },
   "photo_sha256": {
     "03": "5e2ace0fb3d76014f68112c2135af53472a0fc198d0fb8a789b7fd78a7a45fa6",

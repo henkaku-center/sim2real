@@ -1,5 +1,9 @@
 # OLED, switch and battery harnesses
 
+The current electronics model is
+[`Sesame-S3-Assembly.FCStd`](../assets/cad/Sesame-S3-Assembly.FCStd).
+The harness research below remains preparation for a later modeling stage.
+
 Research and proposed representation: 2026-09-24. This is preparation for the
 next native CAD stage; the existing assembly has not been modified by this audit.
 

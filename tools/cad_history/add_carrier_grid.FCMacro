@@ -1,0 +1,5 @@
+# Historical construction recipe; open the current assembly with tools/open_cad.FCMacro.
+"""Add the signal-hole grid to the standalone circuitry model."""
+from pathlib import Path
+import runpy
+runpy.run_path(str(Path(__file__).resolve().parent / "add_carrier_grid.py"))

@@ -5,8 +5,8 @@ import FreeCAD as App
 import Part
 
 ROOT=Path(__file__).resolve().parents[1]
-doc=App.openDocument(str(ROOT/'assets/cad/upstream/lm2596-yaaj/LM2596-comparison.FCStd'))
-carrier=App.openDocument(str(ROOT/'assets/cad/work/Sesame-S3-circuitry.FCStd'))
+doc=App.openDocument(str(ROOT/'assets/cad/Sesame-S3-Assembly.FCStd'))
+carrier=doc
 holes={o.Address:o.Placement.Base for o in carrier.Objects if o.Name.startswith('Hole_') and 'Address' in o.PropertiesList}
 features=[o for o in doc.Objects if 'InstructionId' in o.PropertiesList and o.InstructionId.startswith(('auxiliary.','aux.','jumper.'))]
 assert len(features)==34

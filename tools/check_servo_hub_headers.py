@@ -7,7 +7,7 @@ import json
 import FreeCAD as App
 
 ROOT = Path(__file__).resolve().parents[1]
-FILE = ROOT / 'assets/cad/upstream/lm2596-yaaj/LM2596-comparison.FCStd'
+FILE = ROOT / 'assets/cad/Sesame-S3-Assembly.FCStd'
 REPORT = ROOT / 'assets/cad/reports/servo-hub-headers-check.json'
 
 
@@ -19,12 +19,14 @@ def world(obj):
 
 def main():
     doc = App.openDocument(str(FILE))
-    carrier = App.openDocument(str(ROOT / 'assets/cad/work/Sesame-S3-circuitry.FCStd'))
+    carrier = doc
     holes = {o.Address: o for o in carrier.Objects if o.Name.startswith('Hole_') and 'Address' in o.PropertiesList}
-    finished = [o for o in doc.Objects if 'InstructionId' in o.PropertiesList]
+    finished = [o for o in doc.Objects if 'InstructionId' in o.PropertiesList
+                and o.getParentGeoFeatureGroup() in (doc.HubMaleHeaders, doc.HubFemaleSockets)]
     assert len(finished) == 66
     for obj in finished:
         assert obj.Shape.isValid() and not obj.Shape.isNull(), obj.Name
+    print('PASS: 66 saved hub/header/socket feature shapes valid.', flush=True)
     rows = []
     for col in ['A', 'X']:
         housing = world(doc.getObject('SocketHousing_'+col))
@@ -51,6 +53,7 @@ def main():
             engagement = housing.BoundBox.ZMax-pin.BoundBox.ZMin
             assert abs(engagement-6.25)<1e-7
             rows.append({'address': address, 'engagement_mm': round(engagement, 6)})
+    print('PASS: 12 header alignments and socket engagements; checking screw clearance.', flush=True)
     clearance = world(doc.ServoHubCandidate).distToShape(world(doc.MeasuredAdjustmentScrew))[0]
     assert abs(clearance-.4836487153819995)<1e-6
     # A temporary hub lift must translate male features and leave socket solids fixed.

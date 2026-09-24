@@ -48,12 +48,12 @@
     {
       "s3": "S3BottomSolder_A11",
       "existing": "UnderWire_11",
-      "volume_mm3": 0.03772900788696612
+      "volume_mm3": 0.037729007886965815
     },
     {
       "s3": "S3BottomSolder_A11",
       "existing": "UnderWireSolder_11_0",
-      "volume_mm3": 0.9352488731479099
+      "volume_mm3": 0.9352488731479282
     },
     {
       "s3": "S3SocketTail_B11",
@@ -68,17 +68,17 @@
     {
       "s3": "S3BottomSolder_B11",
       "existing": "UnderWireSegment_14_0",
-      "volume_mm3": 0.03772900046534447
+      "volume_mm3": 0.03772900046534422
     },
     {
       "s3": "S3BottomSolder_B11",
       "existing": "UnderWireSolder_14_1",
-      "volume_mm3": 0.9352489388515193
+      "volume_mm3": 0.9352489388515275
     },
     {
       "s3": "S3SocketTail_C11",
       "existing": "UnderWire_13",
-      "volume_mm3": 0.05583921646493469
+      "volume_mm3": 0.0558392164649347
     },
     {
       "s3": "S3SocketTail_C11",
@@ -88,12 +88,12 @@
     {
       "s3": "S3BottomSolder_C11",
       "existing": "UnderWire_13",
-      "volume_mm3": 0.03772901028838462
+      "volume_mm3": 0.03772901028838503
     },
     {
       "s3": "S3BottomSolder_C11",
       "existing": "UnderWireSolder_13_2",
-      "volume_mm3": 0.9352487650663855
+      "volume_mm3": 0.9352487650663842
     },
     {
       "s3": "S3SocketTail_D17",
@@ -108,12 +108,12 @@
     {
       "s3": "S3BottomSolder_D17",
       "existing": "UnderWire_12",
-      "volume_mm3": 0.03772901028847757
+      "volume_mm3": 0.03772901028847718
     },
     {
       "s3": "S3BottomSolder_D17",
       "existing": "UnderWireSolder_12_3",
-      "volume_mm3": 0.9352487650663915
+      "volume_mm3": 0.9352487650663895
     },
     {
       "s3": "S3SocketTail_E17",
@@ -128,12 +128,12 @@
     {
       "s3": "S3BottomSolder_E17",
       "existing": "UnderWire_5",
-      "volume_mm3": 0.03772900046535427
+      "volume_mm3": 0.03772900046535445
     },
     {
       "s3": "S3BottomSolder_E17",
       "existing": "UnderWireSolder_5_3",
-      "volume_mm3": 0.9352489388521202
+      "volume_mm3": 0.9352489388521344
     }
   ],
   "limitations": "Socket dimensions and USB orientation provisional; source internal component overlaps not repaired."

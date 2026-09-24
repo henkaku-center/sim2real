@@ -1,20 +1,31 @@
-"""Read the open, saved CAD documents into an animation-authoring snapshot.
+"""Read the saved assembly into a renderer-independent authoring snapshot.
 
-Run in the existing FreeCAD GUI after saving both documents. Does not modify CAD.
+Run in FreeCAD's GUI services after saving the assembly (Xvfb is supported).
 Native objects remain authoritative; this is a snapshot, never a regeneration input.
 """
 from pathlib import Path
 from datetime import datetime, timezone
 import hashlib
 import json
+import sys
 import FreeCAD as App
 
 ROOT = Path(__file__).resolve().parents[1]
-OUT = ROOT / 'assets/cad/instructions/converter-cad-snapshot.json'
-PATHS = {
-    'carrier': 'assets/cad/work/Sesame-S3-circuitry.FCStd',
-    'comparison': 'assets/cad/upstream/lm2596-yaaj/LM2596-comparison.FCStd',
-}
+OUT = ROOT / 'assets/cad/instructions/assembly-cad-snapshot.json'
+sys.path.insert(0, str(ROOT / 'tools'))
+from cad_document import ASSEMBLY, open_assembly
+
+
+def effective_visibility(obj, seen=None):
+    """Ignore Boolean dependencies; only container visibility is inherited."""
+    seen = set() if seen is None else seen
+    if obj.Name in seen:
+        return True
+    seen.add(obj.Name)
+    if not obj.ViewObject.Visibility:
+        return False
+    parents = [p for p in obj.InList if 'Group' in p.PropertiesList and obj in p.Group]
+    return all(effective_visibility(p, seen.copy()) for p in parents)
 
 
 def pose(placement):
@@ -43,11 +54,11 @@ def appearance(view):
 
 def main():
     assert App.GuiUp, 'Run in the existing GUI to capture current visual properties.'
-    docs = {key: next(d for d in App.listDocuments().values()
-                      if d.FileName == str(ROOT / path)) for key, path in PATHS.items()}
-    for doc in docs.values():
-        if doc.isTouched():
-            raise RuntimeError(f'Recompute and save {doc.Label} before exporting.')
+    doc = open_assembly()
+    if doc.isTouched():
+        raise RuntimeError(f'Recompute and save {doc.Label} before exporting.')
+    # Preserve every existing semantic ID while co-locating the two old roles.
+    docs = {'carrier': doc, 'comparison': doc}
     bindings = [
         ('carrier', 'carrier', 'PerforatedCarrier'),
         ('carrier.display', 'comparison', 'PerfboardReference'),
@@ -73,8 +84,9 @@ def main():
             bindings.append((f'{semantic}.{address}', 'comparison', prefix + address))
     hub = docs['comparison'].getObject('ServoHubCandidate')
     if hub:
-        imported = next(o for o in hub.Group if o.TypeId == 'App::Part')
-        body = next(o for o in docs['comparison'].Objects if o.Label == 'Platine')
+        imported = doc.getObject('PCA9685')
+        body = doc.getObject('Part__Feature400')
+        assert imported is not None and body is not None, 'Preserve the stable imported hub object identities.'
         bindings.extend([('servo_hub', 'comparison', hub.Name),
                          ('servo_hub.reference', 'comparison', imported.Name),
                          ('servo_hub.body', 'comparison', body.Name)])
@@ -85,22 +97,37 @@ def main():
     for name in ['HubMaleHeaders', 'HubFemaleSockets', 'AuxiliaryHeaders', 'CarrierJumpers', 'S3SuperMini', 'S3FemaleSockets', 'CarrierUndersideWires']:
         if docs['comparison'].getObject(name):
             bindings.append((name, 'comparison', name))
+    bound_names = {name for _, _, name in bindings}
+    # Imported components, hidden source geometry, carrier construction and
+    # parameters also need stable identities for export and staged instruction work.
+    for obj in doc.Objects:
+        if obj.Name not in bound_names:
+            bindings.append(('cad.' + obj.Name, 'comparison', obj.Name))
     for semantic, document, name in bindings:
         obj = docs[document].getObject(name)
         assert obj is not None, name
-        record = {'id': semantic, 'document': document, 'native_object': name,
+        record = {'id': semantic, 'document': 'assembly', 'native_object': name,
                   'label': obj.Label, 'type': obj.TypeId,
                   'cad_dependents': [o.Name for o in obj.InList],
-                  'appearance': appearance(obj.ViewObject)}
+                  'appearance': appearance(obj.ViewObject),
+                  'effective_visible': effective_visibility(obj)}
         if hasattr(obj, 'Placement'):
             record['local_pose'] = pose(obj.Placement)
-            record['global_pose'] = pose(obj.getGlobalPlacement())
-        parent = obj.getParentGeoFeatureGroup()
+            record['global_pose'] = pose(obj.getGlobalPlacement() if hasattr(obj, 'getGlobalPlacement') else obj.Placement)
+        parent = obj.getParentGeoFeatureGroup() if hasattr(obj, 'getParentGeoFeatureGroup') else None
         record['parent_coordinate_group'] = parent.Name if parent else None
+        record['containers'] = [p.Name for p in obj.InList if 'Group' in p.PropertiesList and obj in p.Group]
         if hasattr(obj, 'Group'):
             record['members'] = [o.Name for o in obj.Group]
         if hasattr(obj, 'Shape') and obj.TypeId != 'App::Part':
             record['solid_count'] = len(obj.Shape.Solids)
+            record['face_count'] = len(obj.Shape.Faces)
+            record['export_visible_geometry'] = (effective_visibility(obj) and not obj.Shape.isNull()
+                                                  and obj.TypeId not in ('App::Line', 'App::Plane', 'App::Point', 'App::Origin'))
+        else:
+            record['export_visible_geometry'] = False
+        record['links'] = {prop: getattr(obj, prop).Name for prop in ['LinkedObject', 'Base', 'Tool']
+                           if prop in obj.PropertiesList and hasattr(getattr(obj, prop), 'Name')}
         record['expressions'] = [[path, expression] for path, expression in obj.ExpressionEngine]
         record['construction_metadata'] = {name: getattr(obj, name) for name in
             ['Address', 'Addresses', 'ConnectorPurpose', 'Signal', 'CableColor', 'PinoutEvidence', 'SourceObject', 'Evidence']
@@ -120,15 +147,27 @@ def main():
                 hub_parameters[name] = {'value_mm': getattr(hub_settings, name).Value,
                                         'evidence': hub_settings.getDocumentationOfProperty(name)}
     report = {
-        'schema_version': 1,
+        'schema_version': 2,
         'captured_at_utc': datetime.now(timezone.utc).isoformat(),
-        'source': 'Read-only live GUI snapshot; caller must save documents before export.',
+        'source': 'Read-only native assembly snapshot; save the document before export.',
         'units': {'length': 'mm', 'rotation': 'quaternion_xyzw'},
         'freecad_version': list(App.Version()),
         'authority': 'Native CAD is authoritative. Saved-file hashes identify disk artifacts, not a substitute for saving live edits.',
-        'documents': {key: {'path': path, 'saved_file_sha256': hashlib.sha256((ROOT / path).read_bytes()).hexdigest(),
-                            'distribution': 'Git LFS' if key == 'carrier' else 'local_only_ignored_candidate'}
-                      for key, path in PATHS.items()},
+        'documents': {'assembly': {'path': str(ASSEMBLY.relative_to(ROOT)),
+                                  'saved_file_sha256': hashlib.sha256(ASSEMBLY.read_bytes()).hexdigest(),
+                                  'storage': 'Git LFS'}},
+        'previous_document_hashes': json.loads(doc.AssemblyMetadata.SourceDocuments),
+        'source_permissions': doc.AssemblyMetadata.SourcePermissions,
+        'viewer_contract': {
+            'model_id': doc.AssemblyMetadata.ModelId,
+            'coordinates': 'Right-handed CAD millimetres, Z-up; retain source geometry origins.',
+            'binding_key': 'Stable id; native_object is the FreeCAD Name, not Label.',
+            'render_selection': 'Export only export_visible_geometry=true objects; do not also mesh their parent containers.',
+            'instancing': 'App::Link records retain linked-object identity; instance visible links even if their source is hidden.',
+            'animation': 'Read initial states, dependencies and geometry/visibility changes from the installation records. Transform parent groups for detachable units.',
+            'target_renderer': 'Renderer-independent; suitable as authoring input for a future WebGPU viewer.',
+            'intermediate_geometry': 'Finished-state geometry only; missing uncut pins, tape layers and tool states remain explicit in the records.',
+        },
         'placement_note': 'Transforms act on native object-local geometry. Shape data can already contain nonzero vertex coordinates; do not recenter exported meshes without updating transforms.',
         'parameters': parameters,
         'hub_parameters': hub_parameters,
@@ -145,7 +184,8 @@ def main():
         'objects': records,
     }
     OUT.write_text(json.dumps(report, indent=2, ensure_ascii=False) + '\n')
-    print(f'PASS: {len(records)} native bindings and {len(parameters)} parameters exported; CAD untouched.')
+    print(f'PASS: {len(records)} native bindings and {len(parameters)} parameters exported; CAD untouched.', flush=True)
 
 
-main()
+if __name__ in ('__main__', '<run_path>'):
+    main()

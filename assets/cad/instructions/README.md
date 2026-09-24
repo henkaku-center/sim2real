@@ -4,16 +4,24 @@ Recorded 2026-09-24 for APS-II course dogfooding. The instructor wants students 
 step through assembly and rotate the model to inspect each operation. **Animation
 and viewer implementation are deferred.** These files preserve the inputs now.
 
+**Native model:** `../Sesame-S3-Assembly.FCStd` — one complete, self-contained
+electronics assembly. The carrier's editable construction history is embedded
+under the hidden `CarrierDesign` group. There is no second carrier/comparison file
+to open or synchronize.
+
 ## Records and ownership
 
 - [`converter-installation.json`](converter-installation.json): ordered physical
   operations, stable semantic part IDs, before/after states, inspection viewpoints,
   evidence and missing intermediate geometry. This is an authoring record, not an
   executable animation format or a complete electrical build guide.
-- [`converter-cad-snapshot.json`](converter-cad-snapshot.json): read-only snapshot
+- [`assembly-cad-snapshot.json`](assembly-cad-snapshot.json): read-only snapshot
   of the current native object bindings, transforms, dimensions, visibility and
   materials. Native GUI edits remain authoritative; refresh the snapshot after
   saving changes. It must never be used to overwrite the CAD automatically.
+  Schema version 2 binds all records to the single `assembly` document; previous
+  semantic IDs are unchanged, and additional `cad.<NativeName>` IDs cover the
+  complete native hierarchy and hidden construction history.
 - [`servo-hub-installation.json`](servo-hub-installation.json): detachable hub
   construction, symmetric long-on-both-sides male headers, added spacers and
   carrier-mounted female sockets. The hub reference is placed at confirmed socket
@@ -26,18 +34,19 @@ and viewer implementation are deferred.** These files preserve the inputs now.
 - [`../../../reference/ELECTRONICS-CAD-SOURCES.md`](../../../reference/ELECTRONICS-CAD-SOURCES.md):
   dimensional evidence, model modifications and unresolved details.
 
-In FreeCAD's **existing** Python console, after saving the working documents:
+In FreeCAD's **existing** Python console, after saving the assembly:
 
 ```python
 import runpy
 runpy.run_path('/path/to/sim2real/tools/export_instruction_snapshot.py')
 ```
 
-The exporter refuses pending recomputations; save both documents first, including
+The exporter refuses pending recomputations; save the document first, including
 appearance-only edits. Commit the refreshed JSON together with related native
 edits/scripts. Saved-file SHA-256 values identify the local disk artifacts; they
 do not prove that live unsaved edits have been saved. The exporter only reads the
-open documents and writes the snapshot.
+open document and writes the snapshot. It also supports headless execution using
+FreeCAD GUI services under Xvfb; no mouse/keyboard automation is needed.
 
 ## Recorded physical sequence
 
@@ -81,8 +90,13 @@ claimed tape thicknesses.
 **Do not flatten the assembly into one mesh.** Keep pin, solder, tape and component
 IDs available for selection and highlighting. Preserve relative transforms and
 record the conversion from CAD millimetres/Z-up to any future viewer's coordinates.
-Export only the intended visible result shapes: imported originals hidden after
+Export only records with `export_visible_geometry=true`: imported originals hidden after
 height adaptation and Boolean source/cutter objects must not appear twice.
+`effective_visible` includes container visibility, so the entire hidden carrier
+history stays out of the rendered assembled result. `App::Link` records retain
+their linked-object identities. Mesh individual visible objects, not their parent
+containers as well. This keeps material/part selection and future exploded views
+available without double-rendering geometry.
 
 Record an explicit starting state for every step, so scrubbing or jumping backward
 restores the correct assembly rather than trying to physically undo a solder joint.
@@ -107,17 +121,17 @@ recording the sequence or inspecting the finished assembly today.
 
 ## Reproducibility and future publication
 
-The authoritative carrier is versioned in `work/Sesame-S3-circuitry.FCStd` through
-Git LFS. The converter is currently in the **local comparison document** under
-ignored `upstream/lm2596-yaaj/`; it has not been merged into that carrier file.
-Its imported STEP geometry has no located redistribution license. The structured
-records, hashes and our modeling scripts are tracked; the local comparison binary
-is not. Before distributing a student-facing model, resolve that asset's permission
-or replace it with an independently authored/licensed model. The record distinguishes
-these states instead of implying the existing local comparison is already a
-publishable, versioned course asset.
+The complete assembly and embedded carrier history are now stored together in
+`assets/cad/Sesame-S3-Assembly.FCStd` through Git LFS. The old source-document
+hashes survive in the native `AssemblyMetadata` object and snapshot. The native
+model contains the imported component geometry, not external file links.
+
+Imported converter and uploaded hub/S3 source permissions remain unresolved.
+Before distributing a public student-facing model, resolve those permissions or
+replace the affected geometry. Consolidation preserves the existing source and
+license evidence; it does not change the underlying permissions.
 
 Reconstruction scripts, in order, are `preview_converter_candidate.py`,
-`refine_converter_candidate.py`, and `add_converter_pins.py` under `tools/`.
+`refine_converter_candidate.py`, and `add_converter_pins.py` under `tools/cad_history/`.
 They are one-time construction aids; they do not reproduce arbitrary later GUI
 edits. The native saved document plus refreshed snapshot are the current record.

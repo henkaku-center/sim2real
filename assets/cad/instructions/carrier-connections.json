@@ -2,7 +2,7 @@
   "schema_version": 1,
   "id": "sesame-s3.carrier-connections",
   "recorded_on": "2026-09-24",
-  "cad_snapshot": "converter-cad-snapshot.json",
+  "cad_snapshot": "assembly-cad-snapshot.json",
   "native_groups": ["AuxiliaryHeaders", "CarrierJumpers"],
   "instructor_confirmed_pinout": {
     "M12": {"purpose": "OLED", "signal": "GND", "cable_color": "black"},

@@ -7,18 +7,19 @@
   "asin": "B078YRJ8D7",
   "units": {"length": "mm"},
   "evidence_record": "../../../reference/ELECTRONICS-CAD-SOURCES.md#detachable-servo-hub--research-and-assembly-evidence-2026-09-24",
-  "cad_snapshot": "converter-cad-snapshot.json",
+  "cad_snapshot": "assembly-cad-snapshot.json",
   "selected_cad_candidate": {
     "filename": "pca9685.step",
     "audit_record": "../reports/servo-hub-uploaded-candidates.json",
     "starting_state": "Two end-header rows already bare; preserve servo-output headers",
     "instructor_selection": "STEP looks better and already has end pins absent",
     "fit_status": "Uploaded original is 57.46 mm; derived local reference corrected to the confirmed 58.42 mm socket span, without uniform scaling",
-    "derived_file": "assets/cad/upstream/pca9685-uploaded/ServoHub_FittedReference.FCStd",
+    "historical_derived_file": "assets/cad/upstream/pca9685-uploaded/ServoHub_FittedReference.FCStd",
+    "native_document": "assets/cad/Sesame-S3-Assembly.FCStd",
     "correction": "Move each board end strip outward 0.48 mm; bridge PCB substrate. Inferred outline 60.96 x 25 mm; central devices and 2.54 mm row pitch unchanged. Mounting-hole positions are moved with end strips and remain unverified."
   },
   "parts": {
-    "hub": {"quantity": 1, "cad_binding": {"snapshot_document": "comparison", "semantic_id": "servo_hub", "native_object": "ServoHubCandidate"}},
+    "hub": {"quantity": 1, "cad_binding": {"snapshot_document": "assembly", "semantic_id": "servo_hub", "native_object": "ServoHubCandidate"}},
     "factory_end_headers": {"quantity_if_present": 2, "as_delivered_presence": null, "final_state": "replaced_if_present"},
     "symmetric_male_headers": {"quantity": 2, "positions_each": 6, "construction": "Long metal ends on BOTH sides of the original plastic spacer; instructor-confirmed", "asin": "B0FJ5NR96F", "brand": "PENGLIN", "metal_length_mm": 15, "dimension_evidence": "Supplier listing and 2026-09-14 order title; nominal, not caliper measurement", "pitch_mm": 2.54, "cad_binding": "HubMaleHeaders", "modeled_metal_length_mm": 15, "modeled_upper_protrusion_mm": 2.15, "measured_approximate_upper_protrusion_mm": 2, "modeled_state": "Untrimmed as instructor confirmed; original spacer on socket side, donor on PCB side inferred from photos 10-12"},
     "original_spacers": {"quantity": 2, "positions_each": 6, "final_state": "retained_on_symmetric_headers_socket_side", "thickness_mm": 2.5, "evidence": "15 - 2 * 6.25 mm from supplier nominal pin dimensions"},
@@ -75,6 +76,6 @@
   ],
   "photo_numbering": "Same downloaded 25-image album sequence as converter-installation.json; no individual image permalinks captured",
   "socket_reference_choice": "Instructor does not recall installed origin and accepts using inventory/purchased parts. Youmile B0C13N6T48 selected as the modeling reference; not a claim about installed provenance.",
-  "publication_status": "Derived hub geometry is saved in the ignored local comparison; verify candidate source and license before publishing course assets.",
+  "publication_status": "Derived hub geometry is embedded in Sesame-S3-Assembly.FCStd; source permissions remain unresolved for public course-asset distribution.",
   "open_questions": ["Verify inferred board outline and moved mounting-hole positions", "Measure exact screw-to-hub underside clearance, including solder/tails", "Confirm installed female sockets are from the Youmile kit and measure housing/cavity depth", "Confirm donor spacer provenance/thickness and photo-inferred PCB-side placement"]
 }

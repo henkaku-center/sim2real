@@ -20,6 +20,14 @@ cd web && npm ci && npm run dev   # browser sim at http://localhost:5173
 
 ## Documents
 
+### Electronics CAD
+
+Open **[`assets/cad/Sesame-S3-Assembly.FCStd`](assets/cad/Sesame-S3-Assembly.FCStd)**
+with FreeCAD 1.1.3 or newer, after `git lfs pull`. This is the complete electronics
+assembly, including its editable carrier. `tools/open_cad.FCMacro` opens the same
+file. See [CAD workflow](assets/cad/README.md) and
+[animated-instruction records](assets/cad/instructions/README.md).
+
 | File | Purpose |
 |------|---------|
 | [HANDOVER.md](HANDOVER.md) | Entry point for the agent/developer taking over — known facts, first tasks, exit criteria |

@@ -2,7 +2,7 @@
   "schema_version": 1,
   "id": "sesame-s3.s3-installation",
   "recorded_on": "2026-09-24",
-  "cad_snapshot": "converter-cad-snapshot.json",
+  "cad_snapshot": "assembly-cad-snapshot.json",
   "native_moving_group": "S3SuperMini",
   "native_fixed_group": "S3FemaleSockets",
   "footprint": {"rows": [11, 17], "columns": "ABCDEFGHI", "evidence": "Instructor specified A11-I17"},
@@ -27,5 +27,5 @@
     {"id": "mount_s3_sockets", "instruction": "Fit two nine-way female sockets at A11-I11 and A17-I17 and solder underneath the carrier."},
     {"id": "seat_s3", "depends_on": ["solder_s3_headers", "mount_s3_sockets"], "instruction": "Seat the S3 male strips in the carrier-fixed sockets, plastic-to-plastic. S3, male pins, spacers and top solder detach together."}
   ],
-  "publication_status": "Uploaded source and native comparison retained locally; redistribution permission not established. Scripts, records and geometry checks versioned."
+  "publication_status": "Uploaded geometry is embedded in Sesame-S3-Assembly.FCStd; redistribution permission remains unresolved. Scripts, records and geometry checks retained."
 }

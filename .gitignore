@@ -23,9 +23,9 @@ tests/artifacts/
 # Reproducible, checksum-verified upstream CAD downloads (see assets/cad/README.md)
 assets/cad/upstream/
 
-# Version native CAD through LFS and the small preview through regular Git.
-# Keep automatic backups, full audit output and runtime markers local.
-assets/cad/work/*
-!assets/cad/work/*.FCStd
-!assets/cad/work/sesame-isometric.png
-!assets/cad/work/circuitry-preview.png
+# The one authoritative assembly is assets/cad/Sesame-S3-Assembly.FCStd (LFS).
+# Historical working paths, automatic backups and runtime files are local only.
+assets/cad/work/
+assets/cad/**/*.FCBak
+assets/cad/**/*.FCStd1
+assets/cad/**/*.FCStd.*

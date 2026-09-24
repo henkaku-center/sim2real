@@ -1,5 +1,10 @@
 # Human / agent mechanical CAD co-design
 
+**Current opening workflow (2026-09-24):** use `tools/open_cad.FCMacro` or open
+[`assets/cad/Sesame-S3-Assembly.FCStd`](../assets/cad/Sesame-S3-Assembly.FCStd)
+in FreeCAD 1.1.3+. The complete electronics and editable carrier now share one
+document. See [CAD layout and instruction-authoring workflow](../assets/cad/README.md).
+
 Research and recommendation: **2026-09-23**. Software selection below is a proposal,
 not an instructor-approved replacement of the existing simulation asset pipeline.
 

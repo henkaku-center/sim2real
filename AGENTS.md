@@ -50,6 +50,8 @@ When recording Sesame/Karasu/firmware discoveries:
 
 ## Git conventions
 
+- After completing requested repository changes, validate them, commit them, and push the current branch by default. Do not wait for a separate request unless the user explicitly asks to leave changes uncommitted or unpushed.
+- Never include unrelated or pre-existing working-tree changes in a commit; preserve them untouched.
 - Do NOT include `Co-Authored-By` lines or any AI attribution in commit messages. Attribute commits to the configured git user.
 - [Conventional Commits](https://www.conventionalcommits.org/): `feat:`, `fix:`, `docs:`, `refactor:`, `test:`, `chore:`. Subject ≤72 chars, imperative, no trailing period.
 - `main` is the source of truth; short-lived branches named `<type>/<short-description>`; delete after merge.

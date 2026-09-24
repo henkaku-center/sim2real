@@ -1,5 +1,11 @@
 # Electronics CAD sources and S3 assembly preparation
 
+**Current native model (2026-09-24):**
+[`Sesame-S3-Assembly.FCStd`](../assets/cad/Sesame-S3-Assembly.FCStd) contains the
+assembled electronics and embedded carrier history. See the [CAD entry point](../assets/cad/README.md).
+One-time scripts cited below have moved to `tools/cad_history/`; earlier local
+comparison filenames are historical source identities, not files to open now.
+
 Research date: **2026-09-23**. This is a source-selection and measurement record,
 not a validated assembly model. Component geometry and the eventual assembly belong
 in `sim2real`; purchase quantities/costs remain canonical in APS
