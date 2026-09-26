@@ -7,9 +7,8 @@ preserve the inputs.
 **Viewer (2026-09-26):** the first interactive instructions are the APS page
 `docs/ii/sesame-build/` (<https://aps.chibatech.dev/ii/sesame-build/>).
 `../aps/scripts/export_sesame_build.py` reads the assembly and snapshot read-only and
-writes meshes there. The public export shows imported converter, hub and S3 geometry
-as boxes until redistribution permission is resolved; `--full` writes exact geometry
-to a git-ignored local preview. The step sequence lives in that page's `js/steps.js`.
+writes meshes there, with the exact geometry of every visible part (D8).
+The step sequence lives in that page's `js/steps.js`.
 
 **Native model:** `../Sesame-S3-Assembly.FCStd` — one complete, self-contained
 electronics assembly. The carrier's editable construction history is embedded
@@ -133,10 +132,8 @@ The complete assembly and embedded carrier history are now stored together in
 hashes survive in the native `AssemblyMetadata` object and snapshot. The native
 model contains the imported component geometry, not external file links.
 
-Imported converter and uploaded hub/S3 source permissions remain unresolved.
-Before distributing a public student-facing model, resolve those permissions or
-replace the affected geometry. Consolidation preserves the existing source and
-license evidence; it does not change the underlying permissions.
+Redistribution of the imported converter and uploaded hub/S3 geometry was confirmed
+by the instructor on 2026-09-26 (DECISIONS.md D8).
 
 Reconstruction scripts, in order, are `preview_converter_candidate.py`,
 `refine_converter_candidate.py`, and `add_converter_pins.py` under `tools/cad_history/`.

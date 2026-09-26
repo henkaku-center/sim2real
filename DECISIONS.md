@@ -100,3 +100,15 @@ pin/solder/insulation objects survive the consolidation. The snapshot is now
 and explicit effective visibility for future renderer exports. Installation step
 IDs, dependencies and state changes remain intact. No animation implementation,
 new physical validation or resolution of third-party source permissions is implied.
+
+## D8. Imported component geometry cleared for public release (2026-09-26)
+
+**Decision:** The instructor confirmed that redistribution permission is fine for
+all components in `assets/cad/Sesame-S3-Assembly.FCStd`, including the imported
+LM2596 converter, uploaded PCA9685 servo-hub and ESP32-S3 models.
+
+**Consequence:** The public APS build instructions
+(<https://aps.chibatech.dev/ii/sesame-build/>) now show the exact assembly geometry
+instead of box stand-ins. Earlier "permission unresolved" notes in D6, D7 and the
+instruction records are superseded by this decision; their provenance and hash
+evidence remain unchanged. No dimensional, electrical or manifest change is implied.

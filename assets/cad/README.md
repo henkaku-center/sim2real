@@ -86,5 +86,5 @@ Consolidated on 2026-09-24 from the completed assembly recovered from `calcifer`
 and the LFS-versioned carrier. Original hashes remain in `AssemblyMetadata` and
 the snapshot. The consolidation does not change physical dimensions or the
 simulator manifest. Measured, inferred and provisional values retain their labels.
-Imported converter and uploaded hub/S3 source permissions remain unresolved;
-retaining the design does not establish permission for a public student asset release.
+Redistribution of the imported converter and uploaded hub/S3 geometry was confirmed
+by the instructor on 2026-09-26 (DECISIONS.md D8).
