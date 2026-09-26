@@ -1,8 +1,15 @@
 # Assembly records for future interactive instructions
 
 Recorded 2026-09-24 for APS-II course dogfooding. The instructor wants students to
-step through assembly and rotate the model to inspect each operation. **Animation
-and viewer implementation are deferred.** These files preserve the inputs now.
+step through assembly and rotate the model to inspect each operation. These files
+preserve the inputs.
+
+**Viewer (2026-09-26):** the first interactive instructions are the APS page
+`docs/ii/sesame-build/` (<https://aps.chibatech.dev/ii/sesame-build/>).
+`../aps/scripts/export_sesame_build.py` reads the assembly and snapshot read-only and
+writes meshes there. The public export shows imported converter, hub and S3 geometry
+as boxes until redistribution permission is resolved; `--full` writes exact geometry
+to a git-ignored local preview. The step sequence lives in that page's `js/steps.js`.
 
 **Native model:** `../Sesame-S3-Assembly.FCStd` — one complete, self-contained
 electronics assembly. The carrier's editable construction history is embedded
