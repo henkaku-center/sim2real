@@ -122,6 +122,10 @@ stages. Keep placeholders for:
 - Unsoldered and partially soldered states, using staged visibility/geometry rather
   than showing the completed solder at every step.
 
+The APS viewer export adds illustrative converter spacers (2.5 mm) and uncut long
+ends (6 mm, clipped off as offcuts) from the provisional short-tail header values in
+`carrier-connections.json`, labelled on the page as not measured.
+
 Do not silently invent these as measured assets. Their absence does not prevent
 recording the sequence or inspecting the finished assembly today.
 
