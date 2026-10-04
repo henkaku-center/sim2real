@@ -60,3 +60,8 @@ tests/                  # CDP smoke tests + cross-backend pose assertions
 - **Upstream robot (canonical hardware source):** <https://github.com/dorianborian/sesame-robot> — Apache-2.0; STLs, BOM, wiring guide, firmware, Sesame Studio
 - Course site & teaching materials: `henkaku-center/aps` (hardware decisions log, inventory, course context)
 - Prior-art community simulator: <https://github.com/one-for-all/sesame-robot-sim> (reviewed; not reproducible from public sources — see [reference/PRIOR-ART-SIM.md](reference/PRIOR-ART-SIM.md))
+
+## License
+
+Apache-2.0 — see [LICENSE](LICENSE). Third-party assets keep their own notices in
+`assets/cad/licenses/`, `assets/cad/upstream/` and `assets/cad/fonts/`.

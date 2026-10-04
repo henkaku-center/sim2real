@@ -112,3 +112,14 @@ LM2596 converter, uploaded PCA9685 servo-hub and ESP32-S3 models.
 instead of box stand-ins. Earlier "permission unresolved" notes in D6, D7 and the
 instruction records are superseded by this decision; their provenance and hash
 evidence remain unchanged. No dimensional, electrical or manifest change is implied.
+
+## D9. Repository licensed Apache-2.0 and made public (2026-10-04)
+
+**Decision:** The instructor chose Apache-2.0 for this repository, matching the
+upstream Sesame project, and approved making `henkaku-center/sim2real` public after
+a history scan found no secrets (gitleaks, trufflehog) or personal data beyond
+commit-author emails, which the instructor accepted.
+
+**Consequence:** `LICENSE` added at the root. Third-party files keep their own
+licenses (Sesame Apache-2.0, Adafruit MIT, Source Code Pro OFL); D8 covers the
+imported component geometry.
