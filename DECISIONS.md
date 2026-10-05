@@ -123,3 +123,46 @@ commit-author emails, which the instructor accepted.
 **Consequence:** `LICENSE` added at the root. Third-party files keep their own
 licenses (Sesame Apache-2.0, Adafruit MIT, Source Code Pro OFL); D8 covers the
 imported component geometry.
+
+## D10. Unified S3 calibration/controller and measured-device overlay (2026-10-06)
+
+**Decision:** Deliver one maintained image in `firmware/sesame-s3/`, containing
+calibration, upstream faces/manifest motions and an explicit AP. Preserve the
+September diagnostics as evidence. Generate constants and the APS guide's sole
+machine-readable handoff (`reference/sesame-s3-interface.json`: map/status,
+commands, calibration schema) from the existing canonical manifests.
+
+**Pulse-range qualification:** The owner requested manifest732–2929µs mapping.
+Implement it with configured/measured PCA oscillator and rounded tick math,
+but require horn-disengaged centring and per-device limits. Source investigation
+established that ESP32Servo3.0.9 clamps upstream's `attach(...732,2929)` to2500µs;
+the former S3 cap512ticks deliberately reproduced that effective limit. The
+~19.5% electrical-span mismatch is not a measured20% loss of physical travel.
+Horn offset, clock error and actual channel identity remain NEEDS-HARDWARE.
+
+**Calibration:** A versioned/checksummed NVS record stores per-joint unique
+channels, absolute physical signs, trims, measured limits, verification bits
+and oscillator frequency. Export JSON for instructor review. No unverified
+target map is auto-installed: default channels are unassigned. Simulator S2
+GPIO/sign/angle facts remain intact; an additive S3 profile records only wiring
+expectations and commissioning bounds. Updating the map/trim/sign/limits clears
+the relevant verification; clock changes clear all verification.
+
+**Bounded commissioning behaviour:** All command paths use the same SafeAction
+gate, calibration15°/s and controller60°/s (below the existing300°/s maximum),
+500ms external heartbeat, queue cancellation and post-trim electrical limits.
+S3 watchdog failsafe is outputs-off, rather than trying a Rest motion through
+an unknown map. `stop` freezes targets; `off` releases PWM. Outputs remain off
+through boot/arm until an explicit target. BOOT offers a finite30s battery-only
+raw90° assembly centre and active-press abort; this avoids requiring simultaneous
+USB/battery power before isolation has been verified. Initial neutral acquisition
+is open-loop and cannot assume a sensed shaft position. Verify OE/pull-up before
+powered trials; software cannot guarantee shutdown through a failed I²C bus.
+
+**Controller:** Preserve all19 canonical stock motions with nonblocking,
+rate-limited execution and upstream face assets. Explicit visible AP-only,
+channel1/countryJP/moderate8.5dBm request plus error/readback telemetry makes
+the absent AP diagnosable. The old load test has no AP code; historical full
+firmware visibility failure is unresolved. Do not label the antenna or TX power
+as a proven cause. Class build/flash uses pinned arduino-cli/core/library versions;
+no robot access or firmware upload occurred in this offline implementation.

@@ -131,3 +131,23 @@ power:
   supply_v: 5.0
   budget_note: full walking may draw 5–8 A at 5 V (aps D15/D16); model as
     torque/velocity constraint eventually
+
+# S3 wiring profile; logical joint order above is unchanged. No physical map
+# is accepted until the owner identifies each servo. Runtime NVS is a measured
+# per-device overlay, exported by `show`, not a replacement simulator manifest.
+hardware_profiles:
+  sesame_s3:
+    status: needs-hardware-calibration
+    sda: 2
+    scl: 3
+    oe: 18 # NEEDS-HARDWARE: verify connection and pull-up before servo power
+    pca_address: 0x40
+    oled_address: 0x3c
+    intended_channels: {R1: 4, R2: 5, L1: 0, L2: 1, R4: 7, R3: 6, L3: 2, L4: 3}
+    intended_channels_status: unverified-do-not-use-as-default
+    oscillator_hz: 25000000 # nominal only; measure each PCA9685
+    calibration_rate_deg_s: 15
+    controller_rate_deg_s: 60 # conservative commissioning cap, <= SafeAction maximum
+    trim_limit_deg: 15 # re-index horns rather than using large offsets
+    initial_limits_deg: [85, 95] # expand one joint at a time after horn mounting
+    watchdog_failsafe: outputs_off # an unknown map cannot safely execute rest

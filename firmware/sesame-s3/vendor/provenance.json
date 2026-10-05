@@ -1,0 +1,11 @@
+{
+  "project": "dorianborian/sesame-robot",
+  "commit": "86d2bf8099754fd548c7cf98ee11fc9e9cdb5092",
+  "source": "firmware/face-bitmaps.h",
+  "retrieved_from": "Artemis preserved 2026-09-22 build input; unmodified; SHA-256 also matched GitHub pinned contents API on 2026-10-06",
+  "license": "Apache-2.0",
+  "sha256": {
+    "face-bitmaps.h": "722692894402d9eccf5c022ed7b4eb090c2de6b171b7872cedce55609dac1f06",
+    "LICENSE": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4"
+  }
+}

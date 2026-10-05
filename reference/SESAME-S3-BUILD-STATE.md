@@ -1,5 +1,25 @@
 # Sesame S3 — hardware state and recovery
 
+## Offline firmware update — 2026-10-06
+
+The owner reports the robot is now fully assembled, but neutral alignment and
+travel are unsatisfactory; firmware has not changed since September22.
+**Installed hardware state below is unchanged:** this session performed no flash
+or physical test. A replacement single-image calibration/controller is now in
+`firmware/sesame-s3/`. Start with [calibration](SESAME-S3-CALIBRATION.md),
+[diagnosis](SESAME-S3-DIAGNOSIS.md), and the generated
+[machine-readable APS handoff](sesame-s3-interface.json).
+
+Key qualification: old150..512 ticks do omit~19.5% of the manifest's intended
+pulse span, but ESP32Servo3.0.9 also caps upstream's requested2929µs at2500µs.
+This is not proof of20% missing mechanical range relative to upstream hardware.
+The replacement explicitly uses732..2929µs with a measured-clock setting,
+horn-off centring and per-device travel limits. Physical map, horn offset,
+oscillator frequency, Wi-Fi visibility and successful motions remain
+**NEEDS-HARDWARE**. Target map is not preinstalled as measured calibration.
+
+---
+
 **Updated 2026-09-22**, following the 2026-09-21–22 session.
 Instructor decision: this **S3 SuperMini + PCA9685 perfboard build is the APS-II course default**.
 Course-facing record: `../aps/docs/planning/aps-ii/BUILD-STATE.md` (from this repo root).

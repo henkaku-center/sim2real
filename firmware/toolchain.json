@@ -1,0 +1,15 @@
+{
+  "arduino_cli": "1.5.1",
+  "host_python": "3.12",
+  "pyyaml": "6.0.3",
+  "pyserial": "3.5",
+  "core": "esp32:esp32@3.3.11",
+  "index_url": "https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json",
+  "fqbn": "esp32:esp32:esp32s3:CDCOnBoot=cdc,FlashSize=4M,PartitionScheme=default,PSRAM=disabled,EraseFlash=none",
+  "libraries": {
+    "Adafruit PWM Servo Driver Library": "3.0.3",
+    "Adafruit SSD1306": "2.5.17",
+    "Adafruit GFX Library": "1.12.6",
+    "Adafruit BusIO": "1.17.4"
+  }
+}

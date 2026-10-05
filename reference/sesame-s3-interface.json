@@ -1,0 +1,482 @@
+{
+  "schema_version": 1,
+  "generated_by": "tools/generate_s3_firmware.py",
+  "status": "NEEDS-HARDWARE; offline validation is recorded separately in the diagnosis",
+  "procedure": "reference/SESAME-S3-CALIBRATION.md",
+  "diagnosis": "reference/SESAME-S3-DIAGNOSIS.md",
+  "firmware": "firmware/sesame-s3",
+  "flash_command": "python3 tools/sesame_s3.py flash --port PORT",
+  "console_command": "python3 tools/sesame_s3.py console --port PORT",
+  "serial": {
+    "baud": 115200,
+    "line_ending": "LF",
+    "maximum_line_bytes": 159,
+    "live_command": ":live",
+    "pause_heartbeat_command": ":pause",
+    "close_command": ":quit"
+  },
+  "joint_map": [
+    {
+      "name": "R1",
+      "logical_index": 0,
+      "leg": "front_right",
+      "role": "hip",
+      "target_pca_channel": 4,
+      "hardware_verified_pca_channel": null,
+      "default_nvs_channel": -1,
+      "mapping_status": "target-only-unverified",
+      "manifest_sign": 1,
+      "soft_firmware_deg": [
+        45,
+        180
+      ],
+      "soft_internal_deg": [
+        -45,
+        90
+      ]
+    },
+    {
+      "name": "R2",
+      "logical_index": 1,
+      "leg": "back_right",
+      "role": "hip",
+      "target_pca_channel": 5,
+      "hardware_verified_pca_channel": null,
+      "default_nvs_channel": -1,
+      "mapping_status": "target-only-unverified",
+      "manifest_sign": -1,
+      "soft_firmware_deg": [
+        0,
+        135
+      ],
+      "soft_internal_deg": [
+        -45,
+        90
+      ]
+    },
+    {
+      "name": "L1",
+      "logical_index": 2,
+      "leg": "front_left",
+      "role": "hip",
+      "target_pca_channel": 0,
+      "hardware_verified_pca_channel": null,
+      "default_nvs_channel": -1,
+      "mapping_status": "target-only-unverified",
+      "manifest_sign": -1,
+      "soft_firmware_deg": [
+        0,
+        135
+      ],
+      "soft_internal_deg": [
+        -45,
+        90
+      ]
+    },
+    {
+      "name": "L2",
+      "logical_index": 3,
+      "leg": "back_left",
+      "role": "hip",
+      "target_pca_channel": 1,
+      "hardware_verified_pca_channel": null,
+      "default_nvs_channel": -1,
+      "mapping_status": "target-only-unverified",
+      "manifest_sign": 1,
+      "soft_firmware_deg": [
+        45,
+        180
+      ],
+      "soft_internal_deg": [
+        -45,
+        90
+      ]
+    },
+    {
+      "name": "R4",
+      "logical_index": 4,
+      "leg": "back_right",
+      "role": "foot",
+      "target_pca_channel": 7,
+      "hardware_verified_pca_channel": null,
+      "default_nvs_channel": -1,
+      "mapping_status": "target-only-unverified",
+      "manifest_sign": -1,
+      "soft_firmware_deg": [
+        0,
+        180
+      ],
+      "soft_internal_deg": [
+        -90,
+        90
+      ]
+    },
+    {
+      "name": "R3",
+      "logical_index": 5,
+      "leg": "front_right",
+      "role": "foot",
+      "target_pca_channel": 6,
+      "hardware_verified_pca_channel": null,
+      "default_nvs_channel": -1,
+      "mapping_status": "target-only-unverified",
+      "manifest_sign": 1,
+      "soft_firmware_deg": [
+        0,
+        180
+      ],
+      "soft_internal_deg": [
+        -90,
+        90
+      ]
+    },
+    {
+      "name": "L3",
+      "logical_index": 6,
+      "leg": "front_left",
+      "role": "foot",
+      "target_pca_channel": 2,
+      "hardware_verified_pca_channel": null,
+      "default_nvs_channel": -1,
+      "mapping_status": "target-only-unverified",
+      "manifest_sign": -1,
+      "soft_firmware_deg": [
+        0,
+        180
+      ],
+      "soft_internal_deg": [
+        -90,
+        90
+      ]
+    },
+    {
+      "name": "L4",
+      "logical_index": 7,
+      "leg": "back_left",
+      "role": "foot",
+      "target_pca_channel": 3,
+      "hardware_verified_pca_channel": null,
+      "default_nvs_channel": -1,
+      "mapping_status": "target-only-unverified",
+      "manifest_sign": 1,
+      "soft_firmware_deg": [
+        0,
+        180
+      ],
+      "soft_internal_deg": [
+        -90,
+        90
+      ]
+    }
+  ],
+  "pulse": {
+    "range_us": [
+      732,
+      2929
+    ],
+    "angle_deg": [
+      0,
+      180
+    ],
+    "neutral_deg": 90,
+    "neutral_us": 1830.5,
+    "pwm_hz": 50,
+    "oscillator_default_hz": 25000000,
+    "oscillator_status": "nominal-unmeasured",
+    "ticks_formula": "round(us * oscillator_hz / (1000000 * (prescale+1)))"
+  },
+  "button": {
+    "pin": 0,
+    "off_press_release": "raw CH0..7 neutral for30s",
+    "active_press": "off",
+    "held_at_boot": "must release before new press"
+  },
+  "power": {
+    "flash": "battery disconnected; servo V+ off; USB only",
+    "button_assembly": "unplug USB, then power from battery alone",
+    "serial_motion": "instructor-verified isolated servo V+ with common ground, or verified data-only USB with no VBUS backfeed",
+    "unverified_isolation": "do not combine USB and battery; use battery-only button or Wi-Fi"
+  },
+  "safeaction": {
+    "watchdog_ms": 500,
+    "failsafe": "outputs_off",
+    "calibration_rate_deg_s": 15,
+    "controller_rate_deg_s": 60,
+    "start": "outputs-off, arm does not emit PWM",
+    "first_enable": "unknown physical position; starts neutral, no feedback"
+  },
+  "ap": {
+    "ssid": "Sesame-S3-<last-two-MAC-bytes>",
+    "password": "sesame123",
+    "ip": "192.168.4.1",
+    "country": "JP",
+    "channel": 1,
+    "requested_tx_dbm": 8.5,
+    "hardware_visibility": "unverified"
+  },
+  "commands": [
+    {
+      "syntax": "help",
+      "mode": "any",
+      "meaning": "List exact command grammar"
+    },
+    {
+      "syntax": "show",
+      "mode": "any",
+      "meaning": "Export map/sign/trim/limits/verified flags and oscillator"
+    },
+    {
+      "syntax": "export",
+      "mode": "any",
+      "meaning": "Print JSON matching calibration_schema; retain per-robot evidence"
+    },
+    {
+      "syntax": "status",
+      "mode": "any",
+      "meaning": "Mode, owner, current/target/electrical pulse telemetry"
+    },
+    {
+      "syntax": "wifi",
+      "mode": "any",
+      "meaning": "Actual AP configuration and API error codes"
+    },
+    {
+      "syntax": "face NAME",
+      "mode": "any",
+      "meaning": "OLED face only"
+    },
+    {
+      "syntax": "off",
+      "mode": "any",
+      "meaning": "Cancel queues, assert OE, full-off all PCA outputs, disarm"
+    },
+    {
+      "syntax": "stop",
+      "mode": "any",
+      "meaning": "Cancel queues, freeze targets; heartbeat still required"
+    },
+    {
+      "syntax": "heartbeat",
+      "mode": "active-owner",
+      "meaning": "Renew 500ms watchdog; never arms or resumes"
+    },
+    {
+      "syntax": "arm channel CH",
+      "mode": "off",
+      "meaning": "One physical CH0..7, discovery envelope 85..95"
+    },
+    {
+      "syntax": "arm hornless CH",
+      "mode": "off",
+      "meaning": "One physical CH0..7, bounded 0..180, horns disengaged"
+    },
+    {
+      "syntax": "arm joint NAME",
+      "mode": "off",
+      "meaning": "One mapped logical joint, measured/soft/electrical limits"
+    },
+    {
+      "syntax": "arm assembly",
+      "mode": "off",
+      "meaning": "Prepare raw neutral on physical CH0..7; no pulses yet"
+    },
+    {
+      "syntax": "arm run",
+      "mode": "off",
+      "meaning": "Require eight verified joints and saved NVS record; no pulses yet"
+    },
+    {
+      "syntax": "centre",
+      "mode": "assembly",
+      "meaning": "Raw 90 degrees /1830.5us on CH0..7, ignore trims"
+    },
+    {
+      "syntax": "angle DEG",
+      "mode": "single-channel-or-joint",
+      "meaning": "Absolute firmware angle; physical in raw modes"
+    },
+    {
+      "syntax": "us MICROSECONDS",
+      "mode": "single-channel-or-joint",
+      "meaning": "732..2929, converted through the same limits/rate gate"
+    },
+    {
+      "syntax": "q INTERNAL_DEG",
+      "mode": "joint",
+      "meaning": "Internal signed joint angle; 0 is neutral"
+    },
+    {
+      "syntax": "jog DELTA_DEG",
+      "mode": "single-channel-or-joint",
+      "meaning": "Add to current firmware angle"
+    },
+    {
+      "syntax": "sweep LOW HIGH",
+      "mode": "single-channel-or-joint",
+      "meaning": "One low-high-neutral pass, 15deg/s; live watchdog"
+    },
+    {
+      "syntax": "map NAME CH",
+      "mode": "off",
+      "meaning": "Assign one unique CH0..7; invalidates joint verification"
+    },
+    {
+      "syntax": "unmap NAME",
+      "mode": "off",
+      "meaning": "Unassign joint before swapping channels"
+    },
+    {
+      "syntax": "sign NAME SIGN",
+      "mode": "off",
+      "meaning": "Absolute physical sign +1/-1; invalidates verification"
+    },
+    {
+      "syntax": "trim NAME DEG",
+      "mode": "off",
+      "meaning": "Physical-angle offset, -15..15; invalidates verification"
+    },
+    {
+      "syntax": "limits NAME LOW HIGH",
+      "mode": "off",
+      "meaning": "Measured firmware envelope within manifest, including90"
+    },
+    {
+      "syntax": "verify NAME",
+      "mode": "off",
+      "meaning": "Owner attests measured mapping/direction/limits; not auto-detection"
+    },
+    {
+      "syntax": "oscillator HZ",
+      "mode": "off",
+      "meaning": "Measured20..30MHz; reapplies prescaler, clears ALL verification"
+    },
+    {
+      "syntax": "save",
+      "mode": "off",
+      "meaning": "Persist one versioned/checksummed NVS calibration record"
+    },
+    {
+      "syntax": "reference",
+      "mode": "off",
+      "meaning": "CH15=1500us, all servos disconnected; reports actual programmed ticks"
+    },
+    {
+      "syntax": "motion NAME",
+      "mode": "run",
+      "meaning": "One finite stock sequence through SafeAction; same as run NAME"
+    },
+    {
+      "syntax": "servo NAME DEG",
+      "mode": "run",
+      "meaning": "Bounded single-joint target"
+    },
+    {
+      "syntax": "pose D0 D1 D2 D3 D4 D5 D6 D7",
+      "mode": "run",
+      "meaning": "Bounded targets in canonical logical order"
+    },
+    {
+      "syntax": "rest",
+      "mode": "run",
+      "meaning": "Named rest motion; applies measured trims/signs"
+    },
+    {
+      "syntax": "wifi COUNTRY CHANNEL TX_DBM",
+      "mode": "off-usb-only",
+      "meaning": "JP/US/GB/DE/FR;1..11;2/8.5/13/19.5; session-only"
+    }
+  ],
+  "calibration_schema": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "SesameS3 NVS logical record v1",
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "version",
+      "manifest_id",
+      "oscillator_hz",
+      "joints"
+    ],
+    "properties": {
+      "version": {
+        "const": 1
+      },
+      "manifest_id": {
+        "type": "string",
+        "pattern": "^[0-9a-f]{16}$"
+      },
+      "oscillator_hz": {
+        "type": "integer",
+        "minimum": 20000000,
+        "maximum": 30000000
+      },
+      "joints": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "name",
+            "channel",
+            "sign",
+            "trim_deg",
+            "limits_deg",
+            "verified"
+          ],
+          "properties": {
+            "name": {
+              "enum": [
+                "R1",
+                "R2",
+                "L1",
+                "L2",
+                "R4",
+                "R3",
+                "L3",
+                "L4"
+              ]
+            },
+            "channel": {
+              "type": "integer",
+              "minimum": -1,
+              "maximum": 7,
+              "description": "-1=unassigned; nonnegative channels unique"
+            },
+            "sign": {
+              "enum": [
+                -1,
+                1
+              ]
+            },
+            "trim_deg": {
+              "type": "number",
+              "minimum": -15,
+              "maximum": 15
+            },
+            "limits_deg": {
+              "type": "array",
+              "items": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 180
+              },
+              "minItems": 2,
+              "maxItems": 2
+            },
+            "verified": {
+              "type": "boolean"
+            }
+          }
+        },
+        "minItems": 8,
+        "maxItems": 8
+      }
+    },
+    "$comment": "Joint order must match joint_map; names/channels unique; limits subset of manifest and include90. NVS namespace sesame-s3, key record. Binary record adds magic and checksum; firmware validates all invariants."
+  },
+  "calibration_math": {
+    "physical_angle": "90 + trim + physical_sign * manifest_sign * (firmware_angle - 90)",
+    "internal_angle": "manifest_sign * (firmware_angle - 90)",
+    "clamps": "intersect measured firmware limits, manifest soft limits, and post-trim physical0..180"
+  }
+}

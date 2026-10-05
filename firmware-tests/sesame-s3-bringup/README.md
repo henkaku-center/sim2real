@@ -29,3 +29,13 @@ Artemis has the built binaries under `~/sesame-bringup/2026-09-22/`.
 S3 endpoints 0x01/0x81, 64-byte bulk transfers and 20 ms read timeout. It completed a full flash backup
 and initial diagnostic flash, but later write timeouts remain unresolved. Direct Artemis USB was
 the successful final programming route. This snapshot is not a generic cross-device bridge.
+
+## Replacement calibration/controller
+
+These sketches are historical snapshots of the September22 trials; retain their
+original pulse constants as evidence. For the current single-image firmware,
+corrected manifest pulse mapping, measured oscillator, NVS calibration, class
+flash script and owner procedure, use [`../../firmware/`](../../firmware/) and
+[`../../reference/SESAME-S3-CALIBRATION.md`](../../reference/SESAME-S3-CALIBRATION.md).
+The old load test has no Wi-Fi AP. See the diagnosis for the important
+ESP32Servo2500µs-clamp qualification before interpreting its range as a regression.

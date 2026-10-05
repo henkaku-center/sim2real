@@ -1,0 +1,30 @@
+{
+  "date": "2026-10-06",
+  "hardware_access": false,
+  "flash_performed": false,
+  "toolchain": "firmware/toolchain.json",
+  "controller_source_sha256": "da75e73f5dd7bff655bffbd865189d913a8ef5fc6c88631f1c8a8043f8e91392",
+  "compile_command": "python3 tools/sesame_s3.py build",
+  "macos": {
+    "platform": "macOS-15.7.9-x86_64-i386-64bit",
+    "clean_compile": "PASS",
+    "sketch_bytes": 1019565,
+    "application_capacity_bytes": 1310720,
+    "global_ram_bytes": 48128,
+    "app_binary_sha256": "e00734de1225b072ce18b40a469017c700611694a24c1dcad3b16d24db23aa90",
+    "pytest_command": "uv run --frozen pytest -q tests/test_s3_firmware.py tests/test_manifest.py tests/test_safeaction.py",
+    "pytest_result": "23 passed; generated handoff rechecked after metadata-only update",
+    "native_sanitizers": "AddressSanitizer and UndefinedBehaviorSanitizer PASS"
+  },
+  "linux": {
+    "platform": "Linux-7.0.0-34-generic-x86_64-with-glibc2.39",
+    "clean_compile": "PASS (isolated temporary source checkout on Artemis)",
+    "sketch_bytes": 1019533,
+    "application_capacity_bytes": 1310720,
+    "global_ram_bytes": 48128,
+    "app_binary_sha256": "58c4cbc027dff6686e8c9f1d2a3b249e982e39087b93a641301186c89d559d46",
+    "native_sanitizers": "AddressSanitizer and UndefinedBehaviorSanitizer PASS"
+  },
+  "reproducibility_scope": "Pinned source/core/libraries and successful builds on both hosts; byte-identical binaries are not claimed across build paths/timestamps.",
+  "unverified": ["physical channel map", "horn offsets", "servo usable travel", "PCA oscillator", "OE wiring", "power isolation", "RF visibility", "OLED output on this new image", "NVS persistence on device", "actual flash", "actual gaits"]
+}

@@ -1,0 +1,2 @@
+# Preserve the byte-identical upstream CRLF bitmap header and its pinned hash.
+face-bitmaps.h -text -whitespace

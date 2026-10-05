@@ -1,5 +1,22 @@
 # HANDOVER
 
+## Current firmware handoff — 2026-10-06 (offline)
+
+Replacement S3 calibration+controller: `firmware/sesame-s3/`; one-command flash
+helper `tools/sesame_s3.py`; owner/student procedure
+`reference/SESAME-S3-CALIBRATION.md`; diagnosis and owner session plan
+`reference/SESAME-S3-DIAGNOSIS.md`. APS consumes the single generated
+`reference/sesame-s3-interface.json` (target-vs-verified map, commands, calibration
+schema). Runtime calibration is device-specific NVS and exports as JSON.
+
+Hardware remains on the September22 load test until the owner flashes. No new
+hardware outcomes are claimed. In particular the AP, actual map, oscillator,
+horn indexing and measured travel still need the owner. Source investigation
+confirmed the manifest-vs-effective-upstream distinction: ESP32Servo3.0.9 clamps
+the requested2929µs to2500µs. Read the diagnosis before widening an assembled
+robot's pulse range. All new boot outputs are off; BOOT offers a finite30-second
+battery-only assembly centre. Verify OE and power isolation first.
+
 ## Current CAD handoff — 2026-09-24
 
 The complete electronics model is **`assets/cad/Sesame-S3-Assembly.FCStd`**
