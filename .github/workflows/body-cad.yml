@@ -1,0 +1,67 @@
+name: body-cad
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'tools/body_*.py'
+      - 'tools/check_body.py'
+      - 'tools/render_body.py'
+      - 'tests/test_body_cad.py'
+      - 'assets/body/**'
+      - 'assets/cad/Sesame-S3-Assembly.FCStd'
+      - 'assets/cad/instructions/assembly-cad-snapshot.json'
+      - 'manifest/robot.yaml'
+      - '.github/workflows/body-cad.yml'
+  pull_request:
+    paths:
+      - 'tools/body_*.py'
+      - 'tools/check_body.py'
+      - 'tools/render_body.py'
+      - 'tests/test_body_cad.py'
+      - 'assets/body/**'
+      - '.github/workflows/body-cad.yml'
+
+jobs:
+  geometry:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 90
+    defaults:
+      run:
+        shell: bash -el {0}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: true
+      - uses: mamba-org/setup-micromamba@v2
+        with:
+          environment-name: body-cad
+          create-args: >-
+            python=3.11
+            freecad=1.1.3
+            occt=7.9.3
+          cache-environment: true
+      - uses: astral-sh/setup-uv@v5
+      - name: Configure separate FreeCAD runtime
+        run: |
+          echo "FREECAD_PYTHON=$CONDA_PREFIX/bin/python" >> "$GITHUB_ENV"
+          echo "FREECAD_LIB=$CONDA_PREFIX/lib" >> "$GITHUB_ENV"
+          uv sync --locked
+      - name: Detector regression tests
+        run: uv run pytest tests/test_body_cad.py -q
+        env:
+          REQUIRE_BODY_CAD: '1'
+      - name: Full body fit acceptance (draft failures remain failures)
+        run: uv run python tools/check_body.py --output tests/artifacts/body
+      - name: Upload geometry findings and review
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: body-review-${{ matrix.os }}
+          path: tests/artifacts/body/
+          if-no-files-found: warn

@@ -166,3 +166,41 @@ the absent AP diagnosable. The old load test has no AP code; historical full
 firmware visibility failure is unresolved. Do not label the antenna or TX power
 as a proven cause. Class build/flash uses pinned arduino-cli/core/library versions;
 no robot access or firmware upload occurred in this offline implementation.
+
+## D11. Text-generated S3 body with immutable leg interfaces (2026-10-06)
+
+**Decision:** Use scripted FreeCAD `Part` / OpenCascade for the agent-editable
+body, with `assets/body/params.json` and `tools/body_cad.py` as its source. Read
+the authoritative `Sesame-S3-Assembly.FCStd` without saving it; export native
+electronics STEP plus semantic bindings for enclosure review. CadQuery and
+build123d are viable alternatives, but would add another CAD runtime and an
+interchange boundary without improving access to this native assembly.
+
+**Interfaces:** Keep upstream leg templates and the leg print set unchanged,
+with checked SHA-256 identities. V1 also retains the complete upstream frame
+and bottom, using its old PCB attachment bores for a raised carrier tray. This
+preserves servo pockets rather than approximating them with newly drawn boxes.
+The taller layout prioritizes clearance and straightforward fabrication; it is
+an engineering draft, not acceptance of its stability or physical fit.
+
+**Validation:** Generate STEP/STL/3MF, a part/placement/assembly-order handoff,
+machine-readable interference/clearance/alignment findings, sampled wall and
+manifest-driven leg-motion checks, print-orientation/overhang reports, and CPU
+review renders. Numerical failures remain failures; no guessed servo, wire or
+peripheral dimensions are silently promoted to measured geometry. The upstream
+CAD's hip-shaft registration differs from the existing simulator/template
+registration and remains an explicit reconciliation item.
+
+**Overnight scope:** The owner authorized evidence-based parameter assumptions
+without waiting for hardware access. Battery 51 × 28 × 14 mm and toggle 13 ×
+8 mm footprint come from the recorded exact-ASIN listings. Unknown thread,
+connector, cable-exit, OLED, servo-variant and fastening dimensions stay flagged
+with specific caliper/ruler instructions in `reference/BODY-CAD.md`.
+
+**Handoff boundary:** APS's optional circuit-in-body step consumes
+`assets/body/v1/assembly.json`, per-part exports and `report.json`; it remains
+hidden until geometric and physical fit are accepted. Keep generated MuJoCo
+torso meshes/mass/inertia as a follow-up: the raised assembly changes mass
+distribution materially, so a cosmetic mesh swap or guessed scalar mass would
+misrepresent the robot. No firmware, manifest calibration or actuation changes
+are part of this body revision.

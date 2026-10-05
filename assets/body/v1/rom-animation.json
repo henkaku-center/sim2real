@@ -1,0 +1,3578 @@
+{
+  "frames": [
+    {
+      "leg": "front_right",
+      "hip_deg": -45.0,
+      "foot_deg": 0,
+      "mode": "hip"
+    },
+    {
+      "leg": "front_right",
+      "hip_deg": -40.0,
+      "foot_deg": 0,
+      "mode": "hip"
+    },
+    {
+      "leg": "front_right",
+      "hip_deg": -35.0,
+      "foot_deg": 0,
+      "mode": "hip"
+    },
+    {
+      "leg": "front_right",
+      "hip_deg": -30.0,
+      "foot_deg": 0,
+      "mode": "hip"
+    },
+    {
+      "leg": "front_right",
+      "hip_deg": -25.0,
+      "foot_deg": 0,
+      "mode": "hip"
+    },
+    {
+      "leg": "front_right",
+      "hip_deg": -20.0,
+      "foot_deg": 0,
+      "mode": "hip"
+    },
+    {
+      "leg": "front_right",
+      "hip_deg": -15.0,
+      "foot_deg": 0,
+      "mode": "hip"
+    },
+    {
+      "leg": "front_right",
+      "hip_deg": -10.0,
+      "foot_deg": 0,
+      "mode": "hip"
+    },
+    {
+      "leg": "front_right",
+      "hip_deg": -5.0,
+      "foot_deg": 0,
+      "mode": "hip"
+    },
+    {
+      "leg": "front_right",
+      "hip_deg": 0.0,
+      "foot_deg": 0,
+      "mode": "hip"
+    },
+    {
+      "leg": "front_right",
+      "hip_deg": 5.0,
+      "foot_deg": 0,
+      "mode": "hip"
+    },
+    {
+      "leg": "front_right",
+      "hip_deg": 10.0,
+      "foot_deg": 0,
+      "mode": "hip"
+    },
+    {
+      "leg": "front_right",
+      "hip_deg": 15.0,
+      "foot_deg": 0,
+      "mode": "hip"
+    },
+    {
+      "leg": "front_right",
+      "hip_deg": 20.0,
+      "foot_deg": 0,
+      "mode": "hip"
+    },
+    {
+      "leg": "front_right",
+      "hip_deg": 25.0,
+      "foot_deg": 0,
+      "mode": "hip"
+    },
+    {
+      "leg": "front_right",
+      "hip_deg": 30.0,
+      "foot_deg": 0,
+      "mode": "hip"
+    },
+    {
+      "leg": "front_right",
+      "hip_deg": 35.0,
+      "foot_deg": 0,
+      "mode": "hip"
+    },
+    {
+      "leg": "front_right",
+      "hip_deg": 40.0,
+      "foot_deg": 0,
+      "mode": "hip"
+    },
+    {
+      "leg": "front_right",
+      "hip_deg": 45.0,
+      "foot_deg": 0,
+      "mode": "hip"
+    },
+    {
+      "leg": "front_right",
+      "hip_deg": 50.0,
+      "foot_deg": 0,
+      "mode": "hip"
+    },
+    {
+      "leg": "front_right",
+      "hip_deg": 55.0,
+      "foot_deg": 0,
+      "mode": "hip"
+    },
+    {
+      "leg": "front_right",
+      "hip_deg": 60.0,
+      "foot_deg": 0,
+      "mode": "hip"
+    },
+    {
+      "leg": "front_right",
+      "hip_deg": 65.0,
+      "foot_deg": 0,
+      "mode": "hip"
+    },
+    {
+      "leg": "front_right",
+      "hip_deg": 70.0,
+      "foot_deg": 0,
+      "mode": "hip"
+    },
+    {
+      "leg": "front_right",
+      "hip_deg": 75.0,
+      "foot_deg": 0,
+      "mode": "hip"
+    },
+    {
+      "leg": "front_right",
+      "hip_deg": 80.0,
+      "foot_deg": 0,
+      "mode": "hip"
+    },
+    {
+      "leg": "front_right",
+      "hip_deg": 85.0,
+      "foot_deg": 0,
+      "mode": "hip"
+    },
+    {
+      "leg": "front_right",
+      "hip_deg": 90.0,
+      "foot_deg": 0,
+      "mode": "hip"
+    },
+    {
+      "leg": "front_right",
+      "hip_deg": 0,
+      "foot_deg": -90.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "front_right",
+      "hip_deg": 0,
+      "foot_deg": -85.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "front_right",
+      "hip_deg": 0,
+      "foot_deg": -80.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "front_right",
+      "hip_deg": 0,
+      "foot_deg": -75.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "front_right",
+      "hip_deg": 0,
+      "foot_deg": -70.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "front_right",
+      "hip_deg": 0,
+      "foot_deg": -65.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "front_right",
+      "hip_deg": 0,
+      "foot_deg": -60.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "front_right",
+      "hip_deg": 0,
+      "foot_deg": -55.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "front_right",
+      "hip_deg": 0,
+      "foot_deg": -50.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "front_right",
+      "hip_deg": 0,
+      "foot_deg": -45.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "front_right",
+      "hip_deg": 0,
+      "foot_deg": -40.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "front_right",
+      "hip_deg": 0,
+      "foot_deg": -35.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "front_right",
+      "hip_deg": 0,
+      "foot_deg": -30.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "front_right",
+      "hip_deg": 0,
+      "foot_deg": -25.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "front_right",
+      "hip_deg": 0,
+      "foot_deg": -20.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "front_right",
+      "hip_deg": 0,
+      "foot_deg": -15.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "front_right",
+      "hip_deg": 0,
+      "foot_deg": -10.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "front_right",
+      "hip_deg": 0,
+      "foot_deg": -5.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "front_right",
+      "hip_deg": 0,
+      "foot_deg": 0.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "front_right",
+      "hip_deg": 0,
+      "foot_deg": 5.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "front_right",
+      "hip_deg": 0,
+      "foot_deg": 10.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "front_right",
+      "hip_deg": 0,
+      "foot_deg": 15.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "front_right",
+      "hip_deg": 0,
+      "foot_deg": 20.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "front_right",
+      "hip_deg": 0,
+      "foot_deg": 25.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "front_right",
+      "hip_deg": 0,
+      "foot_deg": 30.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "front_right",
+      "hip_deg": 0,
+      "foot_deg": 35.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "front_right",
+      "hip_deg": 0,
+      "foot_deg": 40.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "front_right",
+      "hip_deg": 0,
+      "foot_deg": 45.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "front_right",
+      "hip_deg": 0,
+      "foot_deg": 50.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "front_right",
+      "hip_deg": 0,
+      "foot_deg": 55.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "front_right",
+      "hip_deg": 0,
+      "foot_deg": 60.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "front_right",
+      "hip_deg": 0,
+      "foot_deg": 65.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "front_right",
+      "hip_deg": 0,
+      "foot_deg": 70.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "front_right",
+      "hip_deg": 0,
+      "foot_deg": 75.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "front_right",
+      "hip_deg": 0,
+      "foot_deg": 80.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "front_right",
+      "hip_deg": 0,
+      "foot_deg": 85.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "front_right",
+      "hip_deg": 0,
+      "foot_deg": 90.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "front_right",
+      "hip_deg": -45.0,
+      "foot_deg": -90.0,
+      "mode": "coupled-grid"
+    },
+    {
+      "leg": "front_right",
+      "hip_deg": -45.0,
+      "foot_deg": 0.0,
+      "mode": "coupled-grid"
+    },
+    {
+      "leg": "front_right",
+      "hip_deg": -45.0,
+      "foot_deg": 90.0,
+      "mode": "coupled-grid"
+    },
+    {
+      "leg": "front_right",
+      "hip_deg": 22.5,
+      "foot_deg": -90.0,
+      "mode": "coupled-grid"
+    },
+    {
+      "leg": "front_right",
+      "hip_deg": 22.5,
+      "foot_deg": 0.0,
+      "mode": "coupled-grid"
+    },
+    {
+      "leg": "front_right",
+      "hip_deg": 22.5,
+      "foot_deg": 90.0,
+      "mode": "coupled-grid"
+    },
+    {
+      "leg": "front_right",
+      "hip_deg": 90.0,
+      "foot_deg": -90.0,
+      "mode": "coupled-grid"
+    },
+    {
+      "leg": "front_right",
+      "hip_deg": 90.0,
+      "foot_deg": 0.0,
+      "mode": "coupled-grid"
+    },
+    {
+      "leg": "front_right",
+      "hip_deg": 90.0,
+      "foot_deg": 90.0,
+      "mode": "coupled-grid"
+    },
+    {
+      "leg": "back_right",
+      "hip_deg": -45.0,
+      "foot_deg": 0,
+      "mode": "hip"
+    },
+    {
+      "leg": "back_right",
+      "hip_deg": -40.0,
+      "foot_deg": 0,
+      "mode": "hip"
+    },
+    {
+      "leg": "back_right",
+      "hip_deg": -35.0,
+      "foot_deg": 0,
+      "mode": "hip"
+    },
+    {
+      "leg": "back_right",
+      "hip_deg": -30.0,
+      "foot_deg": 0,
+      "mode": "hip"
+    },
+    {
+      "leg": "back_right",
+      "hip_deg": -25.0,
+      "foot_deg": 0,
+      "mode": "hip"
+    },
+    {
+      "leg": "back_right",
+      "hip_deg": -20.0,
+      "foot_deg": 0,
+      "mode": "hip"
+    },
+    {
+      "leg": "back_right",
+      "hip_deg": -15.0,
+      "foot_deg": 0,
+      "mode": "hip"
+    },
+    {
+      "leg": "back_right",
+      "hip_deg": -10.0,
+      "foot_deg": 0,
+      "mode": "hip"
+    },
+    {
+      "leg": "back_right",
+      "hip_deg": -5.0,
+      "foot_deg": 0,
+      "mode": "hip"
+    },
+    {
+      "leg": "back_right",
+      "hip_deg": 0.0,
+      "foot_deg": 0,
+      "mode": "hip"
+    },
+    {
+      "leg": "back_right",
+      "hip_deg": 5.0,
+      "foot_deg": 0,
+      "mode": "hip"
+    },
+    {
+      "leg": "back_right",
+      "hip_deg": 10.0,
+      "foot_deg": 0,
+      "mode": "hip"
+    },
+    {
+      "leg": "back_right",
+      "hip_deg": 15.0,
+      "foot_deg": 0,
+      "mode": "hip"
+    },
+    {
+      "leg": "back_right",
+      "hip_deg": 20.0,
+      "foot_deg": 0,
+      "mode": "hip"
+    },
+    {
+      "leg": "back_right",
+      "hip_deg": 25.0,
+      "foot_deg": 0,
+      "mode": "hip"
+    },
+    {
+      "leg": "back_right",
+      "hip_deg": 30.0,
+      "foot_deg": 0,
+      "mode": "hip"
+    },
+    {
+      "leg": "back_right",
+      "hip_deg": 35.0,
+      "foot_deg": 0,
+      "mode": "hip"
+    },
+    {
+      "leg": "back_right",
+      "hip_deg": 40.0,
+      "foot_deg": 0,
+      "mode": "hip"
+    },
+    {
+      "leg": "back_right",
+      "hip_deg": 45.0,
+      "foot_deg": 0,
+      "mode": "hip"
+    },
+    {
+      "leg": "back_right",
+      "hip_deg": 50.0,
+      "foot_deg": 0,
+      "mode": "hip"
+    },
+    {
+      "leg": "back_right",
+      "hip_deg": 55.0,
+      "foot_deg": 0,
+      "mode": "hip"
+    },
+    {
+      "leg": "back_right",
+      "hip_deg": 60.0,
+      "foot_deg": 0,
+      "mode": "hip"
+    },
+    {
+      "leg": "back_right",
+      "hip_deg": 65.0,
+      "foot_deg": 0,
+      "mode": "hip"
+    },
+    {
+      "leg": "back_right",
+      "hip_deg": 70.0,
+      "foot_deg": 0,
+      "mode": "hip"
+    },
+    {
+      "leg": "back_right",
+      "hip_deg": 75.0,
+      "foot_deg": 0,
+      "mode": "hip"
+    },
+    {
+      "leg": "back_right",
+      "hip_deg": 80.0,
+      "foot_deg": 0,
+      "mode": "hip"
+    },
+    {
+      "leg": "back_right",
+      "hip_deg": 85.0,
+      "foot_deg": 0,
+      "mode": "hip"
+    },
+    {
+      "leg": "back_right",
+      "hip_deg": 90.0,
+      "foot_deg": 0,
+      "mode": "hip"
+    },
+    {
+      "leg": "back_right",
+      "hip_deg": 0,
+      "foot_deg": -90.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "back_right",
+      "hip_deg": 0,
+      "foot_deg": -85.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "back_right",
+      "hip_deg": 0,
+      "foot_deg": -80.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "back_right",
+      "hip_deg": 0,
+      "foot_deg": -75.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "back_right",
+      "hip_deg": 0,
+      "foot_deg": -70.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "back_right",
+      "hip_deg": 0,
+      "foot_deg": -65.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "back_right",
+      "hip_deg": 0,
+      "foot_deg": -60.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "back_right",
+      "hip_deg": 0,
+      "foot_deg": -55.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "back_right",
+      "hip_deg": 0,
+      "foot_deg": -50.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "back_right",
+      "hip_deg": 0,
+      "foot_deg": -45.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "back_right",
+      "hip_deg": 0,
+      "foot_deg": -40.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "back_right",
+      "hip_deg": 0,
+      "foot_deg": -35.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "back_right",
+      "hip_deg": 0,
+      "foot_deg": -30.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "back_right",
+      "hip_deg": 0,
+      "foot_deg": -25.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "back_right",
+      "hip_deg": 0,
+      "foot_deg": -20.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "back_right",
+      "hip_deg": 0,
+      "foot_deg": -15.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "back_right",
+      "hip_deg": 0,
+      "foot_deg": -10.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "back_right",
+      "hip_deg": 0,
+      "foot_deg": -5.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "back_right",
+      "hip_deg": 0,
+      "foot_deg": 0.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "back_right",
+      "hip_deg": 0,
+      "foot_deg": 5.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "back_right",
+      "hip_deg": 0,
+      "foot_deg": 10.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "back_right",
+      "hip_deg": 0,
+      "foot_deg": 15.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "back_right",
+      "hip_deg": 0,
+      "foot_deg": 20.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "back_right",
+      "hip_deg": 0,
+      "foot_deg": 25.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "back_right",
+      "hip_deg": 0,
+      "foot_deg": 30.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "back_right",
+      "hip_deg": 0,
+      "foot_deg": 35.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "back_right",
+      "hip_deg": 0,
+      "foot_deg": 40.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "back_right",
+      "hip_deg": 0,
+      "foot_deg": 45.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "back_right",
+      "hip_deg": 0,
+      "foot_deg": 50.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "back_right",
+      "hip_deg": 0,
+      "foot_deg": 55.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "back_right",
+      "hip_deg": 0,
+      "foot_deg": 60.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "back_right",
+      "hip_deg": 0,
+      "foot_deg": 65.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "back_right",
+      "hip_deg": 0,
+      "foot_deg": 70.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "back_right",
+      "hip_deg": 0,
+      "foot_deg": 75.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "back_right",
+      "hip_deg": 0,
+      "foot_deg": 80.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "back_right",
+      "hip_deg": 0,
+      "foot_deg": 85.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "back_right",
+      "hip_deg": 0,
+      "foot_deg": 90.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "back_right",
+      "hip_deg": -45.0,
+      "foot_deg": -90.0,
+      "mode": "coupled-grid"
+    },
+    {
+      "leg": "back_right",
+      "hip_deg": -45.0,
+      "foot_deg": 0.0,
+      "mode": "coupled-grid"
+    },
+    {
+      "leg": "back_right",
+      "hip_deg": -45.0,
+      "foot_deg": 90.0,
+      "mode": "coupled-grid"
+    },
+    {
+      "leg": "back_right",
+      "hip_deg": 22.5,
+      "foot_deg": -90.0,
+      "mode": "coupled-grid"
+    },
+    {
+      "leg": "back_right",
+      "hip_deg": 22.5,
+      "foot_deg": 0.0,
+      "mode": "coupled-grid"
+    },
+    {
+      "leg": "back_right",
+      "hip_deg": 22.5,
+      "foot_deg": 90.0,
+      "mode": "coupled-grid"
+    },
+    {
+      "leg": "back_right",
+      "hip_deg": 90.0,
+      "foot_deg": -90.0,
+      "mode": "coupled-grid"
+    },
+    {
+      "leg": "back_right",
+      "hip_deg": 90.0,
+      "foot_deg": 0.0,
+      "mode": "coupled-grid"
+    },
+    {
+      "leg": "back_right",
+      "hip_deg": 90.0,
+      "foot_deg": 90.0,
+      "mode": "coupled-grid"
+    },
+    {
+      "leg": "front_left",
+      "hip_deg": -45.0,
+      "foot_deg": 0,
+      "mode": "hip"
+    },
+    {
+      "leg": "front_left",
+      "hip_deg": -40.0,
+      "foot_deg": 0,
+      "mode": "hip"
+    },
+    {
+      "leg": "front_left",
+      "hip_deg": -35.0,
+      "foot_deg": 0,
+      "mode": "hip"
+    },
+    {
+      "leg": "front_left",
+      "hip_deg": -30.0,
+      "foot_deg": 0,
+      "mode": "hip"
+    },
+    {
+      "leg": "front_left",
+      "hip_deg": -25.0,
+      "foot_deg": 0,
+      "mode": "hip"
+    },
+    {
+      "leg": "front_left",
+      "hip_deg": -20.0,
+      "foot_deg": 0,
+      "mode": "hip"
+    },
+    {
+      "leg": "front_left",
+      "hip_deg": -15.0,
+      "foot_deg": 0,
+      "mode": "hip"
+    },
+    {
+      "leg": "front_left",
+      "hip_deg": -10.0,
+      "foot_deg": 0,
+      "mode": "hip"
+    },
+    {
+      "leg": "front_left",
+      "hip_deg": -5.0,
+      "foot_deg": 0,
+      "mode": "hip"
+    },
+    {
+      "leg": "front_left",
+      "hip_deg": 0.0,
+      "foot_deg": 0,
+      "mode": "hip"
+    },
+    {
+      "leg": "front_left",
+      "hip_deg": 5.0,
+      "foot_deg": 0,
+      "mode": "hip"
+    },
+    {
+      "leg": "front_left",
+      "hip_deg": 10.0,
+      "foot_deg": 0,
+      "mode": "hip"
+    },
+    {
+      "leg": "front_left",
+      "hip_deg": 15.0,
+      "foot_deg": 0,
+      "mode": "hip"
+    },
+    {
+      "leg": "front_left",
+      "hip_deg": 20.0,
+      "foot_deg": 0,
+      "mode": "hip"
+    },
+    {
+      "leg": "front_left",
+      "hip_deg": 25.0,
+      "foot_deg": 0,
+      "mode": "hip"
+    },
+    {
+      "leg": "front_left",
+      "hip_deg": 30.0,
+      "foot_deg": 0,
+      "mode": "hip"
+    },
+    {
+      "leg": "front_left",
+      "hip_deg": 35.0,
+      "foot_deg": 0,
+      "mode": "hip"
+    },
+    {
+      "leg": "front_left",
+      "hip_deg": 40.0,
+      "foot_deg": 0,
+      "mode": "hip"
+    },
+    {
+      "leg": "front_left",
+      "hip_deg": 45.0,
+      "foot_deg": 0,
+      "mode": "hip"
+    },
+    {
+      "leg": "front_left",
+      "hip_deg": 50.0,
+      "foot_deg": 0,
+      "mode": "hip"
+    },
+    {
+      "leg": "front_left",
+      "hip_deg": 55.0,
+      "foot_deg": 0,
+      "mode": "hip"
+    },
+    {
+      "leg": "front_left",
+      "hip_deg": 60.0,
+      "foot_deg": 0,
+      "mode": "hip"
+    },
+    {
+      "leg": "front_left",
+      "hip_deg": 65.0,
+      "foot_deg": 0,
+      "mode": "hip"
+    },
+    {
+      "leg": "front_left",
+      "hip_deg": 70.0,
+      "foot_deg": 0,
+      "mode": "hip"
+    },
+    {
+      "leg": "front_left",
+      "hip_deg": 75.0,
+      "foot_deg": 0,
+      "mode": "hip"
+    },
+    {
+      "leg": "front_left",
+      "hip_deg": 80.0,
+      "foot_deg": 0,
+      "mode": "hip"
+    },
+    {
+      "leg": "front_left",
+      "hip_deg": 85.0,
+      "foot_deg": 0,
+      "mode": "hip"
+    },
+    {
+      "leg": "front_left",
+      "hip_deg": 90.0,
+      "foot_deg": 0,
+      "mode": "hip"
+    },
+    {
+      "leg": "front_left",
+      "hip_deg": 0,
+      "foot_deg": -90.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "front_left",
+      "hip_deg": 0,
+      "foot_deg": -85.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "front_left",
+      "hip_deg": 0,
+      "foot_deg": -80.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "front_left",
+      "hip_deg": 0,
+      "foot_deg": -75.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "front_left",
+      "hip_deg": 0,
+      "foot_deg": -70.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "front_left",
+      "hip_deg": 0,
+      "foot_deg": -65.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "front_left",
+      "hip_deg": 0,
+      "foot_deg": -60.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "front_left",
+      "hip_deg": 0,
+      "foot_deg": -55.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "front_left",
+      "hip_deg": 0,
+      "foot_deg": -50.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "front_left",
+      "hip_deg": 0,
+      "foot_deg": -45.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "front_left",
+      "hip_deg": 0,
+      "foot_deg": -40.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "front_left",
+      "hip_deg": 0,
+      "foot_deg": -35.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "front_left",
+      "hip_deg": 0,
+      "foot_deg": -30.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "front_left",
+      "hip_deg": 0,
+      "foot_deg": -25.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "front_left",
+      "hip_deg": 0,
+      "foot_deg": -20.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "front_left",
+      "hip_deg": 0,
+      "foot_deg": -15.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "front_left",
+      "hip_deg": 0,
+      "foot_deg": -10.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "front_left",
+      "hip_deg": 0,
+      "foot_deg": -5.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "front_left",
+      "hip_deg": 0,
+      "foot_deg": 0.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "front_left",
+      "hip_deg": 0,
+      "foot_deg": 5.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "front_left",
+      "hip_deg": 0,
+      "foot_deg": 10.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "front_left",
+      "hip_deg": 0,
+      "foot_deg": 15.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "front_left",
+      "hip_deg": 0,
+      "foot_deg": 20.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "front_left",
+      "hip_deg": 0,
+      "foot_deg": 25.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "front_left",
+      "hip_deg": 0,
+      "foot_deg": 30.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "front_left",
+      "hip_deg": 0,
+      "foot_deg": 35.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "front_left",
+      "hip_deg": 0,
+      "foot_deg": 40.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "front_left",
+      "hip_deg": 0,
+      "foot_deg": 45.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "front_left",
+      "hip_deg": 0,
+      "foot_deg": 50.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "front_left",
+      "hip_deg": 0,
+      "foot_deg": 55.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "front_left",
+      "hip_deg": 0,
+      "foot_deg": 60.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "front_left",
+      "hip_deg": 0,
+      "foot_deg": 65.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "front_left",
+      "hip_deg": 0,
+      "foot_deg": 70.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "front_left",
+      "hip_deg": 0,
+      "foot_deg": 75.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "front_left",
+      "hip_deg": 0,
+      "foot_deg": 80.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "front_left",
+      "hip_deg": 0,
+      "foot_deg": 85.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "front_left",
+      "hip_deg": 0,
+      "foot_deg": 90.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "front_left",
+      "hip_deg": -45.0,
+      "foot_deg": -90.0,
+      "mode": "coupled-grid"
+    },
+    {
+      "leg": "front_left",
+      "hip_deg": -45.0,
+      "foot_deg": 0.0,
+      "mode": "coupled-grid"
+    },
+    {
+      "leg": "front_left",
+      "hip_deg": -45.0,
+      "foot_deg": 90.0,
+      "mode": "coupled-grid"
+    },
+    {
+      "leg": "front_left",
+      "hip_deg": 22.5,
+      "foot_deg": -90.0,
+      "mode": "coupled-grid"
+    },
+    {
+      "leg": "front_left",
+      "hip_deg": 22.5,
+      "foot_deg": 0.0,
+      "mode": "coupled-grid"
+    },
+    {
+      "leg": "front_left",
+      "hip_deg": 22.5,
+      "foot_deg": 90.0,
+      "mode": "coupled-grid"
+    },
+    {
+      "leg": "front_left",
+      "hip_deg": 90.0,
+      "foot_deg": -90.0,
+      "mode": "coupled-grid"
+    },
+    {
+      "leg": "front_left",
+      "hip_deg": 90.0,
+      "foot_deg": 0.0,
+      "mode": "coupled-grid"
+    },
+    {
+      "leg": "front_left",
+      "hip_deg": 90.0,
+      "foot_deg": 90.0,
+      "mode": "coupled-grid"
+    },
+    {
+      "leg": "back_left",
+      "hip_deg": -45.0,
+      "foot_deg": 0,
+      "mode": "hip"
+    },
+    {
+      "leg": "back_left",
+      "hip_deg": -40.0,
+      "foot_deg": 0,
+      "mode": "hip"
+    },
+    {
+      "leg": "back_left",
+      "hip_deg": -35.0,
+      "foot_deg": 0,
+      "mode": "hip"
+    },
+    {
+      "leg": "back_left",
+      "hip_deg": -30.0,
+      "foot_deg": 0,
+      "mode": "hip"
+    },
+    {
+      "leg": "back_left",
+      "hip_deg": -25.0,
+      "foot_deg": 0,
+      "mode": "hip"
+    },
+    {
+      "leg": "back_left",
+      "hip_deg": -20.0,
+      "foot_deg": 0,
+      "mode": "hip"
+    },
+    {
+      "leg": "back_left",
+      "hip_deg": -15.0,
+      "foot_deg": 0,
+      "mode": "hip"
+    },
+    {
+      "leg": "back_left",
+      "hip_deg": -10.0,
+      "foot_deg": 0,
+      "mode": "hip"
+    },
+    {
+      "leg": "back_left",
+      "hip_deg": -5.0,
+      "foot_deg": 0,
+      "mode": "hip"
+    },
+    {
+      "leg": "back_left",
+      "hip_deg": 0.0,
+      "foot_deg": 0,
+      "mode": "hip"
+    },
+    {
+      "leg": "back_left",
+      "hip_deg": 5.0,
+      "foot_deg": 0,
+      "mode": "hip"
+    },
+    {
+      "leg": "back_left",
+      "hip_deg": 10.0,
+      "foot_deg": 0,
+      "mode": "hip"
+    },
+    {
+      "leg": "back_left",
+      "hip_deg": 15.0,
+      "foot_deg": 0,
+      "mode": "hip"
+    },
+    {
+      "leg": "back_left",
+      "hip_deg": 20.0,
+      "foot_deg": 0,
+      "mode": "hip"
+    },
+    {
+      "leg": "back_left",
+      "hip_deg": 25.0,
+      "foot_deg": 0,
+      "mode": "hip"
+    },
+    {
+      "leg": "back_left",
+      "hip_deg": 30.0,
+      "foot_deg": 0,
+      "mode": "hip"
+    },
+    {
+      "leg": "back_left",
+      "hip_deg": 35.0,
+      "foot_deg": 0,
+      "mode": "hip"
+    },
+    {
+      "leg": "back_left",
+      "hip_deg": 40.0,
+      "foot_deg": 0,
+      "mode": "hip"
+    },
+    {
+      "leg": "back_left",
+      "hip_deg": 45.0,
+      "foot_deg": 0,
+      "mode": "hip"
+    },
+    {
+      "leg": "back_left",
+      "hip_deg": 50.0,
+      "foot_deg": 0,
+      "mode": "hip"
+    },
+    {
+      "leg": "back_left",
+      "hip_deg": 55.0,
+      "foot_deg": 0,
+      "mode": "hip"
+    },
+    {
+      "leg": "back_left",
+      "hip_deg": 60.0,
+      "foot_deg": 0,
+      "mode": "hip"
+    },
+    {
+      "leg": "back_left",
+      "hip_deg": 65.0,
+      "foot_deg": 0,
+      "mode": "hip"
+    },
+    {
+      "leg": "back_left",
+      "hip_deg": 70.0,
+      "foot_deg": 0,
+      "mode": "hip"
+    },
+    {
+      "leg": "back_left",
+      "hip_deg": 75.0,
+      "foot_deg": 0,
+      "mode": "hip"
+    },
+    {
+      "leg": "back_left",
+      "hip_deg": 80.0,
+      "foot_deg": 0,
+      "mode": "hip"
+    },
+    {
+      "leg": "back_left",
+      "hip_deg": 85.0,
+      "foot_deg": 0,
+      "mode": "hip"
+    },
+    {
+      "leg": "back_left",
+      "hip_deg": 90.0,
+      "foot_deg": 0,
+      "mode": "hip"
+    },
+    {
+      "leg": "back_left",
+      "hip_deg": 0,
+      "foot_deg": -90.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "back_left",
+      "hip_deg": 0,
+      "foot_deg": -85.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "back_left",
+      "hip_deg": 0,
+      "foot_deg": -80.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "back_left",
+      "hip_deg": 0,
+      "foot_deg": -75.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "back_left",
+      "hip_deg": 0,
+      "foot_deg": -70.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "back_left",
+      "hip_deg": 0,
+      "foot_deg": -65.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "back_left",
+      "hip_deg": 0,
+      "foot_deg": -60.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "back_left",
+      "hip_deg": 0,
+      "foot_deg": -55.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "back_left",
+      "hip_deg": 0,
+      "foot_deg": -50.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "back_left",
+      "hip_deg": 0,
+      "foot_deg": -45.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "back_left",
+      "hip_deg": 0,
+      "foot_deg": -40.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "back_left",
+      "hip_deg": 0,
+      "foot_deg": -35.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "back_left",
+      "hip_deg": 0,
+      "foot_deg": -30.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "back_left",
+      "hip_deg": 0,
+      "foot_deg": -25.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "back_left",
+      "hip_deg": 0,
+      "foot_deg": -20.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "back_left",
+      "hip_deg": 0,
+      "foot_deg": -15.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "back_left",
+      "hip_deg": 0,
+      "foot_deg": -10.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "back_left",
+      "hip_deg": 0,
+      "foot_deg": -5.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "back_left",
+      "hip_deg": 0,
+      "foot_deg": 0.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "back_left",
+      "hip_deg": 0,
+      "foot_deg": 5.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "back_left",
+      "hip_deg": 0,
+      "foot_deg": 10.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "back_left",
+      "hip_deg": 0,
+      "foot_deg": 15.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "back_left",
+      "hip_deg": 0,
+      "foot_deg": 20.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "back_left",
+      "hip_deg": 0,
+      "foot_deg": 25.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "back_left",
+      "hip_deg": 0,
+      "foot_deg": 30.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "back_left",
+      "hip_deg": 0,
+      "foot_deg": 35.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "back_left",
+      "hip_deg": 0,
+      "foot_deg": 40.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "back_left",
+      "hip_deg": 0,
+      "foot_deg": 45.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "back_left",
+      "hip_deg": 0,
+      "foot_deg": 50.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "back_left",
+      "hip_deg": 0,
+      "foot_deg": 55.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "back_left",
+      "hip_deg": 0,
+      "foot_deg": 60.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "back_left",
+      "hip_deg": 0,
+      "foot_deg": 65.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "back_left",
+      "hip_deg": 0,
+      "foot_deg": 70.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "back_left",
+      "hip_deg": 0,
+      "foot_deg": 75.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "back_left",
+      "hip_deg": 0,
+      "foot_deg": 80.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "back_left",
+      "hip_deg": 0,
+      "foot_deg": 85.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "back_left",
+      "hip_deg": 0,
+      "foot_deg": 90.0,
+      "mode": "foot"
+    },
+    {
+      "leg": "back_left",
+      "hip_deg": -45.0,
+      "foot_deg": -90.0,
+      "mode": "coupled-grid"
+    },
+    {
+      "leg": "back_left",
+      "hip_deg": -45.0,
+      "foot_deg": 0.0,
+      "mode": "coupled-grid"
+    },
+    {
+      "leg": "back_left",
+      "hip_deg": -45.0,
+      "foot_deg": 90.0,
+      "mode": "coupled-grid"
+    },
+    {
+      "leg": "back_left",
+      "hip_deg": 22.5,
+      "foot_deg": -90.0,
+      "mode": "coupled-grid"
+    },
+    {
+      "leg": "back_left",
+      "hip_deg": 22.5,
+      "foot_deg": 0.0,
+      "mode": "coupled-grid"
+    },
+    {
+      "leg": "back_left",
+      "hip_deg": 22.5,
+      "foot_deg": 90.0,
+      "mode": "coupled-grid"
+    },
+    {
+      "leg": "back_left",
+      "hip_deg": 90.0,
+      "foot_deg": -90.0,
+      "mode": "coupled-grid"
+    },
+    {
+      "leg": "back_left",
+      "hip_deg": 90.0,
+      "foot_deg": 0.0,
+      "mode": "coupled-grid"
+    },
+    {
+      "leg": "back_left",
+      "hip_deg": 90.0,
+      "foot_deg": 90.0,
+      "mode": "coupled-grid"
+    }
+  ],
+  "kinematics": [
+    {
+      "name": "front_right",
+      "hip_joint": "R1",
+      "foot_joint": "R3",
+      "hip_center_mm": [
+        24.5,
+        -23.0,
+        -1.8
+      ],
+      "foot_center_mm": [
+        24.5,
+        -59.900000000000006,
+        -1.8
+      ],
+      "hip_axis": [
+        0,
+        0,
+        1
+      ],
+      "foot_axis": [
+        1,
+        0,
+        0
+      ],
+      "soft_ranges_internal_deg": [
+        [
+          -45.0,
+          90.0
+        ],
+        [
+          -90.0,
+          90.0
+        ]
+      ],
+      "poses": [
+        [
+          -45.0,
+          0,
+          "hip"
+        ],
+        [
+          -40.0,
+          0,
+          "hip"
+        ],
+        [
+          -35.0,
+          0,
+          "hip"
+        ],
+        [
+          -30.0,
+          0,
+          "hip"
+        ],
+        [
+          -25.0,
+          0,
+          "hip"
+        ],
+        [
+          -20.0,
+          0,
+          "hip"
+        ],
+        [
+          -15.0,
+          0,
+          "hip"
+        ],
+        [
+          -10.0,
+          0,
+          "hip"
+        ],
+        [
+          -5.0,
+          0,
+          "hip"
+        ],
+        [
+          0.0,
+          0,
+          "hip"
+        ],
+        [
+          5.0,
+          0,
+          "hip"
+        ],
+        [
+          10.0,
+          0,
+          "hip"
+        ],
+        [
+          15.0,
+          0,
+          "hip"
+        ],
+        [
+          20.0,
+          0,
+          "hip"
+        ],
+        [
+          25.0,
+          0,
+          "hip"
+        ],
+        [
+          30.0,
+          0,
+          "hip"
+        ],
+        [
+          35.0,
+          0,
+          "hip"
+        ],
+        [
+          40.0,
+          0,
+          "hip"
+        ],
+        [
+          45.0,
+          0,
+          "hip"
+        ],
+        [
+          50.0,
+          0,
+          "hip"
+        ],
+        [
+          55.0,
+          0,
+          "hip"
+        ],
+        [
+          60.0,
+          0,
+          "hip"
+        ],
+        [
+          65.0,
+          0,
+          "hip"
+        ],
+        [
+          70.0,
+          0,
+          "hip"
+        ],
+        [
+          75.0,
+          0,
+          "hip"
+        ],
+        [
+          80.0,
+          0,
+          "hip"
+        ],
+        [
+          85.0,
+          0,
+          "hip"
+        ],
+        [
+          90.0,
+          0,
+          "hip"
+        ],
+        [
+          0,
+          -90.0,
+          "foot"
+        ],
+        [
+          0,
+          -85.0,
+          "foot"
+        ],
+        [
+          0,
+          -80.0,
+          "foot"
+        ],
+        [
+          0,
+          -75.0,
+          "foot"
+        ],
+        [
+          0,
+          -70.0,
+          "foot"
+        ],
+        [
+          0,
+          -65.0,
+          "foot"
+        ],
+        [
+          0,
+          -60.0,
+          "foot"
+        ],
+        [
+          0,
+          -55.0,
+          "foot"
+        ],
+        [
+          0,
+          -50.0,
+          "foot"
+        ],
+        [
+          0,
+          -45.0,
+          "foot"
+        ],
+        [
+          0,
+          -40.0,
+          "foot"
+        ],
+        [
+          0,
+          -35.0,
+          "foot"
+        ],
+        [
+          0,
+          -30.0,
+          "foot"
+        ],
+        [
+          0,
+          -25.0,
+          "foot"
+        ],
+        [
+          0,
+          -20.0,
+          "foot"
+        ],
+        [
+          0,
+          -15.0,
+          "foot"
+        ],
+        [
+          0,
+          -10.0,
+          "foot"
+        ],
+        [
+          0,
+          -5.0,
+          "foot"
+        ],
+        [
+          0,
+          0.0,
+          "foot"
+        ],
+        [
+          0,
+          5.0,
+          "foot"
+        ],
+        [
+          0,
+          10.0,
+          "foot"
+        ],
+        [
+          0,
+          15.0,
+          "foot"
+        ],
+        [
+          0,
+          20.0,
+          "foot"
+        ],
+        [
+          0,
+          25.0,
+          "foot"
+        ],
+        [
+          0,
+          30.0,
+          "foot"
+        ],
+        [
+          0,
+          35.0,
+          "foot"
+        ],
+        [
+          0,
+          40.0,
+          "foot"
+        ],
+        [
+          0,
+          45.0,
+          "foot"
+        ],
+        [
+          0,
+          50.0,
+          "foot"
+        ],
+        [
+          0,
+          55.0,
+          "foot"
+        ],
+        [
+          0,
+          60.0,
+          "foot"
+        ],
+        [
+          0,
+          65.0,
+          "foot"
+        ],
+        [
+          0,
+          70.0,
+          "foot"
+        ],
+        [
+          0,
+          75.0,
+          "foot"
+        ],
+        [
+          0,
+          80.0,
+          "foot"
+        ],
+        [
+          0,
+          85.0,
+          "foot"
+        ],
+        [
+          0,
+          90.0,
+          "foot"
+        ],
+        [
+          -45.0,
+          -90.0,
+          "coupled-grid"
+        ],
+        [
+          -45.0,
+          0.0,
+          "coupled-grid"
+        ],
+        [
+          -45.0,
+          90.0,
+          "coupled-grid"
+        ],
+        [
+          22.5,
+          -90.0,
+          "coupled-grid"
+        ],
+        [
+          22.5,
+          0.0,
+          "coupled-grid"
+        ],
+        [
+          22.5,
+          90.0,
+          "coupled-grid"
+        ],
+        [
+          90.0,
+          -90.0,
+          "coupled-grid"
+        ],
+        [
+          90.0,
+          0.0,
+          "coupled-grid"
+        ],
+        [
+          90.0,
+          90.0,
+          "coupled-grid"
+        ]
+      ],
+      "upper": {
+        "source": "assets/stl/upstream/L1-v117.stl",
+        "source_to_rest_matrix": [
+          -1.0,
+          0.0,
+          0.0,
+          26.0,
+          0.0,
+          0.0,
+          1.0,
+          0.03999999999999915,
+          0.0,
+          1.0,
+          0.0,
+          -17.05,
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "lower": {
+        "source": "assets/stl/upstream/L3-v117.stl",
+        "source_to_rest_matrix": [
+          -1.0,
+          0.0,
+          0.0,
+          26.0,
+          0.0,
+          0.0,
+          1.0,
+          -7.105427357601002e-15,
+          0.0,
+          1.0,
+          0.0,
+          -17.05,
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "name": "back_right",
+      "hip_joint": "R2",
+      "foot_joint": "R4",
+      "hip_center_mm": [
+        -24.5,
+        -23.0,
+        -1.8
+      ],
+      "foot_center_mm": [
+        -24.5,
+        -59.900000000000006,
+        -1.8
+      ],
+      "hip_axis": [
+        0,
+        0,
+        -1
+      ],
+      "foot_axis": [
+        1,
+        0,
+        0
+      ],
+      "soft_ranges_internal_deg": [
+        [
+          -45.0,
+          90.0
+        ],
+        [
+          -90.0,
+          90.0
+        ]
+      ],
+      "poses": [
+        [
+          -45.0,
+          0,
+          "hip"
+        ],
+        [
+          -40.0,
+          0,
+          "hip"
+        ],
+        [
+          -35.0,
+          0,
+          "hip"
+        ],
+        [
+          -30.0,
+          0,
+          "hip"
+        ],
+        [
+          -25.0,
+          0,
+          "hip"
+        ],
+        [
+          -20.0,
+          0,
+          "hip"
+        ],
+        [
+          -15.0,
+          0,
+          "hip"
+        ],
+        [
+          -10.0,
+          0,
+          "hip"
+        ],
+        [
+          -5.0,
+          0,
+          "hip"
+        ],
+        [
+          0.0,
+          0,
+          "hip"
+        ],
+        [
+          5.0,
+          0,
+          "hip"
+        ],
+        [
+          10.0,
+          0,
+          "hip"
+        ],
+        [
+          15.0,
+          0,
+          "hip"
+        ],
+        [
+          20.0,
+          0,
+          "hip"
+        ],
+        [
+          25.0,
+          0,
+          "hip"
+        ],
+        [
+          30.0,
+          0,
+          "hip"
+        ],
+        [
+          35.0,
+          0,
+          "hip"
+        ],
+        [
+          40.0,
+          0,
+          "hip"
+        ],
+        [
+          45.0,
+          0,
+          "hip"
+        ],
+        [
+          50.0,
+          0,
+          "hip"
+        ],
+        [
+          55.0,
+          0,
+          "hip"
+        ],
+        [
+          60.0,
+          0,
+          "hip"
+        ],
+        [
+          65.0,
+          0,
+          "hip"
+        ],
+        [
+          70.0,
+          0,
+          "hip"
+        ],
+        [
+          75.0,
+          0,
+          "hip"
+        ],
+        [
+          80.0,
+          0,
+          "hip"
+        ],
+        [
+          85.0,
+          0,
+          "hip"
+        ],
+        [
+          90.0,
+          0,
+          "hip"
+        ],
+        [
+          0,
+          -90.0,
+          "foot"
+        ],
+        [
+          0,
+          -85.0,
+          "foot"
+        ],
+        [
+          0,
+          -80.0,
+          "foot"
+        ],
+        [
+          0,
+          -75.0,
+          "foot"
+        ],
+        [
+          0,
+          -70.0,
+          "foot"
+        ],
+        [
+          0,
+          -65.0,
+          "foot"
+        ],
+        [
+          0,
+          -60.0,
+          "foot"
+        ],
+        [
+          0,
+          -55.0,
+          "foot"
+        ],
+        [
+          0,
+          -50.0,
+          "foot"
+        ],
+        [
+          0,
+          -45.0,
+          "foot"
+        ],
+        [
+          0,
+          -40.0,
+          "foot"
+        ],
+        [
+          0,
+          -35.0,
+          "foot"
+        ],
+        [
+          0,
+          -30.0,
+          "foot"
+        ],
+        [
+          0,
+          -25.0,
+          "foot"
+        ],
+        [
+          0,
+          -20.0,
+          "foot"
+        ],
+        [
+          0,
+          -15.0,
+          "foot"
+        ],
+        [
+          0,
+          -10.0,
+          "foot"
+        ],
+        [
+          0,
+          -5.0,
+          "foot"
+        ],
+        [
+          0,
+          0.0,
+          "foot"
+        ],
+        [
+          0,
+          5.0,
+          "foot"
+        ],
+        [
+          0,
+          10.0,
+          "foot"
+        ],
+        [
+          0,
+          15.0,
+          "foot"
+        ],
+        [
+          0,
+          20.0,
+          "foot"
+        ],
+        [
+          0,
+          25.0,
+          "foot"
+        ],
+        [
+          0,
+          30.0,
+          "foot"
+        ],
+        [
+          0,
+          35.0,
+          "foot"
+        ],
+        [
+          0,
+          40.0,
+          "foot"
+        ],
+        [
+          0,
+          45.0,
+          "foot"
+        ],
+        [
+          0,
+          50.0,
+          "foot"
+        ],
+        [
+          0,
+          55.0,
+          "foot"
+        ],
+        [
+          0,
+          60.0,
+          "foot"
+        ],
+        [
+          0,
+          65.0,
+          "foot"
+        ],
+        [
+          0,
+          70.0,
+          "foot"
+        ],
+        [
+          0,
+          75.0,
+          "foot"
+        ],
+        [
+          0,
+          80.0,
+          "foot"
+        ],
+        [
+          0,
+          85.0,
+          "foot"
+        ],
+        [
+          0,
+          90.0,
+          "foot"
+        ],
+        [
+          -45.0,
+          -90.0,
+          "coupled-grid"
+        ],
+        [
+          -45.0,
+          0.0,
+          "coupled-grid"
+        ],
+        [
+          -45.0,
+          90.0,
+          "coupled-grid"
+        ],
+        [
+          22.5,
+          -90.0,
+          "coupled-grid"
+        ],
+        [
+          22.5,
+          0.0,
+          "coupled-grid"
+        ],
+        [
+          22.5,
+          90.0,
+          "coupled-grid"
+        ],
+        [
+          90.0,
+          -90.0,
+          "coupled-grid"
+        ],
+        [
+          90.0,
+          0.0,
+          "coupled-grid"
+        ],
+        [
+          90.0,
+          90.0,
+          "coupled-grid"
+        ]
+      ],
+      "upper": {
+        "source": "assets/stl/upstream/L2-v117.stl",
+        "source_to_rest_matrix": [
+          1.0,
+          0.0,
+          0.0,
+          -26.0,
+          0.0,
+          0.0,
+          -1.0,
+          0.03999999999999915,
+          0.0,
+          1.0,
+          0.0,
+          -17.05,
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "lower": {
+        "source": "assets/stl/upstream/L4-v117.stl",
+        "source_to_rest_matrix": [
+          1.0,
+          0.0,
+          0.0,
+          -26.0,
+          0.0,
+          0.0,
+          -1.0,
+          -7.105427357601002e-15,
+          0.0,
+          1.0,
+          0.0,
+          -17.05,
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "name": "front_left",
+      "hip_joint": "L1",
+      "foot_joint": "L3",
+      "hip_center_mm": [
+        24.5,
+        23.0,
+        -1.8
+      ],
+      "foot_center_mm": [
+        24.5,
+        59.900000000000006,
+        -1.8
+      ],
+      "hip_axis": [
+        0,
+        0,
+        -1
+      ],
+      "foot_axis": [
+        -1,
+        0,
+        0
+      ],
+      "soft_ranges_internal_deg": [
+        [
+          -45.0,
+          90.0
+        ],
+        [
+          -90.0,
+          90.0
+        ]
+      ],
+      "poses": [
+        [
+          -45.0,
+          0,
+          "hip"
+        ],
+        [
+          -40.0,
+          0,
+          "hip"
+        ],
+        [
+          -35.0,
+          0,
+          "hip"
+        ],
+        [
+          -30.0,
+          0,
+          "hip"
+        ],
+        [
+          -25.0,
+          0,
+          "hip"
+        ],
+        [
+          -20.0,
+          0,
+          "hip"
+        ],
+        [
+          -15.0,
+          0,
+          "hip"
+        ],
+        [
+          -10.0,
+          0,
+          "hip"
+        ],
+        [
+          -5.0,
+          0,
+          "hip"
+        ],
+        [
+          0.0,
+          0,
+          "hip"
+        ],
+        [
+          5.0,
+          0,
+          "hip"
+        ],
+        [
+          10.0,
+          0,
+          "hip"
+        ],
+        [
+          15.0,
+          0,
+          "hip"
+        ],
+        [
+          20.0,
+          0,
+          "hip"
+        ],
+        [
+          25.0,
+          0,
+          "hip"
+        ],
+        [
+          30.0,
+          0,
+          "hip"
+        ],
+        [
+          35.0,
+          0,
+          "hip"
+        ],
+        [
+          40.0,
+          0,
+          "hip"
+        ],
+        [
+          45.0,
+          0,
+          "hip"
+        ],
+        [
+          50.0,
+          0,
+          "hip"
+        ],
+        [
+          55.0,
+          0,
+          "hip"
+        ],
+        [
+          60.0,
+          0,
+          "hip"
+        ],
+        [
+          65.0,
+          0,
+          "hip"
+        ],
+        [
+          70.0,
+          0,
+          "hip"
+        ],
+        [
+          75.0,
+          0,
+          "hip"
+        ],
+        [
+          80.0,
+          0,
+          "hip"
+        ],
+        [
+          85.0,
+          0,
+          "hip"
+        ],
+        [
+          90.0,
+          0,
+          "hip"
+        ],
+        [
+          0,
+          -90.0,
+          "foot"
+        ],
+        [
+          0,
+          -85.0,
+          "foot"
+        ],
+        [
+          0,
+          -80.0,
+          "foot"
+        ],
+        [
+          0,
+          -75.0,
+          "foot"
+        ],
+        [
+          0,
+          -70.0,
+          "foot"
+        ],
+        [
+          0,
+          -65.0,
+          "foot"
+        ],
+        [
+          0,
+          -60.0,
+          "foot"
+        ],
+        [
+          0,
+          -55.0,
+          "foot"
+        ],
+        [
+          0,
+          -50.0,
+          "foot"
+        ],
+        [
+          0,
+          -45.0,
+          "foot"
+        ],
+        [
+          0,
+          -40.0,
+          "foot"
+        ],
+        [
+          0,
+          -35.0,
+          "foot"
+        ],
+        [
+          0,
+          -30.0,
+          "foot"
+        ],
+        [
+          0,
+          -25.0,
+          "foot"
+        ],
+        [
+          0,
+          -20.0,
+          "foot"
+        ],
+        [
+          0,
+          -15.0,
+          "foot"
+        ],
+        [
+          0,
+          -10.0,
+          "foot"
+        ],
+        [
+          0,
+          -5.0,
+          "foot"
+        ],
+        [
+          0,
+          0.0,
+          "foot"
+        ],
+        [
+          0,
+          5.0,
+          "foot"
+        ],
+        [
+          0,
+          10.0,
+          "foot"
+        ],
+        [
+          0,
+          15.0,
+          "foot"
+        ],
+        [
+          0,
+          20.0,
+          "foot"
+        ],
+        [
+          0,
+          25.0,
+          "foot"
+        ],
+        [
+          0,
+          30.0,
+          "foot"
+        ],
+        [
+          0,
+          35.0,
+          "foot"
+        ],
+        [
+          0,
+          40.0,
+          "foot"
+        ],
+        [
+          0,
+          45.0,
+          "foot"
+        ],
+        [
+          0,
+          50.0,
+          "foot"
+        ],
+        [
+          0,
+          55.0,
+          "foot"
+        ],
+        [
+          0,
+          60.0,
+          "foot"
+        ],
+        [
+          0,
+          65.0,
+          "foot"
+        ],
+        [
+          0,
+          70.0,
+          "foot"
+        ],
+        [
+          0,
+          75.0,
+          "foot"
+        ],
+        [
+          0,
+          80.0,
+          "foot"
+        ],
+        [
+          0,
+          85.0,
+          "foot"
+        ],
+        [
+          0,
+          90.0,
+          "foot"
+        ],
+        [
+          -45.0,
+          -90.0,
+          "coupled-grid"
+        ],
+        [
+          -45.0,
+          0.0,
+          "coupled-grid"
+        ],
+        [
+          -45.0,
+          90.0,
+          "coupled-grid"
+        ],
+        [
+          22.5,
+          -90.0,
+          "coupled-grid"
+        ],
+        [
+          22.5,
+          0.0,
+          "coupled-grid"
+        ],
+        [
+          22.5,
+          90.0,
+          "coupled-grid"
+        ],
+        [
+          90.0,
+          -90.0,
+          "coupled-grid"
+        ],
+        [
+          90.0,
+          0.0,
+          "coupled-grid"
+        ],
+        [
+          90.0,
+          90.0,
+          "coupled-grid"
+        ]
+      ],
+      "upper": {
+        "source": "assets/stl/upstream/R1-v117.stl",
+        "source_to_rest_matrix": [
+          -1.0,
+          0.0,
+          0.0,
+          26.0,
+          0.0,
+          0.0,
+          1.0,
+          -0.03999999999999915,
+          0.0,
+          1.0,
+          0.0,
+          -17.05,
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "lower": {
+        "source": "assets/stl/upstream/R3-v117.stl",
+        "source_to_rest_matrix": [
+          -1.0,
+          0.0,
+          0.0,
+          26.0,
+          0.0,
+          0.0,
+          1.0,
+          7.105427357601002e-15,
+          0.0,
+          1.0,
+          0.0,
+          -17.05,
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "name": "back_left",
+      "hip_joint": "L2",
+      "foot_joint": "L4",
+      "hip_center_mm": [
+        -24.5,
+        23.0,
+        -1.8
+      ],
+      "foot_center_mm": [
+        -24.5,
+        59.900000000000006,
+        -1.8
+      ],
+      "hip_axis": [
+        0,
+        0,
+        1
+      ],
+      "foot_axis": [
+        -1,
+        0,
+        0
+      ],
+      "soft_ranges_internal_deg": [
+        [
+          -45.0,
+          90.0
+        ],
+        [
+          -90.0,
+          90.0
+        ]
+      ],
+      "poses": [
+        [
+          -45.0,
+          0,
+          "hip"
+        ],
+        [
+          -40.0,
+          0,
+          "hip"
+        ],
+        [
+          -35.0,
+          0,
+          "hip"
+        ],
+        [
+          -30.0,
+          0,
+          "hip"
+        ],
+        [
+          -25.0,
+          0,
+          "hip"
+        ],
+        [
+          -20.0,
+          0,
+          "hip"
+        ],
+        [
+          -15.0,
+          0,
+          "hip"
+        ],
+        [
+          -10.0,
+          0,
+          "hip"
+        ],
+        [
+          -5.0,
+          0,
+          "hip"
+        ],
+        [
+          0.0,
+          0,
+          "hip"
+        ],
+        [
+          5.0,
+          0,
+          "hip"
+        ],
+        [
+          10.0,
+          0,
+          "hip"
+        ],
+        [
+          15.0,
+          0,
+          "hip"
+        ],
+        [
+          20.0,
+          0,
+          "hip"
+        ],
+        [
+          25.0,
+          0,
+          "hip"
+        ],
+        [
+          30.0,
+          0,
+          "hip"
+        ],
+        [
+          35.0,
+          0,
+          "hip"
+        ],
+        [
+          40.0,
+          0,
+          "hip"
+        ],
+        [
+          45.0,
+          0,
+          "hip"
+        ],
+        [
+          50.0,
+          0,
+          "hip"
+        ],
+        [
+          55.0,
+          0,
+          "hip"
+        ],
+        [
+          60.0,
+          0,
+          "hip"
+        ],
+        [
+          65.0,
+          0,
+          "hip"
+        ],
+        [
+          70.0,
+          0,
+          "hip"
+        ],
+        [
+          75.0,
+          0,
+          "hip"
+        ],
+        [
+          80.0,
+          0,
+          "hip"
+        ],
+        [
+          85.0,
+          0,
+          "hip"
+        ],
+        [
+          90.0,
+          0,
+          "hip"
+        ],
+        [
+          0,
+          -90.0,
+          "foot"
+        ],
+        [
+          0,
+          -85.0,
+          "foot"
+        ],
+        [
+          0,
+          -80.0,
+          "foot"
+        ],
+        [
+          0,
+          -75.0,
+          "foot"
+        ],
+        [
+          0,
+          -70.0,
+          "foot"
+        ],
+        [
+          0,
+          -65.0,
+          "foot"
+        ],
+        [
+          0,
+          -60.0,
+          "foot"
+        ],
+        [
+          0,
+          -55.0,
+          "foot"
+        ],
+        [
+          0,
+          -50.0,
+          "foot"
+        ],
+        [
+          0,
+          -45.0,
+          "foot"
+        ],
+        [
+          0,
+          -40.0,
+          "foot"
+        ],
+        [
+          0,
+          -35.0,
+          "foot"
+        ],
+        [
+          0,
+          -30.0,
+          "foot"
+        ],
+        [
+          0,
+          -25.0,
+          "foot"
+        ],
+        [
+          0,
+          -20.0,
+          "foot"
+        ],
+        [
+          0,
+          -15.0,
+          "foot"
+        ],
+        [
+          0,
+          -10.0,
+          "foot"
+        ],
+        [
+          0,
+          -5.0,
+          "foot"
+        ],
+        [
+          0,
+          0.0,
+          "foot"
+        ],
+        [
+          0,
+          5.0,
+          "foot"
+        ],
+        [
+          0,
+          10.0,
+          "foot"
+        ],
+        [
+          0,
+          15.0,
+          "foot"
+        ],
+        [
+          0,
+          20.0,
+          "foot"
+        ],
+        [
+          0,
+          25.0,
+          "foot"
+        ],
+        [
+          0,
+          30.0,
+          "foot"
+        ],
+        [
+          0,
+          35.0,
+          "foot"
+        ],
+        [
+          0,
+          40.0,
+          "foot"
+        ],
+        [
+          0,
+          45.0,
+          "foot"
+        ],
+        [
+          0,
+          50.0,
+          "foot"
+        ],
+        [
+          0,
+          55.0,
+          "foot"
+        ],
+        [
+          0,
+          60.0,
+          "foot"
+        ],
+        [
+          0,
+          65.0,
+          "foot"
+        ],
+        [
+          0,
+          70.0,
+          "foot"
+        ],
+        [
+          0,
+          75.0,
+          "foot"
+        ],
+        [
+          0,
+          80.0,
+          "foot"
+        ],
+        [
+          0,
+          85.0,
+          "foot"
+        ],
+        [
+          0,
+          90.0,
+          "foot"
+        ],
+        [
+          -45.0,
+          -90.0,
+          "coupled-grid"
+        ],
+        [
+          -45.0,
+          0.0,
+          "coupled-grid"
+        ],
+        [
+          -45.0,
+          90.0,
+          "coupled-grid"
+        ],
+        [
+          22.5,
+          -90.0,
+          "coupled-grid"
+        ],
+        [
+          22.5,
+          0.0,
+          "coupled-grid"
+        ],
+        [
+          22.5,
+          90.0,
+          "coupled-grid"
+        ],
+        [
+          90.0,
+          -90.0,
+          "coupled-grid"
+        ],
+        [
+          90.0,
+          0.0,
+          "coupled-grid"
+        ],
+        [
+          90.0,
+          90.0,
+          "coupled-grid"
+        ]
+      ],
+      "upper": {
+        "source": "assets/stl/upstream/R2-v117.stl",
+        "source_to_rest_matrix": [
+          1.0,
+          0.0,
+          0.0,
+          -26.0,
+          0.0,
+          0.0,
+          -1.0,
+          -0.03999999999999915,
+          0.0,
+          1.0,
+          0.0,
+          -17.05,
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "lower": {
+        "source": "assets/stl/upstream/R4-v117.stl",
+        "source_to_rest_matrix": [
+          1.0,
+          0.0,
+          0.0,
+          -26.0,
+          0.0,
+          0.0,
+          -1.0,
+          7.105427357601002e-15,
+          0.0,
+          1.0,
+          0.0,
+          -17.05,
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      }
+    }
+  ]
+}
