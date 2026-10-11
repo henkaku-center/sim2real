@@ -1,0 +1,26 @@
+{
+  "repository": "tim003/CIT_FC_Robotics",
+  "revision": "98d030a2d1e2e2e1f195669a9f87fcf9c5f1d465",
+  "imported_on": "2026-10-11",
+  "permission": "Instructor confirmed permission to republish/adapt on 2026-10-11",
+  "upstream_license": "No repository licence declared; retain permission/provenance notice",
+  "purpose": "Unmodified reference, not the approved classroom flashing target",
+  "files": {
+    "firmware/test/robotics_esp32s3/robotics_esp32s3.ino": {
+      "git_blob": "92459bf86a3f4a5dc45ae8ba47cae535bec3f0b9",
+      "sha256": "dc9d88b44e60bea83afbcb3c213fbfcbe8ecf9446d61ed79a2a503922359c56f"
+    },
+    "firmware/test/robotics_esp32s3/robotics_esp32s3_servo_map.h": {
+      "git_blob": "c69deac5e06c58ef197a2800ee866ed3f0c38fba",
+      "sha256": "0dd4319cdcb5f745cf0d4d05ef4c173b9cdb752e100276f0afee4c0da8f309fa"
+    },
+    "firmware/common/sesame_servo_map.h": {
+      "git_blob": "921af547252662318ed0ba5d34838bcb8a56fe69",
+      "sha256": "9b10ac1c0dad3bb5383b1dbfe6347ea88de97ae3b9f7e833e208c96f4e8f596d"
+    },
+    "firmware/sesame-s3-pca9685/README.md": {
+      "git_blob": "4e6db44d950fd3207fbf89b9498112e7609f173b",
+      "sha256": "b9209fb9d55539fd0c1946720401a77067cff96431f42fe52f3f4cb1879ca5ee"
+    }
+  }
+}

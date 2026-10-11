@@ -204,3 +204,24 @@ torso meshes/mass/inertia as a follow-up: the raised assembly changes mass
 distribution materially, so a cosmetic mesh swap or guessed scalar mass would
 misrepresent the robot. No firmware, manifest calibration or actuation changes
 are part of this body revision.
+
+## D12. Bench-first horn calibration and Tim reference import (2026-10-11)
+
+**Instructor direction:** Rework APS-II steps 29–33 around firmware verification
+and eight-servo bench calibration before leg attachment. Use a loosely fitted
+single-arm horn with no retaining screw; show all eight leads; label intended
+joint and actual channel in an easily inspected bench arrangement. Students work
+through an agent-facing `debug-firmware.md` and report physical observations.
+
+**Source permission:** The instructor explicitly confirmed permission to
+republish/adapt Tim's code. Preserve the selected test and common-header files
+at `98d030a2d1e2e2e1f195669a9f87fcf9c5f1d465` under
+`reference/vendor/tim-servo-debug/`, with byte hashes and a permission notice.
+The unchanged automatic-sweep sketch is not the classroom flash target.
+
+**Open decisions:** The instructor requested a comparison before choosing the
+production pulse profile. D10 remains in force; neither neutral convention nor
+saved calibration is changed by this import. Wired USB debugging is preferred
+because Wi-Fi is not stable, but the USB/servo supply arrangement still needs
+physical verification. `reference/SERVO-BENCH-PLAN.md` records the comparison and
+proposed sequence. Firmware/rigid-body/RF simulation research is separate.

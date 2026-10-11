@@ -1,5 +1,16 @@
 # HANDOVER
 
+## Bench-first course revision — 2026-10-11 (planning)
+
+The instructor selected single-arm horns and wants bench calibration before legs.
+Tim's authorised, pinned reference is now in `reference/vendor/tim-servo-debug/`;
+do not flash its unchanged automatic endpoint sweep. Read
+`reference/SERVO-BENCH-PLAN.md` for the requested firmware comparison and wired
+power recommendation, and `reference/FIRMWARE-SIMULATION-PLAN.md` for the separate
+simulation investigation. Pulse-profile choice and the powered USB fixture are
+still pending. The existing firmware/manifest is unchanged. Artemis detected the
+S3 USB device; no serial commands, firmware upload or motion tests were performed.
+
 ## Current firmware handoff — 2026-10-06 (offline)
 
 Replacement S3 calibration+controller: `firmware/sesame-s3/`; one-command flash
