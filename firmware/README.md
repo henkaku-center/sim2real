@@ -1,5 +1,18 @@
 # Sesame S3 class firmware
 
+**October 12 profile:** `tim-pca9685-150-512-v1`, approved for the same debug and
+production image. Reference-clock neutral is **1615.28 µs**. Each integer angle
+reproduces Tim's 150–512-count interpolation at 25 MHz / prescale 121; a measured
+oscillator is compensated by converting that reference pulse to actual ticks.
+This supersedes the October 6 S3 image's wider range, without rewriting the
+historical S2 simulation pulse range. Export old calibration before flashing:
+the new manifest fingerprint rejects the old NVS record and requires rechecking.
+
+The OLED starts in paired physical-channel bench view, adapted from Tim's
+authorised diagnostic design (`reference/vendor/tim-servo-debug/NOTICE.md`).
+`bench` selects it; `face NAME` restores faces. Blank/unassigned channels are
+explicitly marked. Values are commanded angles, not measured horn positions.
+
 One image in `sesame-s3/` contains calibration, the bounded controller, stock
 OLED faces, nineteen manifest motions and an AP/web command console. A normal
 firmware directory is appropriate because this replaces the temporary bench

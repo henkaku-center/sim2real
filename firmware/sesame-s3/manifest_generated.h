@@ -2,10 +2,14 @@
 #pragma once
 #include <stdint.h>
 namespace sesame {
-constexpr char MANIFEST_ID[] = "8d5b2526e1debcd7";
+constexpr char MANIFEST_ID[] = "bd7675604b98ae46";
+constexpr char PULSE_PROFILE_ID[] = "tim-pca9685-150-512-v1";
 constexpr uint32_t NEUTRAL = 90;
-constexpr uint32_t PULSE_MIN = 732;
-constexpr uint32_t PULSE_MAX = 2929;
+constexpr float PULSE_MIN = 732.0;
+constexpr float PULSE_MAX = 2498.56;
+constexpr float REFERENCE_TICK_US = 4.88;
+constexpr uint32_t REFERENCE_TICK_MIN = 150;
+constexpr uint32_t REFERENCE_TICK_MAX = 512;
 constexpr uint32_t PWM_HZ = 50;
 constexpr uint32_t WATCHDOG_MS = 500;
 constexpr uint32_t MAX_JUMP = 180;

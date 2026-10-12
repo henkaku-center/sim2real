@@ -1,5 +1,21 @@
 # HANDOVER
 
+## Tim-compatible interactive firmware — 2026-10-12 (offline validated)
+
+The instructor approved the APS controller with Tim-compatible pulse semantics.
+`hardware_profiles.sesame_s3.pulse_profile` now defines
+`tim-pca9685-150-512-v1`: 90° requests 1615.28 µs. Debug and production use the
+same conversion; all 181 integer angles match the pinned Tim code at its nominal
+clock. Measured-clock compensation remains supported. Old NVS calibration is
+invalidated by the new manifest fingerprint, not silently reused.
+
+`bench` shows paired commanded-channel values on the OLED; `face NAME` restores
+faces. Boot remains outputs-off. Native sanitizer tests passed on macOS and
+Artemis/Linux, and a clean Arduino build passed on macOS. No hardware flash or
+movement test has occurred. The wired servo supply fixture still needs physical
+verification. The user confirmed the battery unplugged; the agent requested servo
+plugs removed too before reset/flash. Passive USB read returned no serial output.
+
 ## Bench-first course revision — 2026-10-11 (planning)
 
 The instructor selected single-arm horns and wants bench calibration before legs.
@@ -8,7 +24,8 @@ do not flash its unchanged automatic endpoint sweep. Read
 `reference/SERVO-BENCH-PLAN.md` for the requested firmware comparison and wired
 power recommendation, and `reference/FIRMWARE-SIMULATION-PLAN.md` for the separate
 simulation investigation. Pulse-profile choice and the powered USB fixture are
-still pending. The existing firmware/manifest is unchanged. Artemis detected the
+were pending at that point; the October 12 update above supersedes the profile
+decision. Artemis detected the
 S3 USB device; no serial commands, firmware upload or motion tests were performed.
 
 ## Current firmware handoff — 2026-10-06 (offline)

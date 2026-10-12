@@ -225,3 +225,34 @@ saved calibration is changed by this import. Wired USB debugging is preferred
 because Wi-Fi is not stable, but the USB/servo supply arrangement still needs
 physical verification. `reference/SERVO-BENCH-PLAN.md` records the comparison and
 proposed sequence. Firmware/rigid-body/RF simulation research is separate.
+
+## D13. Tim-compatible APS commissioning/production profile (2026-10-12)
+
+**Decision:** Following the comparison, the instructor approved the APS interactive
+controller with Tim-compatible pulse semantics. Define the profile only in
+`manifest/robot.yaml` → `hardware_profiles.sesame_s3.pulse_profile`. Preserve Tim's
+floor-interpolated 150–512 reference counts at 25 MHz/prescale 121; convert these
+reference pulses to counts using each device's nominal/measured oscillator. This
+supersedes D10's S3 732–2929 µs range. The historical S2 simulation fields remain
+unchanged and must not be mistaken for this S3 profile.
+
+**Contract:** neutral 90° = 331 reference counts = 1615.28 µs. Calibration and
+production share `angleUs`; fractional rate-limited targets use the same reference
+count quantization. The new manifest fingerprint rejects old NVS calibration.
+Keep the bounded gate, explicit arming, outputs-off boot and external watchdog.
+The OLED bench view pairs raw channels 0/4, 1/5, 2/6, 3/7 and distinguishes
+unassigned names and never-commanded positions; it does not infer shaft feedback.
+
+**Validation:** 23 targeted pytest cases passed on macOS, including native C++
+sanitizers and all 181 integer-angle comparisons to Tim's actual pinned code.
+The same native sanitizer executable source passed on Artemis/Linux. A clean
+macOS Arduino build used 1,021,269 bytes (77% of application space); no hardware
+flash/actuation was performed. Local clean-build entry point took 2m22s, including
+toolchain/source checks; native targeted tests took about 2.5s. These are local
+measurements, not CI timings. Build uses two compiler jobs; an independent native
+test uses one additional job, within the 12-logical-CPU/64-GiB host budget. Generated
+artifacts are written once before parallel readers; hardware access stays serial.
+
+**Physical boundary:** battery unplugged was confirmed. Wired servo supply/USB
+isolation and servo disconnection before reset/flash are still to be verified.
+No source-only result certifies the assembled robot's range, power or Wi-Fi.

@@ -1,12 +1,13 @@
 """Native numerical safety tests; no ESP32, servo or RF result is implied."""
 from pathlib import Path
 import subprocess
+import sys
 
 ROOT = Path(__file__).resolve().parents[1]
 
 
 def test_generated_contract_is_current():
-    subprocess.run(["python", "tools/generate_s3_firmware.py", "--check"], cwd=ROOT, check=True)
+    subprocess.run([sys.executable, "tools/generate_s3_firmware.py", "--check"], cwd=ROOT, check=True)
 
 
 def test_native_safeaction(tmp_path):

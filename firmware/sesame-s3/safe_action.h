@@ -7,7 +7,13 @@
 
 namespace sesame {
 inline float clamp(float x, float lo, float hi) { return fminf(hi, fmaxf(lo, x)); }
-inline float angleUs(float angle) { return PULSE_MIN + (PULSE_MAX - PULSE_MIN) * angle / 180.0f; }
+inline float angleUs(float angle) {
+  // Tim's floor-interpolated reference counts, shared by debug and production.
+  // The tiny epsilon only absorbs float roundoff at integral count boundaries.
+  const double count = REFERENCE_TICK_MIN +
+    double(REFERENCE_TICK_MAX - REFERENCE_TICK_MIN) * clamp(angle, 0, 180) / 180.0;
+  return float(floor(count + 1e-4) * REFERENCE_TICK_US);
+}
 inline float usAngle(float us) { return (us - PULSE_MIN) * 180.0f / (PULSE_MAX - PULSE_MIN); }
 inline uint16_t pulseTicks(float us, uint32_t oscillator, uint8_t prescale) {
   return uint16_t(lround(double(us) * oscillator / (1000000.0 * (prescale + 1))));

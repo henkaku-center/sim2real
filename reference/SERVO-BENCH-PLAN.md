@@ -1,5 +1,11 @@
 # Sesame bench commissioning — decisions and firmware comparison
 
+**October 12 update:** instructor approved the APS interactive controller with a
+Tim-compatible pulse profile. Implemented as `tim-pca9685-150-512-v1` in the S3
+hardware profile; the historical comparison below records the prior alternatives.
+Native numerical tests and macOS compilation passed. Wired power verification,
+hardware flash, and the 29–33 visual replacement remain outstanding.
+
 October 11, 2026. Current APS-II course preparation. **Design review, not a
 released replacement for the calibration procedure.** No firmware or pulse-profile
 change has been made. The instructor asked to compare the options before choosing.
@@ -63,8 +69,10 @@ manifest and generate both debug and production definitions from it. If retainin
 the current APS profile, calibrate and remain on that profile; do not claim its
 wider electrical range is automatically better or safe for every servo.
 
-The choice is pending instructor review. Do not update `manifest/robot.yaml`, its
-S3 profile, NVS fingerprint, interface JSON or the guide's firmware pin until chosen.
+The instructor selected the Tim-compatible APS implementation on October 12.
+The S3 profile, NVS fingerprint and generated interface have been updated together.
+The historical S2 simulator pulse range remains distinct. Do not mix a previous
+1830.5 µs calibration with this 1615.28 µs neutral.
 
 ## Wired power recommendation
 

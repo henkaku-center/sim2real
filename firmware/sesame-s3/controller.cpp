@@ -10,6 +10,7 @@
 #include <Adafruit_SSD1306.h>
 #include "safe_action.h"
 #include "command_line.h"
+#include "bench_display.h"
 #include "vendor/face-bitmaps.h"
 #include "web_ui.h"
 
@@ -26,6 +27,8 @@ bool ready = false, screen = false, nvs = false, saved = false;
 bool apOK = false, fault = false;
 uint8_t prescale = 0;
 uint16_t lastTicks[16];
+float lastCommanded[8] = {NAN,NAN,NAN,NAN,NAN,NAN,NAN,NAN};
+bool benchDisplay = true;
 uint32_t lastPWM = 0, buttonStart = 0;
 enum Owner { NONE, USB, WEB, BUTTON } owner = NONE;
 String ssid, country = "JP";
@@ -113,7 +116,7 @@ void loadCalibration() {
   } else Serial.println("CAL defaults: map UNASSIGNED, limits 85..95; show/help");
 }
 String showCalibration() {
-  String out = "manifest=" + String(MANIFEST_ID) + " saved=" + String(saved) +
+  String out = "manifest=" + String(MANIFEST_ID) + " profile=" + PULSE_PROFILE_ID + " saved=" + String(saved) +
     " oscillator_hz=" + String(gate.cal.oscillator) + " prescale=" + String(prescale) +
     " expected_pwm_hz=" + String(double(gate.cal.oscillator) / (4096.0 * (prescale + 1)), 4) + "\n";
   for (int j = 0; j < 8; ++j) {
@@ -138,7 +141,7 @@ String exportCalibration() {
 String status() {
   String out = "mode=" + String(int(gate.mode)) + " outputs=" + String(gate.enabled) +
     " hub=" + String(ready) + " fault=" + String(fault) + " owner=" + String(int(owner)) +
-    " motion=" + String(motion ? motion->name : "none") + "\n";
+    " motion=" + String(motion ? motion->name : "none") + " profile=" + PULSE_PROFILE_ID + "\n";
   for (int j = 0; j < 8; ++j) if (gate.enabled & (1u << j)) {
     out += "CH" + String(gate.channel(j)) + " current=" + String(gate.current[j], 2) +
       " target=" + String(gate.target[j], 2) + " physical=" + String(gate.physical(j), 2) +
@@ -177,7 +180,7 @@ void startWifi() {
 }
 
 const char* HELP =
-  "help | show | export | status | wifi | face NAME | off | stop | heartbeat\n"
+  "help | show | export | status | wifi | face NAME | bench | off | stop | heartbeat\n"
   "arm channel CH | arm hornless CH | arm joint NAME | arm assembly | arm run\n"
   "angle DEG | us MICROSECONDS | q INTERNAL_DEG | jog DELTA_DEG | sweep LOW HIGH\n"
   "centre (assembly, raw CH0..7=90; ignores trims)\n"
@@ -198,11 +201,16 @@ String command(const char* text, Owner source) {
   if (c.is("show", 1) || c.is("subtrim", 1)) return showCalibration();
   if (c.is("export", 1)) return exportCalibration();
   if (c.is("wifi", 1)) return wifiStatus();
+  if (c.is("bench", 1)) { benchDisplay = true; return "OK BENCH commanded angles, not feedback"; }
   if (c.is("off", 1)) { outputsOff("command"); return "OK OFF"; }
   if (c.is("stop", 1)) { cancelQueue(); gate.stop(now); return "OK STOP frozen; off releases torque"; }
   if (gate.active() && owner != source) return "ERR owned by another transport; off first";
   if (c.is("heartbeat", 1)) { gate.heartbeat(now); return ""; }
-  if (c.is("face", 2)) { setFace(c.words[1]); return face && !strcmp(face->name, c.words[1]) ? "OK FACE" : "ERR face name"; }
+  if (c.is("face", 2)) {
+    setFace(c.words[1]);
+    if (!face || strcmp(face->name, c.words[1])) return "ERR face name";
+    benchDisplay = false; return "OK FACE";
+  }
   if (c.is("arm", 2) || c.is("arm", 3)) {
     if (!ready || fault || gate.active()) return "ERR hub fault or already armed; off first";
     Mode mode = Mode::Off; int selected = -1;
@@ -223,13 +231,13 @@ String command(const char* text, Owner source) {
       String(pulseTicks(1500, gate.cal.oscillator, prescale)) + " prescale=" + String(prescale) + "; no servos on CH15";
   }
   if (c.is("centre", 1) || c.is("center", 1)) {
-    return gate.centre(now) ? "OK CENTRE CH0..7 raw=90 us=1830.50" : "ERR arm assembly first";
+    return gate.centre(now) ? "OK CENTRE CH0..7 raw=90 us=" + String(angleUs(NEUTRAL), 2) : "ERR arm assembly first";
   }
   if (c.is("angle", 2) || c.is("us", 2) || c.is("jog", 2) || c.is("q", 2)) {
     if (!c.number(1, value) || gate.selected < 0) return "ERR select one channel/joint";
     int j = gate.selected;
     if (c.is("us", 2)) {
-      if (value < PULSE_MIN || value > PULSE_MAX) return "ERR pulse range 732..2929";
+      if (value < PULSE_MIN || value > PULSE_MAX) return "ERR pulse range " + String(PULSE_MIN, 2) + ".." + String(PULSE_MAX, 2);
       value = usAngle(value);
       if (gate.mode == Mode::Joint) value = gate.cal.canonical(j, value);
     } else if (c.is("jog", 2)) value += gate.current[j];
@@ -406,7 +414,7 @@ void buttonService() {
       seenRelease = true;
       if (pending && ready && !fault && gate.arm(Mode::Assembly, -1, millis())) {
         gate.centre(millis()); owner = BUTTON; buttonStart = millis();
-        Serial.println("OK CENTRE button CH0..7 raw=90 us=1830.50 lease=30000ms");
+        Serial.printf("OK CENTRE button CH0..7 raw=90 us=%.2f lease=30000ms\n", angleUs(NEUTRAL));
       }
       pending = false;
     }
@@ -468,11 +476,28 @@ void outputService() {
     fault = true; outputsOff("I2C/prescale fault"); return;
   }
   digitalWrite(OE, any ? LOW : HIGH);
+  for (int j = 0; j < 8; ++j) if (gate.enabled & (1u << j))
+    lastCommanded[gate.channel(j)] = gate.physical(j);
 }
 void faceService() {
-  if (!screen || !face || millis() - lastFace < 250) return;
+  if (!screen || millis() - lastFace < 250) return;
   lastFace = millis();
   display.clearDisplay();
+  if (benchDisplay) {
+    display.setCursor(0,0); display.setTextSize(1); display.setTextColor(SSD1306_WHITE);
+    if (owner == BUTTON) display.printf("CMD Centre %lus", (unsigned long)((30000 - (millis() - buttonStart))/1000));
+    else display.print(gate.active() ? "CMD / BOOT: OFF" : "CMD / outputs OFF");
+    for (int row = 0; row < 4; ++row) for (int column = 0; column < 2; ++column) {
+      const int ch = benchChannel(row, column);
+      const char* name = "--";
+      for (int j = 0; j < 8; ++j) if (gate.cal.channel[j] == ch) name = NAMES[j];
+      char cell[12];
+      formatBenchCell(cell, sizeof(cell), ch, name, lastTicks[ch] != 4096, lastCommanded[ch]);
+      display.setCursor(column * 64, 16 + row * 12); display.print(cell);
+    }
+    display.display(); return;
+  }
+  if (!face) return;
   display.drawBitmap(0, 0, face->frames[faceFrame], 128, 64, SSD1306_WHITE);
   display.fillRect(0, 0, 128, 10, SSD1306_BLACK);
   display.setCursor(0,0); display.setTextSize(1); display.setTextColor(SSD1306_WHITE);
@@ -500,6 +525,7 @@ void setup() {
   char name[32]; snprintf(name, sizeof(name), "Sesame-S3-%02X%02X", unsigned((mac >> 32)&255), unsigned((mac >> 40)&255)); ssid = name;
   startWifi();
   Serial.println("READY Sesame S3 calibration+controller; outputs OFF; help");
+  Serial.printf("PROFILE %s neutral_us=%.2f manifest=%s\n", PULSE_PROFILE_ID, angleUs(NEUTRAL), MANIFEST_ID);
 }
 void loop() {
   outputService(); buttonService(); serialService(); outputService();

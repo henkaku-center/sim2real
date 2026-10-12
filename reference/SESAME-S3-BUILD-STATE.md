@@ -1,5 +1,17 @@
 # Sesame S3 — hardware state and recovery
 
+## Preparation update — 2026-10-12
+
+Current source uses the instructor-approved **Tim-compatible S3 profile**, neutral
+1615.28 µs, with the APS interactive controller and paired-channel bench display.
+The October 6 description below is historical. See the current generated handoff
+and calibration procedure for the selected profile and NVS migration boundary.
+The user connected the same S3 to Artemis and confirmed battery unplugged. USB
+enumeration passed; a passive four-second read returned no data. No firmware
+upload or movement command was issued, so installed firmware remains unidentified
+in this session. Servo plugs must be removed before reset/flash; powered USB
+commissioning still requires a verified separate servo supply arrangement.
+
 ## Offline firmware update — 2026-10-06
 
 The owner reports the robot is now fully assembled, but neutral alignment and

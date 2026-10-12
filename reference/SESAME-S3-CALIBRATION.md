@@ -1,6 +1,10 @@
 # Sesame S3: centre, mount horns, calibrate
 
-**2026-10-06 — NEEDS-HARDWARE.** One image provides calibration, OLED faces,
+**2026-10-12 — NEEDS-HARDWARE.** Profile `tim-pca9685-150-512-v1` is selected
+for both calibration and production. Its neutral is 1615.28 µs, not the October 6
+image's 1830.5 µs. The changed manifest fingerprint invalidates previous NVS
+calibration: export records first, then re-identify/reverify rather than silently
+reusing them. One image provides calibration, OLED faces,
 stock motions and the Wi-Fi controller. Nothing here claims an observed result
 on the assembled robot. [Diagnosis](SESAME-S3-DIAGNOSIS.md) ·
 [Build/flash instructions](../firmware/README.md) ·
@@ -9,8 +13,10 @@ on the assembled robot. [Diagnosis](SESAME-S3-DIAGNOSIS.md) ·
 ## 1. Power off, disengage horns, flash
 
 1. Support the body with every foot clear. Disconnect battery and USB. Remove
-   the horn screws and **lift the horns off the splines**; merely loosening a
-   screw while the spline remains engaged does not free the linkage. Label the
+    the horn screws and **lift linked horns off the splines**; merely loosening a
+    screw while the spline remains engaged does not free the linkage. For bare
+    bench servos only, the instructor's loosely fitted single-arm pointer may
+    remain if its entire sweep is clear; no legs or retaining screw. Label the
    joints using the robot's own left/right. Never turn a powered shaft by hand.
 2. Confirm **GPIO18 → PCA9685 OE**, with OE pulled high to **3.3 V** during reset,
    common GND, GPIO2 SDA, GPIO3 SCL, logic VCC=3.3 V and regulated servo V+=5 V.
@@ -27,7 +33,13 @@ on the assembled robot. [Diagnosis](SESAME-S3-DIAGNOSIS.md) ·
 
    On macOS use the actual `/dev/cu.usbmodem…` port. Opening the console may
    reset the S3. Expect `READY Sesame S3 calibration+controller; outputs OFF; help`
-   at boot, or type `status`: `mode=0 outputs=0 hub=1 fault=0 owner=0 motion=none`.
+    at boot, followed by `PROFILE tim-pca9685-150-512-v1 neutral_us=1615.28` and
+    the manifest fingerprint. `status` must include
+    `mode=0 outputs=0 hub=1 fault=0 owner=0 motion=none`.
+    `bench` selects the paired physical-channel OLED view (0/4, 1/5, 2/6, 3/7).
+    `--` is unmapped, `---` is never commanded, and `*` marks an enabled channel.
+    These are commanded/interpolated angles, not encoder feedback. `face NAME`
+    returns to the face view without changing servo targets.
 
 ## 2. Calibrate the PWM clock first (servo V+ off)
 
@@ -62,7 +74,7 @@ and mark the clock **unmeasured**; do not call pulse accuracy hardware-verified.
 Power everything off; connect the eight servos to CH0–7 with correct polarity.
 **Unplug USB before connecting battery.** With the horns disengaged, power the
 robot from battery alone. It starts outputs-off. Release BOOT if held, then
-**press and release BOOT once**. All CH0–7 receive raw 90° = **1830.5 µs** for
+**press and release BOOT once**. All CH0–7 receive raw 90° = **1615.28 µs** for
 30 seconds; the display says `Centre …s`. A further BOOT press aborts. This
 works without Wi-Fi, a channel map or a USB connection. Repeat after timeout
 as needed; no screws/connectors should be changed with power applied.
@@ -77,7 +89,7 @@ This is the **Rest/assembly** pose, not the bent-leg Stand pose.
 
 For a verified isolated USB bench setup, the equivalent commands are
 `:live`, `arm assembly`, `centre`, then `off`. They report
-`OK ARMED outputs OFF until target` and `OK CENTRE CH0..7 raw=90 us=1830.50`.
+`OK ARMED outputs OFF until target` and `OK CENTRE CH0..7 raw=90 us=1615.28`.
 Assembly centring ignores trims, even if an old calibration is saved.
 
 ## 4. Identify the channels; test one joint at a time
@@ -136,7 +148,7 @@ binding/buzzing; record the usable range, which may be narrower than the
 manifest. Manifest ceilings: R1/L2 **45–180°**, R2/L1 **0–135°**, feet
 **0–180°**. These correspond to hips **q=[−45,+90]**, feet **q=[−90,+90]**.
 For example, `limits R1 80 100` allows the next small inspection; it does not
-certify that range. `us 1830.5` uses the same gate; it cannot bypass limits.
+certify that range. `us 1615.28` uses the same gate; it cannot bypass limits.
 Post-trim electrical endpoints may further narrow the target (`CLAMPED`).
 
 Once that joint's map, neutral, direction and chosen range are observed:

@@ -72,7 +72,8 @@ def check_sources():
 def build():
     check_toolchain(); check_sources()
     BUILD.mkdir(parents=True, exist_ok=True)
-    cli("compile", "--clean", "--warnings", "all", "--fqbn", LOCK["fqbn"],
+    # Bound compiler fan-out; native test builds may run independently (one job).
+    cli("compile", "--clean", "--jobs", "2", "--warnings", "all", "--fqbn", LOCK["fqbn"],
         "--build-path", str(BUILD), str(ROOT / "firmware/sesame-s3"))
     report = {"platform": platform.platform(), "toolchain": LOCK,
               "binaries_sha256": {p.name: hashlib.sha256(p.read_bytes()).hexdigest() for p in BUILD.glob("*.bin")}}

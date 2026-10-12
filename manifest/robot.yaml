@@ -146,6 +146,14 @@ hardware_profiles:
     intended_channels: {R1: 4, R2: 5, L1: 0, L2: 1, R4: 7, R3: 6, L3: 2, L4: 3}
     intended_channels_status: unverified-do-not-use-as-default
     oscillator_hz: 25000000 # nominal only; measure each PCA9685
+    pulse_profile:
+      id: tim-pca9685-150-512-v1
+      reference_oscillator_hz: 25000000
+      reference_prescale: 121
+      reference_ticks: [150, 512]
+      interpolation: floor-reference-ticks
+      # Preserve Tim's integer-angle mapping, then compensate for measured clock.
+      # This S3 profile does not rewrite the historical S2 simulator pulse range.
     calibration_rate_deg_s: 15
     controller_rate_deg_s: 60 # conservative commissioning cap, <= SafeAction maximum
     trim_limit_deg: 15 # re-index horns rather than using large offsets

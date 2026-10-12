@@ -4,19 +4,32 @@
 #include <iostream>
 #include "safe_action.h"
 #include "command_line.h"
+#include "bench_display.h"
+#include "../../reference/vendor/tim-servo-debug/firmware/common/sesame_servo_map.h"
 
 using namespace sesame;
 void near(float a, float b, float tolerance = .002f) { assert(fabsf(a-b) <= tolerance); }
 
 int main() {
-  near(angleUs(0), 732); near(angleUs(90), 1830.5); near(angleUs(180), 2929);
+  near(angleUs(0), 732); near(angleUs(90), 1615.28); near(angleUs(180), 2498.56);
+  for (int angle=0;angle<=180;++angle) {
+    // Compare to Tim's actual pinned implementation, not a duplicated formula.
+    assert(pulseTicks(angleUs(angle),25000000,121)==servoAngleToPulse(angle));
+    near(angleUs(usAngle(angleUs(angle))),angleUs(angle));
+  }
   for (uint32_t osc : {23000000,25000000,26000000,27000000}) {
     uint8_t p = uint8_t(lround(double(osc)/(50*4096))-1);
     double tick = (p+1)*1000000.0/osc;
-    for (float us : {732.0f,1500.0f,1830.5f,2929.0f})
+    for (float us : {732.0f,1500.0f,1615.28f,2498.56f})
       near(pulseTicks(us,osc,p)*tick, us, tick/2+.001);
   }
-  assert(pulseTicks(2929,25000000,121) == 600); // regression: old cap was 512
+  assert(pulseTicks(angleUs(180),25000000,121) == 512);
+  for (int tenth=1;tenth<=1800;++tenth)
+    assert(angleUs(tenth/10.0f)>=angleUs((tenth-1)/10.0f));
+  char cell[12];
+  formatBenchCell(cell,sizeof(cell),0,"--",false,NAN); assert(!strcmp(cell," 0 --:---"));
+  formatBenchCell(cell,sizeof(cell),4,"R1",true,90); assert(!strcmp(cell,"*4 R1: 90"));
+  for (int row=0;row<4;++row) { assert(benchChannel(row,0)==row); assert(benchChannel(row,1)==row+4); }
   Calibration cal;
   assert(cal.valid() && !cal.complete());
   for (int j=0;j<8;++j) {

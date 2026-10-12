@@ -170,16 +170,23 @@
     }
   ],
   "pulse": {
+    "profile_id": "tim-pca9685-150-512-v1",
+    "reference_ticks": [
+      150,
+      512
+    ],
+    "reference_tick_us": 4.88,
+    "interpolation": "floor-reference-ticks",
     "range_us": [
-      732,
-      2929
+      732.0,
+      2498.56
     ],
     "angle_deg": [
       0,
       180
     ],
     "neutral_deg": 90,
-    "neutral_us": 1830.5,
+    "neutral_us": 1615.28,
     "pwm_hz": 50,
     "oscillator_default_hz": 25000000,
     "oscillator_status": "nominal-unmeasured",
@@ -246,6 +253,11 @@
       "meaning": "OLED face only"
     },
     {
+      "syntax": "bench",
+      "mode": "any",
+      "meaning": "Show paired physical-channel commanded angles; no movement"
+    },
+    {
       "syntax": "off",
       "mode": "any",
       "meaning": "Cancel queues, assert OE, full-off all PCA outputs, disarm"
@@ -288,7 +300,7 @@
     {
       "syntax": "centre",
       "mode": "assembly",
-      "meaning": "Raw 90 degrees /1830.5us on CH0..7, ignore trims"
+      "meaning": "Raw 90 degrees /1615.28us on CH0..7, ignore trims"
     },
     {
       "syntax": "angle DEG",
@@ -298,7 +310,7 @@
     {
       "syntax": "us MICROSECONDS",
       "mode": "single-channel-or-joint",
-      "meaning": "732..2929, converted through the same limits/rate gate"
+      "meaning": "732.0..2498.56, quantized through the same limits/rate gate"
     },
     {
       "syntax": "q INTERNAL_DEG",

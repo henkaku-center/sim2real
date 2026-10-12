@@ -1,5 +1,12 @@
 # Sesame S3 range, neutral and Wi-Fi diagnosis
 
+**October 12, 2026 update:** the instructor chose the APS interactive controller
+with Tim-compatible reference ticks. Current S3 neutral is **1615.28 µs**, using
+`tim-pca9685-150-512-v1` for calibration and production. The October 6 analysis
+below is retained as history: references to a “new” 1830.5 µs neutral describe
+that earlier image, not the current one. The generated S3 interface and current
+calibration procedure are authoritative. No physical range/neutral was measured.
+
 **2026-10-06. Offline source investigation; NEEDS-HARDWARE.** Owner reports a
 fully assembled robot with misalignment/restricted movement, firmware unchanged
 since September22. The installed image remains the old `servo-load-test` until
