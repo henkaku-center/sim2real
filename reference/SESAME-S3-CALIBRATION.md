@@ -1,5 +1,18 @@
 # Sesame S3: centre, mount horns, calibrate
 
+**USB installation observed October 12:** `71af7e0` was flashed to the instructor's
+S3 on Artemis; status reports outputs off/hub ready/no fault. This does not verify
+servo movement or calibration. See `evidence/2026-10-12-s3-usb/README.md`.
+
+**October 12 classroom power route:** the instructor selected USB-only, one-servo
+tests with all leads connected and battery physically unplugged, followed by a
+battery-only load test after unplugging USB. External supplies are not required.
+Use `arm channel N` and small 85–95° discovery moves; `off` before the next channel.
+Stop on brownout/reset or abnormal behaviour. Do not run USB all-channel centring
+or gaits. This supersedes the separate-supply requirement for those small USB
+trials below; simultaneous USB/battery remains prohibited. Current BOOT centre
+is a static hold, not a completed dynamic load-test implementation.
+
 **2026-10-12 — NEEDS-HARDWARE.** Profile `tim-pca9685-150-512-v1` is selected
 for both calibration and production. Its neutral is 1615.28 µs, not the October 6
 image's 1830.5 µs. The changed manifest fingerprint invalidates previous NVS

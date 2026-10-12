@@ -199,10 +199,11 @@
     "held_at_boot": "must release before new press"
   },
   "power": {
-    "flash": "battery disconnected; servo V+ off; USB only",
+    "flash": "battery physically disconnected; USB only; servo leads may remain connected; outputs OFF at boot",
     "button_assembly": "unplug USB, then power from battery alone",
-    "serial_motion": "instructor-verified isolated servo V+ with common ground, or verified data-only USB with no VBUS backfeed",
-    "unverified_isolation": "do not combine USB and battery; use battery-only button or Wi-Fi"
+    "serial_motion": "USB only, battery disconnected; one small single-channel trial at a time; off between channels; stop on reset/sag/abnormal behaviour; USB capacity unverified",
+    "unverified_isolation": "never combine USB and battery; unplug USB before battery-only load testing; no external supply or Wi-Fi requirement",
+    "battery_load_test": "current BOOT routine is a static centre hold; finite repeated-motion load routine pending implementation/validation"
   },
   "safeaction": {
     "watchdog_ms": 500,

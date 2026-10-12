@@ -1,5 +1,26 @@
 # HANDOVER
 
+## Installed and responding over USB — 2026-10-12
+
+The same S3 on Artemis was backed up, then flashed with the validated
+`71af7e0` Tim-compatible APS image, with battery unplugged and servo leads retained
+as requested. Application hash verified. `status/show/bench` reply: outputs=0,
+hub=1, fault=0, profile `tim-pca9685-150-512-v1`, all channels unassigned.
+No movement command was sent. See `reference/evidence/2026-10-12-s3-usb/`.
+Next physical checkpoint: instructor observes OLED/robot state, then guides one
+small servo check at a time. Battery-only dynamic load routine remains pending.
+
+## Power-workflow correction — 2026-10-12
+
+Instructor explicitly chose no external supply and no unplugging of all servos.
+Battery stays unplugged for USB-only flashing/status and sequential, small,
+single-channel tests; send `off` between channels, all other PWM outputs off.
+USB capacity remains unverified—stop on reset/sag/abnormal behaviour. For the
+load phase, unplug USB first and use battery only with deliberate button start.
+Wi-Fi is not required. The existing BOOT centre is a static 30-second hold; a
+finite repeated-motion battery-load routine is still to implement/validate.
+This supersedes the separate-supply/servo-disconnection prerequisites below.
+
 ## Tim-compatible interactive firmware — 2026-10-12 (offline validated)
 
 The instructor approved the APS controller with Tim-compatible pulse semantics.

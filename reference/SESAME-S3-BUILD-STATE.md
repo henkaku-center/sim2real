@@ -1,6 +1,16 @@
 # Sesame S3 — hardware state and recovery
 
-## Preparation update — 2026-10-12
+## USB install confirmed — 2026-10-12
+
+Installed source is now **71af7e0**, the Tim-compatible APS controller. Full-flash
+backup preserved privately; upload hash verified. Serial `status/show/bench`
+reports outputs off, hub ready, no fault, all mappings unassigned and unverified.
+No movement commands were sent. [Evidence](evidence/2026-10-12-s3-usb/README.md).
+The battery was unplugged; servo leads stayed connected at the instructor's
+request. The classroom route is USB-only one-servo trials, then battery-only
+load testing with USB removed—not a required external-supply fixture.
+
+## Earlier preparation — 2026-10-12 (superseded by installation above)
 
 Current source uses the instructor-approved **Tim-compatible S3 profile**, neutral
 1615.28 µs, with the APS interactive controller and paired-channel bench display.

@@ -256,3 +256,22 @@ artifacts are written once before parallel readers; hardware access stays serial
 **Physical boundary:** battery unplugged was confirmed. Wired servo supply/USB
 isolation and servo disconnection before reset/flash are still to be verified.
 No source-only result certifies the assembled robot's range, power or Wi-Fi.
+
+## D14. No external supply required for classroom commissioning (2026-10-12)
+
+**Instructor correction:** keep all servo leads connected. Use USB alone for
+small, sequential one-servo trials, releasing each before moving to the next.
+Then physically unplug USB and use battery alone for a deliberate finite load
+test. No external bench supply or working Wi-Fi should be required.
+
+This supersedes the proposed separate-supply fixture and blanket servo-unplugging
+prerequisites in D13. It does not establish the current capacity of the USB path,
+OE wiring, absence of reset transients or hardware test success. Stop on resets,
+voltage sag, binding, unexpected motion or sustained buzzing; never add battery
+power to an attached ordinary USB connection as a workaround.
+
+Current firmware already bounds one-channel discovery and requires disarming
+before switching channels. Its existing BOOT routine is an all-channel static
+centre hold. A finite repeated-motion battery-load routine still needs to be
+implemented/tested and distinguished from that hold. No movement was commanded
+as part of recording this workflow decision.

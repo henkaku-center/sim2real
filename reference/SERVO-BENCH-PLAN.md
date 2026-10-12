@@ -3,8 +3,12 @@
 **October 12 update:** instructor approved the APS interactive controller with a
 Tim-compatible pulse profile. Implemented as `tim-pca9685-150-512-v1` in the S3
 hardware profile; the historical comparison below records the prior alternatives.
-Native numerical tests and macOS compilation passed. Wired power verification,
-hardware flash, and the 29–33 visual replacement remain outstanding.
+Native numerical tests and macOS compilation passed. The instructor subsequently
+selected USB-only sequential single-servo tests, then a battery-only load test,
+with all servo leads left connected and no external supply requirement. USB flash
+and status acceptance subsequently passed; no movement was commanded. Motion
+acceptance, the finite dynamic battery-load routine and the 29–33 visual replacement
+remain outstanding. The separate-supply proposal below is superseded for class.
 
 October 11, 2026. Current APS-II course preparation. **Design review, not a
 released replacement for the calibration procedure.** No firmware or pulse-profile
@@ -75,6 +79,18 @@ The historical S2 simulator pulse range remains distinct. Do not mix a previous
 1830.5 µs calibration with this 1615.28 µs neutral.
 
 ## Wired power recommendation
+
+**Superseded as a classroom requirement, October 12:** the instructor has no bench
+supply at home and does not want one required for students. Keep all eight plugs
+connected. Use USB alone for flash/status and small, one-channel-at-a-time trials;
+release that channel before selecting another. Keep the battery physically
+unplugged. Stop on resets/sag or abnormal behaviour; no assumption of USB current
+capacity follows from sequential commands, and PWM-off is not power isolation.
+After individual acceptance, unplug USB and use battery alone for a deliberate
+button-started, finite load test. No Wi-Fi dependency. Current BOOT centre is only
+a static hold, not the requested repeated-motion load cycle.
+
+The earlier engineering alternative is retained below as background, not a blocker:
 
 For bench debugging, prefer **USB-powered S3 logic plus separately supplied,
 regulated 5 V servo V+**, sharing ground but not positive supplies. PCA logic VCC

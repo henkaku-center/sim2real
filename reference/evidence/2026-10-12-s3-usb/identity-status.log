@@ -1,0 +1,15 @@
+Commands sent after upload: status, show, bench. No arm/angle/jog/centre/motion command.
+
+mode=0 outputs=0 hub=1 fault=0 owner=0 motion=none profile=tim-pca9685-150-512-v1
+
+manifest=bd7675604b98ae46 profile=tim-pca9685-150-512-v1 saved=0 oscillator_hz=25000000 prescale=121 expected_pwm_hz=50.0288
+R1 channel=-1 sign=1 trim=0.00 limits=85.00,95.00 verified=0
+R2 channel=-1 sign=-1 trim=0.00 limits=85.00,95.00 verified=0
+L1 channel=-1 sign=-1 trim=0.00 limits=85.00,95.00 verified=0
+L2 channel=-1 sign=1 trim=0.00 limits=85.00,95.00 verified=0
+R4 channel=-1 sign=-1 trim=0.00 limits=85.00,95.00 verified=0
+R3 channel=-1 sign=1 trim=0.00 limits=85.00,95.00 verified=0
+L3 channel=-1 sign=-1 trim=0.00 limits=85.00,95.00 verified=0
+L4 channel=-1 sign=-1 trim=0.00 limits=85.00,95.00 verified=0
+
+OK BENCH commanded angles, not feedback

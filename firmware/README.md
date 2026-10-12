@@ -1,5 +1,13 @@
 # Sesame S3 class firmware
 
+**Classroom power route (October 12):** no external supply requirement. Keep the
+battery physically unplugged for USB flashing and sequential single-servo trials;
+servo leads may remain connected. Boot outputs off, use one channel at a time,
+and `off` between channels. Stop on reset/sag/abnormal behaviour; this does not
+certify USB capacity. Unplug USB before battery-only load testing. The existing
+BOOT centre hold is not yet a repeated-motion load test. This route supersedes
+the older servo-V+-off prerequisite for the instructor's connected-servo USB trial.
+
 **October 12 profile:** `tim-pca9685-150-512-v1`, approved for the same debug and
 production image. Reference-clock neutral is **1615.28 µs**. Each integer angle
 reproduces Tim's 150–512-count interpolation at 25 MHz / prescale 121; a measured
