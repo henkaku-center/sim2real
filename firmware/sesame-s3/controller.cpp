@@ -41,7 +41,9 @@ ClockReport clockReport() {
   return report;
 }
 Adafruit_PWMServoDriver pwm(PCA_ADDRESS);
-Adafruit_SSD1306 display(128, 64, &Wire, -1, 400000, 100000); // 128-byte frame chunks must fit the Wire timeout
+// A 128-byte frame chunk takes ~12 ms at 100 kHz but ~3 ms at 400 kHz; it must
+// fit the Wire timeout or every frame write is silently dropped.
+Adafruit_SSD1306 display(128, 64, &Wire, -1, 400000, 100000);
 Preferences prefs;
 NetworkServer http(80);
 NetworkClient client;
@@ -226,7 +228,7 @@ void startWifi() {
 }
 
 const char* HELP =
-  "help | show | export | status | wifi | face NAME | bench | off | stop | heartbeat\n"
+  "help | show | export | status | wifi | i2c | face NAME | bench | off | stop | heartbeat\n"
   "arm bench CH (0..180 loose pointer, no legs) | arm joint NAME | arm assembly | arm run\n"
   "angle DEG | us MICROSECONDS | q INTERNAL_DEG | jog DELTA_DEG | sweep LOW HIGH\n"
   "centre (assembly, raw CH0..7=90; ignores trims)\n"
@@ -239,6 +241,35 @@ const char* HELP =
   "OFF only: wifi JP|US|GB|DE|FR CHANNEL(1..11) TX_DBM(2|8.5|13|19.5)\n"
   "Every active serial/web session needs heartbeat <500ms; use class console.\n"
   "BOOT release while OFF: 30s assembly centre; BOOT press while active: OFF.";
+
+// Bench diagnosis: per clock, 10 address probes and 10 display()-sized OLED data
+// chunks (zeros into display RAM; cosmetic only). Error codes are Wire's
+// (0 ok, 2 addr NACK, 3 data NACK, 4 other, 5 timeout).
+String i2cDiagnostic() {
+  // Both lines idle low (~1.5 V measured) meant an unpowered OLED back-feeding
+  // through its pull-ups, not a slave lock-up; check its VCC before the code.
+  String out = "I2C screen=" + String(screen) + " hub=" + String(ready) +
+    " sda=" + digitalRead(sesame::SDA) + " scl=" + digitalRead(sesame::SCL);
+  const uint32_t clocks[] = {100000, 200000, 400000};
+  for (uint32_t hz : clocks) {
+    Wire.setClock(hz);
+    int pcaFail = 0, oledFail = 0, chunkFail = 0; uint8_t lastChunk = 0; uint32_t worst = 0;
+    for (int i = 0; i < 10; ++i) {
+      Wire.beginTransmission(PCA_ADDRESS); if (Wire.endTransmission()) ++pcaFail;
+      Wire.beginTransmission(OLED_ADDRESS); if (Wire.endTransmission()) ++oledFail;
+      uint32_t t = micros();
+      Wire.beginTransmission(OLED_ADDRESS); Wire.write(0x40);
+      for (int b = 0; b < 127; ++b) Wire.write(0);
+      uint8_t e = Wire.endTransmission(); t = micros() - t;
+      if (e) { ++chunkFail; lastChunk = e; }
+      if (t > worst) worst = t;
+    }
+    out += "\n" + String(hz / 1000) + "kHz pca_fail=" + pcaFail + "/10 oled_fail=" + oledFail +
+      "/10 chunk_fail=" + chunkFail + "/10 last_err=" + lastChunk + " worst_us=" + worst;
+  }
+  Wire.setClock(100000);
+  return out;
+}
 
 String dispatchCommand(const char* text, Owner source) {
   CommandLine c; float value = 0, second = 0; int number = 0;
@@ -253,6 +284,7 @@ String dispatchCommand(const char* text, Owner source) {
   if (c.is("show", 1) || c.is("subtrim", 1)) return showCalibration();
   if (c.is("export", 1)) return exportCalibration();
   if (c.is("wifi", 1)) return wifiStatus();
+  if (c.is("i2c", 1)) return gate.active() ? "ERR off first" : i2cDiagnostic();
   if (c.is("bench", 1)) { benchDisplay = true; return "OK BENCH commanded angles, not feedback"; }
   if (c.is("off", 1)) { outputsOff("command"); return "OK OFF"; }
   if (c.is("stop", 1)) {
@@ -599,7 +631,7 @@ void setup() {
   digitalWrite(OE, HIGH); pinMode(OE, OUTPUT); pinMode(0, INPUT_PULLUP);
   Serial.begin(115200);
   Serial.setTxTimeoutMs(0); // an absent USB host must not block the watchdog
-  Wire.begin(sesame::SDA, sesame::SCL); Wire.setClock(100000); Wire.setTimeOut(20);
+  Wire.begin(sesame::SDA, sesame::SCL); Wire.setClock(100000); Wire.setTimeOut(10);
   loadCalibration();
   ready = pwm.begin();
   if (ready && !configurePWM()) { ready = false; fault = true; }
