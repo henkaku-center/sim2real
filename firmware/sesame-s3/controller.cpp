@@ -18,7 +18,7 @@ using namespace sesame;
 namespace {
 SafeAction gate;
 Adafruit_PWMServoDriver pwm(PCA_ADDRESS);
-Adafruit_SSD1306 display(128, 64, &Wire, -1, 100000, 100000);
+Adafruit_SSD1306 display(128, 64, &Wire, -1, 400000, 100000); // 128-byte frame chunks must fit the Wire timeout
 Preferences prefs;
 NetworkServer http(80);
 NetworkClient client;
@@ -513,7 +513,7 @@ void setup() {
   digitalWrite(OE, HIGH); pinMode(OE, OUTPUT); pinMode(0, INPUT_PULLUP);
   Serial.begin(115200);
   Serial.setTxTimeoutMs(0); // an absent USB host must not block the watchdog
-  Wire.begin(sesame::SDA, sesame::SCL); Wire.setClock(100000); Wire.setTimeOut(5);
+  Wire.begin(sesame::SDA, sesame::SCL); Wire.setClock(100000); Wire.setTimeOut(20);
   loadCalibration();
   ready = pwm.begin();
   if (ready && !configurePWM()) { ready = false; fault = true; }
