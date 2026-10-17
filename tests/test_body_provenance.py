@@ -92,7 +92,7 @@ def test_refresh_preserves_reconstructible_execution_and_is_idempotent(fixture_r
     assert (root / provenance.REPORT).read_bytes() == first
 
 
-@pytest.mark.parametrize('field', ['joint_limit', 'neutral', 'other_hardware_field'])
+@pytest.mark.parametrize('field', ['joint_limit', 'neutral', 'other_hardware_field', 'scalar_type'])
 def test_effective_manifest_changes_rejected_before_write(fixture_repo, field):
     root, baseline, files = fixture_repo
     data = yaml.safe_load((root / provenance.MANIFEST).read_text())
@@ -100,6 +100,8 @@ def test_effective_manifest_changes_rejected_before_write(fixture_repo, field):
         data['joints'][0]['limits_deg'][0] += 1
     elif field == 'neutral':
         data['conventions']['firmware_neutral_deg'] += 1
+    elif field == 'scalar_type':
+        data['joints'][0]['sign'] = True  # Python True == 1 must not bypass the diff.
     else:
         data['hardware_profiles']['sesame_s3']['sda'] += 1
     (root / provenance.MANIFEST).write_text(yaml.safe_dump(data))

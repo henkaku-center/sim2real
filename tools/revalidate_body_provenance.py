@@ -74,7 +74,7 @@ def effective_identity(original, current):
     require('pulse_profile' not in old_hw, 'not an addition to the audited baseline')
     require(isinstance(new_hw.get('pulse_profile'), dict) and new_hw['pulse_profile'], 'missing added profile')
     del new_hw['pulse_profile']
-    require(old == new, 'effective inputs changed outside the single allowed addition')
+    require(encoded(old) == encoded(new), 'effective inputs changed outside the single allowed addition')
     return sha(encoded(old))
 
 
@@ -157,12 +157,12 @@ def refresh(root, baseline):
     require(PROOF not in original and encoded(original) == raw, 'baseline must be original canonical execution report')
     current = json.loads(local(root, REPORT).read_bytes())
     if PROOF not in current:
-        require(current == original, 'unexplained report edits before revalidation')
+        require(encoded(current) == encoded(original), 'unexplained report edits before revalidation')
     else:
         restored = copy.deepcopy(current)
         restored.pop(PROOF)
         restored['input_hashes'] = original['input_hashes']
-        require(restored == original, 'execution/results changed before refresh')
+        require(encoded(restored) == encoded(original), 'execution/results changed before refresh')
     old_yaml = git(root, 'show', f'{baseline}:{MANIFEST}')
     require(sha(old_yaml) == original['input_hashes'][MANIFEST], 'baseline manifest was not executed')
     identity = effective_identity(old_yaml, local(root, MANIFEST).read_bytes())
