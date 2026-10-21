@@ -56,6 +56,14 @@ on the assembled robot. [Diagnosis](SESAME-S3-DIAGNOSIS.md) ·
 
 ## 2. Calibrate the PWM clock first (servo V+ off)
 
+**October 21 alternative:** the controller now supports [S3 edge-timed clock
+measurement](SESAME-S3-CLOCK.md) using `clock measure` / `clock status`. With the
+labelled GPIO4 jumper, USB fixture and actual board binding established, an agent
+can measure, explicitly apply `oscillator HZ`, and remeasure without a handheld
+frequency meter. The carrier-address binding is still unresolved; do not infer
+F17=GPIO4. All servo plugs are removed for this non-motion clock step. The older
+external-instrument method below remains available for comparison.
+
 Use the USB console with **all servos unplugged**, especially CH15:
 
 ```text
@@ -79,7 +87,7 @@ Expect `OK CAL changed; verify after test, then save`, `OK SAVED NVS`.
 Run `:live`, `reference`, `show` again and remeasure. About 50 Hz and
 1500 µs within one tick (about 4.9 µs), plus instrument uncertainty, is expected;
 the integer prescaler need not give exactly 50.000 Hz. Type `off`.
-Do not guess 27 MHz. If no instrument is available, retain the nominal default
+Do not guess 27 MHz. If neither a qualified S3 capture nor an instrument is available, retain the nominal default
 and mark the clock **unmeasured**; do not call pulse accuracy hardware-verified.
 
 ## 3. Centre before fitting horns

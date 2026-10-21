@@ -3,6 +3,7 @@
 import argparse
 import hashlib
 import json
+import re
 from pathlib import Path
 
 import yaml
@@ -61,6 +62,9 @@ def interface():
         ("oscillator HZ", "off", "Measured20..30MHz; reapplies prescaler, clears ALL verification"),
         ("save", "off", "Persist one versioned/checksummed NVS calibration record"),
         ("reference", "off", "CH15=1500us, all servos disconnected; reports actual programmed ticks"),
+        ("clock measure", "off-usb-only", f"Bounded CH15 rising-edge timing on GPIO{hw['clock_measure_gpio']}; all servos unplugged; heartbeat required; no calibration write"),
+        ("clock status", "any", "Read generation, quality, edges, observed Hz and oscillator estimate; MCU-relative, not a lab standard"),
+        ("clock abort", "any", "Abort clock capture and turn all outputs off"),
         ("motion NAME", "run", "One finite stock sequence through SafeAction; same as run NAME"),
         ("servo NAME DEG", "run", "Bounded single-joint target"),
         ("pose D0 D1 D2 D3 D4 D5 D6 D7", "run", "Bounded targets in canonical logical order"),
@@ -102,6 +106,18 @@ def interface():
                    "neutral_us": neutral_us, "pwm_hz": 50, "oscillator_default_hz": hw["oscillator_hz"],
                   "oscillator_status": "nominal-unmeasured", "ticks_formula": "round(us * oscillator_hz / (1000000 * (prescale+1)))"},
         "button": {"pin": 0, "off_press_release": "raw CH0..7 neutral for30s", "active_press": "off", "held_at_boot": "must release before new press"},
+        "clock_measurement": {
+            "input_gpio": hw["clock_measure_gpio"], "pca_channel": 15,
+            "pca_signal_parts": ["cad.Part__Feature128.pin.2", "cad.Part__Feature144.pin.2"],
+            "carrier_address": None, "s3_header_part": None,
+            "pin_binding_status": "NEEDS-HARDWARE: installed SuperMini pinout not established by Zero reference CAD; do not infer F17=GPIO4",
+            "power": "USB only; battery physically unplugged; all servo plugs removed; CH15 SIGNAL (not V+) to labelled GPIO4 input; common carrier GND; logic VCC 3.3V only",
+            "target_edges": 101, "timeout_ms": 4000, "watchdog_ms": safe["watchdog"]["timeout_ms"],
+            "clock_reference": "S3 esp_timer microseconds; average 100 periods; not traceable lab-standard frequency",
+            "quality": "periods 10000..40000us, peak-to-peak jitter <=2% of mean, estimated oscillator 20..30MHz; algorithmic rejection limits, not measured accuracy",
+            "oscillator_formula": "observed_hz * 4096 * (prescale + 1)",
+            "apply": "Explicit oscillator HZ then save while OFF; measurement never changes calibration or verification",
+        },
         "power": {"flash": "battery physically disconnected; USB only; servo leads may remain connected; outputs OFF at boot",
                   "button_assembly": "unplug USB, then power from battery alone",
                    "serial_motion": "USB only, battery disconnected; one small single-channel trial at a time; off between channels; stop on reset/sag/abnormal behaviour; USB capacity unverified",
@@ -129,7 +145,12 @@ def interface():
 def render():
     paths = [ROOT / "manifest" / f for f in ("robot.yaml", "safeaction.yaml", "motions.yaml")]
     robot, safe, motions = [yaml.safe_load(p.read_text()) for p in paths]
-    fingerprint = hashlib.sha256(b"".join(p.read_bytes() for p in paths)).hexdigest()[:16]
+    # Preserve the pre-existing NVS calibration identity: adding/changing this
+    # read-only input does not change pulse conversion, joint mapping or limits.
+    # All other original manifest bytes still participate in the legacy hash.
+    robot_bytes, removed = re.subn(rb'^    clock_measure_gpio: [0-9]+[^\n]*\n', b'', paths[0].read_bytes(), flags=re.M)
+    assert removed == 1, 'Expected one read-only timing-input field'
+    fingerprint = hashlib.sha256(robot_bytes + b"".join(p.read_bytes() for p in paths[1:])).hexdigest()[:16]
     joints = robot["joints"]
     hw = robot["hardware_profiles"]["sesame_s3"]
     profile, tick_low, tick_high, tick_us = pulse_profile(hw)
@@ -157,6 +178,7 @@ def render():
         "INITIAL_LOW": hw["initial_limits_deg"][0],
         "INITIAL_HIGH": hw["initial_limits_deg"][1],
         "OSC_DEFAULT": hw["oscillator_hz"],
+        "CLOCK_MEASURE_GPIO": hw["clock_measure_gpio"],
         **{key.upper(): hw[key] for key in ("sda", "scl", "oe", "pca_address", "oled_address")},
     }
     for name, value in values.items():

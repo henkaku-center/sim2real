@@ -63,7 +63,7 @@ struct Calibration {
   }
 };
 
-enum class Mode { Off, Channel, Hornless, Joint, Assembly, Run, Reference };
+enum class Mode { Off, Channel, Hornless, Joint, Assembly, Run, Reference, ClockMeasure };
 
 // All PWM authority passes through this gate, including raw bench commands.
 // First enable cannot be slew-limited from an unknown physical shaft position.
@@ -93,7 +93,7 @@ class SafeAction {
   }
   bool set(int j, float degrees, uint32_t now) {
     if (!active() || !std::isfinite(degrees) || j < 0 || j > 7) return false;
-    if (mode == Mode::Assembly || mode == Mode::Reference) return false;
+    if (mode == Mode::Assembly || mode == Mode::Reference || mode == Mode::ClockMeasure) return false;
     if (mode != Mode::Run && j != selected) return false;
     float bound;
     if (mode == Mode::Channel) bound = clamp(degrees, INITIAL_LOW, INITIAL_HIGH);
@@ -135,4 +135,20 @@ class SafeAction {
     return mode == Mode::Run || mode == Mode::Joint ? cal.physical(j, current[j]) : current[j];
   }
 };
+// Single output planner shared by hardware and native tests. Timing modes can
+// never emit servo-channel PWM, even if a stale enabled mask were retained.
+inline bool planOutputs(const SafeAction& gate, uint8_t prescale, uint16_t (&wanted)[16]) {
+  for (auto& value : wanted) value = 4096;
+  if (!gate.active()) return true;
+  if (gate.mode == Mode::Reference || gate.mode == Mode::ClockMeasure) {
+    wanted[15] = pulseTicks(1500, gate.cal.oscillator, prescale);
+    return true;
+  }
+  for (int j = 0; j < 8; ++j) if (gate.enabled & (1u << j)) {
+    const int ch = gate.channel(j);
+    if (ch < 0 || ch > 7) return false;
+    wanted[ch] = pulseTicks(angleUs(clamp(gate.physical(j), 0, 180)), gate.cal.oscillator, prescale);
+  }
+  return true;
+}
 } // namespace sesame

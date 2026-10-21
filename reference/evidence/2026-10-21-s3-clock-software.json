@@ -1,0 +1,66 @@
+{
+  "platform": "macOS-15.7.9-x86_64-i386-64bit",
+  "toolchain": {
+    "arduino_cli": "1.5.1",
+    "host_python": "3.12",
+    "pyyaml": "6.0.3",
+    "pyserial": "3.5",
+    "core": "esp32:esp32@3.3.11",
+    "index_url": "https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json",
+    "fqbn": "esp32:esp32:esp32s3:CDCOnBoot=cdc,FlashSize=4M,PartitionScheme=default,PSRAM=disabled,EraseFlash=none",
+    "libraries": {
+      "Adafruit PWM Servo Driver Library": "3.0.3",
+      "Adafruit SSD1306": "2.5.17",
+      "Adafruit GFX Library": "1.12.6",
+      "Adafruit BusIO": "1.17.4"
+    }
+  },
+  "jobs": 1,
+  "setupSeconds": 2.7018360160291195,
+  "executionSeconds": 38.631406048778445,
+  "totalSeconds": 41.333242780994624,
+  "source_sha256": {
+    "firmware/sesame-s3/bench_display.h": "956dc6f11f8124c27c66cde8e44ef9f74fb4d3552b5096ac62cea1f8498d2401",
+    "firmware/sesame-s3/clock_measurement.h": "b7b2b76ed6763a0f9ba6ecf9198b3e8612b0d1d9f17e1bd0b470d9a6d2b0606b",
+    "firmware/sesame-s3/command_line.h": "2fae005c462eda30a42b0945ec0d551a6a3e1af5b4266aa38b026af835111ecc",
+    "firmware/sesame-s3/controller.cpp": "23539f59e96dd6293edb32c863fede91cb33e88d83eeb1e49f2db4f345ab2ba4",
+    "firmware/sesame-s3/manifest_generated.h": "dbda33a73e6f783036131b38f9a372b0a35ee62d6f1db0a32244b05c26743ad9",
+    "firmware/sesame-s3/safe_action.h": "7660350a513bac1af23b4032373c44753273f63b033cfdfe23f9ab02859a10c6",
+    "firmware/sesame-s3/sesame-s3.ino": "617bff8592b8f7521e943b52530b976d4aca596706f06f66c9813abd493e4919",
+    "firmware/sesame-s3/vendor/.gitattributes": "8998c36159a0e1f447254c0a69da11ec0eee1fde7aabd69f38ab7abb8fbfda25",
+    "firmware/sesame-s3/vendor/LICENSE": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4",
+    "firmware/sesame-s3/vendor/NOTICE.md": "2449b5021220c1386f481e144eadc128bfcc8f3a343adefab2c76ed55852cdec",
+    "firmware/sesame-s3/vendor/face-bitmaps.h": "722692894402d9eccf5c022ed7b4eb090c2de6b171b7872cedce55609dac1f06",
+    "firmware/sesame-s3/vendor/provenance.json": "713c5023ed8d34a9ea7176ea0e3cefbcc6f097e6458bd6bc9766b97babc8a696",
+    "firmware/sesame-s3/web_ui.h": "742850f6dd1930ee38a3639aca8c5580f91210e868454826206b2fb06ceba2d3"
+  },
+  "binaries_sha256": {
+    "sesame-s3.ino.partitions.bin": "148b959cbff1c38aa8e1d5c0ba9d612c54997b945e56a63f41223eef650653a1",
+    "boot_app0.bin": "f94c5d786a7a8fab06ac5d10e33bf37711a6697636dc037559ea19cc410a17f0",
+    "sesame-s3.ino.bin": "d79adc362cacc9b135ae8a18a4acc309d1a89dc7101aa6947822ad12ef1213cf",
+    "sesame-s3.ino.bootloader.bin": "5f95cbc8b40b7a373f9cb85b534cb7a570cdad30ca27c7021775d830ca03276b",
+    "sesame-s3.ino.merged.bin": "e412108ad70de9a38685cfa5e1d89cb1b0c9fdb9cce14fe90f96280323ffc7fb"
+  },
+  "scope": "software-only; no device IO or physical measurement",
+  "base_revision": "ded4ce048e55a0fde637d707a586583b54859352",
+  "native_tests": {
+    "command": "uv run --no-project --python 3.12 --with pyyaml==6.0.3 --with pytest==9.1.1 python -m pytest tests/test_s3_firmware.py tests/test_s3_clock.py -q",
+    "result": "4 passed",
+    "seconds": 4.19,
+    "sanitizers": [
+      "address",
+      "undefined"
+    ]
+  },
+  "build_notes": [
+    "Clean pinned build passed before final IRQ-bound/help changes; final incremental build reuses unchanged core/library objects and records final source hashes.",
+    "One initial compile failed on unqualified SDA/SCL name collision with Arduino variant globals; fixed by explicit sesame:: qualification."
+  ],
+  "physical_status": {
+    "jumper": "unknown",
+    "carrier_address": null,
+    "input_gpio_design": 4,
+    "physical_measurement": "not performed"
+  },
+  "pinout_image_sha256": "ba5ad1b550198324fecb00337401689d40f69b9f84ae3d0fbab69d58e2fcfc43"
+}

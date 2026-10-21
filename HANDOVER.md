@@ -1,5 +1,17 @@
 # HANDOVER
 
+## S3-measured PCA clock — October 21, 2026 (software feature)
+
+`clock measure/status/abort` adds a bounded USB-only, non-motion capture of
+CH15 on GPIO4; CH0–14 stay off, all servo plugs removed for this clock step.
+See [protocol, evidence and fixture prerequisites](reference/SESAME-S3-CLOCK.md).
+The agent may automate measure → explicit oscillator/save → remeasure once the
+actual device/jumper setup is established. Jumper state is **unknown**. No
+physical commands or flashing were performed in this coding task; this is not a
+blanket ban on agent-run non-motion tests. GPIO4's actual SuperMini carrier
+address is unresolved, so interface native-header/address fields remain null.
+Do not infer it from the Zero reference CAD or extrapolate F17=GPIO4.
+
 ## Installed and responding over USB — 2026-10-12
 
 The same S3 on Artemis was backed up, then flashed with the validated

@@ -19,6 +19,7 @@ constexpr uint32_t TRIM_LIMIT = 15;
 constexpr uint32_t INITIAL_LOW = 85;
 constexpr uint32_t INITIAL_HIGH = 95;
 constexpr uint32_t OSC_DEFAULT = 25000000;
+constexpr uint32_t CLOCK_MEASURE_GPIO = 4;
 constexpr uint32_t SDA = 2;
 constexpr uint32_t SCL = 3;
 constexpr uint32_t OE = 18;

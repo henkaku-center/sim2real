@@ -141,6 +141,7 @@ hardware_profiles:
     sda: 2
     scl: 3
     oe: 18 # NEEDS-HARDWARE: verify connection and pull-up before servo power
+    clock_measure_gpio: 4 # read-only timing input; carrier address NEEDS-HARDWARE
     pca_address: 0x40
     oled_address: 0x3c
     intended_channels: {R1: 4, R2: 5, L1: 0, L2: 1, R4: 7, R3: 6, L3: 2, L4: 3}

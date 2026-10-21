@@ -198,6 +198,25 @@
     "active_press": "off",
     "held_at_boot": "must release before new press"
   },
+  "clock_measurement": {
+    "input_gpio": 4,
+    "pca_channel": 15,
+    "pca_signal_parts": [
+      "cad.Part__Feature128.pin.2",
+      "cad.Part__Feature144.pin.2"
+    ],
+    "carrier_address": null,
+    "s3_header_part": null,
+    "pin_binding_status": "NEEDS-HARDWARE: installed SuperMini pinout not established by Zero reference CAD; do not infer F17=GPIO4",
+    "power": "USB only; battery physically unplugged; all servo plugs removed; CH15 SIGNAL (not V+) to labelled GPIO4 input; common carrier GND; logic VCC 3.3V only",
+    "target_edges": 101,
+    "timeout_ms": 4000,
+    "watchdog_ms": 500,
+    "clock_reference": "S3 esp_timer microseconds; average 100 periods; not traceable lab-standard frequency",
+    "quality": "periods 10000..40000us, peak-to-peak jitter <=2% of mean, estimated oscillator 20..30MHz; algorithmic rejection limits, not measured accuracy",
+    "oscillator_formula": "observed_hz * 4096 * (prescale + 1)",
+    "apply": "Explicit oscillator HZ then save while OFF; measurement never changes calibration or verification"
+  },
   "power": {
     "flash": "battery physically disconnected; USB only; servo leads may remain connected; outputs OFF at boot",
     "button_assembly": "unplug USB, then power from battery alone",
@@ -372,6 +391,21 @@
       "syntax": "reference",
       "mode": "off",
       "meaning": "CH15=1500us, all servos disconnected; reports actual programmed ticks"
+    },
+    {
+      "syntax": "clock measure",
+      "mode": "off-usb-only",
+      "meaning": "Bounded CH15 rising-edge timing on GPIO4; all servos unplugged; heartbeat required; no calibration write"
+    },
+    {
+      "syntax": "clock status",
+      "mode": "any",
+      "meaning": "Read generation, quality, edges, observed Hz and oscillator estimate; MCU-relative, not a lab standard"
+    },
+    {
+      "syntax": "clock abort",
+      "mode": "any",
+      "meaning": "Abort clock capture and turn all outputs off"
     },
     {
       "syntax": "motion NAME",
