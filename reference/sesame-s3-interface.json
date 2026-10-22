@@ -448,6 +448,26 @@
       "meaning": "Abort clock capture and turn all outputs off"
     },
     {
+      "syntax": "pulse measure",
+      "mode": "usb-active-settled-ch0",
+      "meaning": "Measure CH0 PWM on GPIO4: 100 periods and high widths, 4s deadline, live heartbeat; outputs off at completion; CH0 servo replaced by jumper"
+    },
+    {
+      "syntax": "pulse status",
+      "mode": "any",
+      "meaning": "Capture generation/quality, observed frequency and high widths, CH0 register readback at start; not shaft feedback"
+    },
+    {
+      "syntax": "pulse listen",
+      "mode": "off-usb-only",
+      "meaning": "Passive GPIO input capture with all PWM outputs off; same 4s deadline and heartbeat; channel=-1"
+    },
+    {
+      "syntax": "pulse abort",
+      "mode": "any",
+      "meaning": "Abort waveform capture and turn all outputs off"
+    },
+    {
       "syntax": "motion NAME",
       "mode": "run",
       "meaning": "One finite stock sequence through SafeAction; same as run NAME"

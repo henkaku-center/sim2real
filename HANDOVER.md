@@ -1,5 +1,17 @@
 # HANDOVER
 
+## CH0 loopback on connected S3 — October 22, 2026
+
+Device `90:da:72:73:8a:c8` now runs the CH0 pulse-capture extension described in
+[the waveform procedure](reference/SESAME-S3-PULSE.md). Calibration was exported
+and preserved. User reports no servo movement and installed CH0 SIGNAL → GPIO4.
+Two outputs-off controls saw zero edges. Active captures at requested 1615.28 µs
+and 1566.48 µs read back CH0 ticks 331 and 321, but observed short/malformed
+GPIO4 pulses; both were rejected. **No valid servo waveform is verified.**
+Outputs are OFF. Next verify the actual jumper endpoints and capture/signal path;
+do not apply rejected oscillator estimates. See
+[hardware evidence](reference/evidence/2026-10-22-ch0-loopback/README.md).
+
 ## S3-measured PCA clock — October 21, 2026 (software feature)
 
 `clock measure/status/abort` adds a bounded USB-only, non-motion capture of

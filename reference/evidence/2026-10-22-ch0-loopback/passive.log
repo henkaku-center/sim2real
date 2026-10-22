@@ -1,0 +1,104 @@
+ESP-ROM:esp32s3-20210327
+Build:Mar 27 2021
+rst:0x15 (USB_UART_CHIP_RESET),boot:0x29 (SPI_FAST_FLASH_BOOT)
+Saved PC:0x4037ac4e
+SPIWP:0xee
+mode:DIO, clock div:1
+load:0x3fce2820,len:0x10cc
+load:0x403c8700,len:0xc2c
+load:0x403cb700,len:0x30b0
+entry 0x403c88b8
+CAL loaded NVS
+OFF boot
+WIFI mode=1 country_err=0 sleep=1 ip=1 softAP=1 tx=1
+AP ok=1 ssid=Sesame-S3-8AC8 ip=192.168.4.1 channel=1 hidden=0 country=JP  tx_dbm=8.50 clients=0 get_errors=0,0,0
+READY Sesame S3 calibration+controller; outputs OFF; help
+PROFILE tim-pca9685-150-512-v1 neutral_us=1615.28 manifest=bd7675604b98ae46
+> off
+OFF command
+OK OFF
+> export
+{"version":1,"manifest_id":"bd7675604b98ae46","oscillator_hz":24985600,"joints":[{"name":"R1","channel":-1,"sign":1,"trim_deg":0.0000,"limits_deg":[85.0000,95.0000],"verified":false},{"name":"R2","channel":-1,"sign":-1,"trim_deg":0.0000,"limits_deg":[85.0000,95.0000],"verified":false},{"name":"L1","channel":-1,"sign":-1,"trim_deg":0.0000,"limits_deg":[85.0000,95.0000],"verified":false},{"name":"L2","channel":-1,"sign":1,"trim_deg":0.0000,"limits_deg":[85.0000,95.0000],"verified":false},{"name":"R4","channel":-1,"sign":-1,"trim_deg":0.0000,"limits_deg":[85.0000,95.0000],"verified":false},{"name":"R3","channel":-1,"sign":1,"trim_deg":0.0000,"limits_deg":[85.0000,95.0000],"verified":false},{"name":"L3","channel":-1,"sign":-1,"trim_deg":0.0000,"limits_deg":[85.0000,95.0000],"verified":false},{"name":"L4","channel":-1,"sign":1,"trim_deg":0.0000,"limits_deg":[85.0000,95.0000],"verified":false}]}
+CALIBRATION unchanged
+> status
+mode=0 outputs=0 hub=1 fault=0 owner=0 motion=none profile=tim-pca9685-150-512-v1
+
+> pulse listen
+OK PULSE generation=1 channel=-1 target_periods=100 deadline_ms=4000
+> pulse status
+CLOCK generation=1 quality=running gpio=4 channel=-1 prescale=121 edges=0 observed_hz=0.000000 oscillator_estimate_hz=0.00 min_period_us=0 max_period_us=0 jitter_ppm=0.0 pulses=0 high_us=0.000 min_high_us=0 max_high_us=0 waveform=1 malformed=0 start_on_reg=0 start_off_reg=4096 timeout=0 applied=0 reference=S3_esp_timer
+> pulse status
+CLOCK generation=1 quality=running gpio=4 channel=-1 prescale=121 edges=0 observed_hz=0.000000 oscillator_estimate_hz=0.00 min_period_us=0 max_period_us=0 jitter_ppm=0.0 pulses=0 high_us=0.000 min_high_us=0 max_high_us=0 waveform=1 malformed=0 start_on_reg=0 start_off_reg=4096 timeout=0 applied=0 reference=S3_esp_timer
+> pulse status
+CLOCK generation=1 quality=running gpio=4 channel=-1 prescale=121 edges=0 observed_hz=0.000000 oscillator_estimate_hz=0.00 min_period_us=0 max_period_us=0 jitter_ppm=0.0 pulses=0 high_us=0.000 min_high_us=0 max_high_us=0 waveform=1 malformed=0 start_on_reg=0 start_off_reg=4096 timeout=0 applied=0 reference=S3_esp_timer
+> pulse status
+CLOCK generation=1 quality=running gpio=4 channel=-1 prescale=121 edges=0 observed_hz=0.000000 oscillator_estimate_hz=0.00 min_period_us=0 max_period_us=0 jitter_ppm=0.0 pulses=0 high_us=0.000 min_high_us=0 max_high_us=0 waveform=1 malformed=0 start_on_reg=0 start_off_reg=4096 timeout=0 applied=0 reference=S3_esp_timer
+> pulse status
+CLOCK generation=1 quality=running gpio=4 channel=-1 prescale=121 edges=0 observed_hz=0.000000 oscillator_estimate_hz=0.00 min_period_us=0 max_period_us=0 jitter_ppm=0.0 pulses=0 high_us=0.000 min_high_us=0 max_high_us=0 waveform=1 malformed=0 start_on_reg=0 start_off_reg=4096 timeout=0 applied=0 reference=S3_esp_timer
+> pulse status
+CLOCK generation=1 quality=running gpio=4 channel=-1 prescale=121 edges=0 observed_hz=0.000000 oscillator_estimate_hz=0.00 min_period_us=0 max_period_us=0 jitter_ppm=0.0 pulses=0 high_us=0.000 min_high_us=0 max_high_us=0 waveform=1 malformed=0 start_on_reg=0 start_off_reg=4096 timeout=0 applied=0 reference=S3_esp_timer
+> pulse status
+CLOCK generation=1 quality=running gpio=4 channel=-1 prescale=121 edges=0 observed_hz=0.000000 oscillator_estimate_hz=0.00 min_period_us=0 max_period_us=0 jitter_ppm=0.0 pulses=0 high_us=0.000 min_high_us=0 max_high_us=0 waveform=1 malformed=0 start_on_reg=0 start_off_reg=4096 timeout=0 applied=0 reference=S3_esp_timer
+> pulse status
+CLOCK generation=1 quality=running gpio=4 channel=-1 prescale=121 edges=0 observed_hz=0.000000 oscillator_estimate_hz=0.00 min_period_us=0 max_period_us=0 jitter_ppm=0.0 pulses=0 high_us=0.000 min_high_us=0 max_high_us=0 waveform=1 malformed=0 start_on_reg=0 start_off_reg=4096 timeout=0 applied=0 reference=S3_esp_timer
+> pulse status
+CLOCK generation=1 quality=running gpio=4 channel=-1 prescale=121 edges=0 observed_hz=0.000000 oscillator_estimate_hz=0.00 min_period_us=0 max_period_us=0 jitter_ppm=0.0 pulses=0 high_us=0.000 min_high_us=0 max_high_us=0 waveform=1 malformed=0 start_on_reg=0 start_off_reg=4096 timeout=0 applied=0 reference=S3_esp_timer
+> pulse status
+CLOCK generation=1 quality=running gpio=4 channel=-1 prescale=121 edges=0 observed_hz=0.000000 oscillator_estimate_hz=0.00 min_period_us=0 max_period_us=0 jitter_ppm=0.0 pulses=0 high_us=0.000 min_high_us=0 max_high_us=0 waveform=1 malformed=0 start_on_reg=0 start_off_reg=4096 timeout=0 applied=0 reference=S3_esp_timer
+> pulse status
+CLOCK generation=1 quality=running gpio=4 channel=-1 prescale=121 edges=0 observed_hz=0.000000 oscillator_estimate_hz=0.00 min_period_us=0 max_period_us=0 jitter_ppm=0.0 pulses=0 high_us=0.000 min_high_us=0 max_high_us=0 waveform=1 malformed=0 start_on_reg=0 start_off_reg=4096 timeout=0 applied=0 reference=S3_esp_timer
+> pulse status
+CLOCK generation=1 quality=running gpio=4 channel=-1 prescale=121 edges=0 observed_hz=0.000000 oscillator_estimate_hz=0.00 min_period_us=0 max_period_us=0 jitter_ppm=0.0 pulses=0 high_us=0.000 min_high_us=0 max_high_us=0 waveform=1 malformed=0 start_on_reg=0 start_off_reg=4096 timeout=0 applied=0 reference=S3_esp_timer
+> pulse status
+CLOCK generation=1 quality=running gpio=4 channel=-1 prescale=121 edges=0 observed_hz=0.000000 oscillator_estimate_hz=0.00 min_period_us=0 max_period_us=0 jitter_ppm=0.0 pulses=0 high_us=0.000 min_high_us=0 max_high_us=0 waveform=1 malformed=0 start_on_reg=0 start_off_reg=4096 timeout=0 applied=0 reference=S3_esp_timer
+> pulse status
+CLOCK generation=1 quality=running gpio=4 channel=-1 prescale=121 edges=0 observed_hz=0.000000 oscillator_estimate_hz=0.00 min_period_us=0 max_period_us=0 jitter_ppm=0.0 pulses=0 high_us=0.000 min_high_us=0 max_high_us=0 waveform=1 malformed=0 start_on_reg=0 start_off_reg=4096 timeout=0 applied=0 reference=S3_esp_timer
+> pulse status
+CLOCK generation=1 quality=running gpio=4 channel=-1 prescale=121 edges=0 observed_hz=0.000000 oscillator_estimate_hz=0.00 min_period_us=0 max_period_us=0 jitter_ppm=0.0 pulses=0 high_us=0.000 min_high_us=0 max_high_us=0 waveform=1 malformed=0 start_on_reg=0 start_off_reg=4096 timeout=0 applied=0 reference=S3_esp_timer
+OFF clock capture ended; clock status
+> pulse status
+CLOCK generation=1 quality=timeout gpio=4 channel=-1 prescale=121 edges=0 observed_hz=0.000000 oscillator_estimate_hz=0.00 min_period_us=0 max_period_us=0 jitter_ppm=0.0 pulses=0 high_us=0.000 min_high_us=0 max_high_us=0 waveform=1 malformed=0 start_on_reg=0 start_off_reg=4096 timeout=1 applied=0 reference=S3_esp_timer
+> status
+mode=0 outputs=0 hub=1 fault=0 owner=0 motion=none profile=tim-pca9685-150-512-v1
+
+> pulse listen
+OK PULSE generation=2 channel=-1 target_periods=100 deadline_ms=4000
+> pulse status
+CLOCK generation=2 quality=running gpio=4 channel=-1 prescale=121 edges=0 observed_hz=0.000000 oscillator_estimate_hz=0.00 min_period_us=0 max_period_us=0 jitter_ppm=0.0 pulses=0 high_us=0.000 min_high_us=0 max_high_us=0 waveform=1 malformed=0 start_on_reg=0 start_off_reg=4096 timeout=0 applied=0 reference=S3_esp_timer
+> pulse status
+CLOCK generation=2 quality=running gpio=4 channel=-1 prescale=121 edges=0 observed_hz=0.000000 oscillator_estimate_hz=0.00 min_period_us=0 max_period_us=0 jitter_ppm=0.0 pulses=0 high_us=0.000 min_high_us=0 max_high_us=0 waveform=1 malformed=0 start_on_reg=0 start_off_reg=4096 timeout=0 applied=0 reference=S3_esp_timer
+> pulse status
+CLOCK generation=2 quality=running gpio=4 channel=-1 prescale=121 edges=0 observed_hz=0.000000 oscillator_estimate_hz=0.00 min_period_us=0 max_period_us=0 jitter_ppm=0.0 pulses=0 high_us=0.000 min_high_us=0 max_high_us=0 waveform=1 malformed=0 start_on_reg=0 start_off_reg=4096 timeout=0 applied=0 reference=S3_esp_timer
+> pulse status
+CLOCK generation=2 quality=running gpio=4 channel=-1 prescale=121 edges=0 observed_hz=0.000000 oscillator_estimate_hz=0.00 min_period_us=0 max_period_us=0 jitter_ppm=0.0 pulses=0 high_us=0.000 min_high_us=0 max_high_us=0 waveform=1 malformed=0 start_on_reg=0 start_off_reg=4096 timeout=0 applied=0 reference=S3_esp_timer
+> pulse status
+CLOCK generation=2 quality=running gpio=4 channel=-1 prescale=121 edges=0 observed_hz=0.000000 oscillator_estimate_hz=0.00 min_period_us=0 max_period_us=0 jitter_ppm=0.0 pulses=0 high_us=0.000 min_high_us=0 max_high_us=0 waveform=1 malformed=0 start_on_reg=0 start_off_reg=4096 timeout=0 applied=0 reference=S3_esp_timer
+> pulse status
+CLOCK generation=2 quality=running gpio=4 channel=-1 prescale=121 edges=0 observed_hz=0.000000 oscillator_estimate_hz=0.00 min_period_us=0 max_period_us=0 jitter_ppm=0.0 pulses=0 high_us=0.000 min_high_us=0 max_high_us=0 waveform=1 malformed=0 start_on_reg=0 start_off_reg=4096 timeout=0 applied=0 reference=S3_esp_timer
+> pulse status
+CLOCK generation=2 quality=running gpio=4 channel=-1 prescale=121 edges=0 observed_hz=0.000000 oscillator_estimate_hz=0.00 min_period_us=0 max_period_us=0 jitter_ppm=0.0 pulses=0 high_us=0.000 min_high_us=0 max_high_us=0 waveform=1 malformed=0 start_on_reg=0 start_off_reg=4096 timeout=0 applied=0 reference=S3_esp_timer
+> pulse status
+CLOCK generation=2 quality=running gpio=4 channel=-1 prescale=121 edges=0 observed_hz=0.000000 oscillator_estimate_hz=0.00 min_period_us=0 max_period_us=0 jitter_ppm=0.0 pulses=0 high_us=0.000 min_high_us=0 max_high_us=0 waveform=1 malformed=0 start_on_reg=0 start_off_reg=4096 timeout=0 applied=0 reference=S3_esp_timer
+> pulse status
+CLOCK generation=2 quality=running gpio=4 channel=-1 prescale=121 edges=0 observed_hz=0.000000 oscillator_estimate_hz=0.00 min_period_us=0 max_period_us=0 jitter_ppm=0.0 pulses=0 high_us=0.000 min_high_us=0 max_high_us=0 waveform=1 malformed=0 start_on_reg=0 start_off_reg=4096 timeout=0 applied=0 reference=S3_esp_timer
+> pulse status
+CLOCK generation=2 quality=running gpio=4 channel=-1 prescale=121 edges=0 observed_hz=0.000000 oscillator_estimate_hz=0.00 min_period_us=0 max_period_us=0 jitter_ppm=0.0 pulses=0 high_us=0.000 min_high_us=0 max_high_us=0 waveform=1 malformed=0 start_on_reg=0 start_off_reg=4096 timeout=0 applied=0 reference=S3_esp_timer
+> pulse status
+CLOCK generation=2 quality=running gpio=4 channel=-1 prescale=121 edges=0 observed_hz=0.000000 oscillator_estimate_hz=0.00 min_period_us=0 max_period_us=0 jitter_ppm=0.0 pulses=0 high_us=0.000 min_high_us=0 max_high_us=0 waveform=1 malformed=0 start_on_reg=0 start_off_reg=4096 timeout=0 applied=0 reference=S3_esp_timer
+> pulse status
+CLOCK generation=2 quality=running gpio=4 channel=-1 prescale=121 edges=0 observed_hz=0.000000 oscillator_estimate_hz=0.00 min_period_us=0 max_period_us=0 jitter_ppm=0.0 pulses=0 high_us=0.000 min_high_us=0 max_high_us=0 waveform=1 malformed=0 start_on_reg=0 start_off_reg=4096 timeout=0 applied=0 reference=S3_esp_timer
+> pulse status
+CLOCK generation=2 quality=running gpio=4 channel=-1 prescale=121 edges=0 observed_hz=0.000000 oscillator_estimate_hz=0.00 min_period_us=0 max_period_us=0 jitter_ppm=0.0 pulses=0 high_us=0.000 min_high_us=0 max_high_us=0 waveform=1 malformed=0 start_on_reg=0 start_off_reg=4096 timeout=0 applied=0 reference=S3_esp_timer
+> pulse status
+CLOCK generation=2 quality=running gpio=4 channel=-1 prescale=121 edges=0 observed_hz=0.000000 oscillator_estimate_hz=0.00 min_period_us=0 max_period_us=0 jitter_ppm=0.0 pulses=0 high_us=0.000 min_high_us=0 max_high_us=0 waveform=1 malformed=0 start_on_reg=0 start_off_reg=4096 timeout=0 applied=0 reference=S3_esp_timer
+> pulse status
+CLOCK generation=2 quality=running gpio=4 channel=-1 prescale=121 edges=0 observed_hz=0.000000 oscillator_estimate_hz=0.00 min_period_us=0 max_period_us=0 jitter_ppm=0.0 pulses=0 high_us=0.000 min_high_us=0 max_high_us=0 waveform=1 malformed=0 start_on_reg=0 start_off_reg=4096 timeout=0 applied=0 reference=S3_esp_timer
+OFF clock capture ended; clock status
+> pulse status
+CLOCK generation=2 quality=timeout gpio=4 channel=-1 prescale=121 edges=0 observed_hz=0.000000 oscillator_estimate_hz=0.00 min_period_us=0 max_period_us=0 jitter_ppm=0.0 pulses=0 high_us=0.000 min_high_us=0 max_high_us=0 waveform=1 malformed=0 start_on_reg=0 start_off_reg=4096 timeout=1 applied=0 reference=S3_esp_timer
+> off
+OFF command
+OK OFF
+> status
+mode=0 outputs=0 hub=1 fault=0 owner=0 motion=none profile=tim-pca9685-150-512-v1
+

@@ -1,0 +1,31 @@
+{
+  "platform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.39",
+  "toolchain": {
+    "arduino_cli": "1.5.1",
+    "host_python": "3.12",
+    "pyyaml": "6.0.3",
+    "pyserial": "3.5",
+    "core": "esp32:esp32@3.3.11",
+    "index_url": "https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json",
+    "fqbn": "esp32:esp32:esp32s3:CDCOnBoot=cdc,FlashSize=4M,PartitionScheme=default,PSRAM=disabled,EraseFlash=none",
+    "libraries": {
+      "Adafruit PWM Servo Driver Library": "3.0.3",
+      "Adafruit SSD1306": "2.5.17",
+      "Adafruit GFX Library": "1.12.6",
+      "Adafruit BusIO": "1.17.4"
+    }
+  },
+  "binaries_sha256": {
+    "sesame-s3.ino.merged.bin": "6805ffe5c5e7b0bbc1a5f4cc592fa981b26ca5981e43e4b56c9708b10269db16",
+    "sesame-s3.ino.bin": "ae9c6a318e51c1e6e8b86774e0d213709c6165568790469c5615dad47610b55b",
+    "sesame-s3.ino.partitions.bin": "148b959cbff1c38aa8e1d5c0ba9d612c54997b945e56a63f41223eef650653a1",
+    "boot_app0.bin": "f94c5d786a7a8fab06ac5d10e33bf37711a6697636dc037559ea19cc410a17f0",
+    "sesame-s3.ino.bootloader.bin": "5f95cbc8b40b7a373f9cb85b534cb7a570cdad30ca27c7021775d830ca03276b"
+  },
+  "timing": {
+    "queue_s": 0,
+    "setup_s": 2.012,
+    "execution_s": 103.79,
+    "total_s": 105.803
+  }
+}

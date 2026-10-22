@@ -23,6 +23,8 @@ SafeAction gate;
 ClockMeasurement clockMeasurement;
 portMUX_TYPE clockMux = portMUX_INITIALIZER_UNLOCKED;
 bool clockInterruptAttached = false;
+int captureChannel = 15;
+uint16_t captureOn = 0, captureOff = 0;
 static_assert(CLOCK_MEASURE_GPIO != sesame::SDA && CLOCK_MEASURE_GPIO != sesame::SCL &&
               CLOCK_MEASURE_GPIO != OE && CLOCK_MEASURE_GPIO != 0 &&
               CLOCK_MEASURE_GPIO != 19 && CLOCK_MEASURE_GPIO != 20,
@@ -30,7 +32,8 @@ static_assert(CLOCK_MEASURE_GPIO != sesame::SDA && CLOCK_MEASURE_GPIO != sesame:
 void ARDUINO_ISR_ATTR clockEdge(void* generation) {
   const uint32_t timestamp = uint32_t(esp_timer_get_time());
   portENTER_CRITICAL_ISR(&clockMux);
-  if (clockMeasurement.edge(uint32_t(reinterpret_cast<uintptr_t>(generation)), timestamp))
+  if (clockMeasurement.sample(uint32_t(reinterpret_cast<uintptr_t>(generation)), timestamp,
+                              gpio_get_level(gpio_num_t(CLOCK_MEASURE_GPIO))))
     gpio_intr_disable(gpio_num_t(CLOCK_MEASURE_GPIO)); // bound even an unexpected fast edge train
   portEXIT_CRITICAL_ISR(&clockMux);
 }
@@ -186,11 +189,15 @@ String status() {
 String clockStatus() {
   const ClockReport r = clockReport();
   return "CLOCK generation=" + String(r.generation) + " quality=" + clockOutcomeName(r.outcome) +
-    " gpio=" + String(CLOCK_MEASURE_GPIO) + " channel=15 prescale=" + String(r.prescale) +
+    " gpio=" + String(CLOCK_MEASURE_GPIO) + " channel=" + String(captureChannel) + " prescale=" + String(r.prescale) +
     " edges=" + String(r.edges) + " observed_hz=" + String(r.observedHz(), 6) +
     " oscillator_estimate_hz=" + String(r.oscillatorHz(), 2) +
     " min_period_us=" + String(r.edges > 1 ? r.minPeriodUs : 0) +
     " max_period_us=" + String(r.maxPeriodUs) + " jitter_ppm=" + String(r.jitterPpm(), 1) +
+    " pulses=" + String(r.pulses) + " high_us=" + String(r.highUs(), 3) +
+    " min_high_us=" + String(r.pulses ? r.minHighUs : 0) + " max_high_us=" + String(r.maxHighUs) +
+    " waveform=" + String(r.waveform) + " malformed=" + String(r.malformed) +
+    " start_on_reg=" + String(captureOn) + " start_off_reg=" + String(captureOff) +
     " timeout=" + String(r.outcome == ClockOutcome::Timeout) +
     " applied=0 reference=S3_esp_timer";
 }
@@ -234,6 +241,8 @@ const char* HELP =
   "reference (OFF, no servos: CH15=1500us) | motion NAME | run NAME\n"
   "clock measure (OFF, USB only, all servos unplugged; input pin: clock status)\n"
   "clock status | clock abort (measurement never writes calibration)\n"
+  "pulse measure (USB, active settled CH0 only; CH0 SIGNAL to GPIO4) | pulse listen (OFF, no PWM)\n"
+  "pulse status | pulse abort\n"
   "servo NAME DEG | pose D0 D1 D2 D3 D4 D5 D6 D7 | rest\n"
   "OFF only: wifi JP|US|GB|DE|FR CHANNEL(1..11) TX_DBM(2|8.5|13|19.5)\n"
   "Every active serial/web session needs heartbeat <500ms; use class console.\n"
@@ -243,6 +252,8 @@ String dispatchCommand(const char* text, Owner source) {
   CommandLine c; float value = 0, second = 0; int number = 0;
   if (!c.parse(text)) return "ERR malformed/too long";
   const uint32_t now = millis();
+  if (c.is("pulse", 2) && !strcmp(c.words[1], "status")) return clockStatus();
+  if (c.is("pulse", 2) && !strcmp(c.words[1], "abort")) { outputsOff("pulse abort"); return "OK OFF"; }
   const ClockCommand clock = clockCommand(c);
   if (clock == ClockCommand::Status) return clockStatus();
   if (clock == ClockCommand::Abort) { outputsOff("clock abort"); return "OK OFF"; }
@@ -255,17 +266,49 @@ String dispatchCommand(const char* text, Owner source) {
   if (c.is("bench", 1)) { benchDisplay = true; return "OK BENCH commanded angles, not feedback"; }
   if (c.is("off", 1)) { outputsOff("command"); return "OK OFF"; }
   if (c.is("stop", 1)) {
-    if (gate.mode == Mode::ClockMeasure) { outputsOff("clock stop"); return "OK OFF"; }
+    if (clockInterruptAttached || gate.mode == Mode::ClockMeasure) { outputsOff("capture stop"); return "OK OFF"; }
     cancelQueue(); gate.stop(now); return "OK STOP frozen; off releases torque";
   }
   if (gate.active() && owner != source) return "ERR owned by another transport; off first";
   if (c.is("heartbeat", 1)) { gate.heartbeat(now); return ""; }
+  if (clockInterruptAttached) return "ERR capture active; status, heartbeat or off only";
+  if (c.is("pulse", 2) && (!strcmp(c.words[1], "measure") || !strcmp(c.words[1], "listen"))) {
+    const bool passive = !strcmp(c.words[1], "listen");
+    if (source != USB || !Serial) return "ERR pulse capture requires connected USB owner";
+    if (!ready || fault) return "ERR pulse hub fault";
+    if (passive) {
+      if (gate.active()) return "ERR off before passive capture";
+      if (!clearPWM()) { fault = true; outputsOff("pulse clear fault"); return "ERR pulse clear"; }
+      // Arming alone emits no PWM; this supplies the normal watchdog lifecycle.
+      if (!gate.arm(Mode::Channel, 0, now)) return "ERR pulse listen arm";
+      cancelQueue(); owner = USB;
+    } else if (owner != USB || gate.mode != Mode::Channel || gate.selected != 0 || gate.enabled != 1 ||
+        fabsf(gate.current[0]-gate.target[0]) > .01f || motion || sweeping)
+      return "ERR pulse capture requires settled raw CH0 target";
+    uint8_t regs[4];
+    for (int i = 0; i < 4; ++i) if (!readRegister(0x06+i, regs[i])) {
+      fault = true; outputsOff("pulse register read fault"); return "ERR pulse register read";
+    }
+    captureOn = uint16_t(regs[0]) | (uint16_t(regs[1]) << 8);
+    captureOff = uint16_t(regs[2]) | (uint16_t(regs[3]) << 8);
+    captureChannel = passive ? -1 : 0;
+    pinMode(CLOCK_MEASURE_GPIO, INPUT_PULLDOWN);
+    portENTER_CRITICAL(&clockMux);
+    clockMeasurement.start(now, prescale, true);
+    const uint32_t generation = clockMeasurement.report().generation;
+    portEXIT_CRITICAL(&clockMux);
+    attachInterruptArg(CLOCK_MEASURE_GPIO, clockEdge,
+                       reinterpret_cast<void*>(uintptr_t(generation)), CHANGE);
+    clockInterruptAttached = true;
+    return "OK PULSE generation=" + String(generation) + " channel=" + String(captureChannel) + " target_periods=100 deadline_ms=4000";
+  }
   if (clock == ClockCommand::Measure) {
     if (source != USB || !Serial) return "ERR clock measurement requires connected USB owner";
     if (!ready || fault || gate.active()) return "ERR off first / hub fault";
     if (!clearPWM()) { fault = true; outputsOff("clock prepare I2C fault"); return "ERR clock output clear"; }
     if (!gate.arm(Mode::ClockMeasure, -1, now)) return "ERR clock arm";
     cancelQueue(); owner = USB;
+    captureChannel = 15; captureOn = 0; captureOff = 0;
     pinMode(CLOCK_MEASURE_GPIO, INPUT_PULLDOWN);
     portENTER_CRITICAL(&clockMux);
     clockMeasurement.start(now, prescale);
@@ -393,7 +436,7 @@ String dispatchCommand(const char* text, Owner source) {
 }
 String command(const char* text, Owner source) {
   String result = dispatchCommand(text, source);
-  if (result.startsWith("ERR") && gate.mode == Mode::ClockMeasure)
+  if (result.startsWith("ERR") && (clockInterruptAttached || gate.mode == Mode::ClockMeasure))
     outputsOff("clock command error", ClockOutcome::CommandError);
   return result;
 }
@@ -405,14 +448,14 @@ void serialService() {
     char ch = Serial.read();
     if (ch == '\r' || ch == '\n') {
       if (overflow) {
-        if (gate.mode == Mode::ClockMeasure) outputsOff("clock input overflow", ClockOutcome::CommandError);
+        if (clockInterruptAttached || gate.mode == Mode::ClockMeasure) outputsOff("clock input overflow", ClockOutcome::CommandError);
         Serial.println("ERR line too long (discarded)");
       }
       else if (count) {
         line[count] = 0; String out = command(line, USB);
         if (out.length()) {
           if (replies.length() + out.length() > 8192) {
-            if (gate.mode == Mode::ClockMeasure) outputsOff("clock output overflow", ClockOutcome::CommandError);
+            if (clockInterruptAttached || gate.mode == Mode::ClockMeasure) outputsOff("clock output overflow", ClockOutcome::CommandError);
             replies = "ERR output queue overflow; repeat show/export\n";
           }
           else replies += out + "\n";
@@ -536,7 +579,7 @@ void outputService() {
     if (wasActive) outputsOff("watchdog >500ms", ClockOutcome::Watchdog);
     return;
   }
-  if (gate.mode == Mode::ClockMeasure) {
+  if (clockInterruptAttached || gate.mode == Mode::ClockMeasure) {
     if (!Serial) { outputsOff("clock USB disconnected", ClockOutcome::Disconnected); return; }
     portENTER_CRITICAL(&clockMux);
     const bool finished = clockMeasurement.poll(now);

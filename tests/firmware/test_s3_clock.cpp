@@ -67,6 +67,39 @@ int main() {
     clock.abort(reason);clock.edge(clock.report().generation,20100);
     assert(clock.report().outcome==reason && clock.report().edges==1 && !clock.active());
   }
+  // Physical waveform capture: two duty cycles, wraparound, stale callbacks,
+  // an initial partial pulse, and rejected missing/glitched falling edges.
+  for(uint32_t width:{1567u,1616u}) {
+    assert(clock.start(0,121,true));
+    const auto gen=clock.report().generation;
+    assert(!clock.sample(gen,0xffff0000u-100,false));
+    assert(!clock.sample(gen-1,0xffff0000u,true));
+    for(unsigned i=0;i<101;i++) {
+      uint32_t rise=0xffff0000u+i*20000;
+      assert(clock.sample(gen,rise,true)==(i==100));
+      if(i<100)assert(!clock.sample(gen,rise+width,false));
+    }
+    assert(clock.poll(2100));assert(clock.report().outcome==ClockOutcome::Complete);
+    assert(clock.report().pulses==100);near(clock.report().highUs(),width);
+    near(clock.report().observedHz(),50);
+    assert(!clock.sample(gen,4000000,false));assert(clock.report().pulses==100);
+  }
+  for(int defect:{0,1,2,3}) {
+    assert(clock.start(0,121,true));const auto gen=clock.report().generation;
+    for(unsigned i=0;i<101;i++) {
+      clock.sample(gen,i*20000,true);
+      if(i<100) {
+        if(defect==0 && i==50)continue; // missing fall
+        clock.sample(gen,i*20000+(defect==1?100:1600),false);
+        if(defect==2 && i==50)clock.sample(gen,i*20000+1700,false); // extra fall
+        if(defect==3 && i==50)clock.sample(gen,i*20000+1800,true); // extra rise
+      }
+    }
+    assert(clock.poll(2100));assert(clock.report().outcome==ClockOutcome::Quality);
+  }
+  assert(clock.start(0,121,true));
+  assert(clock.poll(4000));assert(clock.report().outcome==ClockOutcome::Timeout);
+  assert(clock.report().edges==0 && clock.report().highUs()==0);
   SafeAction gate;uint16_t wanted[16];
   assert(gate.arm(Mode::ClockMeasure,-1,0));
   assert(!gate.arm(Mode::Channel,0,0));assert(!gate.centre(0));
@@ -82,5 +115,11 @@ int main() {
   assert(gate.arm(Mode::Channel,1,600));assert(gate.set(1,95,600));
   assert(planOutputs(gate,121,wanted));assert(wanted[1]!=4096 && wanted[15]==4096);
   gate.off();assert(planOutputs(gate,121,wanted));for(auto value:wanted)assert(value==4096);
+  // Passive capture uses the armed-but-no-target lifecycle: no channel enabled.
+  assert(gate.arm(Mode::Channel,0,1000));assert(gate.enabled==0);
+  assert(gate.step(1200));assert(planOutputs(gate,121,wanted));
+  for(auto value:wanted)assert(value==4096);
+  assert(!gate.step(1501));assert(planOutputs(gate,121,wanted));
+  for(auto value:wanted)assert(value==4096);
   std::cout<<"Clock capture/parser/generation/deadline/quality/output exclusion tests passed\n";
 }
