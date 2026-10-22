@@ -71,6 +71,8 @@ def test_committed_revalidation_is_true_and_keeps_hold():
     proof = provenance.verify(ROOT)
     assert proof['original_commit'] == provenance.AUDITED_REPORT_COMMIT
     assert proof['validator_executed'] is False
+    assert proof['method'] == 'unused-s3-firmware-metadata-v2'
+    assert proof['allowed_manifest_changes'] == provenance.ALLOWED_MANIFEST_CHANGES
     assert proof['original_input_hashes'][provenance.MANIFEST] == '2912c38dd40bd622694a103be345d6c2a7374ef05b85a5a511314ff0ccc58bae'
 
 
@@ -92,7 +94,54 @@ def test_refresh_preserves_reconstructible_execution_and_is_idempotent(fixture_r
     assert (root / provenance.REPORT).read_bytes() == first
 
 
-@pytest.mark.parametrize('field', ['joint_limit', 'neutral', 'other_hardware_field', 'scalar_type'])
+def test_exact_firmware_deltas_preserve_effective_body_identity(fixture_repo):
+    root, baseline, files = fixture_repo
+    old = files[provenance.MANIFEST]
+    original = yaml.safe_load(old)
+    revised = copy.deepcopy(original)
+    hw = revised['hardware_profiles']['sesame_s3']
+    for change in provenance.ALLOWED_MANIFEST_CHANGES:
+        hw[change['path'][-1]] = copy.deepcopy(change['value'])
+    expected = provenance.sha(provenance.encoded(original))
+    assert provenance.effective_identity(old, yaml.safe_dump(revised)) == expected
+    assert provenance.effective_identity(old, (ROOT / provenance.MANIFEST).read_bytes()) == expected
+    provenance.refresh(root, baseline)
+    assert provenance.verify(root)['effective_manifest_sha256'] == expected
+
+
+@pytest.mark.parametrize('field,value', [
+    ('clock_measure_gpio', 5), ('clock_measure_gpio', 4.0),
+    ('clock_measure_gpio', True), ('clock_measure_gpio', '4'),
+    ('calibration_compatible_manifest_ids', ['bd7675604b98ae46', '0000000000000000']),
+    ('calibration_compatible_manifest_ids', 'bd7675604b98ae46'),
+    ('calibration_compatible_manifest_ids', []),
+    ('intended_channels_status', 'physically-verified'),
+    ('pulse_profile', {'id': 'different-profile'}),
+])
+def test_changed_allowed_field_values_are_not_a_blanket_exception(fixture_repo, field, value):
+    root, baseline, files = fixture_repo
+    data = yaml.safe_load((root / provenance.MANIFEST).read_text())
+    data['hardware_profiles']['sesame_s3'][field] = value
+    (root / provenance.MANIFEST).write_text(yaml.safe_dump(data))
+    with pytest.raises(ValueError, match='unaudited firmware metadata value'):
+        provenance.refresh(root, baseline)
+    assert (root / provenance.REPORT).read_bytes() == files[provenance.REPORT]
+
+
+@pytest.mark.parametrize('field', ['clock_measure_gpio', 'calibration_compatible_manifest_ids',
+                                 'intended_channels_status', 'pulse_profile'])
+def test_missing_audited_field_is_rejected(fixture_repo, field):
+    root, baseline, files = fixture_repo
+    data = yaml.safe_load((root / provenance.MANIFEST).read_text())
+    del data['hardware_profiles']['sesame_s3'][field]
+    (root / provenance.MANIFEST).write_text(yaml.safe_dump(data))
+    with pytest.raises(ValueError, match='unaudited firmware metadata value'):
+        provenance.refresh(root, baseline)
+    assert (root / provenance.REPORT).read_bytes() == files[provenance.REPORT]
+
+
+@pytest.mark.parametrize('field', ['joint_limit', 'neutral', 'other_hardware_field', 'scalar_type',
+                                 'recommended_channel_map', 'joint_overlay_limits', 'unknown_metadata'])
 def test_effective_manifest_changes_rejected_before_write(fixture_repo, field):
     root, baseline, files = fixture_repo
     data = yaml.safe_load((root / provenance.MANIFEST).read_text())
@@ -102,6 +151,12 @@ def test_effective_manifest_changes_rejected_before_write(fixture_repo, field):
         data['conventions']['firmware_neutral_deg'] += 1
     elif field == 'scalar_type':
         data['joints'][0]['sign'] = True  # Python True == 1 must not bypass the diff.
+    elif field == 'recommended_channel_map':
+        data['hardware_profiles']['sesame_s3']['intended_channels']['R1'] = 6
+    elif field == 'joint_overlay_limits':
+        data['hardware_profiles']['sesame_s3']['initial_limits_deg'] = [0, 180]
+    elif field == 'unknown_metadata':
+        data['hardware_profiles']['sesame_s3']['unknown_firmware_feature'] = True
     else:
         data['hardware_profiles']['sesame_s3']['sda'] += 1
     (root / provenance.MANIFEST).write_text(yaml.safe_dump(data))
@@ -126,6 +181,7 @@ def test_source_asset_or_export_changes_rejected_without_report_write(fixture_re
 @pytest.mark.parametrize('mutation', [
     'result', 'release', 'geometry', 'status', 'original_hash', 'original_commit',
     'original_manifest', 'original_inputs', 'executed_claim', 'coverage', 'missing_proof',
+    'allowed_metadata', 'method',
 ])
 def test_tampered_provenance_or_results_rejected(fixture_repo, mutation):
     root, baseline, _ = fixture_repo
@@ -142,6 +198,8 @@ def test_tampered_provenance_or_results_rejected(fixture_repo, mutation):
     elif mutation == 'executed_claim': proof['validator_executed'] = True
     elif mutation == 'coverage': del proof['preserved_sha256']['sim/manifest.py']
     elif mutation == 'missing_proof': del report[provenance.PROOF]
+    elif mutation == 'allowed_metadata': proof['allowed_manifest_changes'][1]['value'] = 5
+    elif mutation == 'method': proof['method'] = 'unused-s3-pulse-profile-addition-v1'
     with pytest.raises(ValueError): provenance.verify(root, report)
 
 
