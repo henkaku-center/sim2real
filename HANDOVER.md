@@ -1,5 +1,17 @@
 # HANDOVER
 
+## Recommended map and full pointer sequence — October 22, 2026
+
+The current classroom path is `arm bench CH`: loose horn pointers, no legs,
+0→90→180→90 on CH0…7 sequentially, waiting for each rate-limited target and
+sending `off` between channels. This supersedes earlier tiny-discovery and
+repeated horn-removal instructions below. Fresh defaults use the recommended
+R1=4/R2=5/L1=0/L2=1/R4=7/R3=6/L3=2/L4=3 map without claiming physical verification.
+Valid previous `bd7675604b98ae46` NVS calibration remains readable unchanged;
+the agent explicitly normalizes a legacy/different map if needed. Debug and
+production retain the same Tim pulse profile; production joint limits are not
+widened by raw bench commands. See `reference/SESAME-S3-CALIBRATION.md` and D16.
+
 ## S3-measured PCA clock — October 21, 2026 (software feature)
 
 `clock measure/status/abort` adds a bounded USB-only, non-motion capture of

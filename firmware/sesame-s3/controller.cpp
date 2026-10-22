@@ -144,10 +144,11 @@ void loadCalibration() {
   Record r;
   if (nvs && prefs.getBytesLength("record") == sizeof(r) &&
       prefs.getBytes("record", &r, sizeof(r)) == sizeof(r) && r.magic == 0x53334331 &&
-      !memcmp(r.manifest, MANIFEST_ID, sizeof(r.manifest)) && r.checksum == checksum(r) && r.cal.valid()) {
+      compatibleCalibrationManifest(r.manifest) && r.checksum == checksum(r) && r.cal.valid()) {
     gate.cal = r.cal; saved = true;
-    Serial.println("CAL loaded NVS");
-  } else Serial.println("CAL defaults: map UNASSIGNED, limits 85..95; show/help");
+    Serial.println(!memcmp(r.manifest, MANIFEST_ID, sizeof(r.manifest)) ?
+      "CAL loaded NVS" : "CAL loaded compatible NVS; values preserved; show; explicit save updates record identity");
+  } else Serial.println("CAL recommended map defaults; physical verification not implied; arm bench CH for pointer tests; show/help");
 }
 String showCalibration() {
   String out = "manifest=" + String(MANIFEST_ID) + " profile=" + PULSE_PROFILE_ID + " saved=" + String(saved) +
@@ -226,7 +227,7 @@ void startWifi() {
 
 const char* HELP =
   "help | show | export | status | wifi | face NAME | bench | off | stop | heartbeat\n"
-  "arm channel CH | arm hornless CH | arm joint NAME | arm assembly | arm run\n"
+  "arm bench CH (0..180 loose pointer, no legs) | arm joint NAME | arm assembly | arm run\n"
   "angle DEG | us MICROSECONDS | q INTERNAL_DEG | jog DELTA_DEG | sweep LOW HIGH\n"
   "centre (assembly, raw CH0..7=90; ignores trims)\n"
   "OFF only: map NAME CH | unmap NAME | sign NAME -1|1 | trim NAME DEG\n"
@@ -290,8 +291,7 @@ String dispatchCommand(const char* text, Owner source) {
     if (c.count == 2 && !strcmp(c.words[1], "run") && saved) mode = Mode::Run;
     if (c.count == 3 && !strcmp(c.words[1], "joint")) { mode = Mode::Joint; selected = jointIndex(c.words[2]); }
     if (c.count == 3 && c.integer(2, selected)) {
-      if (!strcmp(c.words[1], "channel")) mode = Mode::Channel;
-      if (!strcmp(c.words[1], "hornless")) mode = Mode::Hornless;
+      mode = rawMode(c.words[1]);
     }
     if (!gate.arm(mode, selected, now)) return "ERR arm: select valid channel/joint; run needs all verified+saved";
     owner = source; cancelQueue();

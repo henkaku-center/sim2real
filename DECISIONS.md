@@ -321,3 +321,33 @@ concrete missing prerequisites rather than a blanket access ban, and do not
 present the S3 timebase as a calibrated laboratory standard. Protocol, provenance
 and existing software evidence are in `reference/SESAME-S3-CLOCK.md` and
 `reference/evidence/2026-10-21-s3-clock-software.json`.
+
+## D16. Recommended defaults and full sequential pointer commands (2026-10-22)
+
+**Direct user correction:** remove the tiny-discovery and repeated horn-removal
+procedure, remove the unassigned presentation, and align current firmware with
+the recommended channel map. Fresh defaults now use R1=4, R2=5, L1=0, L2=1,
+R4=7, R3=6, L3=2, L4=3 from the canonical manifest. A recommended default is not
+a claim of physically measured mapping; verification flags remain false.
+
+The canonical bench command is `arm bench CH`: loose single-arm pointers with
+legs not attached, 0→90→180→90 commanded degrees on CH0 through CH7 one at a
+time. The agent waits for each rate-limited target while maintaining heartbeat,
+then sends `off` before the next channel. This replaces the former restricted
+discovery recipe, not bounded SafeAction, electrical pulse bounds, watchdog,
+stop behavior or exclusion of the other outputs. It neither widens production
+joint limits nor establishes measured shaft limits from an ACK. The historical
+raw command names remain compatibility paths, not the recommended instructions.
+
+**Saved-data compatibility:** the default-map policy changes the current manifest
+identity, but prior `bd7675604b98ae46` calibration has the same binary layout,
+pulse profile and meaning. Accept that explicitly listed legacy identity only
+with the existing checksum/validity checks, preserving every saved channel,
+sign, trim, limit, oscillator and verification flag. Loading does not write NVS.
+The agent inspects `show` and explicitly unmaps/remaps while OFF if normalization
+to recommended wiring is needed; only explicit `save` persists changes. No
+silent reset or overwriting of custom calibration is authorized.
+
+This software update introduces no battery-load routine or physical test result.
+The established GPIO4/F17 photo binding, unknown jumper installation state and
+reference-CAD/actual-hub annotation distinction from D15 remain applicable.

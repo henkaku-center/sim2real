@@ -1,7 +1,6 @@
 """Focused native timing tests; no hardware IO and no offline-load lifecycle suite."""
 from pathlib import Path
 import json
-import re
 import subprocess
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -18,9 +17,8 @@ def test_native_clock_measurement(tmp_path):
 
 def test_read_only_feature_preserves_calibration_identity_and_photo_binding():
     header = (ROOT / "firmware/sesame-s3/manifest_generated.h").read_text()
-    # Compatibility identity before this read-only feature. Changing motion or
-    # pulse semantics requires an intentional test/compatibility review.
-    assert re.search(r'MANIFEST_ID\[\] = "bd7675604b98ae46"', header)
+    # Defaults-policy changes must preserve valid prior stored calibration.
+    assert 'COMPATIBLE_MANIFEST_IDS[] = {"bd7675604b98ae46"}' in header
     interface = json.loads((ROOT / "reference/sesame-s3-interface.json").read_text())
     clock = interface['clock_measurement']
     assert clock['input_gpio'] == 4 and clock['pca_channel'] == 15
@@ -37,5 +35,9 @@ def test_read_only_feature_preserves_calibration_identity_and_photo_binding():
     assert clock['target_edges'] == 101 and clock['timeout_ms'] == 4000
     assert clock['watchdog_ms'] == 500
     assert interface['pulse']['profile_id'] == 'tim-pca9685-150-512-v1'
+    assert [j['default_nvs_channel'] for j in interface['joint_map']] == [4,5,0,1,7,6,2,3]
+    assert all(j['hardware_verified_pca_channel'] is None for j in interface['joint_map'])
+    assert interface['bench']['sequence_deg'] == [0,90,180,90]
+    assert interface['bench']['arm_command'] == 'arm bench CH'
     assert {'clock measure', 'clock status', 'clock abort'} <= {
         command['syntax'] for command in interface['commands']}

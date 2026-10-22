@@ -22,12 +22,13 @@ inline uint16_t pulseTicks(float us, uint32_t oscillator, uint8_t prescale) {
 struct Calibration {
   uint32_t version = 1;
   uint32_t oscillator = OSC_DEFAULT;
-  int8_t channel[8] = {-1,-1,-1,-1,-1,-1,-1,-1};
+  int8_t channel[8];
   int8_t sign[8];
   float trim[8], low[8], high[8];
   uint8_t verified = 0;
   Calibration() {
     for (int j = 0; j < 8; ++j) {
+      channel[j] = DEFAULT_CHANNELS[j];
       sign[j] = SIGNS[j]; trim[j] = TRIMS[j];
       low[j] = fmaxf(SOFT_LOW[j], INITIAL_LOW);
       high[j] = fminf(SOFT_HIGH[j], INITIAL_HIGH);
@@ -63,7 +64,19 @@ struct Calibration {
   }
 };
 
-enum class Mode { Off, Channel, Hornless, Joint, Assembly, Run, Reference, ClockMeasure };
+// Keep numeric mode IDs stable; the old name is a source compatibility alias.
+enum class Mode { Off, Channel, Bench, Hornless = Bench, Joint, Assembly, Run, Reference, ClockMeasure };
+inline Mode rawMode(const char* name) {
+  if (!strcmp(name, "bench") || !strcmp(name, "hornless")) return Mode::Bench;
+  if (!strcmp(name, "channel")) return Mode::Channel;
+  return Mode::Off;
+}
+inline bool compatibleCalibrationManifest(const char (&recorded)[17]) {
+  if (!memcmp(recorded, MANIFEST_ID, sizeof(recorded))) return true;
+  for (const char* id : COMPATIBLE_MANIFEST_IDS)
+    if (!memcmp(recorded, id, sizeof(recorded))) return true;
+  return false;
+}
 
 // All PWM authority passes through this gate, including raw bench commands.
 // First enable cannot be slew-limited from an unknown physical shaft position.
@@ -83,7 +96,7 @@ class SafeAction {
   bool arm(Mode m, int index, uint32_t now) {
     if (active() || m == Mode::Off || !cal.valid()) return false;
     if (m == Mode::Run && !cal.complete()) return false;
-    if ((m == Mode::Channel || m == Mode::Hornless || m == Mode::Joint) && (index < 0 || index > 7)) return false;
+    if ((m == Mode::Channel || m == Mode::Bench || m == Mode::Joint) && (index < 0 || index > 7)) return false;
     if (m == Mode::Joint && cal.channel[index] < 0) return false;
     mode = m; selected = index; timedOut = false;
     lastHeartbeat = lastStep = now;
@@ -97,7 +110,7 @@ class SafeAction {
     if (mode != Mode::Run && j != selected) return false;
     float bound;
     if (mode == Mode::Channel) bound = clamp(degrees, INITIAL_LOW, INITIAL_HIGH);
-    else if (mode == Mode::Hornless) bound = clamp(degrees, 0, 180);
+    else if (mode == Mode::Bench) bound = clamp(degrees, 0, 180);
     else bound = cal.bounded(j, degrees);
     if (fabsf(bound - current[j]) > MAX_JUMP) { stop(now); return false; }
     target[j] = bound;

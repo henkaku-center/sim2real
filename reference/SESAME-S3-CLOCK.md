@@ -90,8 +90,11 @@ complete captures, rather than treating one plausible number as proof of wiring.
 Measurement **never writes NVS, changes oscillator calibration or clears joint
 verification**. The existing `oscillator HZ` operation clears all verification;
 `save` persists only on explicit command. The legacy calibration manifest ID is
-preserved when adding the read-only input field; all pre-existing manifest bytes
-still participate in the compatibility hash. The old external-meter `reference`
+preserved when adding the read-only input field. The later recommended-default
+policy produces a new current identity but explicitly accepts the prior
+same-layout `bd7675604b98ae46` records without changing their values or writing
+NVS. See [map normalization and the full pointer sequence](SESAME-S3-CALIBRATION.md).
+The old external-meter `reference`
 command remains available as an independent comparison method.
 
 `off`, `stop`, `clock abort`, BOOT abort, malformed/conflicting commands,

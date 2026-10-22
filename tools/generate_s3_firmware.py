@@ -42,8 +42,8 @@ def interface():
         ("off", "any", "Cancel queues, assert OE, full-off all PCA outputs, disarm"),
         ("stop", "any", "Cancel queues, freeze targets; heartbeat still required"),
         ("heartbeat", "active-owner", "Renew 500ms watchdog; never arms or resumes"),
-        ("arm channel CH", "off", "One physical CH0..7, discovery envelope 85..95"),
-        ("arm hornless CH", "off", "One physical CH0..7, bounded 0..180, horns disengaged"),
+        ("arm bench CH", "off", "One physical CH0..7, rate-limited 0..180 commands with loose horn pointer and no legs; canonical bench path"),
+        ("arm channel CH", "off", "Legacy restricted raw mode; use arm bench CH for the classroom full-command-range sequence"),
         ("arm joint NAME", "off", "One mapped logical joint, measured/soft/electrical limits"),
         ("arm assembly", "off", "Prepare raw neutral on physical CH0..7; no pulses yet"),
         ("arm run", "off", "Require eight verified joints and saved NVS record; no pulses yet"),
@@ -76,7 +76,7 @@ def interface():
         "required": ["name", "channel", "sign", "trim_deg", "limits_deg", "verified"],
         "properties": {
             "name": {"enum": [j["name"] for j in robot["joints"]]},
-            "channel": {"type": "integer", "minimum": -1, "maximum": 7, "description": "-1=unassigned; nonnegative channels unique"},
+            "channel": {"type": "integer", "minimum": -1, "maximum": 7, "description": "Recommended channels on fresh defaults; -1 supported for legacy records/explicit unmap; nonnegative channels unique"},
             "sign": {"enum": [-1, 1]},
             "trim_deg": {"type": "number", "minimum": -hw["trim_limit_deg"], "maximum": hw["trim_limit_deg"]},
             "limits_deg": {"type": "array", "items": {"type": "number", "minimum": 0, "maximum": 180}, "minItems": 2, "maxItems": 2},
@@ -96,8 +96,8 @@ def interface():
                    "live_command": ":live", "pause_heartbeat_command": ":pause", "close_command": ":quit"},
         "joint_map": [{"name": j["name"], "logical_index": j["channel"], "leg": j["leg"], "role": j["role"],
                        "target_pca_channel": hw["intended_channels"][j["name"]],
-                       "hardware_verified_pca_channel": None, "default_nvs_channel": -1,
-                       "mapping_status": "target-only-unverified", "manifest_sign": j["sign"],
+                       "hardware_verified_pca_channel": None, "default_nvs_channel": hw["intended_channels"][j["name"]],
+                       "mapping_status": "recommended-default-not-physically-verified", "manifest_sign": j["sign"],
                        "soft_firmware_deg": j["limits_deg"],
                        "soft_internal_deg": sorted((v-90)*j["sign"] for v in j["limits_deg"])} for j in robot["joints"]],
         "pulse": {"profile_id": profile['id'], "reference_ticks": [tick_low, tick_high],
@@ -135,12 +135,21 @@ def interface():
         },
         "power": {"flash": "battery physically disconnected; USB only; servo leads may remain connected; outputs OFF at boot",
                   "button_assembly": "unplug USB, then power from battery alone",
-                   "serial_motion": "USB only, battery disconnected; one small single-channel trial at a time; off between channels; stop on reset/sag/abnormal behaviour; USB capacity unverified",
+                   "serial_motion": "USB only, battery disconnected; arm bench CH, loosely fitted pointer and no legs; 0->90->180->90 on CH0..7 one at a time; wait for each rate-limited target, off between channels; USB capacity unmeasured",
                    "unverified_isolation": "never combine USB and battery; unplug USB before battery-only load testing; no external supply or Wi-Fi requirement",
                    "battery_load_test": "current BOOT routine is a static centre hold; finite repeated-motion load routine pending implementation/validation"},
         "safeaction": {"watchdog_ms": safe["watchdog"]["timeout_ms"], "failsafe": hw["watchdog_failsafe"],
                        "calibration_rate_deg_s": hw["calibration_rate_deg_s"], "controller_rate_deg_s": hw["controller_rate_deg_s"],
                        "start": "outputs-off, arm does not emit PWM", "first_enable": "unknown physical position; starts neutral, no feedback"},
+        "bench": {"arm_command": "arm bench CH", "channels": list(range(8)),
+                  "sequence_deg": [0, 90, 180, 90], "command_limits_deg": [0, 180],
+                  "setup": "Loosely fitted single-arm horn pointers; legs not attached; USB only, battery disconnected; one channel at a time",
+                  "advance": "Keep heartbeat active; wait for status current=target at each command before the next; off between channels",
+                  "legacy_alias": "arm hornless CH is accepted for compatibility but is not the recommended procedure",
+                  "meaning": "Commanded angles, not measured shaft limits or a physical pass from ACK"},
+        "calibration_compatibility": {"read_manifest_ids": hw["calibration_compatible_manifest_ids"],
+                  "behavior": "Read valid checksum/layout-compatible saved records without changing channel/sign/trim/limits/oscillator/verified values; do not rewrite NVS until explicit save",
+                  "normalization": "Agent compares show with recommended map; while OFF, unmap all eight before mapping recommended channels to avoid collisions; preserve other calibration values; map edits clear verification"},
         "ap": {"ssid": "Sesame-S3-<last-two-MAC-bytes>", "password": "sesame123", "ip": "192.168.4.1",
                "country": "JP", "channel": 1, "requested_tx_dbm": 8.5, "hardware_visibility": "unverified"},
         "commands": [{"syntax": a, "mode": b, "meaning": c} for a,b,c in commands],
@@ -160,8 +169,9 @@ def interface():
 def render():
     paths = [ROOT / "manifest" / f for f in ("robot.yaml", "safeaction.yaml", "motions.yaml")]
     robot, safe, motions = [yaml.safe_load(p.read_text()) for p in paths]
-    # Preserve the pre-existing NVS calibration identity: adding/changing this
-    # read-only input does not change pulse conversion, joint mapping or limits.
+    # Adding/changing the read-only timing input alone does not change identity.
+    # Explicit compatible IDs below preserve earlier same-layout saved records
+    # when a defaults-policy change produces a new current manifest identity.
     # All other original manifest bytes still participate in the legacy hash.
     robot_bytes, removed = re.subn(rb'^    clock_measure_gpio: [0-9]+[^\n]*\n', b'', paths[0].read_bytes(), flags=re.M)
     assert removed == 1, 'Expected one read-only timing-input field'
@@ -177,6 +187,10 @@ def render():
              "#pragma once", "#include <stdint.h>", "namespace sesame {",
              f'constexpr char MANIFEST_ID[] = "{fingerprint}";',
              f'constexpr char PULSE_PROFILE_ID[] = "{profile["id"]}";']
+    compatible = hw["calibration_compatible_manifest_ids"]
+    assert all(re.fullmatch(r'[0-9a-f]{16}', value) for value in compatible)
+    assert sorted(hw['intended_channels'].values()) == list(range(8))
+    lines.append('constexpr const char* COMPATIBLE_MANIFEST_IDS[] = {' + ', '.join(f'"{v}"' for v in compatible) + '};')
     values = {
         "NEUTRAL": robot["conventions"]["firmware_neutral_deg"],
         "PULSE_MIN": round(tick_low * tick_us, 6),
@@ -202,6 +216,7 @@ def render():
     lines.append('constexpr const char* NAMES[] = {' + ', '.join(f'"{n}"' for n in names) + '};')
     for name, values in {
         "SIGNS": [j["sign"] for j in joints],
+        "DEFAULT_CHANNELS": [hw["intended_channels"][n] for n in names],
         "SOFT_LOW": [j["limits_deg"][0] for j in joints],
         "SOFT_HIGH": [j["limits_deg"][1] for j in joints],
         "TRIMS": [robot["calibration"]["subtrim_deg"][n] for n in names],
