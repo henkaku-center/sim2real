@@ -2,8 +2,9 @@
 #pragma once
 #include <stdint.h>
 namespace sesame {
-constexpr char MANIFEST_ID[] = "bd7675604b98ae46";
+constexpr char MANIFEST_ID[] = "e669b916d178ac0a";
 constexpr char PULSE_PROFILE_ID[] = "tim-pca9685-150-512-v1";
+constexpr const char* COMPATIBLE_MANIFEST_IDS[] = {"bd7675604b98ae46"};
 constexpr uint32_t NEUTRAL = 90;
 constexpr float PULSE_MIN = 732.0;
 constexpr float PULSE_MAX = 2498.56;
@@ -19,6 +20,7 @@ constexpr uint32_t TRIM_LIMIT = 15;
 constexpr uint32_t INITIAL_LOW = 85;
 constexpr uint32_t INITIAL_HIGH = 95;
 constexpr uint32_t OSC_DEFAULT = 25000000;
+constexpr uint32_t CLOCK_MEASURE_GPIO = 4;
 constexpr uint32_t SDA = 2;
 constexpr uint32_t SCL = 3;
 constexpr uint32_t OE = 18;
@@ -26,6 +28,7 @@ constexpr uint32_t PCA_ADDRESS = 64;
 constexpr uint32_t OLED_ADDRESS = 60;
 constexpr const char* NAMES[] = {"R1", "R2", "L1", "L2", "R4", "R3", "L3", "L4"};
 constexpr int SIGNS[] = {1, -1, -1, 1, -1, 1, -1, 1};
+constexpr int DEFAULT_CHANNELS[] = {4, 5, 0, 1, 7, 6, 2, 3};
 constexpr int SOFT_LOW[] = {45, 0, 0, 45, 0, 0, 0, 0};
 constexpr int SOFT_HIGH[] = {180, 135, 135, 180, 180, 180, 180, 180};
 constexpr int TRIMS[] = {0, 0, 0, 0, 0, 0, 0, 0};

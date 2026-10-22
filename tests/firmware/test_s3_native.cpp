@@ -31,7 +31,19 @@ int main() {
   formatBenchCell(cell,sizeof(cell),4,"R1",true,90); assert(!strcmp(cell,"*4 R1: 90"));
   for (int row=0;row<4;++row) { assert(benchChannel(row,0)==row); assert(benchChannel(row,1)==row+4); }
   Calibration cal;
+  static_assert(sizeof(Calibration)==124, "Preserve compatible NVS record layout");
   assert(cal.valid() && !cal.complete());
+  const int recommended[8]={4,5,0,1,7,6,2,3};
+  for(int j=0;j<8;++j)assert(cal.channel[j]==recommended[j]);
+  assert(cal.verified==0);
+  char legacyId[17]="bd7675604b98ae46", currentId[17], invalidId[17]="0000000000000000";
+  strcpy(currentId,MANIFEST_ID);
+  assert(compatibleCalibrationManifest(legacyId));assert(compatibleCalibrationManifest(currentId));
+  assert(!compatibleCalibrationManifest(invalidId));legacyId[16]='x';assert(!compatibleCalibrationManifest(legacyId));
+  Calibration savedLegacy=cal;
+  savedLegacy.channel[0]=-1;savedLegacy.oscillator=27000000;savedLegacy.trim[1]=2;
+  assert(savedLegacy.valid());Calibration loaded=savedLegacy;
+  assert(loaded.channel[0]==-1 && loaded.oscillator==27000000 && loaded.trim[1]==2);
   for (int j=0;j<8;++j) {
     cal.channel[j]=j; cal.low[j]=SOFT_LOW[j]; cal.high[j]=SOFT_HIGH[j];
     near(cal.physical(j,45),45); // upstream absolute angles are NOT signed twice
@@ -53,7 +65,7 @@ int main() {
   assert(!g.active() && !g.enabled);
   assert(!g.set(0,90,0));
   assert(!g.arm(Mode::Run,-1,0));
-  assert(!g.arm(Mode::Joint,0,0));
+  g.cal.channel[0]=-1;assert(!g.arm(Mode::Joint,0,0));g.cal.channel[0]=DEFAULT_CHANNELS[0];
   assert(!g.arm(Mode::Channel,8,0));
   assert(g.arm(Mode::Channel,3,0) && g.enabled==0);
   assert(!g.set(2,95,0)); assert(!g.set(3,NAN,0));
@@ -97,5 +109,34 @@ int main() {
   assert(c.parse("angle 90 trailing") && !c.is("angle",2));
   char longline[170]; memset(longline,'x',169); longline[169]=0; assert(!c.parse(longline));
   assert(!c.parse("1 2 3 4 5 6 7 8 9 10 11 12 13"));
+  assert(c.parse("arm bench 7") && c.is("arm",3) && c.integer(2,n) && n==7);
+  assert(rawMode(c.words[1])==Mode::Bench);
+  assert(rawMode("hornless")==Mode::Bench); // compatibility only, not classroom wording
+  assert(rawMode("invalid")==Mode::Off);
+  assert(c.parse("arm bench 7 extra") && !c.is("arm",3));
+  // Full commanded range on every raw channel, without changing production
+  // calibration limits, while preserving slew/watchdog and output exclusion.
+  SafeAction bench;uint32_t now=0;uint16_t wanted[16];
+  for(int channel=0;channel<8;++channel) {
+    assert(bench.arm(Mode::Bench,channel,now));assert(bench.enabled==0);
+    assert(!bench.set((channel+1)%8,0,now));
+    for(float target:{0.0f,90.0f,180.0f,90.0f}) {
+      assert(bench.set(channel,target,now));near(bench.target[channel],target);
+      unsigned iterations=0;
+      while(!bench.settled()) {
+        const float prior=bench.current[channel];now+=20;bench.heartbeat(now);assert(bench.step(now));
+        assert(fabsf(bench.current[channel]-prior)<=CAL_RATE*.02f+.001f);
+        assert(planOutputs(bench,121,wanted));
+        for(int output=0;output<16;++output)assert((wanted[output]!=4096)==(output==channel));
+        assert(++iterations<1000);
+      }
+      near(bench.current[channel],target,.011f);
+    }
+    assert(bench.cal.low[channel]==fmaxf(SOFT_LOW[channel],INITIAL_LOW));
+    bench.off();assert(planOutputs(bench,121,wanted));for(auto tick:wanted)assert(tick==4096);
+  }
+  assert(bench.arm(Mode::Bench,0,now));assert(bench.set(0,-100,now));near(bench.target[0],0);
+  assert(bench.set(0,300,now));near(bench.target[0],180);
+  assert(!bench.set(0,NAN,now));assert(!bench.step(now+WATCHDOG_MS+1));
   std::cout << "S3 native safety/mapping/parser/motion tests passed\n";
 }

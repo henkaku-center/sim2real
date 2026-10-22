@@ -44,7 +44,7 @@ When recording Sesame/Karasu/firmware discoveries:
 
 ## What you cannot do (and who can)
 
-- **You have no access to the physical robot.** All physical trials are human-supervised; your deliverable is the bounded command sequence + expected telemetry, never direct actuation. Flag `NEEDS-HARDWARE` in PRs/notes where a physical measurement is required.
+- **Physical access and test scope must be established, not assumed absent or available.** Use the actual device access, fixture state and applicable task authority. Automated non-motion S3 clock measurement → explicit correction → remeasurement is permitted once the device/jumper setup is established; do not add a blanket supervision requirement or approval form. This does not authorize unrelated device operations or unrestricted motion: all actuation still goes through bounded `SafeAction` with its watchdog and stop semantics. Report concrete missing prerequisites, and retain `NEEDS-HARDWARE` for unperformed measurements or unverified hardware claims. See D15 in `DECISIONS.md`.
 - **You likely run on one OS.** Cross-platform claims (macOS + Linux) must be verified by CI or by asking the human to run the check on the other platform — do not mark them done from a single-OS run.
 - **Decision authority** for hardware revisions, license, safety limits, and course scheduling rests with the instructor. Record every resolved question in `DECISIONS.md` with date and rationale; treat that file as append-only.
 

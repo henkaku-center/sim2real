@@ -23,8 +23,8 @@
       "role": "hip",
       "target_pca_channel": 4,
       "hardware_verified_pca_channel": null,
-      "default_nvs_channel": -1,
-      "mapping_status": "target-only-unverified",
+      "default_nvs_channel": 4,
+      "mapping_status": "recommended-default-not-physically-verified",
       "manifest_sign": 1,
       "soft_firmware_deg": [
         45,
@@ -42,8 +42,8 @@
       "role": "hip",
       "target_pca_channel": 5,
       "hardware_verified_pca_channel": null,
-      "default_nvs_channel": -1,
-      "mapping_status": "target-only-unverified",
+      "default_nvs_channel": 5,
+      "mapping_status": "recommended-default-not-physically-verified",
       "manifest_sign": -1,
       "soft_firmware_deg": [
         0,
@@ -61,8 +61,8 @@
       "role": "hip",
       "target_pca_channel": 0,
       "hardware_verified_pca_channel": null,
-      "default_nvs_channel": -1,
-      "mapping_status": "target-only-unverified",
+      "default_nvs_channel": 0,
+      "mapping_status": "recommended-default-not-physically-verified",
       "manifest_sign": -1,
       "soft_firmware_deg": [
         0,
@@ -80,8 +80,8 @@
       "role": "hip",
       "target_pca_channel": 1,
       "hardware_verified_pca_channel": null,
-      "default_nvs_channel": -1,
-      "mapping_status": "target-only-unverified",
+      "default_nvs_channel": 1,
+      "mapping_status": "recommended-default-not-physically-verified",
       "manifest_sign": 1,
       "soft_firmware_deg": [
         45,
@@ -99,8 +99,8 @@
       "role": "foot",
       "target_pca_channel": 7,
       "hardware_verified_pca_channel": null,
-      "default_nvs_channel": -1,
-      "mapping_status": "target-only-unverified",
+      "default_nvs_channel": 7,
+      "mapping_status": "recommended-default-not-physically-verified",
       "manifest_sign": -1,
       "soft_firmware_deg": [
         0,
@@ -118,8 +118,8 @@
       "role": "foot",
       "target_pca_channel": 6,
       "hardware_verified_pca_channel": null,
-      "default_nvs_channel": -1,
-      "mapping_status": "target-only-unverified",
+      "default_nvs_channel": 6,
+      "mapping_status": "recommended-default-not-physically-verified",
       "manifest_sign": 1,
       "soft_firmware_deg": [
         0,
@@ -137,8 +137,8 @@
       "role": "foot",
       "target_pca_channel": 2,
       "hardware_verified_pca_channel": null,
-      "default_nvs_channel": -1,
-      "mapping_status": "target-only-unverified",
+      "default_nvs_channel": 2,
+      "mapping_status": "recommended-default-not-physically-verified",
       "manifest_sign": -1,
       "soft_firmware_deg": [
         0,
@@ -156,8 +156,8 @@
       "role": "foot",
       "target_pca_channel": 3,
       "hardware_verified_pca_channel": null,
-      "default_nvs_channel": -1,
-      "mapping_status": "target-only-unverified",
+      "default_nvs_channel": 3,
+      "mapping_status": "recommended-default-not-physically-verified",
       "manifest_sign": 1,
       "soft_firmware_deg": [
         0,
@@ -198,10 +198,69 @@
     "active_press": "off",
     "held_at_boot": "must release before new press"
   },
+  "clock_measurement": {
+    "input_gpio": 4,
+    "pca_channel": 15,
+    "pca_signal_parts": [
+      "cad.Part__Feature128.pin.2",
+      "cad.Part__Feature144.pin.2"
+    ],
+    "pca_signal_parts_scope": "reference-CAD-only: native CH15 near USB conflicts with reported actual-photo far-end CH15 annotation",
+    "pca_actual_photo_native_part": null,
+    "pca_connection_rule": "Use the actual board's printed 15 and SIGNAL/PWM row, not V+; do not try the opposite end on timeout. Actual printed channel legend was not fully legible in the parent observation.",
+    "carrier_address": "F17",
+    "s3_header_part": "s3.male_pin.F17",
+    "pin_binding_status": "photo-located GPIO4/F17; not a physical continuity or voltage measurement",
+    "pin_binding_provenance": {
+      "kind": "parent-observed-user-reference-photo",
+      "observed_on": "2026-10-22",
+      "record": "User-provided annotated actual-board photo in the canonical APS guide conversation; observation relayed by the parent session",
+      "image_sha256": null,
+      "image_hash_note": "Attachment not supplied as a local file; no image hash invented",
+      "far_to_usb_labels": [
+        "7",
+        "6",
+        "5",
+        "4",
+        "3",
+        "2",
+        "1",
+        "RX",
+        "TX"
+      ],
+      "installed_row_usb_to_far": {
+        "A17": "TX",
+        "B17": "RX",
+        "C17": "GPIO1",
+        "D17": "GPIO2",
+        "E17": "GPIO3",
+        "F17": "GPIO4",
+        "G17": "GPIO5",
+        "H17": "GPIO6",
+        "I17": "GPIO7"
+      },
+      "geometry_evidence": "assets/cad/instructions/s3-installation.json places USB toward A; native s3.male_pin.F17 carries Address=F17",
+      "supersedes": "Earlier unresolved S3 carrier binding; this is actual-board photo evidence, not extrapolation from adjacent pins or the Waveshare Zero reference pinout",
+      "not_established": [
+        "physical continuity",
+        "voltage",
+        "measurement jumper installed",
+        "actual hub printed CH15 orientation"
+      ]
+    },
+    "power": "USB only; battery physically unplugged; all servo plugs removed; CH15 SIGNAL (not V+) to labelled GPIO4 input; common carrier GND; logic VCC 3.3V only",
+    "target_edges": 101,
+    "timeout_ms": 4000,
+    "watchdog_ms": 500,
+    "clock_reference": "S3 esp_timer microseconds; average 100 periods; not traceable lab-standard frequency",
+    "quality": "periods 10000..40000us, peak-to-peak jitter <=2% of mean, estimated oscillator 20..30MHz; algorithmic rejection limits, not measured accuracy",
+    "oscillator_formula": "observed_hz * 4096 * (prescale + 1)",
+    "apply": "Explicit oscillator HZ then save while OFF; measurement never changes calibration or verification"
+  },
   "power": {
     "flash": "battery physically disconnected; USB only; servo leads may remain connected; outputs OFF at boot",
     "button_assembly": "unplug USB, then power from battery alone",
-    "serial_motion": "USB only, battery disconnected; one small single-channel trial at a time; off between channels; stop on reset/sag/abnormal behaviour; USB capacity unverified",
+    "serial_motion": "USB only, battery disconnected; arm bench CH, loosely fitted pointer and no legs; 0->90->180->90 on CH0..7 one at a time; wait for each rate-limited target, off between channels; USB capacity unmeasured",
     "unverified_isolation": "never combine USB and battery; unplug USB before battery-only load testing; no external supply or Wi-Fi requirement",
     "battery_load_test": "current BOOT routine is a static centre hold; finite repeated-motion load routine pending implementation/validation"
   },
@@ -212,6 +271,40 @@
     "controller_rate_deg_s": 60,
     "start": "outputs-off, arm does not emit PWM",
     "first_enable": "unknown physical position; starts neutral, no feedback"
+  },
+  "bench": {
+    "arm_command": "arm bench CH",
+    "channels": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+    ],
+    "sequence_deg": [
+      0,
+      90,
+      180,
+      90
+    ],
+    "command_limits_deg": [
+      0,
+      180
+    ],
+    "setup": "Loosely fitted single-arm horn pointers; legs not attached; USB only, battery disconnected; one channel at a time",
+    "advance": "Keep heartbeat active; wait for status current=target at each command before the next; off between channels",
+    "legacy_alias": "arm hornless CH is accepted for compatibility but is not the recommended procedure",
+    "meaning": "Commanded angles, not measured shaft limits or a physical pass from ACK"
+  },
+  "calibration_compatibility": {
+    "read_manifest_ids": [
+      "bd7675604b98ae46"
+    ],
+    "behavior": "Read valid checksum/layout-compatible saved records without changing channel/sign/trim/limits/oscillator/verified values; do not rewrite NVS until explicit save",
+    "normalization": "Agent compares show with recommended map; while OFF, unmap all eight before mapping recommended channels to avoid collisions; preserve other calibration values; map edits clear verification"
   },
   "ap": {
     "ssid": "Sesame-S3-<last-two-MAC-bytes>",
@@ -274,14 +367,14 @@
       "meaning": "Renew 500ms watchdog; never arms or resumes"
     },
     {
-      "syntax": "arm channel CH",
+      "syntax": "arm bench CH",
       "mode": "off",
-      "meaning": "One physical CH0..7, discovery envelope 85..95"
+      "meaning": "One physical CH0..7, rate-limited 0..180 commands with loose horn pointer and no legs; canonical bench path"
     },
     {
-      "syntax": "arm hornless CH",
+      "syntax": "arm channel CH",
       "mode": "off",
-      "meaning": "One physical CH0..7, bounded 0..180, horns disengaged"
+      "meaning": "Legacy restricted raw mode; use arm bench CH for the classroom full-command-range sequence"
     },
     {
       "syntax": "arm joint NAME",
@@ -374,6 +467,21 @@
       "meaning": "CH15=1500us, all servos disconnected; reports actual programmed ticks"
     },
     {
+      "syntax": "clock measure",
+      "mode": "off-usb-only",
+      "meaning": "Bounded CH15 rising-edge timing on GPIO4; all servos unplugged; heartbeat required; no calibration write"
+    },
+    {
+      "syntax": "clock status",
+      "mode": "any",
+      "meaning": "Read generation, quality, edges, observed Hz and oscillator estimate; MCU-relative, not a lab standard"
+    },
+    {
+      "syntax": "clock abort",
+      "mode": "any",
+      "meaning": "Abort clock capture and turn all outputs off"
+    },
+    {
       "syntax": "motion NAME",
       "mode": "run",
       "meaning": "One finite stock sequence through SafeAction; same as run NAME"
@@ -453,7 +561,7 @@
               "type": "integer",
               "minimum": -1,
               "maximum": 7,
-              "description": "-1=unassigned; nonnegative channels unique"
+              "description": "Recommended channels on fresh defaults; -1 supported for legacy records/explicit unmap; nonnegative channels unique"
             },
             "sign": {
               "enum": [

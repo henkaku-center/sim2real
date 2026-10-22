@@ -1,12 +1,15 @@
 # Sesame S3 class firmware
 
-**Classroom power route (October 12):** no external supply requirement. Keep the
-battery physically unplugged for USB flashing and sequential single-servo trials;
-servo leads may remain connected. Boot outputs off, use one channel at a time,
-and `off` between channels. Stop on reset/sag/abnormal behaviour; this does not
-certify USB capacity. Unplug USB before battery-only load testing. The existing
-BOOT centre hold is not yet a repeated-motion load test. This route supersedes
-the older servo-V+-off prerequisite for the instructor's connected-servo USB trial.
+**Classroom bench route (October 22):** recommended channel defaults are
+R1=4, R2=5, L1=0, L2=1, R4=7, R3=6, L3=2, L4=3; physical verification is separate.
+Use `arm bench CH` with loosely fitted horn pointers and no legs, then
+0→90→180→90 on CH0…7 one at a time, waiting for each rate-limited target and
+sending `off` between channels. USB only, battery physically disconnected;
+no external supply or Wi-Fi is required. This replaces the tiny-discovery and
+repeated horn-removal procedure, not the watchdog/output bounds. Valid saved
+calibration is preserved; the agent explicitly normalizes a legacy/different map
+as described in [the calibration procedure](../reference/SESAME-S3-CALIBRATION.md).
+No battery load routine or claim of measured travel/USB capacity is added.
 
 **October 12 profile:** `tim-pca9685-150-512-v1`, approved for the same debug and
 production image. Reference-clock neutral is **1615.28 µs**. Each integer angle
@@ -14,12 +17,14 @@ reproduces Tim's 150–512-count interpolation at 25 MHz / prescale 121; a measu
 oscillator is compensated by converting that reference pulse to actual ticks.
 This supersedes the October 6 S3 image's wider range, without rewriting the
 historical S2 simulation pulse range. Export old calibration before flashing:
-the new manifest fingerprint rejects the old NVS record and requires rechecking.
+that October 12 pulse-profile change rejected pre-Tim NVS records. The October 22
+recommended-default update preserves valid same-profile `bd7675604b98ae46`
+records through an explicit compatibility entry; it does not reset custom values.
 
 The OLED starts in paired physical-channel bench view, adapted from Tim's
 authorised diagnostic design (`reference/vendor/tim-servo-debug/NOTICE.md`).
-`bench` selects it; `face NAME` restores faces. Blank/unassigned channels are
-explicitly marked. Values are commanded angles, not measured horn positions.
+`bench` selects it; `face NAME` restores faces. Fresh defaults display the
+recommended joint names. Values are commanded angles, not measured horn positions.
 
 One image in `sesame-s3/` contains calibration, the bounded controller, stock
 OLED faces, nineteen manifest motions and an AP/web command console. A normal
@@ -104,8 +109,8 @@ for the phone controller; the device provides DNS redirection plus an explicit
 `192.168.4.1` fallback, since captive portal auto-open is client-dependent.
 
 Calibration sessions move one servo at a time, except explicitly requested raw
-assembly centre. Default discovery travel85–95°, calibration15°/s and
-controller60°/s are conservative caps below the general SafeAction maximum.
+assembly centre. `arm bench CH` permits the full 0–180° commanded pointer range
+at 15°/s; production retains its saved logical-joint limits and 60°/s rate.
 Stock commands and microsecond commands pass the same gate. `stop` freezes;
 `off` cancels and releases. No external heartbeat for500ms disables outputs
 and cancels queues; internal sequence steps do **not** feed that watchdog.
@@ -120,12 +125,13 @@ software full-off alone cannot protect a still-powered PCA if the bus is lost.
 `status` reports commanded/interpolated angles, not measured encoder positions.
 
 The NVS record is versioned, checksummed and tied to the generated manifest
-fingerprint. An invalid, incompatible or missing record falls back to
-unassigned channels and narrow travel. `map` rejects duplicates; all changes
-require outputs-off and clear verification as appropriate. Ordinary reflashes
-with the same manifest preserve saved calibration. A changed manifest invalidates
-the old record rather than silently reinterpreting it: retain `export` output
-and re-enter/reverify the device's values. Calibration is device-specific;
+fingerprint. An invalid, incompatible or missing record falls back to the
+recommended channel map with physical verification false. `map` rejects
+duplicates; edits require outputs-off and clear verification as appropriate.
+Same-manifest records and explicitly listed same-layout compatible records retain
+their saved values. The defaults-policy update accepts `bd7675604b98ae46` without
+rewriting NVS; the agent explicitly normalizes a differing saved map if needed.
+Other incompatible identities are not silently reinterpreted. Calibration is device-specific;
 do not copy one robot's trims/clock into every class build.
 
 ### Validation boundary

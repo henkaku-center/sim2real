@@ -3,6 +3,7 @@
 import argparse
 import hashlib
 import json
+import re
 from pathlib import Path
 
 import yaml
@@ -41,8 +42,8 @@ def interface():
         ("off", "any", "Cancel queues, assert OE, full-off all PCA outputs, disarm"),
         ("stop", "any", "Cancel queues, freeze targets; heartbeat still required"),
         ("heartbeat", "active-owner", "Renew 500ms watchdog; never arms or resumes"),
-        ("arm channel CH", "off", "One physical CH0..7, discovery envelope 85..95"),
-        ("arm hornless CH", "off", "One physical CH0..7, bounded 0..180, horns disengaged"),
+        ("arm bench CH", "off", "One physical CH0..7, rate-limited 0..180 commands with loose horn pointer and no legs; canonical bench path"),
+        ("arm channel CH", "off", "Legacy restricted raw mode; use arm bench CH for the classroom full-command-range sequence"),
         ("arm joint NAME", "off", "One mapped logical joint, measured/soft/electrical limits"),
         ("arm assembly", "off", "Prepare raw neutral on physical CH0..7; no pulses yet"),
         ("arm run", "off", "Require eight verified joints and saved NVS record; no pulses yet"),
@@ -61,6 +62,9 @@ def interface():
         ("oscillator HZ", "off", "Measured20..30MHz; reapplies prescaler, clears ALL verification"),
         ("save", "off", "Persist one versioned/checksummed NVS calibration record"),
         ("reference", "off", "CH15=1500us, all servos disconnected; reports actual programmed ticks"),
+        ("clock measure", "off-usb-only", f"Bounded CH15 rising-edge timing on GPIO{hw['clock_measure_gpio']}; all servos unplugged; heartbeat required; no calibration write"),
+        ("clock status", "any", "Read generation, quality, edges, observed Hz and oscillator estimate; MCU-relative, not a lab standard"),
+        ("clock abort", "any", "Abort clock capture and turn all outputs off"),
         ("motion NAME", "run", "One finite stock sequence through SafeAction; same as run NAME"),
         ("servo NAME DEG", "run", "Bounded single-joint target"),
         ("pose D0 D1 D2 D3 D4 D5 D6 D7", "run", "Bounded targets in canonical logical order"),
@@ -72,7 +76,7 @@ def interface():
         "required": ["name", "channel", "sign", "trim_deg", "limits_deg", "verified"],
         "properties": {
             "name": {"enum": [j["name"] for j in robot["joints"]]},
-            "channel": {"type": "integer", "minimum": -1, "maximum": 7, "description": "-1=unassigned; nonnegative channels unique"},
+            "channel": {"type": "integer", "minimum": -1, "maximum": 7, "description": "Recommended channels on fresh defaults; -1 supported for legacy records/explicit unmap; nonnegative channels unique"},
             "sign": {"enum": [-1, 1]},
             "trim_deg": {"type": "number", "minimum": -hw["trim_limit_deg"], "maximum": hw["trim_limit_deg"]},
             "limits_deg": {"type": "array", "items": {"type": "number", "minimum": 0, "maximum": 180}, "minItems": 2, "maxItems": 2},
@@ -92,8 +96,8 @@ def interface():
                    "live_command": ":live", "pause_heartbeat_command": ":pause", "close_command": ":quit"},
         "joint_map": [{"name": j["name"], "logical_index": j["channel"], "leg": j["leg"], "role": j["role"],
                        "target_pca_channel": hw["intended_channels"][j["name"]],
-                       "hardware_verified_pca_channel": None, "default_nvs_channel": -1,
-                       "mapping_status": "target-only-unverified", "manifest_sign": j["sign"],
+                       "hardware_verified_pca_channel": None, "default_nvs_channel": hw["intended_channels"][j["name"]],
+                       "mapping_status": "recommended-default-not-physically-verified", "manifest_sign": j["sign"],
                        "soft_firmware_deg": j["limits_deg"],
                        "soft_internal_deg": sorted((v-90)*j["sign"] for v in j["limits_deg"])} for j in robot["joints"]],
         "pulse": {"profile_id": profile['id'], "reference_ticks": [tick_low, tick_high],
@@ -102,14 +106,50 @@ def interface():
                    "neutral_us": neutral_us, "pwm_hz": 50, "oscillator_default_hz": hw["oscillator_hz"],
                   "oscillator_status": "nominal-unmeasured", "ticks_formula": "round(us * oscillator_hz / (1000000 * (prescale+1)))"},
         "button": {"pin": 0, "off_press_release": "raw CH0..7 neutral for30s", "active_press": "off", "held_at_boot": "must release before new press"},
+        "clock_measurement": {
+            "input_gpio": hw["clock_measure_gpio"], "pca_channel": 15,
+            "pca_signal_parts": ["cad.Part__Feature128.pin.2", "cad.Part__Feature144.pin.2"],
+            "pca_signal_parts_scope": "reference-CAD-only: native CH15 near USB conflicts with reported actual-photo far-end CH15 annotation",
+            "pca_actual_photo_native_part": None,
+            "pca_connection_rule": "Use the actual board's printed 15 and SIGNAL/PWM row, not V+; do not try the opposite end on timeout. Actual printed channel legend was not fully legible in the parent observation.",
+            "carrier_address": "F17", "s3_header_part": "s3.male_pin.F17",
+            "pin_binding_status": "photo-located GPIO4/F17; not a physical continuity or voltage measurement",
+            "pin_binding_provenance": {
+                "kind": "parent-observed-user-reference-photo",
+                "observed_on": "2026-10-22",
+                "record": "User-provided annotated actual-board photo in the canonical APS guide conversation; observation relayed by the parent session",
+                "image_sha256": None,
+                "image_hash_note": "Attachment not supplied as a local file; no image hash invented",
+                "far_to_usb_labels": ["7", "6", "5", "4", "3", "2", "1", "RX", "TX"],
+                "installed_row_usb_to_far": {"A17": "TX", "B17": "RX", "C17": "GPIO1", "D17": "GPIO2", "E17": "GPIO3", "F17": "GPIO4", "G17": "GPIO5", "H17": "GPIO6", "I17": "GPIO7"},
+                "geometry_evidence": "assets/cad/instructions/s3-installation.json places USB toward A; native s3.male_pin.F17 carries Address=F17",
+                "supersedes": "Earlier unresolved S3 carrier binding; this is actual-board photo evidence, not extrapolation from adjacent pins or the Waveshare Zero reference pinout",
+                "not_established": ["physical continuity", "voltage", "measurement jumper installed", "actual hub printed CH15 orientation"],
+            },
+            "power": "USB only; battery physically unplugged; all servo plugs removed; CH15 SIGNAL (not V+) to labelled GPIO4 input; common carrier GND; logic VCC 3.3V only",
+            "target_edges": 101, "timeout_ms": 4000, "watchdog_ms": safe["watchdog"]["timeout_ms"],
+            "clock_reference": "S3 esp_timer microseconds; average 100 periods; not traceable lab-standard frequency",
+            "quality": "periods 10000..40000us, peak-to-peak jitter <=2% of mean, estimated oscillator 20..30MHz; algorithmic rejection limits, not measured accuracy",
+            "oscillator_formula": "observed_hz * 4096 * (prescale + 1)",
+            "apply": "Explicit oscillator HZ then save while OFF; measurement never changes calibration or verification",
+        },
         "power": {"flash": "battery physically disconnected; USB only; servo leads may remain connected; outputs OFF at boot",
                   "button_assembly": "unplug USB, then power from battery alone",
-                   "serial_motion": "USB only, battery disconnected; one small single-channel trial at a time; off between channels; stop on reset/sag/abnormal behaviour; USB capacity unverified",
+                   "serial_motion": "USB only, battery disconnected; arm bench CH, loosely fitted pointer and no legs; 0->90->180->90 on CH0..7 one at a time; wait for each rate-limited target, off between channels; USB capacity unmeasured",
                    "unverified_isolation": "never combine USB and battery; unplug USB before battery-only load testing; no external supply or Wi-Fi requirement",
                    "battery_load_test": "current BOOT routine is a static centre hold; finite repeated-motion load routine pending implementation/validation"},
         "safeaction": {"watchdog_ms": safe["watchdog"]["timeout_ms"], "failsafe": hw["watchdog_failsafe"],
                        "calibration_rate_deg_s": hw["calibration_rate_deg_s"], "controller_rate_deg_s": hw["controller_rate_deg_s"],
                        "start": "outputs-off, arm does not emit PWM", "first_enable": "unknown physical position; starts neutral, no feedback"},
+        "bench": {"arm_command": "arm bench CH", "channels": list(range(8)),
+                  "sequence_deg": [0, 90, 180, 90], "command_limits_deg": [0, 180],
+                  "setup": "Loosely fitted single-arm horn pointers; legs not attached; USB only, battery disconnected; one channel at a time",
+                  "advance": "Keep heartbeat active; wait for status current=target at each command before the next; off between channels",
+                  "legacy_alias": "arm hornless CH is accepted for compatibility but is not the recommended procedure",
+                  "meaning": "Commanded angles, not measured shaft limits or a physical pass from ACK"},
+        "calibration_compatibility": {"read_manifest_ids": hw["calibration_compatible_manifest_ids"],
+                  "behavior": "Read valid checksum/layout-compatible saved records without changing channel/sign/trim/limits/oscillator/verified values; do not rewrite NVS until explicit save",
+                  "normalization": "Agent compares show with recommended map; while OFF, unmap all eight before mapping recommended channels to avoid collisions; preserve other calibration values; map edits clear verification"},
         "ap": {"ssid": "Sesame-S3-<last-two-MAC-bytes>", "password": "sesame123", "ip": "192.168.4.1",
                "country": "JP", "channel": 1, "requested_tx_dbm": 8.5, "hardware_visibility": "unverified"},
         "commands": [{"syntax": a, "mode": b, "meaning": c} for a,b,c in commands],
@@ -129,7 +169,13 @@ def interface():
 def render():
     paths = [ROOT / "manifest" / f for f in ("robot.yaml", "safeaction.yaml", "motions.yaml")]
     robot, safe, motions = [yaml.safe_load(p.read_text()) for p in paths]
-    fingerprint = hashlib.sha256(b"".join(p.read_bytes() for p in paths)).hexdigest()[:16]
+    # Adding/changing the read-only timing input alone does not change identity.
+    # Explicit compatible IDs below preserve earlier same-layout saved records
+    # when a defaults-policy change produces a new current manifest identity.
+    # All other original manifest bytes still participate in the legacy hash.
+    robot_bytes, removed = re.subn(rb'^    clock_measure_gpio: [0-9]+[^\n]*\n', b'', paths[0].read_bytes(), flags=re.M)
+    assert removed == 1, 'Expected one read-only timing-input field'
+    fingerprint = hashlib.sha256(robot_bytes + b"".join(p.read_bytes() for p in paths[1:])).hexdigest()[:16]
     joints = robot["joints"]
     hw = robot["hardware_profiles"]["sesame_s3"]
     profile, tick_low, tick_high, tick_us = pulse_profile(hw)
@@ -141,6 +187,10 @@ def render():
              "#pragma once", "#include <stdint.h>", "namespace sesame {",
              f'constexpr char MANIFEST_ID[] = "{fingerprint}";',
              f'constexpr char PULSE_PROFILE_ID[] = "{profile["id"]}";']
+    compatible = hw["calibration_compatible_manifest_ids"]
+    assert all(re.fullmatch(r'[0-9a-f]{16}', value) for value in compatible)
+    assert sorted(hw['intended_channels'].values()) == list(range(8))
+    lines.append('constexpr const char* COMPATIBLE_MANIFEST_IDS[] = {' + ', '.join(f'"{v}"' for v in compatible) + '};')
     values = {
         "NEUTRAL": robot["conventions"]["firmware_neutral_deg"],
         "PULSE_MIN": round(tick_low * tick_us, 6),
@@ -157,6 +207,7 @@ def render():
         "INITIAL_LOW": hw["initial_limits_deg"][0],
         "INITIAL_HIGH": hw["initial_limits_deg"][1],
         "OSC_DEFAULT": hw["oscillator_hz"],
+        "CLOCK_MEASURE_GPIO": hw["clock_measure_gpio"],
         **{key.upper(): hw[key] for key in ("sda", "scl", "oe", "pca_address", "oled_address")},
     }
     for name, value in values.items():
@@ -165,6 +216,7 @@ def render():
     lines.append('constexpr const char* NAMES[] = {' + ', '.join(f'"{n}"' for n in names) + '};')
     for name, values in {
         "SIGNS": [j["sign"] for j in joints],
+        "DEFAULT_CHANNELS": [hw["intended_channels"][n] for n in names],
         "SOFT_LOW": [j["limits_deg"][0] for j in joints],
         "SOFT_HIGH": [j["limits_deg"][1] for j in joints],
         "TRIMS": [robot["calibration"]["subtrim_deg"][n] for n in names],

@@ -1,0 +1,79 @@
+{
+  "platform": "macOS-15.7.9-x86_64-i386-64bit",
+  "toolchain": {
+    "arduino_cli": "1.5.1",
+    "host_python": "3.12",
+    "pyyaml": "6.0.3",
+    "pyserial": "3.5",
+    "core": "esp32:esp32@3.3.11",
+    "index_url": "https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json",
+    "fqbn": "esp32:esp32:esp32s3:CDCOnBoot=cdc,FlashSize=4M,PartitionScheme=default,PSRAM=disabled,EraseFlash=none",
+    "libraries": {
+      "Adafruit PWM Servo Driver Library": "3.0.3",
+      "Adafruit SSD1306": "2.5.17",
+      "Adafruit GFX Library": "1.12.6",
+      "Adafruit BusIO": "1.17.4"
+    }
+  },
+  "jobs": 1,
+  "setupSeconds": 1.748186572920531,
+  "executionSeconds": 36.77351625403389,
+  "totalSeconds": 38.52170346910134,
+  "source_sha256": {
+    "firmware/sesame-s3/bench_display.h": "956dc6f11f8124c27c66cde8e44ef9f74fb4d3552b5096ac62cea1f8498d2401",
+    "firmware/sesame-s3/clock_measurement.h": "b7b2b76ed6763a0f9ba6ecf9198b3e8612b0d1d9f17e1bd0b470d9a6d2b0606b",
+    "firmware/sesame-s3/command_line.h": "2fae005c462eda30a42b0945ec0d551a6a3e1af5b4266aa38b026af835111ecc",
+    "firmware/sesame-s3/controller.cpp": "3846616d41cf53752e1f4f1c4a7f7d770302a72435e836ddf4ef4387113ea32f",
+    "firmware/sesame-s3/manifest_generated.h": "467429abf2bd9211d8a0d86d82fc9ac1198ee813db2743dce53df4a39f0403dd",
+    "firmware/sesame-s3/safe_action.h": "6f0f610c8940ccfea36161019ae42191bfd0df608a34962c12a4e0fddb74c4d1",
+    "firmware/sesame-s3/sesame-s3.ino": "617bff8592b8f7521e943b52530b976d4aca596706f06f66c9813abd493e4919",
+    "firmware/sesame-s3/vendor/.gitattributes": "8998c36159a0e1f447254c0a69da11ec0eee1fde7aabd69f38ab7abb8fbfda25",
+    "firmware/sesame-s3/vendor/LICENSE": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4",
+    "firmware/sesame-s3/vendor/NOTICE.md": "2449b5021220c1386f481e144eadc128bfcc8f3a343adefab2c76ed55852cdec",
+    "firmware/sesame-s3/vendor/face-bitmaps.h": "722692894402d9eccf5c022ed7b4eb090c2de6b171b7872cedce55609dac1f06",
+    "firmware/sesame-s3/vendor/provenance.json": "713c5023ed8d34a9ea7176ea0e3cefbcc6f097e6458bd6bc9766b97babc8a696",
+    "firmware/sesame-s3/web_ui.h": "742850f6dd1930ee38a3639aca8c5580f91210e868454826206b2fb06ceba2d3"
+  },
+  "binaries_sha256": {
+    "sesame-s3.ino.partitions.bin": "148b959cbff1c38aa8e1d5c0ba9d612c54997b945e56a63f41223eef650653a1",
+    "boot_app0.bin": "f94c5d786a7a8fab06ac5d10e33bf37711a6697636dc037559ea19cc410a17f0",
+    "sesame-s3.ino.bin": "8aee5e6d463a7e116aa52d904b6832fea167b9e45ba81e66110488d47cbc4a8b",
+    "sesame-s3.ino.bootloader.bin": "5f95cbc8b40b7a373f9cb85b534cb7a570cdad30ca27c7021775d830ca03276b",
+    "sesame-s3.ino.merged.bin": "f742864c2423223d765413780b62a45afa939077d8a4d75ccd2e026caeaeae3d"
+  },
+  "scope": "software-only recommended defaults and sequential bench commands; no device operations",
+  "previous_head": "8a97ccbd8e058f9d9c34e082f50205819f419402",
+  "native_tests": {
+    "command": "uv run --no-project --python 3.12 --with pyyaml==6.0.3 --with pytest==9.1.1 python -m pytest tests/test_s3_firmware.py tests/test_s3_clock.py -q",
+    "result": "4 passed",
+    "pytest_seconds": 4.5,
+    "total_seconds": 5.0348192057572305,
+    "sanitizers": [
+      "address",
+      "undefined"
+    ],
+    "coverage": [
+      "recommended fresh map with verification false",
+      "explicit legacy NVS identity acceptance and unchanged calibration layout",
+      "0-90-180-90 on all eight channels with slew/output exclusion",
+      "bounds, watchdog, strict bench command parsing",
+      "existing clock capture math, generation, deadline, quality and abort paths"
+    ]
+  },
+  "current_manifest_id": "e669b916d178ac0a",
+  "accepted_prior_manifest_ids": [
+    "bd7675604b98ae46"
+  ],
+  "default_channels": {
+    "R1": 4,
+    "R2": 5,
+    "L1": 0,
+    "L2": 1,
+    "R4": 7,
+    "R3": 6,
+    "L3": 2,
+    "L4": 3
+  },
+  "physical_verification": "not performed; current fixture/jumper state not established by these checks",
+  "parallel_budget": "one Arduino compiler job plus one native compiler job; unchanged Arduino core/library objects reused"
+}

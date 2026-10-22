@@ -1,184 +1,176 @@
-# Sesame S3: centre, mount horns, calibrate
+# Sesame S3: clock calibration and sequential pointer test
 
-**USB installation observed October 12:** `71af7e0` was flashed to the instructor's
-S3 on Artemis; status reports outputs off/hub ready/no fault. This does not verify
-servo movement or calibration. See `evidence/2026-10-12-s3-usb/README.md`.
+**October 22, 2026 classroom procedure.** Use the same interactive
+`firmware/sesame-s3` image for debugging and production, with the
+`tim-pca9685-150-512-v1` pulse profile. Fresh calibration starts with the
+recommended channel map below, not an unassigned map. Recommended wiring and
+command acknowledgements are not measurements of physical mapping or travel.
 
-**October 12 classroom power route:** the instructor selected USB-only, one-servo
-tests with all leads connected and battery physically unplugged, followed by a
-battery-only load test after unplugging USB. External supplies are not required.
-Use `arm channel N` and small 85–95° discovery moves; `off` before the next channel.
-Stop on brownout/reset or abnormal behaviour. Do not run USB all-channel centring
-or gaits. This supersedes the separate-supply requirement for those small USB
-trials below; simultaneous USB/battery remains prohibited. Current BOOT centre
-is a static hold, not a completed dynamic load-test implementation.
+The approved bench test uses **loosely fitted single-arm horn pointers, legs not
+yet attached**, and **0 → 90 → 180 → 90 commanded degrees** on CH0 through CH7,
+one channel at a time. It replaces the earlier tiny-discovery and repeated
+horn-removal procedure. No retaining screws or repeated confirmation forms are
+needed for this pointer demonstration. At joint reference zero the raw command
+is **90°**, not the raw endpoint 0°.
 
-**2026-10-12 — NEEDS-HARDWARE.** Profile `tim-pca9685-150-512-v1` is selected
-for both calibration and production. Its neutral is 1615.28 µs, not the October 6
-image's 1830.5 µs. The changed manifest fingerprint invalidates previous NVS
-calibration: export records first, then re-identify/reverify rather than silently
-reusing them. One image provides calibration, OLED faces,
-stock motions and the Wi-Fi controller. Nothing here claims an observed result
-on the assembled robot. [Diagnosis](SESAME-S3-DIAGNOSIS.md) ·
 [Build/flash instructions](../firmware/README.md) ·
-[Machine-readable guide handoff](sesame-s3-interface.json).
+[Clock protocol](SESAME-S3-CLOCK.md) ·
+[Generated interface](sesame-s3-interface.json)
 
-## 1. Power off, disengage horns, flash
+## 1. Connect and open the console
 
-1. Support the body with every foot clear. Disconnect battery and USB. Remove
-    the horn screws and **lift linked horns off the splines**; merely loosening a
-    screw while the spline remains engaged does not free the linkage. For bare
-    bench servos only, the instructor's loosely fitted single-arm pointer may
-    remain if its entire sweep is clear; no legs or retaining screw. Label the
-   joints using the robot's own left/right. Never turn a powered shaft by hand.
-2. Confirm **GPIO18 → PCA9685 OE**, with OE pulled high to **3.3 V** during reset,
-   common GND, GPIO2 SDA, GPIO3 SCL, logic VCC=3.3 V and regulated servo V+=5 V.
-   OE wiring/power-source isolation are still unverified on the original build.
-   Leave servo V+ disconnected while checking/flash programming. Do not assume
-   the USB port or its 5 V pin can power eight servos.
-3. Battery disconnected, USB only: run the [one-time setup](../firmware/README.md),
-   identify the USB port, then flash:
+Use USB alone with the battery physically disconnected. The bench routine does
+not require Wi-Fi or an external supply. Preserve common GND, 3.3 V logic VCC,
+GPIO2 SDA / GPIO3 SCL and the existing GPIO18→OE/reset-disable arrangement.
+USB capacity and actual wiring are physical properties, not certified by a
+successful build. `off` or BOOT abort disables the outputs; investigate a reset,
+communication fault or mechanically obstructed pointer rather than continuing
+an interrupted sequence as though it completed.
 
-   ```sh
-   python3 tools/sesame_s3.py flash --port /dev/ttyACM0
-   python3 tools/sesame_s3.py console --port /dev/ttyACM0
-   ```
+Use the actual device port; these examples are not device-access commands run by
+the documentation:
 
-   On macOS use the actual `/dev/cu.usbmodem…` port. Opening the console may
-   reset the S3. Expect `READY Sesame S3 calibration+controller; outputs OFF; help`
-    at boot, followed by `PROFILE tim-pca9685-150-512-v1 neutral_us=1615.28` and
-    the manifest fingerprint. `status` must include
-    `mode=0 outputs=0 hub=1 fault=0 owner=0 motion=none`.
-    `bench` selects the paired physical-channel OLED view (0/4, 1/5, 2/6, 3/7).
-    `--` is unmapped, `---` is never commanded, and `*` marks an enabled channel.
-    These are commanded/interpolated angles, not encoder feedback. `face NAME`
-    returns to the face view without changing servo targets.
+```sh
+python3 tools/sesame_s3.py flash --port PORT
+python3 tools/sesame_s3.py console --port PORT
+```
 
-## 2. Calibrate the PWM clock first (servo V+ off)
+At boot the outputs are OFF. `status` reports mode, owner, hub/fault state and
+commanded targets. `show` reports saved calibration; `bench` selects the paired
+physical-channel OLED display. Displayed angles are commanded values, not shaft
+feedback. The historical October 12 flash/status observation remains recorded
+in `evidence/2026-10-12-s3-usb/README.md`; it is not evidence that this revision
+has been flashed or physically tested.
 
-Use the USB console with **all servos unplugged**, especially CH15:
+## 2. Measure the clock before connecting the servo plugs
+
+For this **non-motion clock step only**, all servo plugs are removed and USB is
+the only power source. Connect CH15 **SIGNAL/PWM**, not V+, to the labelled S3
+GPIO4 input at **F17** (`s3.male_pin.F17`). The October 22 actual-board photo
+locates that S3 pin; it is not continuity/voltage verification. The photo's hub
+annotation conflicts with the reference CAD: use the actual printed **15** and
+signal row, never an opposite-end trial on timeout. Jumper installation state
+must be established from the actual fixture, not inferred from this text.
 
 ```text
+off
+show
 :live
-reference
+clock measure
+clock status
+```
+
+The agent keeps heartbeats active and polls until the matching generation has
+`quality=complete`. Then it may apply the rounded observed oscillator estimate
+with `oscillator HZ`, `save`, and repeat the measurement automatically. No
+handheld frequency meter is required. See [clock details](SESAME-S3-CLOCK.md)
+for timeout/quality fields, the S3-relative accuracy limitation and the optional
+external-instrument comparison. Measurement itself never changes calibration.
+Finish with `off` before connecting the servo plugs.
+
+## 3. Recommended map and existing saved records
+
+| Physical channel | Joint | Physical channel | Joint |
+|---|---|---|---|
+| CH0 | L1 | CH4 | R1 |
+| CH1 | L2 | CH5 | R2 |
+| CH2 | L3 | CH6 | R3 |
+| CH3 | L4 | CH7 | R4 |
+
+Fresh defaults use this map, with verification flags still false. Existing valid
+saved records—including unassigned or different mappings—are **preserved**, not
+silently overwritten. The compatible pre-update manifest ID is
+`bd7675604b98ae46`; checksum, calibration validity and record layout are still
+checked. Loading a compatible record does not write NVS. An explicit `save`
+records the current identity with the current calibration values.
+
+The agent reads `show` first. If the saved map differs from the recommended
+wiring, retain an `export` copy and normalize it while OFF. Clear all eight
+assignments first to avoid duplicate-channel collisions, then set the canonical
+map and save:
+
+```text
+off
+export
+unmap R1
+unmap R2
+unmap L1
+unmap L2
+unmap R4
+unmap R3
+unmap L3
+unmap L4
+map R1 4
+map R2 5
+map L1 0
+map L2 1
+map R4 7
+map R3 6
+map L3 2
+map L4 3
+save
 show
 ```
 
-Expect `OK REFERENCE CH15 requested_us=1500 ticks=307 prescale=121` with the
-25 MHz default. Probe **CH15 signal → meter/scope**, **GND → GND**, not V+.
-Measure frequency `f` with a multimeter frequency mode (a DC-voltage reading
-does not measure pulse width), or measure the high pulse with a scope/analyser.
+These explicit mapping operations leave oscillator, signs, trims and joint
+limits intact; they clear the affected mapping-verification flags. A matching
+saved map needs no rewrite. No UI unassigned column or manual approval loop is
+part of this procedure.
 
-- Frequency method: `oscillator_hz = round(f_hz × 4096 × (prescale + 1))`.
-  Example **only if measured**: 54.03112 Hz with prescale 121 → 27,000,000 Hz.
-- Pulse-width method: `oscillator_hz = round(ticks × (prescale + 1) × 1e6 / measured_high_us)`.
-  Use the printed **ticks**, not an assumed exact 1500 µs; quantization matters.
+## 4. Run each pointer through 0 → 90 → 180 → 90
 
-Type `off`, then `oscillator HZ` with your computed integer, then `save`.
-Expect `OK CAL changed; verify after test, then save`, `OK SAVED NVS`.
-Run `:live`, `reference`, `show` again and remeasure. About 50 Hz and
-1500 µs within one tick (about 4.9 µs), plus instrument uncertainty, is expected;
-the integer prescaler need not give exactly 50.000 Hz. Type `off`.
-Do not guess 27 MHz. If no instrument is available, retain the nominal default
-and mark the clock **unmeasured**; do not call pulse accuracy hardware-verified.
-
-## 3. Centre before fitting horns
-
-Power everything off; connect the eight servos to CH0–7 with correct polarity.
-**Unplug USB before connecting battery.** With the horns disengaged, power the
-robot from battery alone. It starts outputs-off. Release BOOT if held, then
-**press and release BOOT once**. All CH0–7 receive raw 90° = **1615.28 µs** for
-30 seconds; the display says `Centre …s`. A further BOOT press aborts. This
-works without Wi-Fi, a channel map or a USB connection. Repeat after timeout
-as needed; no screws/connectors should be changed with power applied.
-
-Seat the horn lightly at the **Rest/90° reference orientation**, using the
-[upstream angle diagram](https://github.com/dorianborian/sesame-robot/blob/c458a9ed2749ac675f7ddfdbb8705180a1ba3211/docs/build-guide/assets/sesame-angle-guide.png).
-Choose the nearest spline without forcing the shaft; power off before securing
-the screw or fitting/rearranging linkage parts. If the shaft moved while off,
-re-centre with the horn disengaged. Do not substitute a generic tester's
-1500 µs centre or the old load-test's “90°”: those are different references.
-This is the **Rest/assembly** pose, not the bent-leg Stand pose.
-
-For a verified isolated USB bench setup, the equivalent commands are
-`:live`, `arm assembly`, `centre`, then `off`. They report
-`OK ARMED outputs OFF until target` and `OK CENTRE CH0..7 raw=90 us=1615.28`.
-Assembly centring ignores trims, even if an old calibration is saved.
-
-## 4. Identify the channels; test one joint at a time
-
-Use battery-only Wi-Fi (join `Sesame-S3-XXXX`, password `sesame123`, open
-`http://192.168.4.1`, tick **Keep heartbeat**) or an instructor-verified isolated
-USB bench supply arrangement. **Do not plug ordinary USB into the live battery
-assembly.** If Wi-Fi fails and isolation is unverified, stop after the BOOT
-centre step; diagnosis can continue USB-only with servo V+ off.
-
-In the USB console `:live` enables heartbeats. In the web console use the
-checkbox instead; the other commands are identical. Starting with CH0:
+Connect the eight servos according to the map, with brown GND / red V+ / yellow
+PWM in the guide illustration. With loose pointers fitted and no legs attached,
+use **`arm bench CH`**. Start at CH0:
 
 ```text
-arm channel 0
+:live
+arm bench 0
+angle 0
+status
 angle 90
-jog 5
+status
+angle 180
+status
+angle 90
 status
 off
 ```
 
-Expect `OK ARMED…`, `OK TARGET 90.00`, `OK TARGET 95.00`. Only that servo
-should move, at ≤15°/s after initial neutral acquisition. Note its actual
-joint name. Repeat for CH1–7. Assign **your observed** names, e.g. `map R1 4`
-**only if CH4 really moved the front-right hip**. `map` runs outputs-off;
-`unmap NAME` frees a channel before a swap. Every channel must be unique.
-The old target map is in the JSON handoff, explicitly **not hardware verified**.
+**Do not stream those target lines back-to-back:** the agent keeps sending
+heartbeats (for example every 200 ms) and polls `status` until `current` reaches
+`target` before sending the next angle. The firmware slews at 15°/s, so a 90°
+transition takes about six seconds of normally serviced loop time. Initial
+enable acquires nominal 90° then slews toward the first 0° target; arming alone
+does not emit pulses. The firmware does not know the initial physical position.
 
-## 5. Direction, trim, limits; save
+After the final 90° settles, send `off` and repeat the same sequence for CH1,
+CH2, …, CH7. Only the selected channel emits servo PWM. A lost heartbeat stops
+outputs; `stop` freezes the current target, while `off` disables outputs. Full
+0–180 command bounds and rate limiting remain enforced. ACK/status confirms
+commands, **not a measured shaft endpoint or physical pass**.
 
-For each mapped joint (R1 example), with the body supported:
+`arm bench` deliberately bypasses logical-joint trim/limit overlays for this raw
+channel demonstration. It does not rewrite them or extend production travel.
+The older raw commands remain compatibility paths, not the classroom recipe.
 
-```text
-:live
-arm joint R1
-angle 90
-q 5
-q 0
-off
-```
+## 5. Correct the observed example, then retain calibration
 
-`q` is internal joint degrees; `angle` is canonical firmware degrees. Default
-signs are R1/R3/L2/L4 **+1**, R2/R4/L1/L3 **−1**. Compare movement with the
-angle diagram, not the apparent screen-left direction. If physically reversed,
-set `sign R1 -1` (example for R1 only), re-arm and repeat. The signs are absolute
-physical signs, not another multiplier to apply to the upstream pose angles.
+Use the recommended names to identify a swapped lead or a pointer whose
+orientation at raw 90° does not match the joint-reference zero. Finish with
+`off` before changing connections or reindexing that pointer; leave the other
+pointers seated. Re-run the relevant bench channel afterward. Do not interpret
+an animation, ACK or recommended map as proof of actual wiring.
 
-Correct large neutral errors by re-indexing the horn. For a small residual,
-`trim R1 2` adds **2 physical servo degrees** (example, not a measured trim).
-Re-arm, `angle 90`, and inspect. Trims are limited to ±15°.
+For production, `arm joint NAME` applies the saved sign/trim/limit overlay;
+`arm run` additionally requires complete verified/saved calibration. These
+logical-joint limits remain distinct from the bare bench command range.
+Existing/default joint envelopes are not widened by this update. Use
+`sign NAME SIGN`, `trim NAME DEG` and `limits NAME LOW HIGH` to apply actual
+chosen calibration values while OFF; do not invent them from the pointer
+sequence. Manifest limits remain R1/L2 45–180°, R2/L1 0–135°, feet 0–180°,
+with post-trim electrical clamps and the same Tim pulse conversion.
 
-Initially each joint is limited to 85–95°. With outputs off, widen its `limits`
-in small stages, then re-arm and `jog 5`/`jog -5`, or `sweep 85 95` for one
-low→high→neutral pass. Do not immediately command endpoints. Stop short of
-binding/buzzing; record the usable range, which may be narrower than the
-manifest. Manifest ceilings: R1/L2 **45–180°**, R2/L1 **0–135°**, feet
-**0–180°**. These correspond to hips **q=[−45,+90]**, feet **q=[−90,+90]**.
-For example, `limits R1 80 100` allows the next small inspection; it does not
-certify that range. `us 1615.28` uses the same gate; it cannot bypass limits.
-Post-trim electrical endpoints may further narrow the target (`CLAMPED`).
-
-Once that joint's map, neutral, direction and chosen range are observed:
-
-```text
-off
-verify R1
-save
-show
-export
-```
-
-Repeat for all eight. `verify` records **your assertion**, not a sensor result.
-`export` prints JSON matching the handoff's `calibration_schema`; save it with
-robot identity, frequency measurement, photos and date. Power-cycle, then
-`show` must reproduce the values with `saved=1`. Every boot remains outputs-off.
-Only then use `:live`, `arm run`, `motion rest`; proceed to `motion stand`,
-`motion wave`, `motion dance` individually if measured travel permits.
-No reflash is needed. A `CLAMP` means choreography was limited; it is not a
-successful full-range trick. **BOOT or `off` releases torque; support the robot.**
+`verify NAME` records an observation-based assertion, not a sensor result;
+`save` persists and `export` returns the record. No battery load-test routine,
+unattended motion or physical calibration result is introduced by this change.

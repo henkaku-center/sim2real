@@ -1,5 +1,32 @@
 # HANDOVER
 
+## Recommended map and full pointer sequence — October 22, 2026
+
+The current classroom path is `arm bench CH`: loose horn pointers, no legs,
+0→90→180→90 on CH0…7 sequentially, waiting for each rate-limited target and
+sending `off` between channels. This supersedes earlier tiny-discovery and
+repeated horn-removal instructions below. Fresh defaults use the recommended
+R1=4/R2=5/L1=0/L2=1/R4=7/R3=6/L3=2/L4=3 map without claiming physical verification.
+Valid previous `bd7675604b98ae46` NVS calibration remains readable unchanged;
+the agent explicitly normalizes a legacy/different map if needed. Debug and
+production retain the same Tim pulse profile; production joint limits are not
+widened by raw bench commands. See `reference/SESAME-S3-CALIBRATION.md` and D16.
+
+## S3-measured PCA clock — October 21, 2026 (software feature)
+
+`clock measure/status/abort` adds a bounded USB-only, non-motion capture of
+CH15 on GPIO4; CH0–14 stay off, all servo plugs removed for this clock step.
+See [protocol, evidence and fixture prerequisites](reference/SESAME-S3-CLOCK.md).
+The agent may automate measure → explicit oscillator/save → remeasure once the
+actual device/jumper setup is established. Jumper state is **unknown**. No
+physical commands or flashing were performed in this coding task; this is not a
+blanket ban on agent-run non-motion tests. **October 22 update:** the parent's
+observation of the user's annotated actual-board photo locates GPIO4 at F17
+(`s3.male_pin.F17`), superseding the earlier unresolved binding. This is not
+physical continuity/voltage verification. The photo's hub-end annotation conflicts
+with the native reference CAD's CH15 placement; use the actual printed 15/PWM,
+not a trial at the opposite end. Native hub part IDs remain reference-only.
+
 ## Installed and responding over USB — 2026-10-12
 
 The same S3 on Artemis was backed up, then flashed with the validated
