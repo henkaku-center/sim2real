@@ -275,3 +275,49 @@ before switching channels. Its existing BOOT routine is an all-channel static
 centre hold. A finite repeated-motion battery-load routine still needs to be
 implemented/tested and distinguished from that hold. No movement was commanded
 as part of recording this workflow decision.
+
+## D15. Automated non-motion clock calibration and photo pin binding (2026-10-22)
+
+**Authority and correction:** the user explicitly requested S3-based PWM clock
+measurement and agent-run measurement → correction → remeasurement once the
+actual device and jumper setup are established. The user also disputed having
+imposed a blanket prohibition on physical commands. The phrase “no physical
+commands” appeared in a parent rollout/resume handoff; attributing it personally
+to the user and generalizing it into a universal ban was incorrect. The prior
+AGENTS assumption of no robot access and mandatory human supervision for every
+physical trial is superseded by this scoped authority, not by the passage of time.
+
+**Scope:** establish the actual device access and electrical fixture, then the
+agent may automate this bounded, non-motion clock-calibration task without an
+extra approval form or blanket supervision gate. `clock measure` captures CH15
+on GPIO4 with CH0–14 off, all servo plugs removed for this clock step, USB only
+and battery physically disconnected. Measurement is read-only with respect to
+calibration; applying an estimate uses explicit `oscillator HZ` and `save`, then
+remeasurement. This does not authorize unrelated device operations, unattended
+load tests or unrestricted actuation. Every actuation path remains subject to
+bounded `SafeAction`, watchdog and stop behavior. The clock-step servo removal
+does not replace D14's separate sequential-servo commissioning workflow.
+
+**Located S3 endpoint:** the parent directly observed the user's October 22
+annotated actual-board photo: right-side labels from the far end toward USB are
+7, 6, 5, **4**, 3, 2, 1, RX, TX, with 4 explicitly circled. With the documented
+USB-facing-A installation, GPIO4 is **F17**, native `s3.male_pin.F17`. This
+supersedes the earlier unresolved S3 binding. It is parent-observed user-photo
+evidence, not extrapolation from adjacent GPIO numbers or the Waveshare Zero
+reference pinout. The attachment was not provided to the child as a local file;
+no image hash is claimed.
+
+**Remaining distinctions:** the native reference CAD labels CH15 near the USB/A
+end (`cad.Part__Feature128.pin.2`, coincident copy `144.pin.2`), while the photo's
+annotation places CH15 at the far/capacitor end. The actual printed hub legend
+was not fully legible in the parent observation; that reference-CAD/photo
+conflict remains unresolved. Use the actual printed **15** and SIGNAL/PWM row,
+not V+ and not an opposite-end trial. The photo does not establish that the
+measurement jumper is installed; its current state remains **unknown**.
+
+Software validation is not physical continuity, voltage or frequency evidence.
+Keep `NEEDS-HARDWARE` for unperformed measurements and unverified claims, report
+concrete missing prerequisites rather than a blanket access ban, and do not
+present the S3 timebase as a calibrated laboratory standard. Protocol, provenance
+and existing software evidence are in `reference/SESAME-S3-CLOCK.md` and
+`reference/evidence/2026-10-21-s3-clock-software.json`.
