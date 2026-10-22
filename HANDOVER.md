@@ -12,6 +12,15 @@ Outputs are OFF. Next verify the actual jumper endpoints and capture/signal path
 do not apply rejected oscillator estimates. See
 [hardware evidence](reference/evidence/2026-10-22-ch0-loopback/README.md).
 
+**Later October 22 instructor measurements:** jumper endpoints confirmed by the
+instructor. Hub A-side VCC is 3.3 V, but V+ is only 30–40 mV both at the side
+header and servo headers relative to GND. Servo power is effectively absent;
+this explains lack of movement independently of the rejected waveform captures.
+Prioritise the 5 V supply path, not repeated jumper-placement checks. The carrier
+model joins S3 5V/A11, converter output/O1 and hub V+/A3. Next measure the S3
+labelled 5V pin against the same hub GND under the existing USB-only condition;
+do not infer physical continuity or USB backfeed behaviour from the model.
+
 ## S3-measured PCA clock — October 21, 2026 (software feature)
 
 `clock measure/status/abort` adds a bounded USB-only, non-motion capture of

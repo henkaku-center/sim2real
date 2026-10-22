@@ -46,3 +46,22 @@ software's requested width as a physically verified pulse.
 
 All captures ended outputs-off; final status `mode=0 outputs=0 hub=1 fault=0`.
 Logs and final build report accompany this note. No gait or all-servo motion ran.
+
+## Subsequent instructor measurements
+
+The instructor confirmed correct jumper placement, then reported **3.3 V on
+A-side VCC** and only **30–40 mV on V+**, measured relative to GND both at the
+side header and around the servo headers. These are human meter observations,
+not telemetry inferred from the firmware. They establish an effectively
+unpowered servo rail at the measured points and explain no servo movement.
+They do not explain or validate the rejected GPIO waveform captures.
+
+The next diagnostic is the S3 pin labelled 5V relative to the same hub GND.
+The recorded carrier connects S3 socket A11 to converter O1 and hub socket A3
+on the `output_5V` net; that model is not proof of actual continuity or of the
+S3 module exposing USB power on its 5V pin. Keep the existing USB-only power
+condition while locating where the 5V rail is absent.
+
+An independent RMT diagnostic was started but paused before build/flash once
+the missing V+ measurement arrived. The installed image remains the one hashed
+above; no further firmware update or calibration write was performed.
