@@ -8,7 +8,7 @@ not asserted absent. Once the fixture and device access are established, an
 agent can run measure → explicit apply → remeasure without a handheld meter.
 This is not a new universal human-supervision rule or approval form.
 
-## Connection and the remaining pin-binding gap
+## Connection and photo-located S3 input
 
 - USB only, battery physically disconnected, **all servo plugs removed** during
   this clock step. CH0–14 remain full-off; only CH15 produces the reference.
@@ -18,22 +18,31 @@ This is not a new universal human-supervision rule or approval form.
 - GPIO4 is newly reserved in `manifest/robot.yaml`. It is distinct from the
   controller's SDA2, SCL3, OE18, BOOT0 and native USB19/20 assignments. Firmware
   configures it as input with pulldown; it is never driven as an output.
-- Hub reference CAD: CH15 is `cad.Part__Feature128.pin.2` and coincident copy
+- Hub **reference CAD only**: CH15 is `cad.Part__Feature128.pin.2` and coincident copy
   `cad.Part__Feature144.pin.2`. The APS exporter explicitly assigns rows
   `.pin.0=GND`, `.pin.1=V+`, `.pin.2=PWM`, edge inward. The native numeric
-  silkscreen marks that column 15.
-- **Installed SuperMini carrier address / S3 header part remain unresolved.**
-  `s3-installation.json` documents A11–I17 geometry, not an electronic pin map.
-  Its imported `ESP32-S3_Zero.step` is reference geometry. The official Zero
-  pinout has a 5V/GND/3V3/GP1…GP6 side and a TX/RX/GP13…GP7 side, which does not
-  match the existing diagram's D17=GPIO2/E17=GPIO3 claim under the recorded CAD
-  rotation. Do **not** extrapolate F17=GPIO4 from those two addresses. Establish
-  the actual board's labelled GPIO4 and its carrier position from its specific
-  pinout/photo before drawing the second endpoint as a verified native part.
-  The generated interface intentionally uses `null` for both carrier fields.
+  silkscreen glyphs `cad.Part__Feature245` / `246` spell 15 at x≈58.47, near the
+  USB-facing A end. CH0 is column115 at x≈11.68, the opposite end. This native
+  ordering **conflicts** with the new photo's far-end “Try first CH15” annotation.
+  The parent could not fully read the actual printed hub number, so an as-built
+  hub-to-native-part mapping is not established. Keep those IDs reference-only.
+  Use the actual printed **15** and **SIGNAL/PWM** row; do not adopt the photo's
+  suggestion to try the opposite end if no signal is detected.
+- **GPIO4 is now photo-located at F17: `s3.male_pin.F17`.** On October 22 the
+  user supplied an annotated actual-board photograph in the canonical APS guide
+  conversation. The parent directly observed the right-side labels, far end
+  toward USB: **7, 6, 5, 4, 3, 2, 1, RX, TX**, with 4 explicitly circled.
+  Combined with the documented USB-facing-A installation, the row is
+  A17=TX, B17=RX, C17=GPIO1, D17=GPIO2, E17=GPIO3, **F17=GPIO4**,
+  G17=GPIO5, H17=GPIO6, I17=GPIO7. The native male pin carries `Address=F17`.
+  This supersedes the earlier unresolved binding: it is not an inference from
+  GPIO2/3 adjacency or from the Waveshare Zero reference model.
+  The child did not receive the attachment as a local file and records no image
+  hash. This is parent-observed user-photo provenance, not direct child image
+  inspection or a physical continuity/voltage measurement.
 
-There is no reason to invent a carrier address or flash a device merely to close
-this documentation gap. Physical execution additionally requires the actual
+The photo does not show the measurement jumper installed; its current state
+remains unknown. Physical execution additionally requires the actual
 USB endpoint/firmware identity and the existing OE/reset-disable wiring to be
 established. None is checked by the offline tests.
 
@@ -107,9 +116,12 @@ peak-to-peak jitter at most 2% of the mean period, and estimated oscillator
 
 Primary sources consulted October 21, 2026:
 
+- October 22 user-supplied actual-board photo, observed by the parent session as
+  described above. This resolves the S3 GPIO4/F17 location; no local image hash
+  is available. It does not resolve the hub annotation/reference-CAD conflict.
 - [Waveshare Zero pinout](https://www.waveshare.com/wiki/ESP32-S3-Zero#Pinout)
   and its [labelled photograph](https://www.waveshare.com/w/upload/8/87/ESP32-S3-Zero-details-inter.jpg).
-  Reference-board evidence only; not proof that the installed SuperMini shares it.
+  Reference-board evidence only; not the source of the now-established F17 binding.
 - [Espressif ESP Timer](https://docs.espressif.com/projects/esp-idf/en/stable/esp32s3/api-reference/system/esp_timer.html#obtaining-current-time)
   documents ISR use of the microsecond time source. The installed pinned Arduino
   core 3.3.11 `esp32-hal-misc.c` also implements `micros()` with that function;

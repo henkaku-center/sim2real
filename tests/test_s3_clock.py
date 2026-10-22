@@ -16,7 +16,7 @@ def test_native_clock_measurement(tmp_path):
     subprocess.run([str(binary)], check=True)
 
 
-def test_read_only_feature_preserves_calibration_identity_and_binding_gap():
+def test_read_only_feature_preserves_calibration_identity_and_photo_binding():
     header = (ROOT / "firmware/sesame-s3/manifest_generated.h").read_text()
     # Compatibility identity before this read-only feature. Changing motion or
     # pulse semantics requires an intentional test/compatibility review.
@@ -24,7 +24,16 @@ def test_read_only_feature_preserves_calibration_identity_and_binding_gap():
     interface = json.loads((ROOT / "reference/sesame-s3-interface.json").read_text())
     clock = interface['clock_measurement']
     assert clock['input_gpio'] == 4 and clock['pca_channel'] == 15
-    assert clock['carrier_address'] is None and clock['s3_header_part'] is None
+    assert clock['carrier_address'] == 'F17' and clock['s3_header_part'] == 's3.male_pin.F17'
+    provenance = clock['pin_binding_provenance']
+    assert provenance['kind'] == 'parent-observed-user-reference-photo'
+    assert provenance['observed_on'] == '2026-10-22'
+    assert provenance['image_sha256'] is None
+    assert provenance['far_to_usb_labels'] == ['7', '6', '5', '4', '3', '2', '1', 'RX', 'TX']
+    assert provenance['installed_row_usb_to_far']['F17'] == 'GPIO4'
+    assert clock['pca_actual_photo_native_part'] is None
+    assert clock['pca_signal_parts_scope'].startswith('reference-CAD-only:')
+    assert clock['pca_signal_parts'] == ['cad.Part__Feature128.pin.2', 'cad.Part__Feature144.pin.2']
     assert clock['target_edges'] == 101 and clock['timeout_ms'] == 4000
     assert clock['watchdog_ms'] == 500
     assert interface['pulse']['profile_id'] == 'tim-pca9685-150-512-v1'

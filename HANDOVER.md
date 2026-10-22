@@ -8,9 +8,12 @@ See [protocol, evidence and fixture prerequisites](reference/SESAME-S3-CLOCK.md)
 The agent may automate measure → explicit oscillator/save → remeasure once the
 actual device/jumper setup is established. Jumper state is **unknown**. No
 physical commands or flashing were performed in this coding task; this is not a
-blanket ban on agent-run non-motion tests. GPIO4's actual SuperMini carrier
-address is unresolved, so interface native-header/address fields remain null.
-Do not infer it from the Zero reference CAD or extrapolate F17=GPIO4.
+blanket ban on agent-run non-motion tests. **October 22 update:** the parent's
+observation of the user's annotated actual-board photo locates GPIO4 at F17
+(`s3.male_pin.F17`), superseding the earlier unresolved binding. This is not
+physical continuity/voltage verification. The photo's hub-end annotation conflicts
+with the native reference CAD's CH15 placement; use the actual printed 15/PWM,
+not a trial at the opposite end. Native hub part IDs remain reference-only.
 
 ## Installed and responding over USB — 2026-10-12
 

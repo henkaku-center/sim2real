@@ -60,8 +60,11 @@ on the assembled robot. [Diagnosis](SESAME-S3-DIAGNOSIS.md) ·
 measurement](SESAME-S3-CLOCK.md) using `clock measure` / `clock status`. With the
 labelled GPIO4 jumper, USB fixture and actual board binding established, an agent
 can measure, explicitly apply `oscillator HZ`, and remeasure without a handheld
-frequency meter. The carrier-address binding is still unresolved; do not infer
-F17=GPIO4. All servo plugs are removed for this non-motion clock step. The older
+frequency meter. The October 22 actual-board photo locates **GPIO4 at F17**
+(`s3.male_pin.F17`); it is not a continuity or voltage measurement. The hub's
+photo annotation conflicts with reference-CAD ordering: use the actual printed
+**15** and SIGNAL/PWM row, not an opposite-end trial. All servo plugs are removed
+for this non-motion clock step. The older
 external-instrument method below remains available for comparison.
 
 Use the USB console with **all servos unplugged**, especially CH15:
