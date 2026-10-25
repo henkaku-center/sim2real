@@ -18,7 +18,8 @@ def test_native_clock_measurement(tmp_path):
 def test_read_only_feature_preserves_calibration_identity_and_photo_binding():
     header = (ROOT / "firmware/sesame-s3/manifest_generated.h").read_text()
     # Defaults-policy changes must preserve valid prior stored calibration.
-    assert 'COMPATIBLE_MANIFEST_IDS[] = {"bd7675604b98ae46"}' in header
+    assert 'COMPATIBLE_MANIFEST_IDS[] = {"e669b916d178ac0a", "bd7675604b98ae46"}' in header
+    assert 'constexpr uint32_t OE = 7;' in header
     interface = json.loads((ROOT / "reference/sesame-s3-interface.json").read_text())
     clock = interface['clock_measurement']
     assert clock['input_gpio'] == 4 and clock['pca_channel'] == 15
@@ -39,5 +40,16 @@ def test_read_only_feature_preserves_calibration_identity_and_photo_binding():
     assert all(j['hardware_verified_pca_channel'] is None for j in interface['joint_map'])
     assert interface['bench']['sequence_deg'] == [0,90,180,90]
     assert interface['bench']['arm_command'] == 'arm bench CH'
+    assert interface['calibration_compatibility']['read_manifest_ids'] == ['e669b916d178ac0a', 'bd7675604b98ae46']
+    oe = interface['output_enable']
+    assert oe['gpio'] == 7 and oe['carrier_address'] == 'I17'
+    assert oe['s3_header_part'] == 's3.male_pin.I17'
+    assert oe['hub_address'] == 'A7' and oe['hub_header_part'] == 'hub.male_pin.A7'
+    assert oe['disabled_level'] == 'HIGH' and oe['enabled_level'] == 'LOW'
+    pullup = oe['pullup']
+    assert pullup['rail_address'] == 'A4' and pullup['rail_part'] == 'hub.male_pin.A4'
+    assert pullup['reported_ohms'] == 4700 and pullup['universally_validated'] is False
+    assert pullup['reported_outputs_off_v'] == 3.2 and pullup['reset_behavior_verified'] is False
+    assert pullup['reference_high_z_divider_ratio'] < pullup['pca_minimum_high_ratio_vdd']
     assert {'clock measure', 'clock status', 'clock abort'} <= {
         command['syntax'] for command in interface['commands']}

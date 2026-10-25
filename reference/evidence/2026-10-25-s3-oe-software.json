@@ -1,0 +1,81 @@
+{
+  "platform": "macOS-15.7.9-x86_64-i386-64bit",
+  "toolchain": {
+    "arduino_cli": "1.5.1",
+    "host_python": "3.12",
+    "pyyaml": "6.0.3",
+    "pyserial": "3.5",
+    "core": "esp32:esp32@3.3.11",
+    "index_url": "https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json",
+    "fqbn": "esp32:esp32:esp32s3:CDCOnBoot=cdc,FlashSize=4M,PartitionScheme=default,PSRAM=disabled,EraseFlash=none",
+    "libraries": {
+      "Adafruit PWM Servo Driver Library": "3.0.3",
+      "Adafruit SSD1306": "2.5.17",
+      "Adafruit GFX Library": "1.12.6",
+      "Adafruit BusIO": "1.17.4"
+    }
+  },
+  "jobs": 1,
+  "setupSeconds": 3.535771968308836,
+  "executionSeconds": 62.183317876886576,
+  "totalSeconds": 65.71909090038389,
+  "source_sha256": {
+    "firmware/sesame-s3/bench_display.h": "956dc6f11f8124c27c66cde8e44ef9f74fb4d3552b5096ac62cea1f8498d2401",
+    "firmware/sesame-s3/clock_measurement.h": "b7b2b76ed6763a0f9ba6ecf9198b3e8612b0d1d9f17e1bd0b470d9a6d2b0606b",
+    "firmware/sesame-s3/command_line.h": "2fae005c462eda30a42b0945ec0d551a6a3e1af5b4266aa38b026af835111ecc",
+    "firmware/sesame-s3/controller.cpp": "3846616d41cf53752e1f4f1c4a7f7d770302a72435e836ddf4ef4387113ea32f",
+    "firmware/sesame-s3/manifest_generated.h": "8756e8929a5db4e501a127a2bd39f0a351321b49f48f51d75c53248401bfc225",
+    "firmware/sesame-s3/safe_action.h": "6f0f610c8940ccfea36161019ae42191bfd0df608a34962c12a4e0fddb74c4d1",
+    "firmware/sesame-s3/sesame-s3.ino": "617bff8592b8f7521e943b52530b976d4aca596706f06f66c9813abd493e4919",
+    "firmware/sesame-s3/vendor/.gitattributes": "8998c36159a0e1f447254c0a69da11ec0eee1fde7aabd69f38ab7abb8fbfda25",
+    "firmware/sesame-s3/vendor/LICENSE": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4",
+    "firmware/sesame-s3/vendor/NOTICE.md": "2449b5021220c1386f481e144eadc128bfcc8f3a343adefab2c76ed55852cdec",
+    "firmware/sesame-s3/vendor/face-bitmaps.h": "722692894402d9eccf5c022ed7b4eb090c2de6b171b7872cedce55609dac1f06",
+    "firmware/sesame-s3/vendor/provenance.json": "713c5023ed8d34a9ea7176ea0e3cefbcc6f097e6458bd6bc9766b97babc8a696",
+    "firmware/sesame-s3/web_ui.h": "742850f6dd1930ee38a3639aca8c5580f91210e868454826206b2fb06ceba2d3"
+  },
+  "binaries_sha256": {
+    "sesame-s3.ino.partitions.bin": "148b959cbff1c38aa8e1d5c0ba9d612c54997b945e56a63f41223eef650653a1",
+    "boot_app0.bin": "f94c5d786a7a8fab06ac5d10e33bf37711a6697636dc037559ea19cc410a17f0",
+    "sesame-s3.ino.bin": "bc65ec9bd92b8b7dd5186e83b835fb947018fc7f75b8ed9749823622db483c7f",
+    "sesame-s3.ino.bootloader.bin": "5f95cbc8b40b7a373f9cb85b534cb7a570cdad30ca27c7021775d830ca03276b",
+    "sesame-s3.ino.merged.bin": "e80724b459442a20f58084b23f03c3206fe38a35b80c4605174857af98fbcb8e"
+  },
+  "scope": "software-only canonical course OE GPIO7 update; no physical device operations",
+  "base_revision": "4cebb2349620514b955a78b3e5e006897bd1e731",
+  "manifest_id": "8d75c0ea0b2c68e7",
+  "accepted_prior_manifest_ids": [
+    "e669b916d178ac0a",
+    "bd7675604b98ae46"
+  ],
+  "oe_gpio": 7,
+  "clock_measure_gpio": 4,
+  "validation": {
+    "firmware_native_and_provenance": {
+      "paths": [
+        "tests/test_s3_firmware.py",
+        "tests/test_s3_clock.py",
+        "tests/test_body_provenance.py"
+      ],
+      "result": "72 passed",
+      "pytest_seconds": 28.39,
+      "total_seconds": 29.54529485385865,
+      "native_sanitizers": [
+        "address",
+        "undefined"
+      ]
+    },
+    "affected_body_contracts": {
+      "path": "tests/test_body_cad.py",
+      "selection": "frozen_leg_and_servo_interfaces or committed_body_review_is_fresh_and_complete or rom_job_uses_manifest_ranges_and_moves_both_links",
+      "result": "3 passed; 4 unrelated/full-acceptance cases deselected",
+      "pytest_seconds": 3.93,
+      "total_seconds": 4.904764148872346
+    },
+    "parallel_budget": "One Arduino compiler job plus one sequential test lane, max 2; numerical libraries bounded to one thread",
+    "body_provenance": "8 consumer hashes unchanged; exact v3 firmware metadata equivalence; original report reconstructible; validator_executed=false; FAIL-DRAFT and both acceptance flags false"
+  },
+  "physical_reset_verified": false,
+  "private_notes": "Reviewed as untrusted evidence only; no raw logs, identifiers or student code published/executed",
+  "historical_records": "Original bring-up code and evidence left unchanged"
+}

@@ -71,7 +71,7 @@ def test_committed_revalidation_is_true_and_keeps_hold():
     proof = provenance.verify(ROOT)
     assert proof['original_commit'] == provenance.AUDITED_REPORT_COMMIT
     assert proof['validator_executed'] is False
-    assert proof['method'] == 'unused-s3-firmware-metadata-v2'
+    assert proof['method'] == 'unused-s3-firmware-metadata-v3'
     assert proof['allowed_manifest_changes'] == provenance.ALLOWED_MANIFEST_CHANGES
     assert proof['original_input_hashes'][provenance.MANIFEST] == '2912c38dd40bd622694a103be345d6c2a7374ef05b85a5a511314ff0ccc58bae'
 
@@ -112,6 +112,10 @@ def test_exact_firmware_deltas_preserve_effective_body_identity(fixture_repo):
 @pytest.mark.parametrize('field,value', [
     ('clock_measure_gpio', 5), ('clock_measure_gpio', 4.0),
     ('clock_measure_gpio', True), ('clock_measure_gpio', '4'),
+    ('oe', 18), ('oe', 8), ('oe', 7.0), ('oe', True), ('oe', '7'),
+    ('calibration_compatible_manifest_ids', ['e669b916d178ac0a']),
+    ('calibration_compatible_manifest_ids', ['bd7675604b98ae46']),
+    ('calibration_compatible_manifest_ids', ['e669b916d178ac0a', 'bd7675604b98ae46', '0000000000000000']),
     ('calibration_compatible_manifest_ids', ['bd7675604b98ae46', '0000000000000000']),
     ('calibration_compatible_manifest_ids', 'bd7675604b98ae46'),
     ('calibration_compatible_manifest_ids', []),
@@ -129,7 +133,7 @@ def test_changed_allowed_field_values_are_not_a_blanket_exception(fixture_repo, 
 
 
 @pytest.mark.parametrize('field', ['clock_measure_gpio', 'calibration_compatible_manifest_ids',
-                                 'intended_channels_status', 'pulse_profile'])
+                                 'intended_channels_status', 'pulse_profile', 'oe'])
 def test_missing_audited_field_is_rejected(fixture_repo, field):
     root, baseline, files = fixture_repo
     data = yaml.safe_load((root / provenance.MANIFEST).read_text())

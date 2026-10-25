@@ -1,6 +1,6 @@
 # Held body-v1 provenance refresh
 
-Updated October 22, 2026. This is **metadata revalidation, not a geometry-validator rerun**
+Updated October 25, 2026. This is **metadata revalidation, not a geometry-validator rerun**
 and not approval to print, release the body preview or move hardware.
 
 ## Cause
@@ -24,13 +24,20 @@ did joint definitions, neutral, poses or geometry parameters. CI run
 proof's deliberate rejection on both OSes. This is a new dependency regression,
 not a rerun or waiver of the earlier provenance work.
 
+The October 25 course OE correction changes only the firmware selector `oe`
+from 18 to 7 and extends the exact saved-record compatibility list to
+`[e669b916d178ac0a, bd7675604b98ae46]`. All eight pinned body consumers were
+rechecked at `4cebb23`; none consumes those fields. No body parameter, joint,
+pose, range, transform, source asset or geometry-consumer code changes with
+this correction. The original report/execution identities are still the baseline.
+
 The audit rechecked all eight original consumer hashes. `sim/manifest.py`
 constructs joints and neutral from their unchanged fields (and exposes poses
 through `pose_internal`). `tools/check_body.py::make_job` uses those joints,
 signs, ranges and fixed geometry transforms to construct its ROM job; its only
 use of the complete YAML file is its raw provenance hash. The pinned MJCF,
 asset-preparation, CAD, detector, motion and renderer code does not consume the
-four allowed firmware metadata fields. None of that consumer code was changed
+allowed firmware metadata fields. None of that consumer code was changed
 to obtain equivalence.
 
 The original and current manifests also produce identical `make_job` numerical
@@ -42,12 +49,12 @@ modeled or certified for body fit by this metadata repair.
 ## Proof and reader semantics
 
 `tools/revalidate_body_provenance.py` now uses
-`unused-s3-firmware-metadata-v2`: three exact additions (the existing Tim pulse
-profile, GPIO4 input and single compatibility-ID list) and the one exact status
-label replacement against the original execution manifest. Its
+`unused-s3-firmware-metadata-v3`: three exact additions (the existing Tim pulse
+profile, GPIO4 input and two-ID compatibility list) and the exact status-label
+and OE18→7 replacements against the original execution manifest. Its
 `allowed_manifest_changes` records their paths, typed values and original label.
 It does not ignore the whole hardware profile or permit arbitrary values even
-within those four keys. It rejects missing keys, other GPIO values, widened
+within those five keys. It rejects missing keys, other GPIO values, widened
 compatibility lists, altered pulse profiles, claimed physical verification,
 channel-map changes, logical-limit changes and unrecognized metadata.
 

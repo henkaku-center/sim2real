@@ -21,7 +21,10 @@ is **90°**, not the raw endpoint 0°.
 
 Use USB alone with the battery physically disconnected. The bench routine does
 not require Wi-Fi or an external supply. Preserve common GND, 3.3 V logic VCC,
-GPIO2 SDA / GPIO3 SCL and the existing GPIO18→OE/reset-disable arrangement.
+GPIO2 SDA / GPIO3 SCL and the canonical **GPIO7/I17 → hub OE/A7** connection.
+The pull-up goes to logic VCC/A4 (3V3), not servo V+/A3; see
+[OE/reset bias](SESAME-S3-OE.md). The reported 4.7 kΩ value and driven-HIGH
+reading do not establish reset-time HIGH on every module.
 USB capacity and actual wiring are physical properties, not certified by a
 successful build. `off` or BOOT abort disables the outputs; investigate a reset,
 communication fault or mechanically obstructed pointer rather than continuing
@@ -80,12 +83,14 @@ Finish with `off` before connecting the servo plugs.
 Fresh defaults use this map, with verification flags still false. Existing valid
 saved records—including unassigned or different mappings—are **preserved**, not
 silently overwritten. The compatible pre-update manifest ID is
-`bd7675604b98ae46`; checksum, calibration validity and record layout are still
+`bd7675604b98ae46` and `e669b916d178ac0a`; checksum, calibration validity and record layout are still
 checked. Loading a compatible record does not write NVS. An explicit `save`
 records the current identity with the current calibration values.
 
-The agent reads `show` first. If the saved map differs from the recommended
-wiring, retain an `export` copy and normalize it while OFF. Clear all eight
+The agent reads `show` first and preserves saved measured/custom maps by default.
+An OE firmware update does not normalize them. Only when explicitly tasked to
+normalize a build whose actual wiring matches the recommended wiring, retain an
+`export` copy and normalize while OFF. Clear all eight
 assignments first to avoid duplicate-channel collisions, then set the canonical
 map and save:
 
