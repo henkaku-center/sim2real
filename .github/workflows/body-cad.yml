@@ -40,12 +40,13 @@ jobs:
         with:
           lfs: true
           fetch-depth: 0
+      - uses: astral-sh/setup-uv@v5
       - name: Classify provenance-only repair
         id: scope
         env:
           BASE_REF: ${{ github.event.pull_request.base.sha || github.event.before }}
           HEAD_REF: ${{ github.event.pull_request.head.sha || github.sha }}
-        run: python3 tools/revalidate_body_provenance.py --classify --base-ref "$BASE_REF" --head-ref "$HEAD_REF" >> "$GITHUB_OUTPUT"
+        run: uv run --no-project --python 3.12 --with pyyaml==6.0.3 python tools/revalidate_body_provenance.py --classify --base-ref "$BASE_REF" --head-ref "$HEAD_REF" >> "$GITHUB_OUTPUT"
       - uses: mamba-org/setup-micromamba@v2
         if: steps.scope.outputs.provenance_only != 'true'
         with:
@@ -55,7 +56,6 @@ jobs:
             freecad=1.1.3
             occt=7.9.3
           cache-environment: true
-      - uses: astral-sh/setup-uv@v5
       - name: Verify metadata-only provenance and rejection controls
         if: steps.scope.outputs.provenance_only == 'true'
         run: uv run --no-project --python 3.12 --with pyyaml==6.0.3 --with pytest==9.1.1 python -m pytest tests/test_body_provenance.py -q

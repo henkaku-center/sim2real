@@ -57,6 +57,19 @@ PROVENANCE_PATHS = {
     REPORT, 'tools/revalidate_body_provenance.py', 'tests/test_body_provenance.py',
     'reference/BODY-PROVENANCE.md', '.github/workflows/body-cad.yml',
 }
+# Exact non-geometry companions audited in 4cebb23..1aea3c8 for the course OE
+# correction. No directory/glob exemption: new firmware, geometry, consumer or
+# asset paths require review. Main CI still tests/builds the firmware changes.
+FIRMWARE_COMPANION_PATHS = {
+    MANIFEST, 'DECISIONS.md', 'HANDOVER.md', 'firmware/README.md',
+    'firmware/sesame-s3/manifest_generated.h',
+    'reference/SESAME-S3-BUILD-STATE.md', 'reference/SESAME-S3-CALIBRATION.md',
+    'reference/SESAME-S3-CLOCK.md', 'reference/SESAME-S3-OE.md',
+    'reference/sesame-s3-interface.json',
+    'reference/evidence/2026-10-25-s3-oe-software.json',
+    'tests/firmware/test_s3_native.cpp', 'tests/test_s3_clock.py',
+    'tools/generate_s3_firmware.py',
+}
 
 
 def require(condition, message):
@@ -224,9 +237,26 @@ def refresh(root, baseline):
     return result
 
 
-def provenance_only(paths):
+def classify_body_scope(paths, root=ROOT):
     paths = set(paths)
-    return REPORT in paths and paths <= PROVENANCE_PATHS
+    if REPORT not in paths:
+        return False, 'no-provenance-report-change'
+    if not paths <= PROVENANCE_PATHS | FIRMWARE_COMPANION_PATHS:
+        return False, 'unknown-or-geometry-path'
+    try:
+        # A path list is only a candidate. Verify the checked-out report and
+        # exact manifest equivalence, original execution reconstruction, pinned
+        # consumer/source/export hashes and holds before skipping geometry work.
+        verify(root)
+    except Exception as error:
+        # Missing dependencies/LFS inputs, malformed or stale proof, changed
+        # consumers/assets and unknown failures all retain the full CAD route.
+        return False, 'proof-not-established-' + type(error).__name__
+    return True, 'verified-unchanged-body-inputs-with-audited-companions'
+
+
+def provenance_only(paths, root=ROOT):
+    return classify_body_scope(paths, root)[0]
 
 
 def main():
@@ -242,9 +272,12 @@ def main():
             require(all(re.fullmatch(r'[0-9a-f]{40}', value or '') for value in
                         (args.base_ref, args.head_ref)), 'scope needs full commit hashes')
             paths = git(ROOT, 'diff', '--name-only', '-z', args.base_ref, args.head_ref, '--').decode().split('\0')
-            scoped = provenance_only(filter(None, paths))
+            scoped, reason = classify_body_scope(filter(None, paths))
         except (subprocess.CalledProcessError, TypeError, ValueError):
             scoped = False  # Missing/unknown comparison retains full CAD coverage.
+            reason = 'missing-or-invalid-comparison'
+        import sys
+        print('body scope: ' + reason, file=sys.stderr)
         print('provenance_only=' + str(scoped).lower())
     elif args.write:
         if not args.baseline:

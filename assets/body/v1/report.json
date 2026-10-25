@@ -61599,7 +61599,7 @@
       "tools/render_body.py": "6e6f839edb21e8e3089d28411cc17ceb97fd0ef684d5aa2f175f68048fc68834"
     },
     "validator_executed": false,
-    "verifier_sha256": "0048523014b32d8b760500c1c5c0b9f0a0bad60d8d71c7ed117af9812419e2fd"
+    "verifier_sha256": "0250eee63419f71bde5ad22d66dac56eec9eb11f3abf765bdf0eae3cdca462f8"
   },
   "limitations": [
     "Static eight MG90S/horn proxies are nominal, not measured purchased-variant geometry.",

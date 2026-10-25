@@ -94,11 +94,30 @@ python -m pytest -q tests/test_body_cad.py -k 'frozen_leg_and_servo_interfaces o
 The ordinary freshness test is unchanged. Normal Linux/macOS CI still runs it
 and the new proof/rejection tests. The body-CAD job uses a metadata-only route
 only when the change set contains the report and is wholly within the explicit
-provenance helper/test/document/workflow allowlist. That route runs proof and
-negative controls on both OSes, without invoking FreeCAD, FCL or rendering.
-Mixed geometry/manifest changes, unknown paths or missing comparison refs retain
-the existing full CAD path. Workflow changes alone cannot select the narrow path.
+provenance allowlist plus the exact non-geometry OE firmware companion paths
+audited in `4cebb23..1aea3c8`. No firmware/reference directory-wide exemption is
+used. The companion list includes this change's generated contract, generator,
+focused firmware tests and named documents; it does not admit new helper files,
+body tests, assets or geometry consumers.
+
+**Path eligibility alone never selects that route.** Before classification the
+job provides pinned PyYAML, then verifies the checked-out proof, exact manifest
+delta, original report reconstruction, all pinned consumer/source/export hashes
+and held flags. The same proof/rejection tests run again as the metadata job's
+required check on both OSes. The main CI job retains firmware tests/builds.
+Missing dependencies or LFS data, malformed/stale proofs, altered geometry
+inputs/consumers/assets, unknown paths or missing comparison refs retain the
+existing full CAD path. Workflow changes alone cannot select the narrow path.
 The matrix has two bounded jobs with separate runner filesystems.
+
+This corrects OE PR #5's classification: run `40170704312` selected full CAD
+merely because the manifest/proof repair accompanied firmware documents and
+generated constants. Its known held FAIL-DRAFT results remain results, not
+successes or waived failures. A successful metadata-only job means unchanged
+audited body inputs and preserved failure evidence, **not successful body fit**.
+Full detector and fit-acceptance steps are retained unchanged for genuine or
+unclassified geometry changes; no `continue-on-error` or acceptance bypass is
+introduced.
 
 A future genuine body redesign/regeneration requires its own review and a new
 execution/provenance contract; this held snapshot cannot silently certify it.
