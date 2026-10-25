@@ -1,5 +1,16 @@
 # HANDOVER
 
+## Course OE uses exposed GPIO7 — October 25, 2026
+
+Canonical **GPIO7/I17 → hub OE/A7**, with pull-up to **3V3 VCC/A4**, replaces
+the unavailable GPIO18 expectation for the actual course SuperMini. The class
+notes' 4.7 kΩ and 3.2 V driven-HIGH observation do not prove reset bias: see
+`reference/SESAME-S3-OE.md`. No student code/raw logs were imported or executed.
+Known valid prior identities `e669b916d178ac0a` and `bd7675604b98ae46` retain
+saved calibration unchanged, without automatic normalization of measured maps.
+Full-range bounded bench commands, Tim semantics and hardware watchdog/stop
+requirements remain. No new physical measurement or reset behavior is claimed.
+
 ## Recommended map and full pointer sequence — October 22, 2026
 
 The current classroom path is `arm bench CH`: loose horn pointers, no legs,

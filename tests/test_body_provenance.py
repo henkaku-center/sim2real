@@ -71,7 +71,7 @@ def test_committed_revalidation_is_true_and_keeps_hold():
     proof = provenance.verify(ROOT)
     assert proof['original_commit'] == provenance.AUDITED_REPORT_COMMIT
     assert proof['validator_executed'] is False
-    assert proof['method'] == 'unused-s3-firmware-metadata-v2'
+    assert proof['method'] == 'unused-s3-firmware-metadata-v3'
     assert proof['allowed_manifest_changes'] == provenance.ALLOWED_MANIFEST_CHANGES
     assert proof['original_input_hashes'][provenance.MANIFEST] == '2912c38dd40bd622694a103be345d6c2a7374ef05b85a5a511314ff0ccc58bae'
 
@@ -112,6 +112,10 @@ def test_exact_firmware_deltas_preserve_effective_body_identity(fixture_repo):
 @pytest.mark.parametrize('field,value', [
     ('clock_measure_gpio', 5), ('clock_measure_gpio', 4.0),
     ('clock_measure_gpio', True), ('clock_measure_gpio', '4'),
+    ('oe', 18), ('oe', 8), ('oe', 7.0), ('oe', True), ('oe', '7'),
+    ('calibration_compatible_manifest_ids', ['e669b916d178ac0a']),
+    ('calibration_compatible_manifest_ids', ['bd7675604b98ae46']),
+    ('calibration_compatible_manifest_ids', ['e669b916d178ac0a', 'bd7675604b98ae46', '0000000000000000']),
     ('calibration_compatible_manifest_ids', ['bd7675604b98ae46', '0000000000000000']),
     ('calibration_compatible_manifest_ids', 'bd7675604b98ae46'),
     ('calibration_compatible_manifest_ids', []),
@@ -129,7 +133,7 @@ def test_changed_allowed_field_values_are_not_a_blanket_exception(fixture_repo, 
 
 
 @pytest.mark.parametrize('field', ['clock_measure_gpio', 'calibration_compatible_manifest_ids',
-                                 'intended_channels_status', 'pulse_profile'])
+                                 'intended_channels_status', 'pulse_profile', 'oe'])
 def test_missing_audited_field_is_rejected(fixture_repo, field):
     root, baseline, files = fixture_repo
     data = yaml.safe_load((root / provenance.MANIFEST).read_text())
@@ -243,11 +247,69 @@ def test_changed_image_and_forged_proof_hash_cannot_relabel_original_asset(fixtu
         provenance.verify(root, report)
 
 
-@pytest.mark.parametrize('extra', ['manifest/robot.yaml', 'tools/check_body.py',
+@pytest.mark.parametrize('extra', ['firmware/sesame-s3/controller.cpp', 'tools/check_body.py',
                                   'assets/body/params.json', 'assets/body/v1/face-cover.stl',
                                   'tests/test_body_cad.py', 'unknown.py'])
 def test_mixed_or_uncertain_changes_keep_full_cad_coverage(extra):
     assert not provenance.provenance_only({provenance.REPORT, extra})
+
+
+def test_audited_mixed_oe_companions_require_verified_body_proof(fixture_repo):
+    root, baseline, _ = fixture_repo
+    paths = provenance.PROVENANCE_PATHS | provenance.FIRMWARE_COMPANION_PATHS
+    assert not provenance.provenance_only(paths, root)  # no wrapper yet
+    provenance.refresh(root, baseline)
+    scoped, reason = provenance.classify_body_scope(paths, root)
+    assert scoped and reason == 'verified-unchanged-body-inputs-with-audited-companions'
+    assert provenance.provenance_only({provenance.REPORT, provenance.MANIFEST,
+                                      'firmware/sesame-s3/manifest_generated.h'}, root)
+    assert not provenance.provenance_only(paths - {provenance.REPORT}, root)
+
+
+@pytest.mark.parametrize('mutation', ['manifest', 'consumer', 'asset', 'release',
+                                     'missing_proof', 'unhydrated_asset', 'malformed_manifest'])
+def test_mixed_path_allowlist_cannot_bypass_current_proof(fixture_repo, mutation):
+    root, baseline, _ = fixture_repo
+    report = provenance.refresh(root, baseline)
+    paths = {provenance.REPORT, provenance.MANIFEST, 'tools/generate_s3_firmware.py'}
+    assert provenance.provenance_only(paths, root)
+    if mutation == 'manifest':
+        path = root / provenance.MANIFEST
+        data = yaml.safe_load(path.read_text())
+        data['hardware_profiles']['sesame_s3']['oe'] = 8
+        path.write_text(yaml.safe_dump(data))
+        # Even a forged current raw hash must not bypass exact input equivalence.
+        report['input_hashes'][provenance.MANIFEST] = provenance.sha(path.read_bytes())
+    elif mutation == 'consumer':
+        with (root / 'tools/check_body.py').open('a') as out: out.write('\n# changed\n')
+    elif mutation == 'asset':
+        (root / 'assets/body/v1/preview.png').write_bytes(b'changed')
+    elif mutation == 'release': report['release_ready'] = True
+    elif mutation == 'missing_proof': del report[provenance.PROOF]
+    elif mutation == 'unhydrated_asset':
+        (root / 'assets/stl/upstream/fixture.stl').write_bytes(b'version https://git-lfs.github.com/spec/v1\n')
+    else: (root / provenance.MANIFEST).write_text('invalid: [yaml')
+    (root / provenance.REPORT).write_bytes(provenance.encoded(report))
+    scoped, reason = provenance.classify_body_scope(paths, root)
+    assert not scoped and reason.startswith('proof-not-established-')
+
+
+def test_exact_oe_pr_paths_are_candidates_without_broad_directory_exemptions():
+    # Exact files in 4cebb23..1aea3c8; no Git-history dependency on shallow CI.
+    paths = {
+        'DECISIONS.md', 'HANDOVER.md', provenance.REPORT, 'firmware/README.md',
+        'firmware/sesame-s3/manifest_generated.h', provenance.MANIFEST,
+        'reference/BODY-PROVENANCE.md', 'reference/SESAME-S3-BUILD-STATE.md',
+        'reference/SESAME-S3-CALIBRATION.md', 'reference/SESAME-S3-CLOCK.md',
+        'reference/SESAME-S3-OE.md', 'reference/evidence/2026-10-25-s3-oe-software.json',
+        'reference/sesame-s3-interface.json', 'tests/firmware/test_s3_native.cpp',
+        'tests/test_body_provenance.py', 'tests/test_s3_clock.py',
+        'tools/generate_s3_firmware.py', 'tools/revalidate_body_provenance.py',
+    }
+    assert provenance.provenance_only(paths)
+    for extra in ('assets/body/params.json', 'sim/manifest.py', 'new-file.md',
+                  'firmware/sesame-s3/new-helper.h', 'reference/evidence/new.json'):
+        assert not provenance.provenance_only(paths | {extra})
 
 
 def test_scoped_ci_route_requires_report_and_exact_allowlist():
@@ -267,6 +329,9 @@ def test_workflow_scopes_only_provenance_without_dropping_validation():
     assert job['strategy']['max-parallel'] == 2
     steps = {s.get('name', s.get('uses')): s for s in job['steps']}
     assert steps['actions/checkout@v4']['with']['fetch-depth'] == 0
+    names = [s.get('name', s.get('uses')) for s in job['steps']]
+    assert names.index('astral-sh/setup-uv@v5') < names.index('Classify provenance-only repair')
+    assert '--with pyyaml==6.0.3' in steps['Classify provenance-only repair']['run']
     verify = steps['Verify metadata-only provenance and rejection controls']
     assert verify['if'] == "steps.scope.outputs.provenance_only == 'true'"
     assert 'tests/test_body_provenance.py' in verify['run']

@@ -37,8 +37,11 @@ int main() {
   for(int j=0;j<8;++j)assert(cal.channel[j]==recommended[j]);
   assert(cal.verified==0);
   char legacyId[17]="bd7675604b98ae46", currentId[17], invalidId[17]="0000000000000000";
+  char benchId[17]="e669b916d178ac0a";
+  static_assert(OE==7 && CLOCK_MEASURE_GPIO==4 && OE!=SDA && OE!=SCL, "Course pin contract");
   strcpy(currentId,MANIFEST_ID);
   assert(compatibleCalibrationManifest(legacyId));assert(compatibleCalibrationManifest(currentId));
+  assert(compatibleCalibrationManifest(benchId));
   assert(!compatibleCalibrationManifest(invalidId));legacyId[16]='x';assert(!compatibleCalibrationManifest(legacyId));
   Calibration savedLegacy=cal;
   savedLegacy.channel[0]=-1;savedLegacy.oscillator=27000000;savedLegacy.trim[1]=2;

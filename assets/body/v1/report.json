@@ -61395,7 +61395,7 @@
   ],
   "geometry_pass": false,
   "input_hashes": {
-    "manifest/robot.yaml": "864bdc0f3321d3020985bb7ca526cdac2f621620a919b4f30369ed7b8d8b7dfe",
+    "manifest/robot.yaml": "3eb4e19b57bd4d45f4ab85fd57e03d018628a07a8f09cc9dc26c223d9853156b",
     "sim/build_mjcf.py": "c3d5cb2a6519dd7e0111e48fd98a7856eab099677435a23b2e226377aea98343",
     "sim/prepare_assets.py": "459d6b558e8a89355cf235b029b51ae8bd64f9b8c79fc3b79588c4d98fc446ac",
     "tools/body_cad.py": "c0b5869f482100bd324b01ee9ba3d03ae707044d83335dcb4dc736565b13bab1",
@@ -61441,6 +61441,7 @@
           "calibration_compatible_manifest_ids"
         ],
         "value": [
+          "e669b916d178ac0a",
           "bd7675604b98ae46"
         ]
       },
@@ -61453,6 +61454,16 @@
           "intended_channels_status"
         ],
         "value": "recommended-default-not-physically-verified"
+      },
+      {
+        "operation": "replace",
+        "original_value": 18,
+        "path": [
+          "hardware_profiles",
+          "sesame_s3",
+          "oe"
+        ],
+        "value": 7
       }
     ],
     "body_files": [
@@ -61504,7 +61515,7 @@
       "assets/body/v1/top-open.png"
     ],
     "effective_manifest_sha256": "bcc6af1f137488217f9b8070e7f74cba07e23ca4586357367a6dae937fd44683",
-    "method": "unused-s3-firmware-metadata-v2",
+    "method": "unused-s3-firmware-metadata-v3",
     "original_commit": "b38d4b3d249f9c09171277f01ba4b387f7660578",
     "original_input_hashes": {
       "manifest/robot.yaml": "2912c38dd40bd622694a103be345d6c2a7374ef05b85a5a511314ff0ccc58bae",
@@ -61588,7 +61599,7 @@
       "tools/render_body.py": "6e6f839edb21e8e3089d28411cc17ceb97fd0ef684d5aa2f175f68048fc68834"
     },
     "validator_executed": false,
-    "verifier_sha256": "7c5ed1cf102d1a226f82468afd2947d4aa25afda073878fc5fe3645a03f1aaa1"
+    "verifier_sha256": "0250eee63419f71bde5ad22d66dac56eec9eb11f3abf765bdf0eae3cdca462f8"
   },
   "limitations": [
     "Static eight MG90S/horn proxies are nominal, not measured purchased-variant geometry.",

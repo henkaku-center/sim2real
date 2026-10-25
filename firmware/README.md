@@ -1,5 +1,13 @@
 # Sesame S3 class firmware
 
+**October 25 OE correction:** canonical OE is exposed **GPIO7/I17 → hub OE/A7**,
+with pull-up toward logic **3V3 VCC/A4**, not servo V+. The student-reported
+4.7 kΩ and driven-HIGH 3.2 V are not universal reset-bias validation; an onboard
+pull-down can defeat the pull-up while the MCU is high-impedance. See
+[the OE contract and electrical evidence](../reference/SESAME-S3-OE.md).
+Valid `e669b916d178ac0a` and `bd7675604b98ae46` saved records remain readable
+unchanged, without automatic map normalization or NVS writes on load.
+
 **Classroom bench route (October 22):** recommended channel defaults are
 R1=4, R2=5, L1=0, L2=1, R4=7, R3=6, L3=2, L4=3; physical verification is separate.
 Use `arm bench CH` with loosely fitted horn pointers and no legs, then

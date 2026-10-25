@@ -351,3 +351,29 @@ silent reset or overwriting of custom calibration is authorized.
 This software update introduces no battery-load routine or physical test result.
 The established GPIO4/F17 photo binding, unknown jumper installation state and
 reference-CAD/actual-hub annotation distinction from D15 remain applicable.
+
+## D17. Exposed course SuperMini OE and reset-bias evidence (2026-10-25)
+
+**Instructor authority:** resolve the course board's unavailable GPIO18
+prerequisite by selecting exposed **GPIO7**, located at **I17** by the existing
+actual-board photo/installation orientation. Wire to hub **OE/A7**; the pull-up
+rail is **3V3 logic VCC/A4**, not servo V+/A3. Native illustration endpoints are
+`s3.male_pin.I17`, `hub.male_pin.A7` and `hub.male_pin.A4`. This is now the single
+current firmware pin contract; historical bring-up/evidence records are retained.
+
+Private course notes report a 4.7 kΩ pull-up, approximately 3.2 V while GPIO7
+actively drove HIGH and stopping on a fault. Raw notes and student code remain
+private/untrusted inputs, not code to execute or import. No new physical test
+or universally valid resistor is claimed. The Adafruit reference module has a
+10 kΩ OE pull-down: with 4.7 kΩ up, the high-impedance divider is only 0.6803×VCC,
+below NXP's guaranteed OE-HIGH boundary of 0.7×VDD. Actual-module bias and
+reset-time OE level therefore remain a concrete electrical check, not an added
+student form or blanket supervision gate. See `reference/SESAME-S3-OE.md` for
+pinned primary references and the distinction from actively driven HIGH.
+
+Preserve valid saved `e669b916d178ac0a` and `bd7675604b98ae46` records through
+explicit compatibility entries, unchanged checksum/layout validation and no
+automatic NVS writes or normalization of measured/custom maps. The same bounded
+SafeAction, full 0–180 pointer bench commands, Tim pulse profile, watchdog and
+fault/output exclusion remain. No load test, retry behavior or unrelated student
+firmware feature is adopted.

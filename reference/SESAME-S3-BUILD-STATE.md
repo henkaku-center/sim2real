@@ -1,5 +1,15 @@
 # Sesame S3 — hardware state and recovery
 
+## Canonical OE correction — 2026-10-25
+
+Current course firmware selects exposed **GPIO7/I17**, not GPIO18, for hub
+**OE/A7**, with pull-up toward **3V3 VCC/A4**. See
+[the pin contract and reset-bias limitations](SESAME-S3-OE.md). Private class
+notes report 4.7 kΩ and driven-HIGH 3.2 V; these are not an independently
+reproduced reset test. Earlier GPIO18 entries below are historical observations
+or assumptions, not the current course prerequisite. No new device operation
+or class-wide hardware success is claimed by this correction.
+
 ## USB install confirmed — 2026-10-12
 
 Installed source is now **71af7e0**, the Tim-compatible APS controller. Full-flash

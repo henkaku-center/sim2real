@@ -16,7 +16,7 @@ This is not a new universal human-supervision rule or approval form.
   GND. Never connect the middle V+ pin to the S3 input. PCA logic VCC must be
   3.3 V; the measurement code cannot detect an incorrect signal voltage.
 - GPIO4 is newly reserved in `manifest/robot.yaml`. It is distinct from the
-  controller's SDA2, SCL3, OE18, BOOT0 and native USB19/20 assignments. Firmware
+  controller's SDA2, SCL3, OE7, BOOT0 and native USB19/20 assignments. Firmware
   configures it as input with pulldown; it is never driven as an output.
 - Hub **reference CAD only**: CH15 is `cad.Part__Feature128.pin.2` and coincident copy
   `cad.Part__Feature144.pin.2`. The APS exporter explicitly assigns rows
@@ -43,7 +43,7 @@ This is not a new universal human-supervision rule or approval form.
 
 The photo does not show the measurement jumper installed; its current state
 remains unknown. Physical execution additionally requires the actual
-USB endpoint/firmware identity and the existing OE/reset-disable wiring to be
+USB endpoint/firmware identity and the [GPIO7 OE/reset-disable wiring](SESAME-S3-OE.md) to be
 established. None is checked by the offline tests.
 
 ## Commands and automation
@@ -94,6 +94,8 @@ preserved when adding the read-only input field. The later recommended-default
 policy produces a new current identity but explicitly accepts the prior
 same-layout `bd7675604b98ae46` records without changing their values or writing
 NVS. See [map normalization and the full pointer sequence](SESAME-S3-CALIBRATION.md).
+The October 25 OE pin correction additionally accepts `e669b916d178ac0a` records;
+neither update automatically normalizes a saved measured/custom channel map.
 The old external-meter `reference`
 command remains available as an independent comparison method.
 
