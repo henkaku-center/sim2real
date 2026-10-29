@@ -58,7 +58,35 @@ def build(params, out, include_cover=False):
         assert result.isValid() and len(result.Solids)==1
         return result
 
+    def support_width(shape):
+        edges=shape.common(Part.makeLine(App.Vector(0,-100,4),App.Vector(0,100,4))).Edges
+        return max(e.BoundBox.YMax for e in edges)-min(e.BoundBox.YMin for e in edges)
+
     frame=widen(original)
+    port=None
+    if params.get('battery_wire_cutout')=='front-right':
+        # Recover the exact open-notch profile from the top deck, including its
+        # corner radii. Move only that opening, not the frame or mounting holes.
+        corners=[f for f in frame.Faces if isinstance(f.Surface,Part.Cylinder) and abs(f.Surface.Radius-.635)<1e-5 and abs(f.Surface.Axis.z)>.999 and f.Surface.Center.x<-15 and f.Surface.Center.y>0]
+        assert len(corners)==2
+        radius=corners[0].Surface.Radius
+        x0=min(f.Surface.Center.x for f in corners)-radius;x1=max(f.Surface.Center.x for f in corners)+radius
+        y0=corners[0].Surface.Center.y-radius;y1=support_width(frame)/2
+        top=frame.BoundBox.ZMax;bottom=max(f.BoundBox.ZMin for f in corners);probe=top-.05
+        rectangle=Part.makePlane(x1-x0,y1-y0,App.Vector(x0,y0,probe))
+        profile=rectangle.cut(frame)
+        assert profile.isValid() and len(profile.Faces)==1 and 40<profile.Area<60
+        fill=profile.copy();fill.translate(App.Vector(0,0,bottom-probe));fill=fill.extrude(App.Vector(0,0,top-bottom))
+        pivot=App.Vector((frame.BoundBox.XMin+frame.BoundBox.XMax)/2,0,0)
+        moved_profile=profile.copy();moved_profile.rotate(pivot,App.Vector(0,0,1),180)
+        cutter=moved_profile.copy();cutter.translate(App.Vector(0,0,frame.BoundBox.ZMin-1-probe));cutter=cutter.extrude(App.Vector(0,0,frame.BoundBox.ZLength+2))
+        frame=frame.fuse(fill).cut(cutter)
+        assert frame.isValid() and len(frame.Solids)==1
+        old_point=App.Vector((x0+x1)/2,(y0+y1)/2,top-.1)
+        new_point=App.Vector(2*pivot.x-old_point.x,-old_point.y,old_point.z)
+        assert frame.isInside(old_point,1e-6,False) and not frame.isInside(new_point,1e-6,False)
+        assert new_point.x>0 and new_point.y<0
+        port={'location':'front-right','old_location':'back-left','profile_area_mm2':profile.Area,'profile_bounds_mm':bounds(moved_profile),'original_profile_bounds_mm':bounds(profile),'corner_radius_mm':radius,'roof_depth_mm':top-bottom,'rotation_about_frame_center_deg':180,'old_opening_closed':True,'new_opening_clear':True}
     native, electronics, _, holes, hole_diameter=load_electronics()
     pcb_size=[native.Carrier.Length.Value,native.Carrier.Width.Value,native.Carrier.Shape.BoundBox.ZLength]
     cx,cy=pcb_size[0]/2,pcb_size[1]/2
@@ -88,7 +116,8 @@ def build(params, out, include_cover=False):
     # Mounting holes and pocket shapes must be rigid translations of the source.
     bay_checks=[]
     for sign in [-1,1]:
-        cut=Part.makeBox(300,130.78,300,App.Vector(-150,19.22 if sign>0 else -150,-150))
+        boundary=support_width(original)/2+1e-4
+        cut=Part.makeBox(300,150-boundary,300,App.Vector(-150,boundary if sign>0 else -150,-150))
         expected=shifted(original.common(cut),sign*width/2)
         actual=frame.common(shifted(cut,sign*width/2))
         # OCCT returns invalid negative-volume intersections when subtracting
@@ -136,9 +165,6 @@ def build(params, out, include_cover=False):
     for name,key in [('L1','front_left'),('L2','back_left'),('R1','front_right'),('R2','back_right')]:
         x,y=nominal[key];y-=centre_y;y+=(1 if y>seam else -1)*width/2
         hips[name]=[x,y]
-    def support_width(shape):
-        edges=shape.common(Part.makeLine(App.Vector(0,-100,4),App.Vector(0,100,4))).Edges
-        return max(e.BoundBox.YMax for e in edges)-min(e.BoundBox.YMin for e in edges)
     support=support_width(frame)
     assert support>=pcb_size[1]+2, support
     report={
@@ -147,6 +173,7 @@ def build(params, out, include_cover=False):
         'parameters':params,'source_frame_bounds_mm':bounds(original),'pcb_size_mm':pcb_size,
         'source_support_width_mm':support_width(original),'support_width_mm':support,
         'pcb_side_margin_mm':(support-pcb_size[1])/2,
+        'battery_wire_cutout':port,
         'pcb_mount_holes_mm':hole_centres,'pcb_hole_diameter_mm':hole_diameter,'pcb_seat_z_mm':seat,
         'servo_flange_seat_z_mm':original.BoundBox.ZMax,'hip_shaft_xy_mm':hips,
         'electronics_sha256':sha(ROOT/'assets/cad/Sesame-S3-Assembly.FCStd'),
