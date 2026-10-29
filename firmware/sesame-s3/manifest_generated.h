@@ -2,7 +2,7 @@
 #pragma once
 #include <stdint.h>
 namespace sesame {
-constexpr char MANIFEST_ID[] = "bd7675604b98ae46";
+constexpr char MANIFEST_ID[] = "f7382b66d6f7a844";
 constexpr char PULSE_PROFILE_ID[] = "tim-pca9685-150-512-v1";
 constexpr uint32_t NEUTRAL = 90;
 constexpr float PULSE_MIN = 732.0;
@@ -14,7 +14,7 @@ constexpr uint32_t PWM_HZ = 50;
 constexpr uint32_t WATCHDOG_MS = 500;
 constexpr uint32_t MAX_JUMP = 180;
 constexpr uint32_t CAL_RATE = 15;
-constexpr uint32_t RUN_RATE = 60;
+constexpr uint32_t RUN_RATE = 300;
 constexpr uint32_t TRIM_LIMIT = 15;
 constexpr uint32_t INITIAL_LOW = 85;
 constexpr uint32_t INITIAL_HIGH = 95;

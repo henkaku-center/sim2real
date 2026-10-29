@@ -76,7 +76,7 @@ int main() {
   assert(g.step(0x00000010)); near(g.current[0],90.3);
   assert(!g.step(0x00000100));
   g.cal=cal; assert(g.arm(Mode::Run,-1,0));
-  g.set(0,180,0); near(g.target[0],177); g.step(20); near(g.current[0],91.2);
+  g.set(0,180,0); near(g.target[0],177); g.step(20); near(g.current[0],90+RUN_RATE*0.02f);
   assert(!g.set(8,90,20)); g.off();
   // All stock motion targets must stay within the manifest's soft envelope.
   unsigned count=0;

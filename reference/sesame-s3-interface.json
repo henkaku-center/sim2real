@@ -209,7 +209,7 @@
     "watchdog_ms": 500,
     "failsafe": "outputs_off",
     "calibration_rate_deg_s": 15,
-    "controller_rate_deg_s": 60,
+    "controller_rate_deg_s": 300,
     "start": "outputs-off, arm does not emit PWM",
     "first_enable": "unknown physical position; starts neutral, no feedback"
   },

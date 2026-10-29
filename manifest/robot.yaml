@@ -155,7 +155,7 @@ hardware_profiles:
       # Preserve Tim's integer-angle mapping, then compensate for measured clock.
       # This S3 profile does not rewrite the historical S2 simulator pulse range.
     calibration_rate_deg_s: 15
-    controller_rate_deg_s: 60 # conservative commissioning cap, <= SafeAction maximum
+    controller_rate_deg_s: 300 # local robot build; see PR #7
     trim_limit_deg: 15 # re-index horns rather than using large offsets
     initial_limits_deg: [85, 95] # expand one joint at a time after horn mounting
     watchdog_failsafe: outputs_off # an unknown map cannot safely execute rest
