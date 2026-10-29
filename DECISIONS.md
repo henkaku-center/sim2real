@@ -408,3 +408,11 @@ APS will place mounting the legs and PCB on this frame immediately after Step 33
 This standalone printable revision has its own CAD workflow and receipt. It is
 not part of the older `assets/body/v1` enclosure experiment's frozen inventory;
 that experiment and its existing findings remain unchanged.
+
+## D20. Battery-wire opening at robot front-right (2026-10-30)
+
+The instructor requests moving the internal-frame battery-wire cutout from
+back-left to front-right, retaining its dimensions and edge offsets. The exact
+top-deck notch profile is recovered from the source CAD, the old roof opening is
+filled, and the profile is rotated 180° around the frame centre to cut the new
+opening. Servo bays, PCB mounts, frame orientation and leg files remain unchanged.

@@ -45,3 +45,14 @@ def test_fit_and_existing_leg_interfaces():
     assert {round(p[0],4) for p in holes}=={-33,33}
     assert {round(p[1],4) for p in holes}=={-23.2,23.2}
     assert report['parts']['bottom-cover']['frame_intersection_mm3']<1e-3
+
+
+def test_battery_wire_cutout_moves_without_changing_its_profile():
+    report=json.loads((OUT/'assembly.json').read_text());port=report['battery_wire_cutout']
+    assert port['location']=='front-right' and port['old_location']=='back-left'
+    assert port['old_opening_closed'] and port['new_opening_clear']
+    old=port['original_profile_bounds_mm'];new=port['profile_bounds_mm'];frame=report['source_frame_bounds_mm']
+    assert old[1][0]<0 and old[0][1]>0 and new[0][0]>0 and new[1][1]<0
+    for axis in [0,1]:assert abs((old[1][axis]-old[0][axis])-(new[1][axis]-new[0][axis]))<1e-6
+    assert abs((old[0][0]+old[1][0]+new[0][0]+new[1][0])/2-(frame[0][0]+frame[1][0]))<1e-6
+    assert abs(old[0][1]+old[1][1]+new[0][1]+new[1][1])<1e-6
