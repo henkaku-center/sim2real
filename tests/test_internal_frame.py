@@ -1,17 +1,18 @@
 """Check the shipped frame/PCB geometry receipt without requiring FreeCAD in CI."""
 import hashlib
 import json
+import os
 import struct
 from pathlib import Path
 
 ROOT=Path(__file__).resolve().parents[1]
-OUT=ROOT/'assets/body/internal-frame-s3'
+OUT=Path(os.environ.get('INTERNAL_FRAME_OUTPUT',ROOT/'assets/printing/internal-frame-s3'))
 
 
 def test_frame_artifacts_and_dimensions():
     report=json.loads((OUT/'assembly.json').read_text())
     assert report['source_script_sha256']==hashlib.sha256((ROOT/'tools/internal_frame_cad.py').read_bytes()).hexdigest()
-    assert report['parameters']==json.loads((OUT/'params.json').read_text())
+    assert report['parameters']==json.loads((ROOT/'assets/printing/internal-frame-s3/params.json').read_text())
     assert report['pcb_size_mm']==[70.0,50.0,1.6]
     assert abs(report['support_width_mm']-report['source_support_width_mm']-14)<1e-5
     assert abs(report['support_width_mm']-52.44)<.001  # displayed nominal dimensions

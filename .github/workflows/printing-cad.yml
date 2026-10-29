@@ -1,0 +1,71 @@
+name: printing-cad
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'assets/printing/**'
+      - 'tools/internal_frame_cad.py'
+      - 'tools/body_cad.py'
+      - 'tests/test_internal_frame.py'
+      - 'assets/body/params.json'
+      - 'assets/cad/sources.json'
+      - 'assets/cad/Sesame-S3-Assembly.FCStd'
+      - 'assets/cad/instructions/assembly-cad-snapshot.json'
+      - 'assets/stl/upstream/**'
+      - '.github/workflows/printing-cad.yml'
+  pull_request:
+    paths:
+      - 'assets/printing/**'
+      - 'tools/internal_frame_cad.py'
+      - 'tools/body_cad.py'
+      - 'tests/test_internal_frame.py'
+      - 'assets/body/params.json'
+      - 'assets/cad/sources.json'
+      - 'assets/cad/Sesame-S3-Assembly.FCStd'
+      - 'assets/cad/instructions/assembly-cad-snapshot.json'
+      - 'assets/stl/upstream/**'
+      - '.github/workflows/printing-cad.yml'
+
+jobs:
+  frame:
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    env:
+      OMP_NUM_THREADS: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      QT_QPA_PLATFORM: offscreen
+    defaults:
+      run:
+        shell: bash -el {0}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: true
+      - uses: mamba-org/setup-micromamba@v2
+        with:
+          environment-name: printing-cad
+          create-args: >-
+            python=3.11
+            freecad=1.1.3
+            occt=7.9.3
+            pytest
+          cache-environment: true
+      - name: Check committed artifacts and native CAD fit
+        run: |
+          export PYTHONPATH="$CONDA_PREFIX/lib"
+          python -m pytest tests/test_internal_frame.py -q
+          python -u -m tools.internal_frame_cad --include-bottom-cover --output tests/artifacts/printing
+          INTERNAL_FRAME_OUTPUT=tests/artifacts/printing python -m pytest tests/test_internal_frame.py -q
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: printing-cad-${{ matrix.os }}
+          path: tests/artifacts/printing/
+          if-no-files-found: warn

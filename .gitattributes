@@ -11,6 +11,7 @@
 *.FCStd filter=lfs diff=lfs merge=lfs -text
 *.3mf filter=lfs diff=lfs merge=lfs -text
 assets/body/**/*.step filter=lfs diff=lfs merge=lfs -text
+assets/printing/**/*.step filter=lfs diff=lfs merge=lfs -text
 assets/body/**/*.json.gz filter=lfs diff=lfs merge=lfs -text
 
 # Lockfiles: treat as binary-ish in diffs to reduce noise? No — keep text for review.

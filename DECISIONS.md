@@ -399,8 +399,12 @@ width. This supersedes retaining the entire old-width frame as immutable in D11.
 The servo pockets and mounting features remain rigid copies, moved laterally;
 the eight leg STLs remain byte-for-byte unchanged.
 
-`tools/internal_frame_cad.py` and `assets/body/internal-frame-s3/params.json`
+`tools/internal_frame_cad.py` and `assets/printing/internal-frame-s3/params.json`
 define the revision: 14 mm added through the middle, 7 mm per side, and PCB
 mounts for the existing native 70 × 50 mm assembly. CAD checks and downloadable
 STEP/STL files live alongside `assembly.json`; physical printing is not claimed.
 APS will place mounting the legs and PCB on this frame immediately after Step 33.
+
+This standalone printable revision has its own CAD workflow and receipt. It is
+not part of the older `assets/body/v1` enclosure experiment's frozen inventory;
+that experiment and its existing findings remain unchanged.

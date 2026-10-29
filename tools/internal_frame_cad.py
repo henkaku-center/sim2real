@@ -8,10 +8,11 @@ with the same splice and width, preserving its mating fastener coordinates.
 import argparse
 import hashlib
 import json
+import urllib.request
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-OUTPUT = ROOT / 'assets/body/internal-frame-s3'
+OUTPUT = ROOT / 'assets/printing/internal-frame-s3'
 
 
 def sha(path):
@@ -28,8 +29,10 @@ def build(params, out, include_cover=False):
     entries = json.loads((ROOT/'assets/cad/sources.json').read_text())['files']
     entry = next(e for e in entries if e['source_path']=='hardware/cad/Sesame-ESP32-v122.step')
     source = ROOT/'assets/cad/upstream'/entry['path']
-    raw = source.read_bytes()
+    raw = source.read_bytes() if source.exists() else urllib.request.urlopen(entry['url'],timeout=180).read()
+    assert len(raw)==entry['bytes']
     assert hashlib.sha1(b'blob '+str(len(raw)).encode()+b'\0'+raw).hexdigest()==entry['git_blob_sha1']
+    if not source.exists():source.parent.mkdir(parents=True,exist_ok=True);source.write_bytes(raw)
     upstream = App.newDocument('InternalFrameSource')
     Import.insert(str(source), upstream.Name)
     body_basis = App.Matrix(-1,0,0,26, 0,0,1,0, 0,1,0,-17, 0,0,0,1)
