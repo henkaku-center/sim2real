@@ -377,3 +377,18 @@ automatic NVS writes or normalization of measured/custom maps. The same bounded
 SafeAction, full 0–180 pointer bench commands, Tim pulse profile, watchdog and
 fault/output exclusion remain. No load test, retry behavior or unrelated student
 firmware feature is adopted.
+
+## D18. S3 controller rate 60 → 300 °/s (proposed 2026-10-29)
+
+**Status: proposed by the robot owner; takes effect only if the instructor merges
+it.** Stock motions (`stand`, `wave`, `walk`, …) were authored for servos moving
+at full speed with 200–300 ms holds. At the 60 °/s commissioning cap a 0→180°
+foot sweep takes 3 s, so motions observed on a calibrated robot ran slow and
+smeared; the owner reported the motion shapes themselves looked correct.
+
+Raise `controller_rate_deg_s` to **300 °/s**, equal to `safeaction.yaml`
+`max_rate_deg_s` (still about half the MG90S nominal 0.10 s/60°). Calibration
+mode stays at 15 °/s, and every other SafeAction bound (verified+saved gate,
+per-joint limits, heartbeat watchdog, outputs-off failsafe) is unchanged. The
+manifest fingerprint changes, so `8d75c0ea0b2c68e7` is added to the calibration
+compatibility list to preserve records saved by the GPIO7 build.
