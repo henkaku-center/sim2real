@@ -179,3 +179,41 @@ with post-trim electrical clamps and the same Tim pulse conversion.
 `verify NAME` records an observation-based assertion, not a sensor result;
 `save` persists and `export` returns the record. No battery load-test routine,
 unattended motion or physical calibration result is introduced by this change.
+
+## 6. Troubleshooting observed on a student build (2026-10)
+
+**`hub=0`, OLED shows dotted lines or noise, web page returns an empty
+response, BOOT centre does nothing.** Check that the OLED's own VCC pin has
+continuity to hub VCC before suspecting firmware. An OLED whose VCC is open
+back-feeds through its SDA/SCL pull-ups: with USB only and hub VCC at 3.3 V,
+both bus lines measured about **1.5 V**, which the S3 reads as LOW, so neither
+device answers. Unplugging the OLED restored 3.3 V on both lines; reconnecting
+its VCC fixed every symptom. Two different OLED modules showed the same fault
+because the header wiring, not the module, was open.
+
+**Web console on a phone.**
+
+- Leaving the page (app switch, screenshot, screen lock) clears
+  *Keep heartbeat* and sends `off`; the armed selection is gone. Send each
+  `arm …` through `off` sequence without leaving the page, and re-tick the box
+  before re-arming.
+- The log is newest-first. Read it bottom-up when reconstructing a sequence.
+- Commands are case-sensitive ASCII: `verify R1`, not `Verify R1`, `verify r1`
+  or full-width characters/spaces from a Japanese keyboard (`ERR syntax; help`).
+
+| Reply | Usual cause |
+|---|---|
+| `ERR arm assembly first` | `centre` sent before `arm assembly`, or the arm was dropped by `off`/heartbeat loss |
+| `ERR select one channel/joint` | `angle`/`jog`/`q` after an `off` cleared the selection; re-arm first |
+| `ERR syntax; help` | typing (see above), or `verify NAME` for a joint with `channel=-1` |
+| `ERR arm: … run needs all verified+saved` | any joint `verified=0`, or `saved=0` after the last `verify` |
+| `ERR arm run first (verified+saved calibration)` | a motion button pressed before `arm run` |
+
+Changing `map`, `sign`, `trim` or `limits` clears that joint's `verified`, and
+any calibration edit makes `saved=0` until the next `save`; `show` reports both.
+
+**Motions that look clamped.** Motion targets are clamped to each joint's saved
+`limits`. A robot verified only through its Rest–Stand range will execute
+`stand` correctly while other stock motions stop short; for example `wave`
+raises L3 to 180°. Widen limits toward the manifest ceilings one joint at a
+time, checking each new range with `sweep` before `verify` and `save`.
