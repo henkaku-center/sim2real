@@ -31,18 +31,20 @@ ALLOWED_MANIFEST_CHANGES = [
     {'operation': 'add', 'path': ['hardware_profiles', 'sesame_s3', 'clock_measure_gpio'],
      'value': 4},
     {'operation': 'add', 'path': ['hardware_profiles', 'sesame_s3', 'calibration_compatible_manifest_ids'],
-     'value': ['e669b916d178ac0a', 'bd7675604b98ae46']},
+     'value': ['e669b916d178ac0a', 'bd7675604b98ae46', '8d75c0ea0b2c68e7']},
     {'operation': 'replace', 'path': ['hardware_profiles', 'sesame_s3', 'intended_channels_status'],
      'original_value': 'unverified-do-not-use-as-default',
      'value': 'recommended-default-not-physically-verified'},
     {'operation': 'replace', 'path': ['hardware_profiles', 'sesame_s3', 'oe'],
      'original_value': 18, 'value': 7},
+    {'operation': 'replace', 'path': ['hardware_profiles', 'sesame_s3', 'controller_rate_deg_s'],
+     'original_value': 60, 'value': 300},
 ]
 AUDITED_REPORT_COMMIT = 'b38d4b3d249f9c09171277f01ba4b387f7660578'
 AUDITED_REPORT_SHA256 = 'b5b4e730806144de953699aa48299bf74d62928f0a6f22dc67c2ea7adfcd9a68'
 AUDITED_PRESERVED_SHA256 = '4a1707a9e731533c736e70fec4f5e62ca43a73772af565ac5ff30401f0c9fc47'
 # Audited at b38d4b3 and rechecked at 4cebb23: make_job consumes joints/neutral;
-# these unchanged consumers do not use the five firmware-only fields above.
+# these unchanged consumers do not use the six firmware-only fields above.
 AUDITED_CONSUMERS = {
     'sim/build_mjcf.py': 'c3d5cb2a6519dd7e0111e48fd98a7856eab099677435a23b2e226377aea98343',
     'sim/prepare_assets.py': '459d6b558e8a89355cf235b029b51ae8bd64f9b8c79fc3b79588c4d98fc446ac',

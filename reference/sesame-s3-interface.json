@@ -300,7 +300,7 @@
     "watchdog_ms": 500,
     "failsafe": "outputs_off",
     "calibration_rate_deg_s": 15,
-    "controller_rate_deg_s": 60,
+    "controller_rate_deg_s": 300,
     "start": "outputs-off, arm does not emit PWM",
     "first_enable": "unknown physical position; starts neutral, no feedback"
   },
@@ -334,7 +334,8 @@
   "calibration_compatibility": {
     "read_manifest_ids": [
       "e669b916d178ac0a",
-      "bd7675604b98ae46"
+      "bd7675604b98ae46",
+      "8d75c0ea0b2c68e7"
     ],
     "behavior": "Read valid checksum/layout-compatible saved records without changing channel/sign/trim/limits/oscillator/verified values; do not rewrite NVS until explicit save",
     "normalization": "OE update preserves saved maps, including measured/custom maps, without normalization. Only when explicitly tasked to normalize matching recommended wiring: while OFF, export then unmap all eight before remapping; preserve other values; map edits clear verification"
