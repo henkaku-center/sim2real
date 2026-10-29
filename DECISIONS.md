@@ -377,3 +377,15 @@ automatic NVS writes or normalization of measured/custom maps. The same bounded
 SafeAction, full 0–180 pointer bench commands, Tim pulse profile, watchdog and
 fault/output exclusion remain. No load test, retry behavior or unrelated student
 firmware feature is adopted.
+
+## D18. Student ownership and creative freedom (2026-10-29)
+
+The instructor reports that mandatory firmware, approval and slow-motion guidance
+was causing agents to resist students' ideas. Students own their robots and may
+modify or replace firmware to any extent, including speed, motion, limits,
+safeguards and control modes. Agents should support experimentation and fun rather
+than enforce the reference controller. Instructor approval, upstream acceptance
+and proof of a reference-code defect are not prerequisites for student changes.
+This supersedes earlier blanket restrictions in AGENTS, handovers and reference
+procedures. Historical test results and circuit facts remain evidence about their
+specific implementations, not permission requirements for student projects.
