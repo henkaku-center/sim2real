@@ -112,6 +112,29 @@ def build(params, out, include_cover=False):
             if volume>1e-4:collisions.append({'part':name,'intersection_mm3':volume})
     assert not collisions, collisions
 
+    # Reserve the two straight side-wall strips alongside the PCB for the next
+    # head-shell revision. This checks a design envelope, not a fitted head.
+    support=support_width(frame)
+    side_margin=(support-pcb_size[1])/2
+    wall=float(params['head_wall_mm']);clearance=float(params['head_side_clearance_mm'])
+    assert wall>0 and clearance>0 and side_margin>=wall+2*clearance
+    height=max(p.BoundBox.ZMax for p in electronics.values())-seat
+    wall_shapes=[Part.makeBox(pcb_size[0],wall,height,App.Vector(-cx,y,seat))
+                 for y in [cy+clearance,-cy-clearance-wall]]
+    wall_collisions=[]
+    for name,part in electronics.items():
+        for side,shape in zip(['left','right'],wall_shapes):
+            if not part.BoundBox.intersect(shape.BoundBox):continue
+            overlap=part.common(shape)
+            assert overlap.isNull() or overlap.isValid(),name
+            assert overlap.Volume>=-1e-6,(name,overlap.Volume)
+            if overlap.Volume>1e-4:wall_collisions.append({'part':name,'side':side,'intersection_mm3':overlap.Volume})
+    assert not wall_collisions,wall_collisions
+    head_allowance={'wall_mm':wall,'pcb_gap_mm':clearance,'outer_gap_mm':side_margin-wall-clearance,
+                    'side_wall_bounds_mm':[bounds(s) for s in wall_shapes],
+                    'electronics_shapes_checked':len(electronics),'electronics_intersections':wall_collisions,
+                    'status':'Reserved side-wall envelopes only; head shape, height, retention and OLED window fitting follow separately.'}
+
     # Protect each complete servo bay outside the original central support.
     # Mounting holes and pocket shapes must be rigid translations of the source.
     bay_checks=[]
@@ -173,6 +196,7 @@ def build(params, out, include_cover=False):
         'parameters':params,'source_frame_bounds_mm':bounds(original),'pcb_size_mm':pcb_size,
         'source_support_width_mm':support_width(original),'support_width_mm':support,
         'pcb_side_margin_mm':(support-pcb_size[1])/2,
+        'head_wall_allowance':head_allowance,
         'battery_wire_cutout':port,
         'pcb_mount_holes_mm':hole_centres,'pcb_hole_diameter_mm':hole_diameter,'pcb_seat_z_mm':seat,
         'servo_flange_seat_z_mm':original.BoundBox.ZMax,'hip_shaft_xy_mm':hips,
