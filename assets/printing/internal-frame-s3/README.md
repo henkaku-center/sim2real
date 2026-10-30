@@ -4,9 +4,15 @@ This changes the **Internal-Frame-v121** part in the supplied
 `Sesame-ESP32-v122.step` assembly. The existing L1–L4 / R1–R4 leg STLs are unchanged.
 
 - PCB: **70 × 50 × 1.6 mm**, read from the existing native electronics model.
-- Widening: **14 mm total**, translating each side by **7 mm**. No scaling of
+- Widening: **18 mm total**, translating each side by **9 mm**. No scaling of
   servo pockets, screw holes or leg interfaces.
-- Central support: **38.44 → 52.44 mm**, leaving **1.22 mm per side** of the PCB.
+- Central support: **38.44 → 56.44 mm**, leaving **3.22 mm per side** of the PCB.
+  This is 2 mm extra per side compared with the previous 14 mm widening.
+- The side allowance reserves a **2 mm head wall**, **0.6 mm PCB clearance** and
+  **0.62 mm outer clearance**. The two 70 mm-long wall envelopes are checked
+  against the native electronics through their full height. These are space
+  reservations; the next head revision must fit its complete shape, mounting,
+  cable outlets and OLED window to this frame. The old head is not a fitted part.
 - New PCB supports: 4 mm above the frame deck, with the recorded **66 × 46.4 mm**
   mounting-hole spacing. The 1.4 mm pilot holes are intended for M1.6 screws through
   the PCB's approximately 2 mm holes; dimensions are editable in `params.json`.

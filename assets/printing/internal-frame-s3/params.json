@@ -1,7 +1,9 @@
 {
   "schema_version": 1,
   "units": "mm",
-  "widening_mm": 14.0,
+  "widening_mm": 18.0,
+  "head_wall_mm": 2.0,
+  "head_side_clearance_mm": 0.6,
   "splice_y_mm": 3.5,
   "battery_wire_cutout": "front-right",
   "pcb_standoff_height_mm": 4.0,

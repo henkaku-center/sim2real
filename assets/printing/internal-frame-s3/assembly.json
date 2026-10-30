@@ -8,25 +8,25 @@
     "original_profile_bounds_mm": [
       [
         -27.998041096910097,
-        20.409555283170466,
+        22.409555283170466,
         4.917756901865166
       ],
       [
         -19.49755104102555,
-        26.22033042972172,
+        28.220330429722154,
         4.917756901865166
       ]
     ],
-    "profile_area_mm2": 49.221370699111894,
+    "profile_area_mm2": 49.221370699115575,
     "profile_bounds_mm": [
       [
         19.457828792446982,
-        -26.220330429721724,
+        -28.220330429722157,
         4.917756901865166
       ],
       [
         27.95831884833153,
-        -20.40955528317047,
+        -22.40955528317047,
         4.917756901865166
       ]
     ],
@@ -38,26 +38,62 @@
   "electronics_sha256": "d96973c182bf78b99527ad390e552871f7b5ec073eee68850c346b291ffa1b88",
   "electronics_shapes_checked": 710,
   "fit_note": "CAD geometry check, not a physical print test. PCB hole datums retain the recorded instructor estimates. Servo mounting features are preserved from the linked frame.",
+  "head_wall_allowance": {
+    "electronics_intersections": [],
+    "electronics_shapes_checked": 710,
+    "outer_gap_mm": 0.6203304297221536,
+    "pcb_gap_mm": 0.6,
+    "side_wall_bounds_mm": [
+      [
+        [
+          -35.0,
+          25.6,
+          8.967756901865165
+        ],
+        [
+          35.0,
+          27.6,
+          37.677756901865166
+        ]
+      ],
+      [
+        [
+          -35.0,
+          -27.6,
+          8.967756901865165
+        ],
+        [
+          35.0,
+          -25.6,
+          37.677756901865166
+        ]
+      ]
+    ],
+    "status": "Reserved side-wall envelopes only; head shape, height, retention and OLED window fitting follow separately.",
+    "wall_mm": 2.0
+  },
   "hip_shaft_xy_mm": {
     "L1": [
       24.47673,
-      32.40000232182349
+      34.40000232182349
     ],
     "L2": [
       -23.92327,
-      32.40000232182349
+      34.40000232182349
     ],
     "R1": [
       24.47673,
-      -32.39999767817651
+      -34.39999767817651
     ],
     "R2": [
       -23.92327,
-      -32.39999767817651
+      -34.39999767817651
     ]
   },
   "parameters": {
     "battery_wire_cutout": "front-right",
+    "head_side_clearance_mm": 0.6,
+    "head_wall_mm": 2.0,
     "mesh_deflection_mm": 0.08,
     "pcb_pilot_depth_mm": 5.0,
     "pcb_pilot_diameter_mm": 1.4,
@@ -66,50 +102,50 @@
     "schema_version": 1,
     "splice_y_mm": 3.5,
     "units": "mm",
-    "widening_mm": 14.0
+    "widening_mm": 18.0
   },
   "parts": {
     "bottom-cover": {
       "bounds_mm": [
         [
           -39.63255567668173,
-          -34.12157551933801,
+          -36.12157551933801,
           -18.00198309813487
         ],
         [
           39.59283342810326,
-          34.12157551933809,
+          36.12157551933809,
           -10.73198309813487
         ]
       ],
       "closed_mesh": true,
       "frame_intersection_mm3": 0.0,
       "original_frame_intersection_mm3": 0.0,
-      "step_sha256": "a29bc2d1c063cefe3c48dd8ad75a2d6806e8dcbd45c382b62ab4dcce6a27e2bd",
-      "stl_sha256": "a983569041f5031506e8d73922b25bbf4e6f0e208d395ac4250b445f6a618deb",
+      "step_sha256": "e1fa6dfb217e7384be9a3ed3c0244daa03b694182678325d0890bc2f7c8b169e",
+      "stl_sha256": "b68803a71602b1ad1ee9cce677edac813037e924e0d4abf8073293b8a0539cd1",
       "triangles": 3664,
       "valid_solid": true,
-      "volume_mm3": 21122.55189033033
+      "volume_mm3": 22309.84945387869
     },
     "internal-frame": {
       "bounds_mm": [
         [
           -39.63255567668173,
-          -41.04000000000003,
+          -43.04000000000003,
           -10.731983098134872
         ],
         [
           39.59283342810326,
-          41.039999999999935,
+          43.039999999999935,
           8.967756901865165
         ]
       ],
       "closed_mesh": true,
-      "step_sha256": "6344035d0d472ab270dfa2f39e7816ef3090bf0dde7a5ac74ec6404b65338855",
-      "stl_sha256": "e2eba0941a76f0135cec980d8b237d2f2da7bb4086321008d4e996e645af960c",
-      "triangles": 17984,
+      "step_sha256": "2b339300863963a73045cc09a98e04e17ab917c835d3b5e088634cc8329f1ea3",
+      "stl_sha256": "997f1d586fd8afc227a75f7623c3aa124083bbe1500c442e1fb61144af5ad095",
+      "triangles": 18240,
       "valid_solid": true,
-      "volume_mm3": 44361.72144412622
+      "volume_mm3": 46548.953284572606
     }
   },
   "pcb_hole_diameter_mm": 2.0,
@@ -136,7 +172,7 @@
     ]
   ],
   "pcb_seat_z_mm": 8.967756901865165,
-  "pcb_side_margin_mm": 1.2203304297217201,
+  "pcb_side_margin_mm": 3.2203304297221536,
   "pcb_size_mm": [
     70.0,
     50.0,
@@ -148,15 +184,15 @@
       "max_surface_deviation_mm": 1.0048591735576161e-14,
       "side": -1,
       "surface_samples": 510,
-      "translation_y_mm": -7.0,
+      "translation_y_mm": -9.0,
       "volume_difference_mm3": 9.094947017729282e-13
     },
     {
-      "max_surface_deviation_mm": 1.2434497875801753e-14,
+      "max_surface_deviation_mm": 7.944109290391274e-15,
       "side": 1,
       "surface_samples": 546,
-      "translation_y_mm": 7.0,
-      "volume_difference_mm3": 1.0398616723250598e-06
+      "translation_y_mm": 9.0,
+      "volume_difference_mm3": 1.0398625818197615e-06
     }
   ],
   "servo_flange_seat_z_mm": 4.967756901865166,
@@ -179,9 +215,9 @@
       4.967756901865166
     ]
   ],
-  "source_script_sha256": "176276bb9c339053789be12c18b6ac718d744e3ca453b7e7b97383eb083ff64c",
+  "source_script_sha256": "ab8db1b8fcb4c52e90ca9bdd5d77b1ff42b73d0f90708abca4ae493164d35e59",
   "source_support_width_mm": 38.440660859444506,
-  "support_width_mm": 52.44066085944344,
+  "support_width_mm": 56.44066085944431,
   "unchanged_legs": {
     "L1": "081896568cc9776393c038d05ecc8caf01090c6971efebe799d064def4c92558",
     "L2": "4e47eef40bf523aa0d7b0ac285f3086b3e6c5ccd347525f5c93bbf0c5bcd1fbf",
