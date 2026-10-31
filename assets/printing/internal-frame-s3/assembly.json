@@ -1,10 +1,223 @@
 {
   "battery_wire_cutout": {
+    "channel_section_checks": [
+      {
+        "material_y_intervals_mm": [
+          [
+            19.909555283170466,
+            24.266999999999967
+          ],
+          [
+            28.071560261495854,
+            28.3
+          ]
+        ],
+        "x_mm": -34,
+        "z_mm": -10.232068246806282
+      },
+      {
+        "material_y_intervals_mm": [
+          [
+            19.909555283170466,
+            24.266999999999967
+          ],
+          [
+            28.071560261495854,
+            28.3
+          ]
+        ],
+        "x_mm": -34,
+        "z_mm": -5
+      },
+      {
+        "material_y_intervals_mm": [
+          [
+            19.909555283170466,
+            24.306789992337876
+          ],
+          [
+            27.268337562856495,
+            28.3
+          ]
+        ],
+        "x_mm": -34,
+        "z_mm": 0
+      },
+      {
+        "material_y_intervals_mm": [
+          [
+            19.909555283170466,
+            28.3
+          ]
+        ],
+        "x_mm": -34,
+        "z_mm": 4.8677569018651665
+      },
+      {
+        "material_y_intervals_mm": [
+          [
+            22.8246329314168,
+            24.266999999999967
+          ],
+          [
+            27.187999999999967,
+            28.3
+          ]
+        ],
+        "x_mm": -25.998041096910097,
+        "z_mm": -10.232068246806282
+      },
+      {
+        "material_y_intervals_mm": [
+          [
+            23.21444630320595,
+            24.266999999999967
+          ],
+          [
+            27.187999999999967,
+            28.3
+          ]
+        ],
+        "x_mm": -25.998041096910097,
+        "z_mm": -5
+      },
+      {
+        "material_y_intervals_mm": [
+          [
+            19.909555283170466,
+            28.3
+          ]
+        ],
+        "x_mm": -25.998041096910097,
+        "z_mm": 0
+      },
+      {
+        "material_y_intervals_mm": [
+          [
+            19.909555283170466,
+            28.3
+          ]
+        ],
+        "x_mm": -25.998041096910097,
+        "z_mm": 4.8677569018651665
+      },
+      {
+        "material_y_intervals_mm": [
+          [
+            22.824632931416776,
+            24.266999999999967
+          ],
+          [
+            27.187999999999967,
+            28.3
+          ]
+        ],
+        "x_mm": -23.747796068967823,
+        "z_mm": -10.232068246806282
+      },
+      {
+        "material_y_intervals_mm": [
+          [
+            23.21444630320595,
+            24.266999999999967
+          ],
+          [
+            27.187999999999967,
+            28.3
+          ]
+        ],
+        "x_mm": -23.747796068967823,
+        "z_mm": -5
+      },
+      {
+        "material_y_intervals_mm": [
+          [
+            19.909555283170466,
+            28.3
+          ]
+        ],
+        "x_mm": -23.747796068967823,
+        "z_mm": 0
+      },
+      {
+        "material_y_intervals_mm": [
+          [
+            19.909555283170466,
+            28.3
+          ]
+        ],
+        "x_mm": -23.747796068967823,
+        "z_mm": 4.8677569018651665
+      },
+      {
+        "material_y_intervals_mm": [
+          [
+            22.824632931416776,
+            24.266999999999967
+          ],
+          [
+            27.187999999999967,
+            28.3
+          ]
+        ],
+        "x_mm": -19.99755104102555,
+        "z_mm": -10.232068246806282
+      },
+      {
+        "material_y_intervals_mm": [
+          [
+            23.21444630320595,
+            24.266999999999967
+          ],
+          [
+            27.187999999999967,
+            28.3
+          ]
+        ],
+        "x_mm": -19.99755104102555,
+        "z_mm": -5
+      },
+      {
+        "material_y_intervals_mm": [
+          [
+            19.909555283170466,
+            28.3
+          ]
+        ],
+        "x_mm": -19.99755104102555,
+        "z_mm": 0
+      },
+      {
+        "material_y_intervals_mm": [
+          [
+            19.909555283170466,
+            28.3
+          ]
+        ],
+        "x_mm": -19.99755104102555,
+        "z_mm": 4.8677569018651665
+      }
+    ],
     "corner_radius_mm": 0.635,
     "location": "front-right",
+    "method": "Opposite-hand channel restoration and rotated original 3D opening, including rounded wall ends",
+    "new_cutout_wall_clear": true,
     "new_opening_clear": true,
+    "old_channel_matches_opposite": true,
     "old_location": "back-left",
     "old_opening_closed": true,
+    "opening_tool_bounds_mm": [
+      [
+        19.456417523674403,
+        -29.000000000000004,
+        -12.237185271939373
+      ],
+      [
+        27.958318848331533,
+        -22.409555283170466,
+        5.967756901865167
+      ]
+    ],
     "original_profile_bounds_mm": [
       [
         -27.998041096910097,
@@ -304,11 +517,11 @@
         ]
       ],
       "closed_mesh": true,
-      "step_sha256": "ec68c830aee1eed073329916398c3c6b6ed3f1096546b3208560ec71de098c72",
-      "stl_sha256": "5f4595ce87ccdcd718f24889cd17e521a7787d61994107f043d7671a242c8247",
-      "triangles": 18240,
+      "step_sha256": "81d48cf33e1eac4fcc4a2b0da930a26ef25c1ec41750500e1c55a856b7207686",
+      "stl_sha256": "7bac07557f2dbfb9df5c329519f8092573c2ebea726e58ea64cf2ddbab7ccdea",
+      "triangles": 17596,
       "valid_solid": true,
-      "volume_mm3": 46548.95296485964
+      "volume_mm3": 46831.00557853074
     }
   },
   "pcb_hole_diameter_mm": 2.0,
@@ -344,18 +557,20 @@
   "schema_version": 1,
   "servo_bay_checks": [
     {
-      "max_surface_deviation_mm": 1.0048591735576161e-14,
+      "max_surface_deviation_mm": 2.2469334198890888e-14,
+      "protected_source_y_min_abs_mm": 19.3001,
       "side": -1,
       "surface_samples": 510,
       "translation_y_mm": -9.0,
-      "volume_difference_mm3": 9.094947017729282e-13
+      "volume_difference_mm3": 1.8189894035458565e-12
     },
     {
-      "max_surface_deviation_mm": 7.944109290391274e-15,
+      "max_surface_deviation_mm": 7.402218232280468e-09,
+      "protected_source_y_min_abs_mm": 19.3001,
       "side": 1,
-      "surface_samples": 546,
+      "surface_samples": 510,
       "translation_y_mm": 9.0,
-      "volume_difference_mm3": 1.0398625818197615e-06
+      "volume_difference_mm3": 0.0001463284834244405
     }
   ],
   "servo_flange_seat_z_mm": 4.967756901865166,
@@ -378,7 +593,7 @@
       4.967756901865166
     ]
   ],
-  "source_script_sha256": "223e74a48d949abf0212e4c247423be809b24a07a323a99a5aee39b671d10a5d",
+  "source_script_sha256": "bf7f9f5cd10a25d0b100bc6311836697e8e0394b352ac9095d9ab5a0df8f137a",
   "source_support_width_mm": 38.440660859444506,
   "support_width_mm": 56.44066085944431,
   "unchanged_legs": {

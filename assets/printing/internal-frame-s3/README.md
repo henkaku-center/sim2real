@@ -18,9 +18,11 @@ This changes the **Internal-Frame-v121** part in the supplied
   the PCB's approximately 2 mm holes; dimensions are editable in `params.json`.
 - USB remains at the robot's rear. The frame is in millimetres, X front / Y left /
   Z up. Let the slicer place its underside on the bed.
-- The battery-wire opening is now at the robot's **front-right**. Its original
-  back-left top opening is filled. The same measured notch profile is rotated
-  180° around the frame centre, retaining its dimensions and edge offsets.
+- The battery-wire opening is at the robot's **front-right**. The old back-left
+  channel is rebuilt from the intact opposite-hand geometry, including both
+  walls underneath. The complete original 3D opening is rotated 180° around the
+  frame centre, retaining rounded wall ends and removing the former thin outer
+  remnant. This supersedes the earlier roof-only fill and extruded outline cut.
 
 `internal-frame.step` is the editable CAD solid; `internal-frame.stl` is its print
 mesh. The matching `bottom-cover.step` / `.stl` are widened only after the frame
