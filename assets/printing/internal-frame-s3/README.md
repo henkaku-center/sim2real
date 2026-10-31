@@ -27,6 +27,12 @@ mesh. The matching `bottom-cover.step` / `.stl` are widened only after the frame
 has been built and checked, using the same splice and lateral translations.
 The old-width bottom cover will not match this wider frame.
 
+Both underside cover screws are centred on **Y=0** (X ≈ −30.691 and +29.437 mm).
+The earlier splice had carried them 9 mm to one side. The frame's blind pilot
+holes and the cover's matching through-holes, countersinks and head wells now
+share the centreline. Their original axial profiles are retained; the displaced
+holes are closed. Top-side legacy holes are unchanged pending the head fitting.
+
 ## Rebuild and checks
 
 Run `python -m tools.internal_frame_cad --include-bottom-cover` with the FreeCAD
