@@ -7,8 +7,12 @@ on:
     paths:
       - 'assets/printing/**'
       - 'tools/internal_frame_cad.py'
+      - 'tools/v3_assembly_cad.py'
+      - 'tools/normalize_v3_reference.py'
+      - 'tools/preview_printing.py'
       - 'tools/body_cad.py'
       - 'tests/test_internal_frame.py'
+      - 'tests/test_head_preview.py'
       - 'assets/body/params.json'
       - 'assets/cad/sources.json'
       - 'assets/cad/Sesame-S3-Assembly.FCStd'
@@ -19,8 +23,12 @@ on:
     paths:
       - 'assets/printing/**'
       - 'tools/internal_frame_cad.py'
+      - 'tools/v3_assembly_cad.py'
+      - 'tools/normalize_v3_reference.py'
+      - 'tools/preview_printing.py'
       - 'tools/body_cad.py'
       - 'tests/test_internal_frame.py'
+      - 'tests/test_head_preview.py'
       - 'assets/body/params.json'
       - 'assets/cad/sources.json'
       - 'assets/cad/Sesame-S3-Assembly.FCStd'
@@ -62,7 +70,8 @@ jobs:
           export PYTHONPATH="$CONDA_PREFIX/lib"
           python -m pytest tests/test_internal_frame.py -q
           python -u -m tools.internal_frame_cad --include-bottom-cover --output tests/artifacts/printing
-          INTERNAL_FRAME_OUTPUT=tests/artifacts/printing python -m pytest tests/test_internal_frame.py -q
+          INTERNAL_FRAME_OUTPUT=tests/artifacts/printing python -m pytest tests/test_internal_frame.py tests/test_head_preview.py -q
+          python tools/preview_printing.py
       - uses: actions/upload-artifact@v4
         if: always()
         with:

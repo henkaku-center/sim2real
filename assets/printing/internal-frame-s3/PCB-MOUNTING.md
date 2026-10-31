@@ -18,6 +18,10 @@ this session. Product record: `reference/ELECTRONICS-CAD-SOURCES.md` and native
 
 ## Proposed printed joint
 
+The current frame derives from Loftwork V3. Its PCB datum moves 0.6 mm forward;
+its original 66 × 46 mm / Ø1.9 mm holes are filled and replaced by the recorded
+66 × 46.4 mm / Ø1.3 mm pilots. This preserves the guide's board and loose spacers.
+
 Print **four identical loose spacers**, 3 mm high, 4.9 mm outside diameter and
 1.9 mm clearance bore. Place them on the frame's four pilot holes, then lower
 the board with its USB connector toward the rear.

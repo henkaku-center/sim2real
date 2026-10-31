@@ -1,0 +1,106 @@
+{
+  "family": "Loftwork printing_V3",
+  "shared_date": "2026-09-17",
+  "credit": "V3 files shared by Jom Jetsada / Loftwork team; original Sesame by Dorian Todd and contributors.",
+  "upstream": "dorianborian/sesame-robot",
+  "upstream_license": "Apache-2.0",
+  "publication": "Adapted V3 geometry authorized by the instructor on 2026-10-31.",
+  "source_to_body_matrix": [
+    -1.0,
+    0.0,
+    0.0,
+    43.70175432,
+    0.0,
+    -1.0,
+    0.0,
+    -429.272079467773,
+    0.0,
+    0.0,
+    1.0,
+    24.967756901864593,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+  ],
+  "pcb_forward_adjustment_mm": 0.6,
+  "lid_seating_translation_z_mm": -20,
+  "normalizer_sha256": "4a4f92ad61a3af16bf67dfe077503cccd5aebcea3e4ee8a382e747087b29d55b",
+  "files": {
+    "frame": {
+      "original_filename": "internal-frame_v3.stp",
+      "original_sha256": "ad839992f312e5620746c7eef9ae7cf00684bfad7c6caba2087c94a0385875a2",
+      "normalized_sha256": "0ca2da207a8e8159ce160234b72e1c867f614461b1ba17fb6950e2fc7e513551",
+      "bounds_mm": [
+        [
+          -43.47500000218,
+          -46.615,
+          -10.731983098136162
+        ],
+        [
+          43.701750061318,
+          46.615,
+          4.967756901865261
+        ]
+      ],
+      "repair": null
+    },
+    "bottom": {
+      "original_filename": "bottom-cover_v3.stp",
+      "original_sha256": "2941964bbdc59ea6d19554496f9186c0207076670b3e25f6d40b0a230366e822",
+      "normalized_sha256": "e3e965ba8a1deae16991d1d6a3623ac33238bbacbc16f5db8771b107598d82ba",
+      "bounds_mm": [
+        [
+          -43.47500000218,
+          -39.69657965842,
+          -18.00198309813291
+        ],
+        [
+          43.701754200401,
+          39.696571380251,
+          -10.731983098127957
+        ]
+      ],
+      "repair": {
+        "free_edges": 3,
+        "patch_area_mm2": 0.07836587341449722
+      }
+    },
+    "head": {
+      "original_filename": "top-cover-shell_v3.stp",
+      "original_sha256": "51b485d709507860551224d774774df3b97d43f6d265c1513409fd69537abfbe",
+      "normalized_sha256": "e79dcec9dc24a4dee686a41d3896fcb76db6b488a872f589842697a01165a855",
+      "bounds_mm": [
+        [
+          -43.47500000338,
+          -29.261916393140197,
+          4.967756901865
+        ],
+        [
+          43.701750061318,
+          29.272083606857294,
+          50.210127293762
+        ]
+      ],
+      "repair": null
+    },
+    "lid": {
+      "original_filename": "top-cover-lid_v3.stp",
+      "original_sha256": "329bb5156c8c1346d24d6299f4373d84f7deb081b3465c38a6d22062c68f0690",
+      "normalized_sha256": "39864cf0e97531720f765361606bdf97970947f3273ec0e94a1e94a753f27a49",
+      "bounds_mm": [
+        [
+          -38.25244061195,
+          -26.18020229635,
+          48.210127293762
+        ],
+        [
+          34.001911518725,
+          26.190369510066,
+          51.967756901865
+        ]
+      ],
+      "repair": null
+    }
+  }
+}

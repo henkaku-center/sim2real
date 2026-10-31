@@ -1,10 +1,13 @@
 {
   "schema_version": 1,
   "units": "mm",
-  "widening_mm": 18.0,
-  "head_wall_mm": 2.0,
-  "head_side_clearance_mm": 0.6,
-  "splice_y_mm": 3.5,
+  "source_family": "loftwork-printing-v3",
+  "head_cover": {
+    "raise_mm": 8.0,
+    "height_splice_z_mm": 47.7,
+    "cable_notch_width_mm": 8.0,
+    "cable_notch_top_z_mm": 55.0
+  },
   "battery_wire_cutout": "front-right",
   "pcb_standoff_height_mm": 3.0,
   "pcb_standoff_radius_mm": 2.45,
