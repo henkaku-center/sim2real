@@ -8,6 +8,7 @@ with the same splice and width, preserving its mating fastener coordinates.
 import argparse
 import hashlib
 import json
+import math
 import urllib.request
 from pathlib import Path
 
@@ -62,11 +63,58 @@ def build(params, out, include_cover=False):
         edges=shape.common(Part.makeLine(App.Vector(0,-100,4),App.Vector(0,100,4))).Edges
         return max(e.BoundBox.YMax for e in edges)-min(e.BoundBox.YMin for e in edges)
 
-    frame=widen(original)
+    def widen_with_centered_fasteners(shape,kind):
+        # The original centre bores fall wholly in the negative splice half.
+        # Remove them before widening, then recut their exact axial profiles at
+        # Y=0. Moving only the top opening would leave displaced screw-head wells.
+        radius=.72328 if kind=='frame' else 1.15
+        axes=sorted({(round(f.Surface.Center.x,8),round(f.Surface.Center.y,8)) for f in shape.Faces
+                     if isinstance(f.Surface,Part.Cylinder) and abs(f.Surface.Axis.z)>.999
+                     and abs(f.Surface.Center.y)<1e-5 and abs(f.Surface.Radius-radius)<1e-5})
+        assert len(axes)==2,(kind,axes)
+        def axis_match(point):return any(math.hypot(point.x-x,point.y-y)<1e-5 for x,y in axes)
+        profiles={axis:[] for axis in axes}
+        for face in shape.Faces:
+            surface=face.Surface
+            if not isinstance(surface,(Part.Cylinder,Part.Cone)) or abs(surface.Axis.z)<.999 or not axis_match(surface.Center):continue
+            axis=min(axes,key=lambda p:math.hypot(surface.Center.x-p[0],surface.Center.y-p[1]))
+            lo,hi=face.BoundBox.ZMin,face.BoundBox.ZMax
+            radii=[surface.Radius]*2
+            if isinstance(surface,Part.Cone):
+                radii=[surface.Radius+(z-surface.Center.z)*math.tan(surface.SemiAngle)/surface.Axis.z for z in [lo,hi]]
+            profiles[axis].append({'z_mm':[lo,hi],'radii_mm':radii})
+        blank=shape.copy()
+        for _ in range(3):
+            faces=[]
+            for f in blank.Faces:
+                surface=f.Surface
+                if isinstance(surface,(Part.Cylinder,Part.Cone)) and abs(surface.Axis.z)>.999 and axis_match(surface.Center):faces.append(f)
+                elif isinstance(surface,Part.Plane) and abs(surface.Axis.z)>.999 and axis_match(f.CenterOfMass) and len(f.Wires)==1 and len(f.Edges)==1 and f.BoundBox.XLength<9 and f.BoundBox.YLength<9:faces.append(f)
+            if not faces:break
+            previous_volume=blank.Volume;blank=blank.defeaturing(faces)
+            assert blank.isValid() and len(blank.Solids)==1 and blank.Volume>previous_volume+1e-4,(kind,'hole closure failed')
+        else:raise AssertionError((kind,'hole surfaces remain'))
+        result=widen(blank);records=[]
+        for (x,y),profile in profiles.items():
+            tools=[]
+            for segment in profile:
+                lo,hi=segment['z_mm'];r0,r1=segment['radii_mm']
+                tools.append(Part.makeCylinder(r0,hi-lo,App.Vector(x,0,lo)) if abs(r0-r1)<1e-7 else Part.makeCone(r0,r1,hi-lo,App.Vector(x,0,lo)))
+            result=result.cut(Part.makeCompound(tools))
+            assert result.isValid() and len(result.Solids)==1
+            lo=min(s['z_mm'][0] for s in profile);hi=max(s['z_mm'][1] for s in profile)
+            old_y=y+(-width/2 if y<seam else width/2)
+            for z in [lo+.1,(lo+hi)/2,hi-.1]:
+                assert result.isInside(App.Vector(x,old_y,z),1e-6,False),(kind,'old hole not closed')
+                assert not result.isInside(App.Vector(x,0,z),1e-6,False),(kind,'new axis blocked')
+            records.append({'x_mm':x,'y_mm':0,'previous_widened_y_mm':old_y,'profile':profile,'old_hole_closed':True,'new_axis_clear':True})
+        return result,records
+
+    frame,frame_fasteners=widen_with_centered_fasteners(original,'frame')
     port=None
     if params.get('battery_wire_cutout')=='front-right':
-        # Recover the exact open-notch profile from the top deck, including its
-        # corner radii. Move only that opening, not the frame or mounting holes.
+        # Recover the original 3D opening, not an extrusion of its roof outline.
+        # Restore the entire old channel from the intact opposite-hand geometry.
         corners=[f for f in frame.Faces if isinstance(f.Surface,Part.Cylinder) and abs(f.Surface.Radius-.635)<1e-5 and abs(f.Surface.Axis.z)>.999 and f.Surface.Center.x<-15 and f.Surface.Center.y>0]
         assert len(corners)==2
         radius=corners[0].Surface.Radius
@@ -76,17 +124,41 @@ def build(params, out, include_cover=False):
         rectangle=Part.makePlane(x1-x0,y1-y0,App.Vector(x0,y0,probe))
         profile=rectangle.cut(frame)
         assert profile.isValid() and len(profile.Faces)==1 and 40<profile.Area<60
-        fill=profile.copy();fill.translate(App.Vector(0,0,bottom-probe));fill=fill.extrude(App.Vector(0,0,top-bottom))
         pivot=App.Vector((frame.BoundBox.XMin+frame.BoundBox.XMax)/2,0,0)
         moved_profile=profile.copy();moved_profile.rotate(pivot,App.Vector(0,0,1),180)
-        cutter=moved_profile.copy();cutter.translate(App.Vector(0,0,frame.BoundBox.ZMin-1-probe));cutter=cutter.extrude(App.Vector(0,0,frame.BoundBox.ZLength+2))
-        frame=frame.fuse(fill).cut(cutter)
+        z0=frame.BoundBox.ZMin-1;height=frame.BoundBox.ZLength+2;outer_y=width/2+20
+        opening_box=Part.makeBox(x1-x0,outer_y-y0,height,App.Vector(x0,y0,z0))
+        cutter=opening_box.cut(frame)
+        assert cutter.isValid() and len(cutter.Solids)==1
+        repair_x=frame.BoundBox.XMin-1
+        repair_outer_y=width/2+19.3  # stop at the native servo-pocket inner face
+        repair_box=Part.makeBox(x1+1.5-repair_x,repair_outer_y-y0+2.5,height,App.Vector(repair_x,y0-2.5,z0))
+        reference=frame.mirror(App.Vector(0,0,0),App.Vector(0,1,0)).common(repair_box)
+        assert reference.isValid()
+        frame=frame.cut(repair_box).fuse(reference)
+        cutter.rotate(pivot,App.Vector(0,0,1),180)
+        frame=frame.cut(cutter)
         assert frame.isValid() and len(frame.Solids)==1
         old_point=App.Vector((x0+x1)/2,(y0+y1)/2,top-.1)
         new_point=App.Vector(2*pivot.x-old_point.x,-old_point.y,old_point.z)
         assert frame.isInside(old_point,1e-6,False) and not frame.isInside(new_point,1e-6,False)
         assert new_point.x>0 and new_point.y<0
-        port={'location':'front-right','old_location':'back-left','profile_area_mm2':profile.Area,'profile_bounds_mm':bounds(moved_profile),'original_profile_bounds_mm':bounds(profile),'corner_radius_mm':radius,'roof_depth_mm':top-bottom,'rotation_about_frame_center_deg':180,'old_opening_closed':True,'new_opening_clear':True}
+        channel_samples=[]
+        for x in [-34,x0+2,(x0+x1)/2,x1-.5]:
+            for z in [frame.BoundBox.ZMin+.5,-5,0,top-.1]:
+                intervals=[]
+                for side in [1,-1]:
+                    edges=frame.common(Part.makeLine(App.Vector(x,side*(y0-2.5),z),App.Vector(x,side*repair_outer_y,z))).Edges
+                    intervals.append(sorted([sorted([abs(e.BoundBox.YMin),abs(e.BoundBox.YMax)]) for e in edges]))
+                assert len(intervals[0])==len(intervals[1]),(x,z,intervals)
+                assert all(abs(a-b)<1e-5 for aa,bb in zip(*intervals) for a,b in zip(aa,bb)),(x,z,intervals)
+                channel_samples.append({'x_mm':x,'z_mm':z,'material_y_intervals_mm':intervals[0]})
+        for z in [frame.BoundBox.ZMin+.5,-5,0,top-.1]:
+            for y in [y0+.2,(y0+outer_y)/2,width/2+19.26]:
+                assert not frame.isInside(App.Vector(new_point.x,-y,z),1e-6,False),('battery opening blocked',y,z)
+        port={'location':'front-right','old_location':'back-left','profile_area_mm2':profile.Area,'profile_bounds_mm':bounds(moved_profile),'original_profile_bounds_mm':bounds(profile),'corner_radius_mm':radius,'roof_depth_mm':top-bottom,'rotation_about_frame_center_deg':180,'old_opening_closed':True,'new_opening_clear':True,
+              'method':'Opposite-hand channel restoration and rotated original 3D opening, including rounded wall ends',
+              'old_channel_matches_opposite':True,'channel_section_checks':channel_samples,'new_cutout_wall_clear':True,'opening_tool_bounds_mm':bounds(cutter)}
     native, electronics, _, holes, hole_diameter=load_electronics()
     pcb_size=[native.Carrier.Length.Value,native.Carrier.Width.Value,native.Carrier.Shape.BoundBox.ZLength]
     cx,cy=pcb_size[0]/2,pcb_size[1]/2
@@ -139,7 +211,10 @@ def build(params, out, include_cover=False):
     # Mounting holes and pocket shapes must be rigid translations of the source.
     bay_checks=[]
     for sign in [-1,1]:
-        boundary=support_width(original)/2+1e-4
+        # Native servo-pocket inner faces are Y=±19.3. The old support-edge
+        # boundary also included 0.08 mm of channel wall, now deliberately fixed.
+        boundary=19.3+1e-4
+        assert any(abs(f.BoundBox.YLength)<1e-6 and abs(abs(f.CenterOfMass.y)-19.3)<1e-5 for f in original.Faces)
         cut=Part.makeBox(300,150-boundary,300,App.Vector(-150,boundary if sign>0 else -150,-150))
         expected=shifted(original.common(cut),sign*width/2)
         actual=frame.common(shifted(cut,sign*width/2))
@@ -156,7 +231,7 @@ def build(params, out, include_cover=False):
                     if index<0 or not points:continue
                     deviation=max(deviation,Part.Vertex(points[index]).distToShape(target_bay)[0]);samples+=1
         assert volume_difference<1e-3 and deviation<1e-4,(sign,volume_difference,deviation)
-        bay_checks.append({'side':sign,'translation_y_mm':sign*width/2,'volume_difference_mm3':volume_difference,'max_surface_deviation_mm':deviation,'surface_samples':samples})
+        bay_checks.append({'side':sign,'translation_y_mm':sign*width/2,'protected_source_y_min_abs_mm':boundary,'volume_difference_mm3':volume_difference,'max_surface_deviation_mm':deviation,'surface_samples':samples})
 
     out.mkdir(parents=True,exist_ok=True)
     parts={}
@@ -170,10 +245,12 @@ def build(params, out, include_cover=False):
 
     # Frame validation and export complete before touching the dependent cover.
     export('internal-frame',frame)
+    cover_fasteners=[]
     if include_cover:
         bottom=next(o.Shape.copy() for o in upstream.Objects if o.Label=='Bottom-Cover')
         bottom.transformShape(body_basis);bottom.translate(App.Vector(0,-centre_y,0))
-        cover=widen(bottom)
+        cover,cover_fasteners=widen_with_centered_fasteners(bottom,'cover')
+        assert [(p['x_mm'],p['y_mm']) for p in frame_fasteners]==[(p['x_mm'],p['y_mm']) for p in cover_fasteners]
         original_overlap=original.common(bottom).Volume
         intersection=frame.common(cover)
         assert intersection.isNull() or intersection.isValid()
@@ -198,6 +275,7 @@ def build(params, out, include_cover=False):
         'pcb_side_margin_mm':(support-pcb_size[1])/2,
         'head_wall_allowance':head_allowance,
         'battery_wire_cutout':port,
+        'bottom_cover_fasteners':{'frame':frame_fasteners,'cover':cover_fasteners,'note':'Both axes centred at Y=0; original bore, entry chamfer and screw-head recess profiles retained.'},
         'pcb_mount_holes_mm':hole_centres,'pcb_hole_diameter_mm':hole_diameter,'pcb_seat_z_mm':seat,
         'servo_flange_seat_z_mm':original.BoundBox.ZMax,'hip_shaft_xy_mm':hips,
         'electronics_sha256':sha(ROOT/'assets/cad/Sesame-S3-Assembly.FCStd'),

@@ -60,10 +60,27 @@ def test_head_side_wall_space_is_reserved_clear_of_electronics():
     assert left[1][2]>left[0][2] and right[1][2]>right[0][2]
 
 
+def test_bottom_cover_fasteners_are_centred_with_matching_axes():
+    report=json.loads((OUT/'assembly.json').read_text());fixings=report['bottom_cover_fasteners']
+    frame,cover=fixings['frame'],fixings['cover']
+    assert len(frame)==len(cover)==2
+    assert [(p['x_mm'],p['y_mm']) for p in frame]==[(p['x_mm'],p['y_mm']) for p in cover]
+    for kind,records in [('frame',frame),('cover',cover)]:
+        for p in records:
+            assert p['y_mm']==0 and p['previous_widened_y_mm']==-9
+            assert p['old_hole_closed'] and p['new_axis_clear']
+            assert len(p['profile'])==(2 if kind=='frame' else 4)
+            radii=[r for s in p['profile'] for r in s['radii_mm']]
+            assert abs(min(radii)-(.72328 if kind=='frame' else 1.15))<1e-5
+            assert abs(max(radii)-(1.48528 if kind=='frame' else 3.99796))<1e-5
+
+
 def test_battery_wire_cutout_moves_without_changing_its_profile():
     report=json.loads((OUT/'assembly.json').read_text());port=report['battery_wire_cutout']
     assert port['location']=='front-right' and port['old_location']=='back-left'
     assert port['old_opening_closed'] and port['new_opening_clear']
+    assert port['old_channel_matches_opposite'] and port['new_cutout_wall_clear']
+    assert len(port['channel_section_checks'])==16
     old=port['original_profile_bounds_mm'];new=port['profile_bounds_mm'];frame=report['source_frame_bounds_mm']
     assert old[1][0]<0 and old[0][1]>0 and new[0][0]>0 and new[1][1]<0
     for axis in [0,1]:assert abs((old[1][axis]-old[0][axis])-(new[1][axis]-new[0][axis]))<1e-6

@@ -1,10 +1,223 @@
 {
   "battery_wire_cutout": {
+    "channel_section_checks": [
+      {
+        "material_y_intervals_mm": [
+          [
+            19.909555283170466,
+            24.266999999999967
+          ],
+          [
+            28.071560261495854,
+            28.3
+          ]
+        ],
+        "x_mm": -34,
+        "z_mm": -10.232068246806282
+      },
+      {
+        "material_y_intervals_mm": [
+          [
+            19.909555283170466,
+            24.266999999999967
+          ],
+          [
+            28.071560261495854,
+            28.3
+          ]
+        ],
+        "x_mm": -34,
+        "z_mm": -5
+      },
+      {
+        "material_y_intervals_mm": [
+          [
+            19.909555283170466,
+            24.306789992337876
+          ],
+          [
+            27.268337562856495,
+            28.3
+          ]
+        ],
+        "x_mm": -34,
+        "z_mm": 0
+      },
+      {
+        "material_y_intervals_mm": [
+          [
+            19.909555283170466,
+            28.3
+          ]
+        ],
+        "x_mm": -34,
+        "z_mm": 4.8677569018651665
+      },
+      {
+        "material_y_intervals_mm": [
+          [
+            22.8246329314168,
+            24.266999999999967
+          ],
+          [
+            27.187999999999967,
+            28.3
+          ]
+        ],
+        "x_mm": -25.998041096910097,
+        "z_mm": -10.232068246806282
+      },
+      {
+        "material_y_intervals_mm": [
+          [
+            23.21444630320595,
+            24.266999999999967
+          ],
+          [
+            27.187999999999967,
+            28.3
+          ]
+        ],
+        "x_mm": -25.998041096910097,
+        "z_mm": -5
+      },
+      {
+        "material_y_intervals_mm": [
+          [
+            19.909555283170466,
+            28.3
+          ]
+        ],
+        "x_mm": -25.998041096910097,
+        "z_mm": 0
+      },
+      {
+        "material_y_intervals_mm": [
+          [
+            19.909555283170466,
+            28.3
+          ]
+        ],
+        "x_mm": -25.998041096910097,
+        "z_mm": 4.8677569018651665
+      },
+      {
+        "material_y_intervals_mm": [
+          [
+            22.824632931416776,
+            24.266999999999967
+          ],
+          [
+            27.187999999999967,
+            28.3
+          ]
+        ],
+        "x_mm": -23.747796068967823,
+        "z_mm": -10.232068246806282
+      },
+      {
+        "material_y_intervals_mm": [
+          [
+            23.21444630320595,
+            24.266999999999967
+          ],
+          [
+            27.187999999999967,
+            28.3
+          ]
+        ],
+        "x_mm": -23.747796068967823,
+        "z_mm": -5
+      },
+      {
+        "material_y_intervals_mm": [
+          [
+            19.909555283170466,
+            28.3
+          ]
+        ],
+        "x_mm": -23.747796068967823,
+        "z_mm": 0
+      },
+      {
+        "material_y_intervals_mm": [
+          [
+            19.909555283170466,
+            28.3
+          ]
+        ],
+        "x_mm": -23.747796068967823,
+        "z_mm": 4.8677569018651665
+      },
+      {
+        "material_y_intervals_mm": [
+          [
+            22.824632931416776,
+            24.266999999999967
+          ],
+          [
+            27.187999999999967,
+            28.3
+          ]
+        ],
+        "x_mm": -19.99755104102555,
+        "z_mm": -10.232068246806282
+      },
+      {
+        "material_y_intervals_mm": [
+          [
+            23.21444630320595,
+            24.266999999999967
+          ],
+          [
+            27.187999999999967,
+            28.3
+          ]
+        ],
+        "x_mm": -19.99755104102555,
+        "z_mm": -5
+      },
+      {
+        "material_y_intervals_mm": [
+          [
+            19.909555283170466,
+            28.3
+          ]
+        ],
+        "x_mm": -19.99755104102555,
+        "z_mm": 0
+      },
+      {
+        "material_y_intervals_mm": [
+          [
+            19.909555283170466,
+            28.3
+          ]
+        ],
+        "x_mm": -19.99755104102555,
+        "z_mm": 4.8677569018651665
+      }
+    ],
     "corner_radius_mm": 0.635,
     "location": "front-right",
+    "method": "Opposite-hand channel restoration and rotated original 3D opening, including rounded wall ends",
+    "new_cutout_wall_clear": true,
     "new_opening_clear": true,
+    "old_channel_matches_opposite": true,
     "old_location": "back-left",
     "old_opening_closed": true,
+    "opening_tool_bounds_mm": [
+      [
+        19.456417523674403,
+        -29.000000000000004,
+        -12.237185271939373
+      ],
+      [
+        27.958318848331533,
+        -22.409555283170466,
+        5.967756901865167
+      ]
+    ],
     "original_profile_bounds_mm": [
       [
         -27.998041096910097,
@@ -32,6 +245,169 @@
     ],
     "roof_depth_mm": 6.35000000000004,
     "rotation_about_frame_center_deg": 180
+  },
+  "bottom_cover_fasteners": {
+    "cover": [
+      {
+        "new_axis_clear": true,
+        "old_hole_closed": true,
+        "previous_widened_y_mm": -9.0,
+        "profile": [
+          {
+            "radii_mm": [
+              2.9209999999999976,
+              1.844039999999997
+            ],
+            "z_mm": [
+              -13.079463098134879,
+              -12.002503098134875
+            ]
+          },
+          {
+            "radii_mm": [
+              2.921,
+              2.921
+            ],
+            "z_mm": [
+              -16.925023098134865,
+              -13.079463098134875
+            ]
+          },
+          {
+            "radii_mm": [
+              3.9979600000000337,
+              2.921000000000001
+            ],
+            "z_mm": [
+              -18.0019830981349,
+              -16.925023098134865
+            ]
+          },
+          {
+            "radii_mm": [
+              1.1500000000000026,
+              1.1500000000000026
+            ],
+            "z_mm": [
+              -12.002503098134875,
+              -10.731983098134872
+            ]
+          }
+        ],
+        "x_mm": -30.69066596,
+        "y_mm": 0
+      },
+      {
+        "new_axis_clear": true,
+        "old_hole_closed": true,
+        "previous_widened_y_mm": -9.0,
+        "profile": [
+          {
+            "radii_mm": [
+              2.9210000000000007,
+              1.8440400000000001
+            ],
+            "z_mm": [
+              -13.079463098134879,
+              -12.002503098134877
+            ]
+          },
+          {
+            "radii_mm": [
+              2.921,
+              2.921
+            ],
+            "z_mm": [
+              -16.925023098134865,
+              -13.079463098134875
+            ]
+          },
+          {
+            "radii_mm": [
+              3.997959999999999,
+              2.9210000000000003
+            ],
+            "z_mm": [
+              -18.001983098134865,
+              -16.925023098134865
+            ]
+          },
+          {
+            "radii_mm": [
+              1.15,
+              1.15
+            ],
+            "z_mm": [
+              -12.002503098134875,
+              -10.731983098134872
+            ]
+          }
+        ],
+        "x_mm": 29.4366714,
+        "y_mm": 0
+      }
+    ],
+    "frame": [
+      {
+        "new_axis_clear": true,
+        "old_hole_closed": true,
+        "previous_widened_y_mm": -9.0,
+        "profile": [
+          {
+            "radii_mm": [
+              0.7232800000000025,
+              0.7232800000000025
+            ],
+            "z_mm": [
+              -9.969983098134872,
+              -4.0319830981348765
+            ]
+          },
+          {
+            "radii_mm": [
+              1.4852800000000024,
+              0.7232799999999864
+            ],
+            "z_mm": [
+              -10.731983098134872,
+              -9.969983098134856
+            ]
+          }
+        ],
+        "x_mm": -30.69066596,
+        "y_mm": 0
+      },
+      {
+        "new_axis_clear": true,
+        "old_hole_closed": true,
+        "previous_widened_y_mm": -9.0,
+        "profile": [
+          {
+            "radii_mm": [
+              0.7232799999999999,
+              0.7232799999999999
+            ],
+            "z_mm": [
+              -9.969983098134872,
+              -4.0319830981348765
+            ]
+          },
+          {
+            "radii_mm": [
+              1.48528,
+              0.7232799999999981
+            ],
+            "z_mm": [
+              -10.731983098134872,
+              -9.96998309813487
+            ]
+          }
+        ],
+        "x_mm": 29.4366714,
+        "y_mm": 0
+      }
+    ],
+    "note": "Both axes centred at Y=0; original bore, entry chamfer and screw-head recess profiles retained."
   },
   "coordinates": "X front, Y left, Z up; frame centred laterally; PCB USB rear",
   "electronics_intersections": [],
@@ -110,7 +486,7 @@
         [
           -39.63255567668173,
           -36.12157551933801,
-          -18.00198309813487
+          -18.0019830981349
         ],
         [
           39.59283342810326,
@@ -121,11 +497,11 @@
       "closed_mesh": true,
       "frame_intersection_mm3": 0.0,
       "original_frame_intersection_mm3": 0.0,
-      "step_sha256": "e1fa6dfb217e7384be9a3ed3c0244daa03b694182678325d0890bc2f7c8b169e",
-      "stl_sha256": "b68803a71602b1ad1ee9cce677edac813037e924e0d4abf8073293b8a0539cd1",
-      "triangles": 3664,
+      "step_sha256": "9430248ff2d203bb7b1df07bead5e2021c1a84bd92176c2c5c3f1788b7e63e27",
+      "stl_sha256": "1a26d2868529747894c5dec8fa6a35d8e13e4c90aca508915dc136d0d3d4d299",
+      "triangles": 3560,
       "valid_solid": true,
-      "volume_mm3": 22309.84945387869
+      "volume_mm3": 22355.415417528635
     },
     "internal-frame": {
       "bounds_mm": [
@@ -141,11 +517,11 @@
         ]
       ],
       "closed_mesh": true,
-      "step_sha256": "2b339300863963a73045cc09a98e04e17ab917c835d3b5e088634cc8329f1ea3",
-      "stl_sha256": "997f1d586fd8afc227a75f7623c3aa124083bbe1500c442e1fb61144af5ad095",
-      "triangles": 18240,
+      "step_sha256": "81d48cf33e1eac4fcc4a2b0da930a26ef25c1ec41750500e1c55a856b7207686",
+      "stl_sha256": "7bac07557f2dbfb9df5c329519f8092573c2ebea726e58ea64cf2ddbab7ccdea",
+      "triangles": 17596,
       "valid_solid": true,
-      "volume_mm3": 46548.953284572606
+      "volume_mm3": 46831.00557853074
     }
   },
   "pcb_hole_diameter_mm": 2.0,
@@ -181,18 +557,20 @@
   "schema_version": 1,
   "servo_bay_checks": [
     {
-      "max_surface_deviation_mm": 1.0048591735576161e-14,
+      "max_surface_deviation_mm": 2.2469334198890888e-14,
+      "protected_source_y_min_abs_mm": 19.3001,
       "side": -1,
       "surface_samples": 510,
       "translation_y_mm": -9.0,
-      "volume_difference_mm3": 9.094947017729282e-13
+      "volume_difference_mm3": 1.8189894035458565e-12
     },
     {
-      "max_surface_deviation_mm": 7.944109290391274e-15,
+      "max_surface_deviation_mm": 7.402218232280468e-09,
+      "protected_source_y_min_abs_mm": 19.3001,
       "side": 1,
-      "surface_samples": 546,
+      "surface_samples": 510,
       "translation_y_mm": 9.0,
-      "volume_difference_mm3": 1.0398625818197615e-06
+      "volume_difference_mm3": 0.0001463284834244405
     }
   ],
   "servo_flange_seat_z_mm": 4.967756901865166,
@@ -215,7 +593,7 @@
       4.967756901865166
     ]
   ],
-  "source_script_sha256": "ab8db1b8fcb4c52e90ca9bdd5d77b1ff42b73d0f90708abca4ae493164d35e59",
+  "source_script_sha256": "bf7f9f5cd10a25d0b100bc6311836697e8e0394b352ac9095d9ab5a0df8f137a",
   "source_support_width_mm": 38.440660859444506,
   "support_width_mm": 56.44066085944431,
   "unchanged_legs": {
