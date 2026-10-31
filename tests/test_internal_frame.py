@@ -1,4 +1,4 @@
-"""Check the shipped frame/PCB geometry receipt without requiring FreeCAD in CI."""
+"""Check the delivered V3-derived kit and its native-CAD validation receipt."""
 import hashlib
 import json
 import os
@@ -7,116 +7,94 @@ from pathlib import Path
 
 ROOT=Path(__file__).resolve().parents[1]
 OUT=Path(os.environ.get('INTERNAL_FRAME_OUTPUT',ROOT/'assets/printing/internal-frame-s3'))
+CANONICAL=ROOT/'assets/printing/internal-frame-s3'
+def receipt():return json.loads((OUT/'assembly.json').read_text())
+def sha(path):return hashlib.sha256(Path(path).read_bytes()).hexdigest()
 
 
-def test_frame_artifacts_and_dimensions():
-    report=json.loads((OUT/'assembly.json').read_text())
-    assert report['source_script_sha256']==hashlib.sha256((ROOT/'tools/internal_frame_cad.py').read_bytes()).hexdigest()
-    assert report['parameters']==json.loads((ROOT/'assets/printing/internal-frame-s3/params.json').read_text())
-    assert report['pcb_size_mm']==[70.0,50.0,1.6]
-    assert abs(report['support_width_mm']-report['source_support_width_mm']-18)<1e-5
-    assert abs(report['support_width_mm']-56.44)<.001  # displayed nominal dimensions
-    assert abs(report['pcb_side_margin_mm']-3.22)<.001
-    old=report['source_frame_bounds_mm'];new=report['parts']['internal-frame']['bounds_mm']
-    assert abs((new[1][1]-new[0][1])-(old[1][1]-old[0][1])-18)<1e-6
-    for name,part in report['parts'].items():
-        assert part['valid_solid'] and part['closed_mesh']
-        for ext in ['stl','step']:
-            assert hashlib.sha256((OUT/f'{name}.{ext}').read_bytes()).hexdigest()==part[f'{ext}_sha256']
-        raw=(OUT/f'{name}.stl').read_bytes()
-        assert struct.unpack_from('<I',raw,80)[0]==part['triangles']
-        assert len(raw)==84+50*part['triangles']
+def test_artifacts_match_the_validated_native_kit():
+    r=receipt();assert r['reference_family']=='loftwork-printing-v3'
+    assert r['source_script_sha256']==sha(ROOT/'tools/v3_assembly_cad.py')
+    assert r['entry_script_sha256']==sha(ROOT/'tools/internal_frame_cad.py')
+    assert r['parameters']==json.loads((CANONICAL/'params.json').read_text())
+    assert set(r['parts'])=={'internal-frame','bottom-cover','pcb-spacer','head-cover','head-lid'}
+    for name,p in r['parts'].items():
+        assert p['valid_solid'] and p['closed_mesh']
+        for ext in ['stl','step']:assert sha(OUT/f'{name}.{ext}')==p[f'{ext}_sha256']
+        raw=(OUT/f'{name}.stl').read_bytes();assert raw[80:84]==struct.pack('<I',p['triangles'])
+        assert len(raw)==84+50*p['triangles']
 
 
-def test_fit_and_existing_leg_interfaces():
-    report=json.loads((OUT/'assembly.json').read_text())
-    assert report['electronics_sha256']==hashlib.sha256((ROOT/'assets/cad/Sesame-S3-Assembly.FCStd').read_bytes()).hexdigest()
-    assert report['electronics_shapes_checked']>600 and not report['electronics_intersections']
-    for bay in report['servo_bay_checks']:
-        assert abs(bay['translation_y_mm'])==9
-        assert bay['surface_samples']>100
-        assert bay['volume_difference_mm3']<1e-3
-        assert bay['max_surface_deviation_mm']<1e-4
-    assert len(report['unchanged_legs'])==8
-    for name,digest in report['unchanged_legs'].items():
-        assert hashlib.sha256((ROOT/f'assets/stl/upstream/{name}-v117.stl').read_bytes()).hexdigest()==digest
-    holes=report['pcb_mount_holes_mm']
-    assert len(holes)==4
-    assert {round(p[0],4) for p in holes}=={-33,33}
-    assert {round(p[1],4) for p in holes}=={-23.2,23.2}
-    assert report['parts']['bottom-cover']['frame_intersection_mm3']<1e-3
+def test_v3_reference_is_pinned_normalized_and_repaired_without_private_headers():
+    r=receipt();source=r['source'];m=source['source_to_body_matrix']
+    assert m[0]==m[5]==-1 and m[10]==1  # proper rotation, not a mirrored robot
+    assert source['pcb_forward_adjustment_mm']==.6
+    assert source['lid_seating_translation_z_mm']==-20
+    for name,entry in source['files'].items():
+        p=CANONICAL/'reference-v3'/f'{name}.step';assert sha(p)==entry['normalized_sha256']
+        header=p.read_text().split('DATA;')[0]
+        assert 'Sesame V3 reference' in header and '/Users/' not in header and 'C:\\' not in header
+    assert source['files']['bottom']['repair']['free_edges']==3
+    assert source['files']['bottom']['repair']['patch_area_mm2']<.1
 
 
-def test_head_side_wall_space_is_reserved_clear_of_electronics():
-    report=json.loads((OUT/'assembly.json').read_text());allowance=report['head_wall_allowance']
-    assert allowance['wall_mm']==2 and allowance['pcb_gap_mm']==.6
-    assert allowance['outer_gap_mm']>=.6
-    assert not allowance['electronics_intersections'] and allowance['electronics_shapes_checked']==710
-    left,right=allowance['side_wall_bounds_mm']
-    assert abs(left[0][1]-25.6)<1e-6 and abs(left[1][1]-27.6)<1e-6
-    assert abs(right[0][1]+27.6)<1e-6 and abs(right[1][1]+25.6)<1e-6
-    assert left[0][0]==right[0][0]==-35 and left[1][0]==right[1][0]==35
-    assert left[0][2]==right[0][2]==report['pcb_seat_z_mm']
-    assert left[1][2]>left[0][2] and right[1][2]>right[0][2]
-
-
-def test_bottom_cover_fasteners_are_centred_with_matching_axes():
-    report=json.loads((OUT/'assembly.json').read_text());fixings=report['bottom_cover_fasteners']
-    frame,cover=fixings['frame'],fixings['cover']
-    assert len(frame)==len(cover)==2
-    assert [(p['x_mm'],p['y_mm']) for p in frame]==[(p['x_mm'],p['y_mm']) for p in cover]
-    for kind,records in [('frame',frame),('cover',cover)]:
-        for p in records:
-            assert p['y_mm']==0 and p['previous_widened_y_mm']==-9
-            assert p['old_hole_closed'] and p['new_axis_clear']
-            assert len(p['profile'])==(2 if kind=='frame' else 4)
-            radii=[r for s in p['profile'] for r in s['radii_mm']]
-            assert abs(min(radii)-(.72328 if kind=='frame' else 1.15))<1e-5
-            assert abs(max(radii)-(1.48528 if kind=='frame' else 3.99796))<1e-5
-
-
-def test_separate_spacers_and_screw_stack_leave_solder_and_tip_clearance():
-    report=json.loads((OUT/'assembly.json').read_text());p=report['parameters'];parts=report['parts']
-    spacer=parts['pcb-spacer'];frame=parts['internal-frame'];stack=report['pcb_fastening']
-    assert spacer['quantity']==4 and len(spacer['assembly_origins_mm'])==4
-    assert abs(spacer['bounds_mm'][1][2]-spacer['bounds_mm'][0][2]-3)<1e-6
-    assert abs(spacer['bounds_mm'][0][2])<1e-6
-    assert abs(frame['bounds_mm'][1][2]-report['servo_flange_seat_z_mm'])<1e-6
-    for origin,hole in zip(spacer['assembly_origins_mm'],report['pcb_mount_holes_mm']):
-        assert origin[:2]==hole[:2] and abs(origin[2]+3-hole[2])<1e-6
-    assert p['pcb_spacer_bore_mm']>p['pcb_screw_diameter_mm']>p['pcb_pilot_diameter_mm']
-    assert stack['board_thickness_mm']==1.6 and stack['screw_under_head_length_mm']==8
+def test_current_pcb_datums_and_screw_stack_are_retained():
+    r=receipt();assert r['pcb_size_mm']==[70.,50.,1.6]
+    assert len(r['pcb_mount_holes_mm'])==4
+    assert {round(p[0],4) for p in r['pcb_mount_holes_mm']}=={-33,33}
+    assert {round(p[1],4) for p in r['pcb_mount_holes_mm']}=={-23.2,23.2}
+    assert r['pcb_hole_adjustment']['source_diameter_mm']==1.9
+    assert r['pcb_hole_adjustment']['pilot_diameter_mm']==1.3
+    assert len(r['pcb_hole_adjustment']['source_axes'])==4
+    stack=r['pcb_fastening'];assert stack['spacer_height_mm']==3 and stack['screw_under_head_length_mm']==8
     assert abs(stack['nominal_frame_penetration_mm']-3.4)<1e-6
     assert abs(stack['tip_clearance_mm']-.8)<1e-6 and stack['minimum_pilot_floor_mm']==1.2
-    assert abs(stack['model_underside_projection_mm']-1.4)<1e-6
     assert abs(stack['model_deck_clearance_mm']-1.6)<1e-6
-    raw=(OUT/frame['print_stl']).read_bytes()
-    assert hashlib.sha256(raw).hexdigest()==frame['print_stl_sha256']
-    vertices=[struct.unpack_from('<12fH',raw,84+i*50)[3:12] for i in range(struct.unpack_from('<I',raw,80)[0])]
-    assert abs(min(z for v in vertices for z in v[2::3]))<1e-5
 
 
-def test_only_approved_top_holes_are_closed():
-    report=json.loads((OUT/'assembly.json').read_text());cleanup=report['top_hole_cleanup']
-    filled,retained=cleanup['filled'],cleanup['retained']
-    assert len(filled)==7 and len(retained)==4
-    assert sum(p['reason']=='unused electronics mounting hole' for p in filled)==4
-    assert sum(p['reason']=='unintended mirrored rear hole' for p in filled)==1
-    assert sum('crescent' in p['reason'] for p in filled)==2
-    assert sum(p['reason']=='original rear head fixing' for p in retained)==2
-    assert sum(p['reason']=='unresolved original rear hole' for p in retained)==2
-    assert all(p['x_mm']< -35 for p in retained)
-    assert all(p['y_mm']<0 for p in retained if p['reason']=='unresolved original rear hole')
+def test_frame_print_face_is_flat_and_spacers_are_separate():
+    r=receipt();frame=r['parts']['internal-frame'];spacer=r['parts']['pcb-spacer']
+    assert abs(frame['bounds_mm'][1][2]-r['servo_flange_seat_z_mm'])<1e-6
+    assert spacer['quantity']==4 and len(spacer['assembly_origins_mm'])==4
+    for origin,hole in zip(spacer['assembly_origins_mm'],r['pcb_mount_holes_mm']):
+        assert origin[:2]==hole[:2] and abs(origin[2]+3-hole[2])<1e-6
+    for name in ['internal-frame','head-cover','head-lid']:
+        part=r['parts'][name]
+        assert sha(OUT/part['print_stl'])==part['print_stl_sha256']
+        raw=(OUT/part['print_stl']).read_bytes();vertices=[struct.unpack_from('<12fH',raw,84+i*50)[3:12] for i in range(struct.unpack_from('<I',raw,80)[0])]
+        assert abs(min(z for p in vertices for z in p[2::3]))<1e-5
 
 
-def test_battery_wire_cutout_moves_without_changing_its_profile():
-    report=json.loads((OUT/'assembly.json').read_text());port=report['battery_wire_cutout']
-    assert port['location']=='front-right' and port['old_location']=='back-left'
-    assert port['old_opening_closed'] and port['new_opening_clear']
-    assert port['old_channel_matches_opposite'] and port['new_cutout_wall_clear']
-    assert len(port['channel_section_checks'])==16
-    old=port['original_profile_bounds_mm'];new=port['profile_bounds_mm'];frame=report['source_frame_bounds_mm']
-    assert old[1][0]<0 and old[0][1]>0 and new[0][0]>0 and new[1][1]<0
-    for axis in [0,1]:assert abs((old[1][axis]-old[0][axis])-(new[1][axis]-new[0][axis]))<1e-6
-    assert abs((old[0][0]+old[1][0]+new[0][0]+new[1][0])/2-(frame[0][0]+frame[1][0]))<1e-6
-    assert abs(old[0][1]+old[1][1]+new[0][1]+new[1][1])<1e-6
+def test_servo_bays_and_leg_meshes_are_preserved():
+    r=receipt();assert len(r['servo_mounts'])==4
+    for m in r['servo_mounts'].values():assert abs(m['holes'][1][0]-m['holes'][0][0]-27.8)<1e-4
+    for b in r['servo_bay_checks']:
+        assert b['volume_difference_mm3']<1e-3 and b['max_surface_deviation_mm']<1e-4 and b['surface_samples']>100
+    assert len(r['unchanged_legs'])==8
+    for name,digest in r['unchanged_legs'].items():assert sha(ROOT/f'assets/stl/upstream/{name}-v117.stl')==digest
+
+
+def test_fixings_and_battery_channel_remain_functional():
+    r=receipt();bottom=r['bottom_cover_fasteners']
+    assert bottom['matching_axes'] and abs(bottom['frame_intersection_mm3'])<.01
+    assert len(bottom['frame'])==len(bottom['cover'])==2
+    assert all(abs(p[1])<1e-3 for p in bottom['frame']+bottom['cover'])
+    assert len(r['head_mount_axes_xy_mm'])==4
+    port=r['battery_wire_cutout'];assert port['location']=='front-right' and port['corner_radius_mm']==1
+    assert port['other_channel_walls_intact'] and port['new_cutout_wall_clear']
+
+
+def test_head_lid_electronics_and_cable_entries_are_checked():
+    r=receipt();h=r['head_fit']
+    assert h['source_object']=='Loftwork V3 shell and removable lid'
+    assert h['raise_mm']==8 and h['height_splice_z_mm']==47.7
+    assert all(abs(a-b)<.001 for a,b in zip(h['assembled_size_mm'],[87.17675,58.534,55]))
+    assert h['display_window_unchanged'] and h['display_window']['width_mm']>20 and h['display_window']['height_mm']>11
+    assert h['cable_notches']['bottom_open'] and h['cable_notches']['count']==2
+    assert h['cable_notches']['centre_x_mm']==r['channel_layout']['midpoint_x_mm']
+    assert h['cable_notches']['width_mm']==8 and h['cable_notches']['top_z_mm']==55
+    assert min(h['spacer_clearances_mm'])>=.6 and abs(h['lid_intersection_mm3'])<1e-3
+    assert r['electronics_shapes_checked']==710 and not r['electronics_intersections']
+    assert h['cable_reference_sha256']==sha(CANONICAL/'head-cable-clearance.json')
+    assert h['cable_entry_min_gap_mm']>=.2 and h['cable_samples_inside']==0
+    assert len(h['leg_pose_checks'])==16 and all(x['separated_from_head'] for x in h['leg_pose_checks'])
