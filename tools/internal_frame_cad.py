@@ -162,13 +162,34 @@ def build(params, out, include_cover=False):
     native, electronics, _, holes, hole_diameter=load_electronics()
     pcb_size=[native.Carrier.Length.Value,native.Carrier.Width.Value,native.Carrier.Shape.BoundBox.ZLength]
     cx,cy=pcb_size[0]/2,pcb_size[1]/2
-    seat=original.BoundBox.ZMax+params['pcb_standoff_height_mm']
+    deck=original.BoundBox.ZMax
+    seat=deck+params['pcb_standoff_height_mm']
     hole_centres=[[cx-x,cy-y,seat] for x,y in holes]
-    posts=[Part.makeCylinder(params['pcb_standoff_radius_mm'],seat,App.Vector(x,y,0)) for x,y,_ in hole_centres]
+    # Reinforcement stays below the flat print face. The four spacers are loose
+    # parts, with clearance bores; only the frame has screw-forming pilot holes.
+    boss_depth=params['pcb_pilot_depth_mm']+params['pcb_pilot_floor_mm']
+    posts=[Part.makeCylinder(params['pcb_standoff_radius_mm'],boss_depth,App.Vector(x,y,deck-boss_depth)) for x,y,_ in hole_centres]
     frame=frame.multiFuse(posts)
-    pilots=[Part.makeCylinder(params['pcb_pilot_diameter_mm']/2,params['pcb_pilot_depth_mm'],App.Vector(x,y,seat-params['pcb_pilot_depth_mm'])) for x,y,_ in hole_centres]
+    pilots=[Part.makeCylinder(params['pcb_pilot_diameter_mm']/2,params['pcb_pilot_depth_mm'],App.Vector(x,y,deck-params['pcb_pilot_depth_mm'])) for x,y,_ in hole_centres]
     frame=frame.cut(Part.makeCompound(pilots))
     assert frame.isValid() and len(frame.Solids)==1
+    assert abs(frame.BoundBox.ZMax-deck)<1e-6,'No integral spacer may rise above the flat bed face'
+    for x,y,_ in hole_centres:
+        assert not frame.isInside(App.Vector(x,y,deck-params['pcb_pilot_depth_mm']+.1),1e-6,False)
+        assert frame.isInside(App.Vector(x,y,deck-params['pcb_pilot_depth_mm']-params['pcb_pilot_floor_mm']/2),1e-6,False)
+    spacer=Part.makeCylinder(params['pcb_standoff_radius_mm'],params['pcb_standoff_height_mm'])
+    spacer=spacer.cut(Part.makeCylinder(params['pcb_spacer_bore_mm']/2,params['pcb_standoff_height_mm']))
+    spacer_origins=[[x,y,deck] for x,y,_ in hole_centres]
+    placed_spacers=[]
+    for origin in spacer_origins:
+        placed=spacer.copy();placed.translate(App.Vector(*origin));placed_spacers.append(placed)
+        assert placed.common(frame).Volume<1e-5
+    lowest=min(s.BoundBox.ZMin for s in electronics.values())
+    penetration=params['pcb_screw_length_mm']-pcb_size[2]-params['pcb_standoff_height_mm']
+    assert params['pcb_spacer_bore_mm']>params['pcb_screw_diameter_mm']
+    assert hole_diameter>params['pcb_screw_diameter_mm']
+    assert 2*params['pcb_screw_diameter_mm']<=penetration<params['pcb_pilot_depth_mm']
+    assert params['pcb_standoff_height_mm']+lowest>=1.0
 
     # Compare the complete electronics BReps, not just a PCB rectangle. The 180°
     # yaw keeps USB at the rear in the guide's established robot orientation.
@@ -176,12 +197,13 @@ def build(params, out, include_cover=False):
     collisions=[]
     for name,part in electronics.items():
         part.transformShape(pcb_matrix)
-        if part.BoundBox.intersect(frame.BoundBox):
-            intersection=part.common(frame)
+        for item,solid in [('frame',frame),*[(f'spacer-{i+1}',s) for i,s in enumerate(placed_spacers)]]:
+            if not part.BoundBox.intersect(solid.BoundBox):continue
+            intersection=part.common(solid)
             assert intersection.isNull() or intersection.isValid(),name
             volume=intersection.Volume
             assert volume>=-1e-6,(name,volume)
-            if volume>1e-4:collisions.append({'part':name,'intersection_mm3':volume})
+            if volume>1e-4:collisions.append({'part':name,'against':item,'intersection_mm3':volume})
     assert not collisions, collisions
 
     # Reserve the two straight side-wall strips alongside the PCB for the next
@@ -245,6 +267,19 @@ def build(params, out, include_cover=False):
 
     # Frame validation and export complete before touching the dependent cover.
     export('internal-frame',frame)
+    export('pcb-spacer',spacer)
+    parts['pcb-spacer']['quantity']=4
+    parts['pcb-spacer']['assembly_origins_mm']=spacer_origins
+    parts['pcb-spacer']['print_rotation_axis_angle']=[1,0,0,0]
+    parts['internal-frame']['print_rotation_axis_angle']=[1,0,0,180]
+    print_frame=frame.copy();print_frame.rotate(App.Vector(0,0,0),App.Vector(1,0,0),180)
+    print_frame.translate(App.Vector(0,0,-print_frame.BoundBox.ZMin))
+    print_mesh=MeshPart.meshFromShape(Shape=print_frame,LinearDeflection=params['mesh_deflection_mm'],AngularDeflection=.2,Relative=False)
+    assert print_mesh.isSolid() and abs(print_frame.BoundBox.ZMin)<1e-6
+    write_stl(out/'internal-frame-print.stl',print_mesh)
+    parts['internal-frame']['print_stl']='internal-frame-print.stl'
+    parts['internal-frame']['print_stl_sha256']=sha(out/'internal-frame-print.stl')
+    parts['internal-frame']['print_bounds_mm']=bounds(print_frame)
     cover_fasteners=[]
     if include_cover:
         bottom=next(o.Shape.copy() for o in upstream.Objects if o.Label=='Bottom-Cover')
@@ -277,6 +312,13 @@ def build(params, out, include_cover=False):
         'battery_wire_cutout':port,
         'bottom_cover_fasteners':{'frame':frame_fasteners,'cover':cover_fasteners,'note':'Both axes centred at Y=0; original bore, entry chamfer and screw-head recess profiles retained.'},
         'pcb_mount_holes_mm':hole_centres,'pcb_hole_diameter_mm':hole_diameter,'pcb_seat_z_mm':seat,
+        'pcb_fastening':{'board_thickness_mm':pcb_size[2],'spacer_height_mm':params['pcb_standoff_height_mm'],
+                         'screw_diameter_mm':params['pcb_screw_diameter_mm'],'screw_under_head_length_mm':params['pcb_screw_length_mm'],
+                         'nominal_frame_penetration_mm':penetration,'pilot_depth_mm':params['pcb_pilot_depth_mm'],
+                         'tip_clearance_mm':params['pcb_pilot_depth_mm']-penetration,'minimum_pilot_floor_mm':params['pcb_pilot_floor_mm'],
+                         'model_underside_projection_mm':-lowest,'model_deck_clearance_mm':params['pcb_standoff_height_mm']+lowest,
+                         'type':'Pan-head plastics thread-forming screw, not an interchangeable metric machine screw',
+                         'status':'Proposed stack; corner holes are model datums, exact screw and printed pilot fit need checking; solder envelope is illustrative'},
         'servo_flange_seat_z_mm':original.BoundBox.ZMax,'hip_shaft_xy_mm':hips,
         'electronics_sha256':sha(ROOT/'assets/cad/Sesame-S3-Assembly.FCStd'),
         'source_script_sha256':sha(__file__),'parts':parts,'servo_bay_checks':bay_checks,

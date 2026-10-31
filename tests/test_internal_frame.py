@@ -75,6 +75,27 @@ def test_bottom_cover_fasteners_are_centred_with_matching_axes():
             assert abs(max(radii)-(1.48528 if kind=='frame' else 3.99796))<1e-5
 
 
+def test_separate_spacers_and_screw_stack_leave_solder_and_tip_clearance():
+    report=json.loads((OUT/'assembly.json').read_text());p=report['parameters'];parts=report['parts']
+    spacer=parts['pcb-spacer'];frame=parts['internal-frame'];stack=report['pcb_fastening']
+    assert spacer['quantity']==4 and len(spacer['assembly_origins_mm'])==4
+    assert abs(spacer['bounds_mm'][1][2]-spacer['bounds_mm'][0][2]-3)<1e-6
+    assert abs(spacer['bounds_mm'][0][2])<1e-6
+    assert abs(frame['bounds_mm'][1][2]-report['servo_flange_seat_z_mm'])<1e-6
+    for origin,hole in zip(spacer['assembly_origins_mm'],report['pcb_mount_holes_mm']):
+        assert origin[:2]==hole[:2] and abs(origin[2]+3-hole[2])<1e-6
+    assert p['pcb_spacer_bore_mm']>p['pcb_screw_diameter_mm']>p['pcb_pilot_diameter_mm']
+    assert stack['board_thickness_mm']==1.6 and stack['screw_under_head_length_mm']==8
+    assert abs(stack['nominal_frame_penetration_mm']-3.4)<1e-6
+    assert abs(stack['tip_clearance_mm']-.8)<1e-6 and stack['minimum_pilot_floor_mm']==1.2
+    assert abs(stack['model_underside_projection_mm']-1.4)<1e-6
+    assert abs(stack['model_deck_clearance_mm']-1.6)<1e-6
+    raw=(OUT/frame['print_stl']).read_bytes()
+    assert hashlib.sha256(raw).hexdigest()==frame['print_stl_sha256']
+    vertices=[struct.unpack_from('<12fH',raw,84+i*50)[3:12] for i in range(struct.unpack_from('<I',raw,80)[0])]
+    assert abs(min(z for v in vertices for z in v[2::3]))<1e-5
+
+
 def test_battery_wire_cutout_moves_without_changing_its_profile():
     report=json.loads((OUT/'assembly.json').read_text());port=report['battery_wire_cutout']
     assert port['location']=='front-right' and port['old_location']=='back-left'
