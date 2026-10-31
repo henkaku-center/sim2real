@@ -96,6 +96,19 @@ def test_separate_spacers_and_screw_stack_leave_solder_and_tip_clearance():
     assert abs(min(z for v in vertices for z in v[2::3]))<1e-5
 
 
+def test_only_approved_top_holes_are_closed():
+    report=json.loads((OUT/'assembly.json').read_text());cleanup=report['top_hole_cleanup']
+    filled,retained=cleanup['filled'],cleanup['retained']
+    assert len(filled)==7 and len(retained)==4
+    assert sum(p['reason']=='unused electronics mounting hole' for p in filled)==4
+    assert sum(p['reason']=='unintended mirrored rear hole' for p in filled)==1
+    assert sum('crescent' in p['reason'] for p in filled)==2
+    assert sum(p['reason']=='original rear head fixing' for p in retained)==2
+    assert sum(p['reason']=='unresolved original rear hole' for p in retained)==2
+    assert all(p['x_mm']< -35 for p in retained)
+    assert all(p['y_mm']<0 for p in retained if p['reason']=='unresolved original rear hole')
+
+
 def test_battery_wire_cutout_moves_without_changing_its_profile():
     report=json.loads((OUT/'assembly.json').read_text());port=report['battery_wire_cutout']
     assert port['location']=='front-right' and port['old_location']=='back-left'

@@ -159,6 +159,31 @@ def build(params, out, include_cover=False):
         port={'location':'front-right','old_location':'back-left','profile_area_mm2':profile.Area,'profile_bounds_mm':bounds(moved_profile),'original_profile_bounds_mm':bounds(profile),'corner_radius_mm':radius,'roof_depth_mm':top-bottom,'rotation_about_frame_center_deg':180,'old_opening_closed':True,'new_opening_clear':True,
               'method':'Opposite-hand channel restoration and rotated original 3D opening, including rounded wall ends',
               'old_channel_matches_opposite':True,'channel_section_checks':channel_samples,'new_cutout_wall_clear':True,'opening_tool_bounds_mm':bounds(cutter)}
+    # Close only the approved top-side openings, before adding the PCB pilot
+    # reinforcement. Full circular bore faces give exact plugs without growing
+    # a broad cylinder into adjacent channels or retaining crescent openings.
+    removed_holes=[];plugs=[];retained_holes=[]
+    for face in frame.Faces:
+        c=face.Surface
+        if not isinstance(c,Part.Cylinder) or abs(c.Axis.z)<.999 or abs(face.BoundBox.ZMax-original.BoundBox.ZMax)>1e-5:continue
+        x,y=c.Center.x,c.Center.y;reason=None
+        if abs(c.Radius-.875)<1e-5:
+            if x>0 or abs(x+7.78853)<1e-4:reason='unused electronics mounting hole'
+            elif x<-35 and y>0:reason='unintended mirrored rear hole'
+            elif x<-35:retained_holes.append({'x_mm':x,'y_mm':y,'diameter_mm':2*c.Radius,'reason':'unresolved original rear hole'})
+        elif abs(c.Radius-1.15)<1e-5:
+            if x>30:reason='obsolete front head opening causing PCB reinforcement crescent'
+            elif x<-35:retained_holes.append({'x_mm':x,'y_mm':y,'diameter_mm':2*c.Radius,'reason':'original rear head fixing'})
+        if reason:
+            lo,hi=face.BoundBox.ZMin,face.BoundBox.ZMax
+            assert not frame.isInside(App.Vector(x,y,(lo+hi)/2),1e-6,False),'Expected an empty bore, including mirrored faces'
+            assert abs(face.Area-2*math.pi*c.Radius*(hi-lo))<1e-4,'Expected a complete bore before reinforcement'
+            plugs.append(Part.makeCylinder(c.Radius,hi-lo,App.Vector(x,y,lo)))
+            removed_holes.append({'x_mm':x,'y_mm':y,'diameter_mm':2*c.Radius,'filled_z_mm':[lo,hi],'reason':reason})
+    assert len(removed_holes)==7 and len(retained_holes)==4,(removed_holes,retained_holes)
+    before=frame.Volume;frame=frame.multiFuse(plugs)
+    assert frame.isValid() and len(frame.Solids)==1
+    assert abs(frame.Volume-before-sum(p.Volume for p in plugs))<1e-3
     native, electronics, _, holes, hole_diameter=load_electronics()
     pcb_size=[native.Carrier.Length.Value,native.Carrier.Width.Value,native.Carrier.Shape.BoundBox.ZLength]
     cx,cy=pcb_size[0]/2,pcb_size[1]/2
@@ -174,6 +199,12 @@ def build(params, out, include_cover=False):
     frame=frame.cut(Part.makeCompound(pilots))
     assert frame.isValid() and len(frame.Solids)==1
     assert abs(frame.BoundBox.ZMax-deck)<1e-6,'No integral spacer may rise above the flat bed face'
+    for record in removed_holes:
+        lo,hi=record['filled_z_mm']
+        for z in [lo+.05,(lo+hi)/2,hi-.05]:
+            assert frame.isInside(App.Vector(record['x_mm'],record['y_mm'],z),1e-6,False),record
+    for record in retained_holes:
+        assert not frame.isInside(App.Vector(record['x_mm'],record['y_mm'],deck-.1),1e-6,False),record
     for x,y,_ in hole_centres:
         assert not frame.isInside(App.Vector(x,y,deck-params['pcb_pilot_depth_mm']+.1),1e-6,False)
         assert frame.isInside(App.Vector(x,y,deck-params['pcb_pilot_depth_mm']-params['pcb_pilot_floor_mm']/2),1e-6,False)
@@ -310,6 +341,7 @@ def build(params, out, include_cover=False):
         'pcb_side_margin_mm':(support-pcb_size[1])/2,
         'head_wall_allowance':head_allowance,
         'battery_wire_cutout':port,
+        'top_hole_cleanup':{'filled':removed_holes,'retained':retained_holes,'note':'Seven approved top openings closed; original lower head-access recesses remain. PCB pilots are drilled afterward.'},
         'bottom_cover_fasteners':{'frame':frame_fasteners,'cover':cover_fasteners,'note':'Both axes centred at Y=0; original bore, entry chamfer and screw-head recess profiles retained.'},
         'pcb_mount_holes_mm':hole_centres,'pcb_hole_diameter_mm':hole_diameter,'pcb_seat_z_mm':seat,
         'pcb_fastening':{'board_thickness_mm':pcb_size[2],'spacer_height_mm':params['pcb_standoff_height_mm'],
