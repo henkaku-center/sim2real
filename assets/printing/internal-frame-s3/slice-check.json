@@ -1,0 +1,22 @@
+{
+  "tool": "Bambu Studio 02.08.02.61",
+  "date": "2026-10-31",
+  "printer": "Bambu Lab P1S 0.4 nozzle",
+  "layer_height_mm": 0.2,
+  "wall_loops": 4,
+  "infill": "25%",
+  "filament": [
+    "Generic PLA"
+  ],
+  "supports_enabled": false,
+  "support_toolpaths": 0,
+  "object_count": 5,
+  "return_code": 0,
+  "models": {
+    "internal-frame-print.stl": "f72ec089130f2284e35c5f57dc3307bb367b23ddf2d73f89e9255e0f3892dd00",
+    "pcb-spacer.stl": "8b5c8dcfbe057933dd664d75ab8c7c47dc08ff43652d31724ca03cca2fff1e80"
+  },
+  "estimated_time": "1h 26m 58s",
+  "estimated_filament_g": 39.23,
+  "scope": "One frame plus four spacers, flat-face-down frame and upright spacers; local slicing only, includes bridge toolpaths, no physical print or printer upload."
+}

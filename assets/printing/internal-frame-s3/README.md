@@ -13,9 +13,17 @@ This changes the **Internal-Frame-v121** part in the supplied
   against the native electronics through their full height. These are space
   reservations; the next head revision must fit its complete shape, mounting,
   cable outlets and OLED window to this frame. The old head is not a fitted part.
-- New PCB supports: 4 mm above the frame deck, with the recorded **66 × 46.4 mm**
-  mounting-hole spacing. The 1.4 mm pilot holes are intended for M1.6 screws through
-  the PCB's approximately 2 mm holes; dimensions are editable in `params.json`.
+- Four **separately printed 3 mm spacers**, with **66 × 46.4 mm** mounting-hole
+  spacing. The spacers have 1.9 mm clearance bores; the frame has 1.3 mm pilots.
+  Corner-hole diameter is approximately 2 mm in the model, not a verified product
+  specification. Dimensions are editable in `params.json`.
+- Proposed fastener: **Ø1.6 × 8 mm pan-head plastics thread-forming screw**.
+  Stack: 1.6 mm PCB + 3 mm spacer + 3.4 mm nominal penetration. Frame pilots are
+  4.2 mm deep with 0.8 mm tip clearance and 1.2 mm material beneath. The pilot
+  diameter is a starting point for the selected screw and printed polymer, not
+  a universal fit or a substitute for a screw manufacturer's specification.
+- Modeled underside pins project 1.4 mm, leaving **1.6 mm deck clearance**.
+  Actual solder blobs and untrimmed leads may differ; check the assembled board.
 - USB remains at the robot's rear. The frame is in millimetres, X front / Y left /
   Z up. Let the slicer place its underside on the bed.
 - The battery-wire opening is at the robot's **front-right**. The old back-left
@@ -24,10 +32,26 @@ This changes the **Internal-Frame-v121** part in the supplied
   frame centre, retaining rounded wall ends and removing the former thin outer
   remnant. This supersedes the earlier roof-only fill and extruded outline cut.
 
-`internal-frame.step` is the editable CAD solid; `internal-frame.stl` is its print
-mesh. The matching `bottom-cover.step` / `.stl` are widened only after the frame
+`internal-frame.step` is the editable CAD solid; `internal-frame.stl` is its
+assembly-coordinate mesh. The matching `bottom-cover.step` / `.stl` are widened only after the frame
 has been built and checked, using the same splice and lateral translations.
 The old-width bottom cover will not match this wider frame.
+
+For printing, use **`internal-frame-print.stl`**: the flat PCB-side face is already
+on Z=0, with the underside pointing up. This removes the integral posts that
+prevented flat-bed placement. Print **four copies of `pcb-spacer.stl`** upright;
+`pcb-spacer.step` is editable. The ordinary frame STL retains assembly coordinates
+for the guide. Print orientation is a design choice, not a physical print result.
+
+The frame plus four spacers were sliced in Bambu Studio 02.08.02.61 with the P1S
+0.4 mm / Generic PLA profile, 0.2 mm layers, four walls and 25% infill. Slicing
+completed with supports disabled and **zero support toolpaths**; normal bridge
+paths remain. Estimated plate time: **1 h 26 min 58 s**, filament **39.23 g**.
+See `slice-check.json` for model hashes. These are slicer estimates, not a print
+test or instructions to send this printer-specific G-code to another machine.
+
+See [PCB-MOUNTING.md](PCB-MOUNTING.md) for the purchased board, fastening stack,
+manufacturer guidance and the remaining corner-hole/pilot-fit uncertainties.
 
 Both underside cover screws are centred on **Y=0** (X ≈ −30.691 and +29.437 mm).
 The earlier splice had carried them 9 mm to one side. The frame's blind pilot
