@@ -540,12 +540,12 @@
         180
       ],
       "print_stl": "internal-frame-print.stl",
-      "print_stl_sha256": "f72ec089130f2284e35c5f57dc3307bb367b23ddf2d73f89e9255e0f3892dd00",
-      "step_sha256": "84a95a71f4fde12e10b822e7c1fed4e42cf7d0a2af92983f873231dfd1558316",
-      "stl_sha256": "0c93861cfa1d2303b23dee5a229bbced91d2934fa678221188eaf69529c2f9d4",
-      "triangles": 17276,
+      "print_stl_sha256": "f5b9171f0055f681832ce06881115ae1ebd3eefe594e81237bd621be2ed9d1e7",
+      "step_sha256": "371088c8b1d9df9e2dc2072f83b022eaf1850472f7fbe1194d0951a5fdff64f0",
+      "stl_sha256": "7b2382ab27948684998748d2200938230b32eda6b8f9ab17dbf4d233101f4644",
+      "triangles": 16684,
       "valid_solid": true,
-      "volume_mm3": 46548.67716974289
+      "volume_mm3": 46595.235436514966
     },
     "pcb-spacer": {
       "assembly_origins_mm": [
@@ -680,9 +680,110 @@
       4.967756901865166
     ]
   ],
-  "source_script_sha256": "9c97fa83836dcc9a570dfe5f5bfbba6416505b7d41a89ba17987fe8cac63026d",
+  "source_script_sha256": "2bfdfd225f1569d3565b203f4f47020f41b7c4b2d4e830ed2c456a7f5b7e0870",
   "source_support_width_mm": 38.440660859444506,
   "support_width_mm": 56.44066085944431,
+  "top_hole_cleanup": {
+    "filled": [
+      {
+        "diameter_mm": 2.3,
+        "filled_z_mm": [
+          3.6974969018651365,
+          4.967756901865126
+        ],
+        "reason": "obsolete front head opening causing PCB reinforcement crescent",
+        "x_mm": 33.59904927125379,
+        "y_mm": -24.928847753470848
+      },
+      {
+        "diameter_mm": 1.75,
+        "filled_z_mm": [
+          1.7927569018651255,
+          4.967756901865126
+        ],
+        "reason": "unused electronics mounting hole",
+        "x_mm": 23.931062306554118,
+        "y_mm": -21.446024892049728
+      },
+      {
+        "diameter_mm": 1.75,
+        "filled_z_mm": [
+          1.4677569018651333,
+          4.967756901865126
+        ],
+        "reason": "unused electronics mounting hole",
+        "x_mm": -7.788525136838956,
+        "y_mm": -18.570935615831733
+      },
+      {
+        "diameter_mm": 1.75,
+        "filled_z_mm": [
+          1.7927569018651255,
+          4.967756901865126
+        ],
+        "reason": "unused electronics mounting hole",
+        "x_mm": 23.994562433554457,
+        "y_mm": 21.319024638049353
+      },
+      {
+        "diameter_mm": 2.3,
+        "filled_z_mm": [
+          3.6974969018651365,
+          4.967756901865126
+        ],
+        "reason": "obsolete front head opening causing PCB reinforcement crescent",
+        "x_mm": 33.59904927125379,
+        "y_mm": 24.928847753470905
+      },
+      {
+        "diameter_mm": 1.75,
+        "filled_z_mm": [
+          1.4677569018651333,
+          4.967756901865126
+        ],
+        "reason": "unused electronics mounting hole",
+        "x_mm": -7.788525136838956,
+        "y_mm": 19.829064384168202
+      },
+      {
+        "diameter_mm": 1.7500000000000053,
+        "filled_z_mm": [
+          -0.1122430981348721,
+          4.967756901865126
+        ],
+        "reason": "unintended mirrored rear hole",
+        "x_mm": -36.36256960980183,
+        "y_mm": 21.02653924263467
+      }
+    ],
+    "note": "Seven approved top openings closed; original lower head-access recesses remain. PCB pilots are drilled afterward.",
+    "retained": [
+      {
+        "diameter_mm": 2.2999999999999847,
+        "reason": "original rear head fixing",
+        "x_mm": -36.063712430763765,
+        "y_mm": -25.78756377759719
+      },
+      {
+        "diameter_mm": 1.7500000000000053,
+        "reason": "unresolved original rear hole",
+        "x_mm": -36.36256960980183,
+        "y_mm": -21.02653924263467
+      },
+      {
+        "diameter_mm": 1.74999999999999,
+        "reason": "unresolved original rear hole",
+        "x_mm": -36.36256960980183,
+        "y_mm": -16.708530606617348
+      },
+      {
+        "diameter_mm": 2.2999999999999847,
+        "reason": "original rear head fixing",
+        "x_mm": -36.063712430763765,
+        "y_mm": 25.787563777597185
+      }
+    ]
+  },
   "unchanged_legs": {
     "L1": "081896568cc9776393c038d05ecc8caf01090c6971efebe799d064def4c92558",
     "L2": "4e47eef40bf523aa0d7b0ac285f3086b3e6c5ccd347525f5c93bbf0c5bcd1fbf",

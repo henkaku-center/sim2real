@@ -13,10 +13,10 @@
   "object_count": 5,
   "return_code": 0,
   "models": {
-    "internal-frame-print.stl": "f72ec089130f2284e35c5f57dc3307bb367b23ddf2d73f89e9255e0f3892dd00",
+    "internal-frame-print.stl": "f5b9171f0055f681832ce06881115ae1ebd3eefe594e81237bd621be2ed9d1e7",
     "pcb-spacer.stl": "8b5c8dcfbe057933dd664d75ab8c7c47dc08ff43652d31724ca03cca2fff1e80"
   },
-  "estimated_time": "1h 26m 58s",
-  "estimated_filament_g": 39.23,
+  "estimated_time": "1h 25m 26s",
+  "estimated_filament_g": 39.09,
   "scope": "One frame plus four spacers, flat-face-down frame and upright spacers; local slicing only, includes bridge toolpaths, no physical print or printer upload."
 }

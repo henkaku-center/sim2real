@@ -46,7 +46,7 @@ for the guide. Print orientation is a design choice, not a physical print result
 The frame plus four spacers were sliced in Bambu Studio 02.08.02.61 with the P1S
 0.4 mm / Generic PLA profile, 0.2 mm layers, four walls and 25% infill. Slicing
 completed with supports disabled and **zero support toolpaths**; normal bridge
-paths remain. Estimated plate time: **1 h 26 min 58 s**, filament **39.23 g**.
+paths remain. Estimated plate time: **1 h 25 min 26 s**, filament **39.09 g**.
 See `slice-check.json` for model hashes. These are slicer estimates, not a print
 test or instructions to send this printer-specific G-code to another machine.
 
@@ -57,7 +57,13 @@ Both underside cover screws are centred on **Y=0** (X ≈ −30.691 and +29.437 
 The earlier splice had carried them 9 mm to one side. The frame's blind pilot
 holes and the cover's matching through-holes, countersinks and head wells now
 share the centreline. Their original axial profiles are retained; the displaced
-holes are closed. Top-side legacy holes are unchanged pending the head fitting.
+holes are closed.
+
+The approved top-side cleanup closes four unused electronics holes, the
+accidentally mirrored rear hole, and the two obsolete front head openings that
+left crescents beside the PCB pilots. Their lower head-access recesses are
+retained. The two rear head fixings and two unidentified original rear holes
+remain open. The four current PCB pilots and eight servo fixings are preserved.
 
 ## Rebuild and checks
 
