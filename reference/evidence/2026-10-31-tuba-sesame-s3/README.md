@@ -8,6 +8,8 @@ here is my personal firmware and is shared for reference only.
 
 - `tuba-firmware.patch`: my personal firmware changes (living face, battery demo,
   diagnostics, speed, rest pose), diffed against `a90dc60`.
+- `SESSION-LOG.md`: my session-by-session summary for the professor (Oct 15–31,
+  builds 1–16). File names in it refer to my private build-log repo.
 - `apply_calibration.py`: re-applies my calibration (clock, map, signs, limits)
   after a manifest change resets the saved record.
 
