@@ -16,6 +16,8 @@ def test_artifacts_match_the_validated_native_kit():
     r=receipt();assert r['reference_family']=='loftwork-printing-v3'
     assert r['source_script_sha256']==sha(ROOT/'tools/v3_assembly_cad.py')
     assert r['entry_script_sha256']==sha(ROOT/'tools/internal_frame_cad.py')
+    assert r['validation_checker_sha256']==sha(ROOT/'tools/cad_validation_cache.py')
+    assert len(r['validation_cache'])==9 and all(len(c['key'])==64 for c in r['validation_cache'])
     assert r['parameters']==json.loads((CANONICAL/'params.json').read_text())
     assert set(r['parts'])=={'internal-frame','bottom-cover','pcb-spacer','head-cover','head-lid'}
     for name,p in r['parts'].items():

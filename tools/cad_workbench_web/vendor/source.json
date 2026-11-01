@@ -1,0 +1,11 @@
+{
+  "package": "three",
+  "version": "0.180.0",
+  "tarball_sha512": "a3eab2700319ae1f93b04d351aa594c5420a47500bd12f29abbcc3918390c3c1aa7d7f1bf15a022985281db8625f98feee1afc5ecb870d553afa09102502a0f7",
+  "files": {
+    "three.module.js": "c8211c69345d2e9949dc7a8ac969380497aa0600a5a8ac6a459c8cd02dd9cb8a",
+    "three.core.js": "eb077d2417f61d3e6d9264c317cabc4ea35769ed6b0ab533067292a550784c20",
+    "OrbitControls.js": "b97879c748170baadeb3fb84cea1ffdf4674e283dc06042f34e2acb95a76042c",
+    "LICENSE": "bfe119ea4fd413f5f7ca3fcd63adb0c4a073ed39daa2fe7d3e6b769e21272601"
+  }
+}

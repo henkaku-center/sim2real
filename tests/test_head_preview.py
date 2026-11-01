@@ -17,6 +17,30 @@ from tools import v3_assembly_cad as cad
 
 
 class HeadPreviewTest(unittest.TestCase):
+    def test_frame_and_spacer_preview_match_full_native_exports(self):
+        params=json.loads((cad.REF.parent/'params.json').read_text())
+        expected_dir=Path(os.environ.get('INTERNAL_FRAME_OUTPUT',cad.REF.parent))
+        with tempfile.TemporaryDirectory() as directory:
+            for kind,name in [('frame','internal-frame'),('spacer','pcb-spacer')]:
+                out=Path(directory)/kind;cad.preview_part(params,out,kind)
+                expected=Part.read(str(expected_dir/(name+'.step')));actual=Part.read(str(out/(name+'.step')))
+                self.assertLess(abs(actual.Volume-expected.Volume),1e-3)
+                # Identical imported fillets can give a nonempty coincident
+                # Boolean difference. Compare the actual delivered STEP bytes.
+                self.assertEqual((out/(name+'.step')).read_bytes(),(expected_dir/(name+'.step')).read_bytes())
+                self.assertTrue((out/(kind+'-preview.stl')).exists())
+                self.assertFalse((out/'assembly.json').exists())
+
+    def test_geometry_change_invalidates_cached_collision_check(self):
+        from tools.cad_validation_cache import CheckCache,shape_digest,check_electronics
+        body=Part.makeBox(1,1,1);other=Part.makeBox(1,1,1,FreeCAD.Vector(5,0,0))
+        with tempfile.TemporaryDirectory() as directory:
+            cache=CheckCache(directory,{'checker':cad.sha(cad.ROOT/'tools/cad_validation_cache.py')})
+            def check(shape):return cache.run('electronics',{'shape':shape_digest(shape),'other':shape_digest(other)},lambda:check_electronics(shape,{'part':other}))
+            self.assertEqual(check(body),[]);self.assertEqual(check(body),[]);self.assertTrue(cache.records[-1]['cache_hit'])
+            body.translate(FreeCAD.Vector(5,0,0))
+            with self.assertRaises(AssertionError):check(body)
+
     def test_preview_edits_reuse_inputs_but_not_geometry_or_fit_results(self):
         params=json.loads((cad.REF.parent/'params.json').read_text())
         with tempfile.TemporaryDirectory() as directory:
