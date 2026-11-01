@@ -20,10 +20,10 @@ def sha(path):
     return hashlib.sha256(Path(path).read_bytes()).hexdigest()
 
 
-def build(params, out, include_cover=False, datums_only=False):
+def build(params, out, include_cover=False, datums_only=False, fresh_checks=False, check_cache=None):
     if params.get('source_family')=='loftwork-printing-v3':
         from tools.v3_assembly_cad import build as build_v3
-        return build_v3(params,out,include_cover,datums_only)
+        return build_v3(params,out,include_cover,datums_only,fresh_checks,check_cache)
     import FreeCAD as App
     import Import
     import MeshPart
@@ -372,12 +372,16 @@ def main():
     p.add_argument('--include-bottom-cover',action='store_true')
     p.add_argument('--datums-only',action='store_true',help='Export the V3 route/placement datums before generating clearance samples')
     p.add_argument('--preview-head',action='store_true',help='Fast V3 shell/lid STEP preview; skip full assembly checks and release exports')
+    p.add_argument('--preview',choices=['head','frame','spacer'],help='Fast native part preview')
+    p.add_argument('--fresh-checks',action='store_true',help='Recompute all validation groups, bypassing cached results')
+    p.add_argument('--check-cache',type=Path,help='Validation cache directory (default tests/artifacts/printing-check-cache)')
     args=p.parse_args();params=json.loads(args.params.read_text())
-    if args.preview_head:
+    if args.preview_head or args.preview:
         if args.datums_only or params.get('source_family')!='loftwork-printing-v3':p.error('--preview-head requires V3 parameters and cannot be combined with --datums-only')
-        from tools.v3_assembly_cad import preview_head
-        preview_head(params,args.output or ROOT/'tests/artifacts/head-preview')
-    else:build(params,args.output or OUTPUT,args.include_bottom_cover,args.datums_only)
+        from tools.v3_assembly_cad import preview_part
+        kind=args.preview or 'head'
+        preview_part(params,args.output or ROOT/f'tests/artifacts/{kind}-preview',kind)
+    else:build(params,args.output or OUTPUT,args.include_bottom_cover,args.datums_only,args.fresh_checks,args.check_cache)
 
 
 if __name__=='__main__':main()

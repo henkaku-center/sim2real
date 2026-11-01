@@ -182,7 +182,7 @@
   "electronics_intersections": [],
   "electronics_sha256": "d96973c182bf78b99527ad390e552871f7b5ec073eee68850c346b291ffa1b88",
   "electronics_shapes_checked": 710,
-  "entry_script_sha256": "60bce0c0d4a8fbcaa967fada0b46e706a9f514faea09d0af629a3b942d622617",
+  "entry_script_sha256": "58c57f0199a88c9f269089f3cf531650b2e32f2364bc4459326e470db6e20954",
   "fit_note": "V3-derived example; current PCB/spacer datums retained. CAD and sampled route checks are not physical fit evidence.",
   "head_fit": {
     "assembled_size_mm": [
@@ -904,7 +904,7 @@
       4.967756901865376
     ]
   ],
-  "source_script_sha256": "6f4dbca5fa225a6c644a394de411835d9f90dfa35b42252c39e18d37e200aaab",
+  "source_script_sha256": "77dcf94f2f03b9bf0ed157624abeb4b3e092f4e3155d6dbe4ba968db915b9a57",
   "support_width_mm": 63.55037999999999,
   "unchanged_legs": {
     "L1": "081896568cc9776393c038d05ecc8caf01090c6971efebe799d064def4c92558",
@@ -916,5 +916,53 @@
     "R3": "c2c35b4c948849878649d99e512af6702b5fcbbd2b30578bbec87ab15b8ec99e",
     "R4": "131348a19491edad32f29d7a64109fdfadc3a03e01feedbf08dc1769e050938a"
   },
-  "units": "mm"
+  "units": "mm",
+  "validation_cache": [
+    {
+      "cache_hit": false,
+      "group": "electronics/frame",
+      "key": "610dc55163c87d4bdf981e9b666bdd15a27b6340051f7cc5068386bc1e29b9f6"
+    },
+    {
+      "cache_hit": false,
+      "group": "electronics/spacer-0",
+      "key": "5c51b516a1223637c01ffc93a23c07d5b175b88ace8ae8b71c2c9b2347c9ede7"
+    },
+    {
+      "cache_hit": false,
+      "group": "electronics/spacer-1",
+      "key": "434df0048e277b58b3d7b72dfb28299b32634ec762523229cf9294e7b7641886"
+    },
+    {
+      "cache_hit": false,
+      "group": "electronics/spacer-2",
+      "key": "ad4b5c300068db4ebd1b75fbf434652cb524d4b8a6b7dca4008ed7ef2ab6d437"
+    },
+    {
+      "cache_hit": false,
+      "group": "electronics/spacer-3",
+      "key": "f264f03331d38e6595f46f2cbbe3093ddd49564d0866fd0703925d2b81d5e8b3"
+    },
+    {
+      "cache_hit": false,
+      "group": "electronics/head",
+      "key": "a689155b6adc53522a4a730bb2639ae5ee08f02c8f4e65a228347d4a4d4c8899"
+    },
+    {
+      "cache_hit": false,
+      "group": "electronics/lid",
+      "key": "57d8f2f290d5f9d2c024080c746e7115a4b60931df4e1b642d2fbe30a3b84461"
+    },
+    {
+      "cache_hit": false,
+      "group": "servo-bays",
+      "key": "9e219924a735214266fb4d5768409a2ab9c827f03c863b6bbf4d531de6e286ee"
+    },
+    {
+      "cache_hit": false,
+      "group": "ribbons",
+      "key": "0888f603bd740a2ecc8a603b62e82b2915af658b92cc2a17d856c5dae5406117"
+    }
+  ],
+  "validation_checker_sha256": "72457d3041975b3e6948fbc36ed8f0d0c56a69a570530a4c074bb70d2be9b2a6"
 }

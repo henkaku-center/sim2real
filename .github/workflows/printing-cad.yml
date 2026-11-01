@@ -10,6 +10,10 @@ on:
       - 'tools/v3_assembly_cad.py'
       - 'tools/normalize_v3_reference.py'
       - 'tools/preview_printing.py'
+      - 'tools/cad_*'
+      - 'tools/cad_workbench_web/**'
+      - 'tests/test_cad_*.py'
+      - 'tests/compare_printing_receipts.py'
       - 'tools/body_cad.py'
       - 'tests/test_internal_frame.py'
       - 'tests/test_head_preview.py'
@@ -26,6 +30,10 @@ on:
       - 'tools/v3_assembly_cad.py'
       - 'tools/normalize_v3_reference.py'
       - 'tools/preview_printing.py'
+      - 'tools/cad_*'
+      - 'tools/cad_workbench_web/**'
+      - 'tests/test_cad_*.py'
+      - 'tests/compare_printing_receipts.py'
       - 'tools/body_cad.py'
       - 'tests/test_internal_frame.py'
       - 'tests/test_head_preview.py'
@@ -68,9 +76,12 @@ jobs:
       - name: Check committed artifacts and native CAD fit
         run: |
           export PYTHONPATH="$CONDA_PREFIX/lib"
-          python -m pytest tests/test_internal_frame.py -q
-          python -u -m tools.internal_frame_cad --include-bottom-cover --output tests/artifacts/printing
+          python -m pytest tests/test_internal_frame.py tests/test_cad_validation_cache.py tests/test_cad_workbench.py -q
+          python -u -m tools.internal_frame_cad --include-bottom-cover --fresh-checks --output tests/artifacts/printing
           INTERNAL_FRAME_OUTPUT=tests/artifacts/printing python -m pytest tests/test_internal_frame.py tests/test_head_preview.py -q
+          python -u -m tools.internal_frame_cad --include-bottom-cover --output tests/artifacts/printing-cached
+          python tests/compare_printing_receipts.py tests/artifacts/printing tests/artifacts/printing-cached
+          INTERNAL_FRAME_OUTPUT=tests/artifacts/printing-cached python -m pytest tests/test_internal_frame.py -q
           python tools/preview_printing.py
       - uses: actions/upload-artifact@v4
         if: always()

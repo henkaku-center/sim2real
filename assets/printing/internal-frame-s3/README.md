@@ -52,8 +52,12 @@ closed parts, the unchanged OLED aperture, shell/lid overlap and head-base heigh
 Its `preview.json` explicitly lists the assembly-wide checks not run. Unchanged
 electronics/placement measurements are cached by source hashes and CAD versions;
 edited head geometry is rebuilt each time. Preview never writes a release receipt
-or overwrites the delivered kit. The full command below still runs every fit
-check and produces the release STEP/STL files.
+or overwrites the delivered kit. `--part frame` and `--part spacer` provide the
+same fast loop for those parts. For debounced saves, fixed-camera before/after
+comparison and phone access, see `reference/CAD-ITERATION.md` in the repository.
+Full builds check every fit group or reuse its matching successful result;
+`--fresh-checks` forces all checks to run. The full command produces the release
+STEP/STL files and records cache provenance.
 
 Use FreeCAD's Python to run `python -m tools.internal_frame_cad --include-bottom-cover`.
 If mounting datums change, first run `--datums-only`, then regenerate ribbon/leg

@@ -8,6 +8,7 @@ import FreeCAD as App
 import Part
 import MeshPart
 from tools.body_cad import load_electronics,bounds,export_step,write_stl
+from tools.cad_validation_cache import CheckCache,shape_digest,check_electronics,check_servo_bays,check_ribbons
 
 ROOT=Path(__file__).resolve().parents[1]
 REF=ROOT/'assets/printing/internal-frame-s3/reference-v3'
@@ -88,6 +89,26 @@ def fit_head(ref,settings,mid,usb):
     return head,lid,fitted_window,head_lid_overlap,usb_cut
 
 
+def make_spacer(params):
+    spacer=Part.makeCylinder(params['pcb_standoff_radius_mm'],params['pcb_standoff_height_mm']).cut(Part.makeCylinder(params['pcb_spacer_bore_mm']/2,params['pcb_standoff_height_mm']))
+    assert spacer.isValid() and spacer.isClosed() and len(spacer.Solids)==1
+    return spacer
+
+
+def fit_frame(original,params,pcb_holes):
+    frame=original.copy();deck=frame.BoundBox.ZMax
+    old_holes=cylinders(frame,.95,lambda f:abs(f.BoundBox.ZMax-deck)<1e-5);assert len(old_holes)==4
+    frame=frame.multiFuse([Part.makeCylinder(.95,hi-lo,V(x,y,lo)) for x,y,lo,hi in old_holes])
+    depth=params['pcb_pilot_depth_mm']+params['pcb_pilot_floor_mm']
+    frame=frame.multiFuse([Part.makeCylinder(params['pcb_standoff_radius_mm'],depth,V(x,y,deck-depth)) for x,y,_ in pcb_holes])
+    frame=frame.cut(Part.makeCompound([Part.makeCylinder(params['pcb_pilot_diameter_mm']/2,params['pcb_pilot_depth_mm'],V(x,y,deck-params['pcb_pilot_depth_mm'])) for x,y,_ in pcb_holes]))
+    assert frame.isValid() and len(frame.Solids)==1 and abs(frame.BoundBox.ZMax-deck)<1e-6
+    for x,y,_ in pcb_holes:
+        assert not frame.isInside(V(x,y,deck-.1),1e-6,False)
+        assert frame.isInside(V(x,y,deck-params['pcb_pilot_depth_mm']-params['pcb_pilot_floor_mm']/2),1e-6,False)
+    return frame,old_holes
+
+
 def preview_datums(out):
     """Cache only immutable input measurements, never fit-check results."""
     files=['assets/cad/Sesame-S3-Assembly.FCStd','assets/cad/instructions/assembly-cad-snapshot.json',
@@ -102,43 +123,68 @@ def preview_datums(out):
         except (ValueError,KeyError):pass
     _,ref=load_references({'frame'});deck=ref['frame'].BoundBox.ZMax
     _,_,channel=frame_layout(ref['frame'],deck)
-    native,electronics,_,_,_=load_electronics()
+    native,electronics,_,holes,_=load_electronics()
     data={'deck_z_mm':deck,'midpoint_x_mm':channel['midpoint_x_mm'],
           'pcb_half_size_mm':[native.Carrier.Length.Value/2,native.Carrier.Width.Value/2],
-          'usb_native_bounds_mm':bounds(electronics['S3Source_Part__Feature022'])}
+          'usb_native_bounds_mm':bounds(electronics['S3Source_Part__Feature022']),
+          'pcb_native_holes_mm':holes}
     out.mkdir(parents=True,exist_ok=True);write(path,{'key':key,'datums':data})
     return data,False
 
 
 def preview_head(params,out):
+    return preview_part(params,out,'head')
+
+
+def preview_part(params,out,kind='head'):
     """Fast native STEP preview, explicitly separate from a release receipt."""
     if out.resolve()==REF.parent.resolve() or (out/'assembly.json').exists():
         raise ValueError('Use a separate preview directory; this directory holds release artifacts')
     started=time.perf_counter()
-    datums,cached=preview_datums(out)
-    _,ref=load_references({'head','lid'})
-    deck=datums['deck_z_mm'];seat=deck+params['pcb_standoff_height_mm']
-    cx,cy=datums['pcb_half_size_mm'];lo,hi=datums['usb_native_bounds_mm']
-    usb=App.BoundBox(cx-hi[0],cy-hi[1],lo[2]+seat,cx-lo[0],cy-lo[1],hi[2]+seat)
-    head,lid,aperture,overlap,_=fit_head(ref,params['head_cover'],datums['midpoint_x_mm'],usb)
-    assert head.BoundBox.ZMin>=deck-1e-6
+    details={};cached=False
+    if kind=='spacer':
+        shape=make_spacer(params);shapes=[('pcb-spacer',shape)];checks=['closed valid spacer']
+    else:
+        datums,cached=preview_datums(out);deck=datums['deck_z_mm'];seat=deck+params['pcb_standoff_height_mm']
+        cx,cy=datums['pcb_half_size_mm']
+        if kind=='head':
+            _,ref=load_references({'head','lid'});lo,hi=datums['usb_native_bounds_mm']
+            usb=App.BoundBox(cx-hi[0],cy-hi[1],lo[2]+seat,cx-lo[0],cy-lo[1],hi[2]+seat)
+            head,lid,aperture,overlap,_=fit_head(ref,params['head_cover'],datums['midpoint_x_mm'],usb)
+            assert head.BoundBox.ZMin>=deck-1e-6
+            shapes=[('head-cover',head),('head-lid',lid)]
+            details={'display_window':aperture,'lid_intersection_mm3':overlap.Volume}
+            checks=['closed valid shell/lid','unchanged OLED aperture','shell/lid overlap','head base above frame deck']
+        elif kind=='frame':
+            _,ref=load_references({'frame'});holes=[[cx-x,cy-y,seat] for x,y in datums['pcb_native_holes_mm']]
+            frame,_=fit_frame(ref['frame'],params,holes)
+            shapes=[('internal-frame',frame)]
+            checks=['valid frame','flat deck','clear pilot axes','pilot floors']
+        else:raise ValueError('Unknown preview part: '+kind)
     out.mkdir(parents=True,exist_ok=True)
-    parts={}
-    for name,shape in [('head-cover',head),('head-lid',lid),('head-preview',Part.makeCompound([head,lid]))]:
+    parts={};view_name=kind+'-preview'
+    for name,shape in [*shapes,(view_name,Part.makeCompound([s for _,s in shapes]))]:
         path=out/(name+'.step');export_step(shape,path)
         parts[name]={'step_sha256':sha(path),'bounds_mm':bounds(shape),'volume_mm3':shape.Volume}
-    report={'schema':1,'mode':'head-preview','parameters':params,'parts':parts,
-            'checks':['closed valid shell/lid','unchanged OLED aperture','shell/lid overlap','head base above frame deck'],
+        if name==view_name:
+            mesh=MeshPart.meshFromShape(Shape=shape,LinearDeflection=params['mesh_deflection_mm'],AngularDeflection=.2,Relative=False)
+            # Touching shell/lid solids may share edges in this display mesh.
+            # It is an assembly preview, not a single printable solid.
+            if len(shapes)==1:assert mesh.isSolid()
+            write_stl(out/(view_name+'.stl'),mesh)
+            parts[name]['stl_sha256']=sha(out/(view_name+'.stl'))
+    report={'schema':1,'mode':view_name,'parameters':params,'parts':parts,
+            'checks':checks,
             'unchecked':['electronics intersections','spacer clearance','mounting axes','ribbon clearance','leg poses','slicing','physical fit'],
             'source_script_sha256':sha(__file__),'electronics_sha256':sha(ROOT/'assets/cad/Sesame-S3-Assembly.FCStd'),
-            'reference_sha256':sha(REF/'source.json'),'display_window':aperture,'lid_intersection_mm3':overlap.Volume,
+            'reference_sha256':sha(REF/'source.json'),**details,
             'input_cache_hit':cached,'elapsed_seconds':time.perf_counter()-started}
     write(out/'preview.json',report)
-    print(json.dumps({'mode':'head-preview','seconds':report['elapsed_seconds'],'input_cache_hit':cached,'view_file':str(out/'head-preview.step'),'full_assembly_checks':'not run'},indent=2),flush=True)
+    print(json.dumps({'mode':view_name,'seconds':report['elapsed_seconds'],'input_cache_hit':cached,'view_file':str(out/(view_name+'.step')),'full_assembly_checks':'not run'},indent=2),flush=True)
     return report
 
 
-def build(params,out,include_cover=True,datums_only=False):
+def build(params,out,include_cover=True,datums_only=False,fresh_checks=False,check_cache=None):
     source,ref=load_references()
     frame=ref['frame'].copy();deck=frame.BoundBox.ZMax;seat=deck+params['pcb_standoff_height_mm']
     native,electronics,_,holes,hole_diameter=load_electronics()
@@ -150,18 +196,8 @@ def build(params,out,include_cover=True,datums_only=False):
     out.mkdir(parents=True,exist_ok=True);write(out/'frame-datums.json',datums)
     if datums_only:return datums
     print('V3: fitting PCB pilots and separate spacers',flush=True)
-    old_holes=cylinders(frame,.95,lambda f:abs(f.BoundBox.ZMax-deck)<1e-5);assert len(old_holes)==4
-    fills=[Part.makeCylinder(.95,hi-lo,V(x,y,lo)) for x,y,lo,hi in old_holes]
-    frame=frame.multiFuse(fills)
-    depth=params['pcb_pilot_depth_mm']+params['pcb_pilot_floor_mm']
-    reinforcement=[Part.makeCylinder(params['pcb_standoff_radius_mm'],depth,V(x,y,deck-depth)) for x,y,_ in pcb_holes]
-    frame=frame.multiFuse(reinforcement)
-    frame=frame.cut(Part.makeCompound([Part.makeCylinder(params['pcb_pilot_diameter_mm']/2,params['pcb_pilot_depth_mm'],V(x,y,deck-params['pcb_pilot_depth_mm'])) for x,y,_ in pcb_holes]))
-    assert frame.isValid() and len(frame.Solids)==1 and abs(frame.BoundBox.ZMax-deck)<1e-6
-    for x,y,_ in pcb_holes:
-        assert not frame.isInside(V(x,y,deck-.1),1e-6,False)
-        assert frame.isInside(V(x,y,deck-params['pcb_pilot_depth_mm']-params['pcb_pilot_floor_mm']/2),1e-6,False)
-    spacer=Part.makeCylinder(params['pcb_standoff_radius_mm'],params['pcb_standoff_height_mm']).cut(Part.makeCylinder(params['pcb_spacer_bore_mm']/2,params['pcb_standoff_height_mm']))
+    frame,old_holes=fit_frame(frame,params,pcb_holes)
+    spacer=make_spacer(params)
     origins=[[x,y,deck] for x,y,_ in pcb_holes];spacers=[translated(spacer,p) for p in origins]
     lowest=min(s.BoundBox.ZMin for s in electronics.values());penetration=params['pcb_screw_length_mm']-pcb_size[2]-params['pcb_standoff_height_mm']
     assert 2*params['pcb_screw_diameter_mm']<=penetration<params['pcb_pilot_depth_mm']
@@ -171,14 +207,20 @@ def build(params,out,include_cover=True,datums_only=False):
     head,lid,fitted_window,head_lid_overlap,usb_cut=fit_head(ref,settings,mid,electronics['S3Source_Part__Feature022'].BoundBox)
     assert head.BoundBox.ZMin>=frame.BoundBox.ZMax-1e-6
     print('V3: checking electronics, spacers, shell and lid',flush=True)
+    cache=CheckCache(check_cache or ROOT/'tests/artifacts/printing-check-cache',
+        {'checker':sha(ROOT/'tools/cad_validation_cache.py'),'loader':sha(ROOT/'tools/body_cad.py'),
+         'freecad':App.Version(),'occt':Part.OCC_VERSION},fresh=fresh_checks)
+    electronics_key={'source':sha(ROOT/'assets/cad/Sesame-S3-Assembly.FCStd'),
+                     'snapshot':sha(ROOT/'assets/cad/instructions/assembly-cad-snapshot.json'),'placement':[cx,cy,seat]}
+    # Native Boolean/classifier calls can populate a shape's internal caches.
+    # Freeze identities before any optional check so a hit cannot change the
+    # identity used by a later group.
+    checked_solids=[('frame',frame),*[(f'spacer-{i}',s) for i,s in enumerate(spacers)],('head',head),('lid',lid)]
+    geometry_keys={name:shape_digest(solid) for name,solid in checked_solids}
+    reference_frame_key=shape_digest(ref['frame'])
     collisions=[]
-    for name,solid in [('frame',frame),*[(f'spacer-{i}',s) for i,s in enumerate(spacers)],('head',head),('lid',lid)]:
-        bb=solid.BoundBox
-        for part,shape in electronics.items():
-            if not bb.intersect(shape.BoundBox):continue
-            hit=solid.common(shape);assert hit.isNull() or hit.isValid(),(name,part)
-            assert hit.Volume>=-1e-6
-            if hit.Volume>1e-4:collisions.append({'solid':name,'part':part,'volume_mm3':hit.Volume})
+    for name,solid in checked_solids:
+        cache.run('electronics/'+name,{'solid':geometry_keys[name],'electronics':electronics_key},lambda:check_electronics(solid,electronics))
     assert not collisions,collisions
     spacer_gaps=[head.distToShape(s)[0] for s in spacers];assert min(spacer_gaps)>=.6,spacer_gaps
     bottom=ref['bottom'];overlap=frame.common(bottom);assert overlap.isNull() or overlap.isValid();assert abs(overlap.Volume)<.01,overlap.Volume
@@ -208,19 +250,7 @@ def build(params,out,include_cover=True,datums_only=False):
             assert all(abs(a-b)<1e-3 for p,q in zip(*sections) for a,b in zip(p,q)),(x,zz,sections)
             channel_checks.append({'x_mm':x,'z_mm':zz,'left_right_intervals_mm':sections})
     # Protect the V3 servo bays; the PCB edits are strictly inboard of them.
-    bay_checks=[]
-    for side in [-1,1]:
-        boundary=31.8751;box=Part.makeBox(300,150-boundary,300,V(-150,boundary if side>0 else -150,-150))
-        before=ref['frame'].common(box);after=frame.common(box);assert before.isValid() and after.isValid()
-        delta=abs(before.Volume-after.Volume);assert delta<1e-3
-        deviation=0.;samples=0
-        for a,b in [(before,after),(after,before)]:
-            for face in a.Faces:
-                points,_=face.tessellate(.3)
-                for i in sorted({0,len(points)//2,len(points)-1}):
-                    if points:deviation=max(deviation,Part.Vertex(points[i]).distToShape(b)[0]);samples+=1
-        assert deviation<1e-4
-        bay_checks.append({'side':side,'translation_y_mm':0,'volume_difference_mm3':delta,'max_surface_deviation_mm':deviation,'surface_samples':samples,'source':'unchanged normalized V3 bay outside Y=±31.8751'})
+    bay_checks=cache.run('servo-bays',{'frame':geometry_keys['frame'],'reference':reference_frame_key},lambda:check_servo_bays(ref['frame'],frame))
     cables_path=ROOT/'assets/printing/internal-frame-s3/head-cable-clearance.json';cables=json.loads(cables_path.read_text())
     def same(a,b):
         if isinstance(a,dict):return a.keys()==b.keys() and all(same(a[k],b[k]) for k in a)
@@ -230,19 +260,8 @@ def build(params,out,include_cover=True,datums_only=False):
     assert same(cables['assembly_datums'],datums),'Routing samples use different frame/PCB datums'
     assert cables['entry_min_gap_mm']>=.2
     print('V3: checking authored ribbon and leg clearance samples',flush=True)
-    core=Part.makeBox(60,50,45,V(-30,-25,10));core_hits=[s.common(core) for s in [head,lid]]
-    assert all(s.isNull() or s.isValid() for s in core_hits);core_clear=all(abs(s.Volume)<1e-6 for s in core_hits)
-    hbox=head.BoundBox;lbox=lid.BoundBox;bad=[];queries=0
-    for point in cables['surface_points_mm']:
-        x,y,zz=point
-        v=V(*point)
-        if not hbox.isInside(v) and not lbox.isInside(v):continue
-        if core_clear and -30<=x<=30 and -25<=y<=25 and 10<=zz<=55:continue
-        dx=abs(x-mid);half=settings['cable_notch_width_mm']/2;top=settings['cable_notch_top_z_mm']
-        if zz<lbox.ZMin and (dx<=half and zz<=top-2 or dx<=half-2 and zz<=top or (dx-half+2)**2+(zz-top+2)**2<=4):continue
-        queries+=1
-        if hbox.isInside(v) and head.isInside(v,1e-6,False) or lbox.isInside(v) and lid.isInside(v,1e-6,False):bad.append(point)
-    assert not bad,('ribbons in head',len(bad),bad[:4])
+    ribbon_check=cache.run('ribbons',{'head':geometry_keys['head'],'lid':geometry_keys['lid'],'routes':sha(cables_path),'settings':settings,'midpoint':mid},lambda:check_ribbons(head,lid,cables,settings,mid))
+    queries=ribbon_check['classified']
     leg_checks=[];boxes=[bounds(head),bounds(lid)];limits=[[min(b[0][i] for b in boxes) for i in range(3)],[max(b[1][i] for b in boxes) for i in range(3)]]
     for item in cables['leg_samples']:
         box=item['bounds_mm'];assert any(box[1][i]<limits[0][i] or box[0][i]>limits[1][i] for i in range(3)),(item['part'],item['pose'])
@@ -265,6 +284,7 @@ def build(params,out,include_cover=True,datums_only=False):
     edges=frame.common(Part.makeLine(V(mid,-100,deck-.5),V(mid,100,deck-.5))).Edges
     support=max(e.BoundBox.YMax for e in edges)-min(e.BoundBox.YMin for e in edges)
     report={**datums,'schema_version':2,'units':'mm','coordinates':'X front/OLED, Y left, Z up; PCB USB toward rear','source':source,
+            'validation_cache':cache.records,'validation_checker_sha256':sha(ROOT/'tools/cad_validation_cache.py'),
             'source_script_sha256':sha(__file__),'entry_script_sha256':sha(ROOT/'tools/internal_frame_cad.py'),'pcb_size_mm':pcb_size,'pcb_hole_diameter_mm':hole_diameter,'pcb_mount_holes_mm':pcb_holes,
             'pcb_side_margin_mm':(support-pcb_size[1])/2,'support_width_mm':support,'electronics_sha256':sha(ROOT/'assets/cad/Sesame-S3-Assembly.FCStd'),'electronics_shapes_checked':len(electronics),'electronics_intersections':collisions,'parts':parts,
             'pcb_hole_adjustment':{'source_axes':[[x,y] for x,y,lo,hi in old_holes],'destination_axes':[[x,y] for x,y,_ in pcb_holes],'source_diameter_mm':1.9,'pilot_diameter_mm':params['pcb_pilot_diameter_mm']},

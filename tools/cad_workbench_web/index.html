@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sesame · CAD workbench</title>
+<link rel="stylesheet" href="./style.css">
+<script type="importmap">{"imports":{"three":"./vendor/three.module.js"}}</script>
+</head><body>
+<header><div><span class="eyebrow">SESAME / DESIGN TOOLS</span><h1>CAD workbench</h1></div><div id="buildState" role="status">Connecting…</div></header>
+<main>
+  <nav aria-label="Preview controls">
+    <label>Part <select id="part"><option value="head">Head & lid</option><option value="frame">Internal frame</option><option value="spacer">PCB spacer</option></select></label>
+    <div class="modes" aria-label="Comparison"><button data-mode="current" aria-pressed="true">After</button><button data-mode="previous" aria-pressed="false">Before</button><button data-mode="overlay" aria-pressed="false">Overlay</button></div>
+    <button id="fit">Fit view</button>
+  </nav>
+  <div id="viewport"><canvas aria-label="Interactive CAD comparison"></canvas><p id="empty">Building your first preview…</p><div id="legend"><span class="after">Current</span><span class="before">Previous</span></div></div>
+  <section class="details"><div><strong id="version">Waiting for geometry</strong><p id="summary">Orbit with one finger; pinch to zoom. Your view stays fixed between versions.</p></div><a id="download" hidden>Download STEP</a></section>
+  <pre id="error" hidden></pre>
+</main><footer>Interactive preview · full assembly checks run separately. Saves rebuild only affected parts.</footer>
+<script type="module" src="./viewer.js"></script>
+</body></html>
