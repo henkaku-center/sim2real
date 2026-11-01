@@ -94,9 +94,18 @@ bool clearPWM() {
   for (auto& v : lastTicks) v = 4096;
   return ok;
 }
+// Event log kept in NVS so an untethered (battery) run can be read back over
+// USB afterwards (`log`, `log clear`): boot reset reasons and why outputs went OFF.
+void logEvent(const String& event) {
+  if (!nvs) return;
+  String log = prefs.getString("log", "") + event + ";";
+  if (log.length() > 480) log = log.substring(log.length() - 480);
+  prefs.putString("log", log);
+}
 void outputsOff(const char* reason, ClockOutcome outcome = ClockOutcome::Aborted) {
   // Assert hardware disable before detaching/cancelling capture or doing I2C.
   digitalWrite(OE, HIGH);
+  const bool wasActive = gate.active();
   portENTER_CRITICAL(&clockMux);
   clockMeasurement.abort(outcome);
   portEXIT_CRITICAL(&clockMux);
@@ -109,7 +118,9 @@ void outputsOff(const char* reason, ClockOutcome outcome = ClockOutcome::Aborted
     portEXIT_CRITICAL(&clockMux);
   }
   Serial.printf("OFF %s%s\n", reason, fault ? " I2C_FAULT: power off, reboot after repair" : "");
+  if (wasActive || fault) logEvent(String("OFF ") + reason + (fault ? " FAULT" : ""));
 }
+bool bootHubBegin = false;
 bool readRegister(uint8_t reg, uint8_t& value) {
   Wire.beginTransmission(PCA_ADDRESS); Wire.write(reg);
   if (Wire.endTransmission(false) || Wire.requestFrom(uint8_t(PCA_ADDRESS), uint8_t(1)) != 1) return false;
@@ -237,6 +248,7 @@ const char* HELP =
   "clock status | clock abort (measurement never writes calibration)\n"
   "servo NAME DEG | pose D0 D1 D2 D3 D4 D5 D6 D7 | rest\n"
   "OFF only: wifi JP|US|GB|DE|FR CHANNEL(1..11) TX_DBM(2|8.5|13|19.5)\n"
+  "diag (I2C scan, hub registers, OE) | rehub (retry hub setup) | log [clear]\n"
   "Every active serial/web session needs heartbeat <500ms; use class console.\n"
   "BOOT release while OFF: 30s assembly centre; BOOT press while active: OFF.";
 
@@ -253,6 +265,32 @@ String dispatchCommand(const char* text, Owner source) {
   if (c.is("show", 1) || c.is("subtrim", 1)) return showCalibration();
   if (c.is("export", 1)) return exportCalibration();
   if (c.is("wifi", 1)) return wifiStatus();
+  if (c.is("diag", 1)) {
+    // Read-only health report: what answers on I2C, hub registers, OE and power state.
+    String r = "DIAG";
+    r += " SDA=" + String(digitalRead(sesame::SDA)) + " SCL=" + String(digitalRead(sesame::SCL)) + " ack:";
+    for (uint8_t a = 1; a < 127; ++a) { Wire.beginTransmission(a); if (!Wire.endTransmission()) r += " 0x" + String(a, HEX); }
+    uint8_t mode1 = 0, mode2 = 0, pre = 0;
+    const bool m1 = readRegister(0x00, mode1), m2 = readRegister(0x01, mode2), p = readRegister(0xfe, pre);
+    r += "\nHUB mode1=" + (m1 ? "0x" + String(mode1, HEX) : String("ERR")) + (m1 && (mode1 & 0x10) ? "(SLEEP)" : "");
+    r += " mode2=" + (m2 ? "0x" + String(mode2, HEX) : String("ERR"));
+    r += " prescale_reg=" + (p ? String(pre) : String("ERR")) + " expected=" + String(prescale);
+    r += "\nSTATE ready=" + String(ready) + " fault=" + String(fault) + " boot_begin=" + String(bootHubBegin) + " mode=" + String(int(gate.mode));
+    r += " OE_pin=" + String(OE) + " OE_level=" + String(digitalRead(OE)) + " screen=" + String(screen);
+    return r;
+  }
+  if (c.is("rehub", 1)) {
+    // Same checks as boot; clears a fault only after a complete hub setup.
+    if (gate.active()) return "ERR off first";
+    ready = pwm.begin();
+    if (ready && configurePWM()) { fault = false; outputsOff("rehub"); return "OK HUB ready prescale=" + String(prescale); }
+    ready = false; fault = true; return "ERR hub not responding (try diag)";
+  }
+  if (c.is("log", 1) || c.is("log", 2)) {
+    if (c.count == 2 && !strcmp(c.words[1], "clear")) { prefs.remove("log"); return "OK LOG cleared"; }
+    if (c.count == 2) return "ERR log [clear]";
+    return "LOG " + (nvs ? prefs.getString("log", "") : String("no NVS"));
+  }
   if (c.is("bench", 1)) { benchDisplay = true; return "OK BENCH commanded angles, not feedback"; }
   if (c.is("off", 1)) { outputsOff("command"); return "OK OFF"; }
   if (c.is("stop", 1)) {
@@ -546,8 +584,19 @@ void outputService() {
   motionService();
   if (now - lastPWM < 20) return;
   lastPWM = now;
+  // Soft start: a joint's first pulse jumps from an unknown shaft position, so
+  // starting all eight at once can sag the shared supply (ESP32 brown-out or
+  // hub dropping off I2C). Admit newly enabled joints one at a time, 150 ms apart.
+  static uint8_t started = 0; static uint32_t lastStart = 0;
+  started &= gate.enabled;
+  const uint8_t pendingJoints = gate.enabled & ~started;
+  if (pendingJoints && now - lastStart >= 150) { started |= pendingJoints & -pendingJoints; lastStart = now; }
   uint16_t wanted[16];
-  if (!planOutputs(gate, prescale, wanted)) { outputsOff("invalid map"); return; }
+  const uint8_t requested = gate.enabled;
+  gate.enabled = started;
+  const bool planned = planOutputs(gate, prescale, wanted);
+  gate.enabled = requested;
+  if (!planned) { outputsOff("invalid map"); return; }
   bool any = false;
   for (int ch = 0; ch < 16; ++ch) {
     if (wanted[ch] != 4096) any = true;
@@ -557,13 +606,27 @@ void outputService() {
     }
   }
   // Check hub even when holding a stationary target; lost I2C latches off.
+  // Tolerate an isolated noisy read while servos run; three consecutive
+  // failures (60 ms) still latch the fault and cut outputs.
+  static uint8_t badReads = 0;
   uint8_t livePrescale;
   if (!readRegister(0xfe, livePrescale) || livePrescale != prescale) {
-    fault = true; outputsOff("I2C/prescale fault"); return;
-  }
+    if (++badReads >= 3) { badReads = 0; fault = true; outputsOff("I2C/prescale fault"); return; }
+  } else badReads = 0;
   digitalWrite(OE, any ? LOW : HIGH);
-  for (int j = 0; j < 8; ++j) if (gate.enabled & (1u << j))
+  for (int j = 0; j < 8; ++j) if (started & (1u << j))
     lastCommanded[gate.channel(j)] = gate.physical(j);
+}
+// A hub missing at boot is retried every second while outputs are OFF; after
+// five failed setups it latches a fault (use diag / rehub).
+void hubService() {
+  static uint32_t last = 0; static int failures = 0;
+  if (ready || fault || gate.active() || millis() - last < 1000) return;
+  last = millis();
+  if (!pwm.begin()) { if (++failures >= 5) { fault = true; Serial.println("HUB not found after 5 retries; diag"); } return; }
+  ready = true;
+  if (!configurePWM()) { ready = false; if (++failures >= 5) { fault = true; Serial.println("HUB setup failed 5x; diag"); } return; }
+  failures = 0; outputsOff("hub found");
 }
 void faceService() {
   if (!screen || millis() - lastFace < 250) return;
@@ -599,10 +662,17 @@ void setup() {
   digitalWrite(OE, HIGH); pinMode(OE, OUTPUT); pinMode(0, INPUT_PULLUP);
   Serial.begin(115200);
   Serial.setTxTimeoutMs(0); // an absent USB host must not block the watchdog
-  Wire.begin(sesame::SDA, sesame::SCL); Wire.setClock(100000); Wire.setTimeOut(5);
+  // 50 ms, not 5: after a short timeout the IDF i2c_master ISR can still fire
+  // into the finished transaction (StoreProhibited panic on a disturbed bus).
+  Wire.begin(sesame::SDA, sesame::SCL); Wire.setClock(100000); Wire.setTimeOut(50);
   loadCalibration();
+  logEvent("boot r" + String(int(esp_reset_reason())));
   ready = pwm.begin();
-  if (ready && !configurePWM()) { ready = false; fault = true; }
+  // Servo inrush at power-on can disturb this first setup: leave it to
+  // hubService() to retry instead of latching (runtime faults still latch).
+  bootHubBegin = ready;
+  if (ready && !configurePWM()) ready = false;
+  Serial.printf("HUB boot begin=%d ready=%d\n", bootHubBegin, ready);
   outputsOff("boot");
   Wire.beginTransmission(OLED_ADDRESS);
   if (!Wire.endTransmission()) screen = display.begin(SSD1306_SWITCHCAPVCC, OLED_ADDRESS, false, false);
@@ -616,6 +686,6 @@ void setup() {
 void loop() {
   outputService(); buttonService(); serialService(); outputService();
   httpService(); outputService();
-  dns.processNextRequest(); faceService(); outputService();
+  dns.processNextRequest(); faceService(); hubService(); outputService();
   delay(1);
 }
