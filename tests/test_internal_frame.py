@@ -94,7 +94,9 @@ def test_head_lid_electronics_and_cable_entries_are_checked():
     assert h['assembled_size_mm'][2]<55 and len(h['ear_bounds_mm'])==2
     assert h['closed_upper_side_ports']==2 and h['ear_height_above_roof_mm']>5
     assert h['lid_plan']['shape'].startswith('T-shaped') and h['lid_plan']['clearance_mm']==.3
-    assert len(h['lid_seating_samples'])==9 and all(abs(s['intersection_mm3'])<1e-3 for s in h['lid_seating_samples'])
+    assert len(h['lid_slide_samples'])==41 and all(abs(s['intersection_mm3'])<1e-3 and s['z_offset_mm']==0 for s in h['lid_slide_samples'])
+    assert len(h['lid_capture_samples'])==3 and all(s['intersection_mm3']>1 for s in h['lid_capture_samples'])
+    assert h['lid_plan']['mating_profile']=='unchanged native V3 captive underhang'
     for name,entry in h['ear_source']['files'].items():assert sha(CANONICAL/'reference-ears'/f'{name}.step')==entry['sha256']
     assert h['display_window_unchanged'] and h['display_window']['width_mm']>20 and h['display_window']['height_mm']>11
     assert h['cable_notches']['bottom_open'] and h['cable_notches']['count']==2

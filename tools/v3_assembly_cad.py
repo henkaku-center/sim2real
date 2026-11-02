@@ -106,14 +106,9 @@ def fit_head(ref,settings,mid,usb):
     shoulders=translated(lid.common(corners),[0,0,-.1])
     gap=settings['lid_clearance_mm']
     lid=lid.cut(Part.makeCompound([Part.makeBox(100,100,100,V(split_x-gap,tongue-gap if side>0 else -100-tongue+gap,0)) for side in [-1,1]]))
-    # Replace V3's outward-flared (dovetail) lower skirt with a straight slip
-    # skirt. Keep the upper seating flange, so the lid can lower past the rim.
-    rim=ref['head'].BoundBox.ZMax+raise_mm
-    skirt=Part.makeFace(lid.slice(V(0,0,1),rim-.01),'Part::FaceMakerBullseye').makeOffset2D(-gap,join=2)
-    if not skirt.Faces:skirt=Part.makeFace(skirt.Wires,'Part::FaceMakerBullseye')
-    skirt.translate(V(0,0,.01))
-    keep=skirt.extrude(V(0,0,-10)).fuse(Part.makeBox(300,300,100,V(-150,-150,rim)))
-    lid=lid.common(keep)
+    # Preserve Jom/Paul's native V3 captive rail profile and mating clearance.
+    # The flare beneath the shell overhang blocks vertical removal on purpose.
+    # Only the T-shaped shoulder split above uses our separate plan clearance.
     head=head.multiFuse([shoulders,*ears])
     usb_y=(usb.YMin+usb.YMax)/2;usb_z=(usb.ZMin+usb.ZMax)/2
     usb_cut=Part.makeBox(usb.XMin-head.BoundBox.XMin+2,12,7,V(head.BoundBox.XMin-1,usb_y-6,usb_z-3.5));head=head.cut(usb_cut)
@@ -138,15 +133,27 @@ def fit_head(ref,settings,mid,usb):
     fitted_window=window(head)
     assert max(abs(a-b) for p,q in zip(original_window['bounds_mm'],fitted_window['bounds_mm']) for a,b in zip(p,q))<1e-5
     head_lid_overlap=head.common(lid);assert head_lid_overlap.isNull() or head_lid_overlap.isValid();assert abs(head_lid_overlap.Volume)<1e-3
-    seating=[]
-    for lift in [0,.5,1,1.5,2,4,8,12,20]:
+    capture=[]
+    for lift in [.25,.5,1]:
         overlap=head.common(translated(lid,[0,0,lift]));assert overlap.isNull() or overlap.isValid()
-        assert abs(overlap.Volume)<1e-3,(lift,overlap.Volume)
-        seating.append({'lift_mm':lift,'intersection_mm3':overlap.Volume})
+        assert overlap.Volume>1,(lift,overlap.Volume)
+        capture.append({'lift_mm':lift,'intersection_mm3':overlap.Volume})
+    slide=[]
+    travel=lid.BoundBox.XLength+14
+    for i in range(41):
+        offset=-travel*(1-i/40)
+        overlap=head.common(translated(lid,[offset,0,0]));assert overlap.isNull() or overlap.isValid()
+        assert abs(overlap.Volume)<1e-3,(offset,overlap.Volume)
+        slide.append({'rear_offset_mm':offset,'z_offset_mm':0,'intersection_mm3':overlap.Volume})
+    switch_holes=[f.Surface for f in head.Faces if isinstance(f.Surface,Part.Cylinder) and abs(f.Surface.Radius-2.5)<1e-6 and f.Surface.Axis.x<-.9]
+    assert len(switch_holes)==1
+    switch_hole=switch_holes[0]
     details={'cable_notches':entries,'closed_upper_side_ports':2,'ear_source':ear_source,
+              'switch_opening':{'centre_mm':list(switch_hole.Center),'normal':list(switch_hole.Axis),'diameter_mm':5.,'source':'unchanged native V3 rear bore'},
              'sealed_internal_voids':{'count':void_count,'volume_mm3':void_volume},'unified_external_faces':unified,
              'ear_bounds_mm':[bounds(e) for e in ears],'ear_height_above_roof_mm':max(e.BoundBox.ZMax for e in ears)-roof,
-             'lid_seating_samples':seating,'lid_plan':{'shape':'T-shaped rear roof with a front tongue between fixed ears','roof_z_mm':roof,
+              'lid_capture_samples':capture,'lid_slide_samples':slide,'lid_plan':{'shape':'T-shaped rear roof with a front tongue between fixed ears','roof_z_mm':roof,
+                          'mating_profile':'unchanged native V3 captive underhang','assembly_direction':'rear-to-front at fixed Z',
                          'tongue_half_width_mm':tongue-gap,'shoulder_start_x_mm':split_x,'clearance_mm':gap}}
     return head,lid,fitted_window,head_lid_overlap,usb_cut,details
 
