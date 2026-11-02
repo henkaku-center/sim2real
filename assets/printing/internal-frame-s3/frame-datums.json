@@ -5,6 +5,21 @@
     "midpoint_x_mm": -0.2257165000000001,
     "side_offset_mm": 12.575000000000003
   },
+  "head_cable_entry": {
+    "bottom_open": true,
+    "bottom_z_mm": 4.967756901864767,
+    "centre_x_mm": 0.43609945419250007,
+    "count": 2,
+    "entry_z_mm": 11.2,
+    "side_y_mm": [
+      -29.2619163931402,
+      29.272083606857294
+    ],
+    "source": "unchanged native V3 lower entries",
+    "top_corner_radius_mm": 1.6,
+    "top_z_mm": 14.967756901865,
+    "width_mm": 15.483191024289
+  },
   "head_reference_bounds_mm": [
     [
       -43.47500000338184,
@@ -38,10 +53,20 @@
   "parameters": {
     "battery_wire_cutout": "front-right",
     "head_cover": {
-      "cable_notch_top_z_mm": 55.0,
-      "cable_notch_width_mm": 8.0,
+      "cable_entry": {
+        "inner_low_y_mm": 25.5,
+        "inner_y_mm": 23.2,
+        "low_rise_z_mm": 29.0,
+        "pitch_x_mm": 3.8,
+        "upper_rise_z_mm": 40.0,
+        "z_mm": 11.2
+      },
+      "ear_extension_mm": 5.0,
+      "ear_forward_mm": 4.5,
+      "ear_spread_mm": 10.5,
       "height_splice_z_mm": 47.7,
-      "raise_mm": 8.0
+      "lid_clearance_mm": 0.3,
+      "raise_mm": 0.0
     },
     "mesh_deflection_mm": 0.08,
     "pcb_pilot_depth_mm": 4.2,

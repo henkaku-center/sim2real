@@ -6,16 +6,19 @@ v122-derived widened frame. All eight existing leg meshes remain unchanged.
 
 The frame is approximately **87.177 × 93.230 × 15.700 mm**. Its native servo bays
 retain their 27.8 mm mounting-hole pitch. The assembled shell and lid are about
-**87.177 × 58.534 × 55 mm**. The head's upper section is raised 8 mm above a splice
-at body Z=47.7 mm; the OLED aperture and lower mounting features are preserved.
+**87.177 × 58.534 × 53.78 mm**, including the ears. The main roof is at the native
+V3 height, 8 mm below the previous revision. Original Sesame ears remain fixed
+to the shell; the removable lid extends between them. The OLED aperture and lower
+mounting features are preserved.
 
 The PCB is positioned 0.6 mm forward of V3's original PCB datum. The original
 66 × 46 mm / Ø1.9 mm pilot pattern is replaced by the guide's 66 × 46.4 mm /
 Ø1.3 mm pattern. Four separate 3 mm spacers and the proposed Ø1.6 × 8 mm
 plastics-screw stack are retained. See `PCB-MOUNTING.md` for dimensions and limits.
 
-Each side has one 8 mm-wide bottom-open ribbon notch, with 2 mm top corner radii,
-aligned with the frame's midpoint outlet between front and rear hip servos.
+Each side retains V3's lower bottom-open ribbon notch, about 15.48 mm wide at
+the cable-entry height. Four ribbons pass inward side-by-side, then rise inside
+the shell. The tall slots and upper side openings from the prior revision are closed.
 The native front-right battery opening and centred underside cover fixings remain.
 V3's bottom-cover STEP had one missing three-edge curved sliver; a 0.0784 mm²
 patch closes that boundary without filling its screw openings.
@@ -34,9 +37,9 @@ patch closes that boundary without filling its screw openings.
 Slicing receipts identify the exact checked meshes. With the Bambu Studio P1S
 0.4 mm / Generic PLA profile, 0.2 mm layers, four walls and 25% infill, the frame
 plus four spacers sliced without supports (about 1 h 34 min / 45.25 g). The shell
-and lid sliced with supports (about 1 h 20 min / 42.27 g). The unsupported shell
-trial reported floating regions; the supported trial did not. These are slicer
-estimates, not physical print results. See `HEAD-COVER.md` for head-specific checks.
+and lid are checked with supports; `head-slice-check.json` gives the current
+hash-pinned settings and estimates. These are slicer estimates, not physical
+print results. See `HEAD-COVER.md` for head-specific checks.
 
 ## Rebuild
 

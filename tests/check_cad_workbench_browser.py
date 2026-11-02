@@ -18,8 +18,8 @@ def main():
         def write():args.params.write_text(json.dumps(params,indent=2)+'\n')
         try:
             page.goto(args.url);wait_ready();wait_loaded();before=snapshot();view=before['view']
-            params['head_cover']['cable_notch_width_mm']=10;write()
-            page.wait_for_function('window.__cadWorkbench.snapshot().status.parts.head.current.parameters.head_cover.cable_notch_width_mm===10',timeout=60000);wait_ready();wait_loaded()
+            params['head_cover']['raise_mm']+=2;write()
+            page.wait_for_function('(height)=>window.__cadWorkbench.snapshot().status.parts.head.current.parameters.head_cover.raise_mm===height',arg=params['head_cover']['raise_mm'],timeout=60000);wait_ready();wait_loaded()
             after=snapshot();assert same_view(after['view'],view),(view,after['view'])
             for kind in ['frame','spacer']:assert after['status']['parts'][kind]['current']['mesh']==before['status']['parts'][kind]['current']['mesh']
             assert after['status']['parts']['head']['previous']['mesh']==before['status']['parts']['head']['current']['mesh']

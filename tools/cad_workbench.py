@@ -35,6 +35,7 @@ class Inputs:
         self.files=[ROOT/name for name in ['tools/v3_assembly_cad.py','tools/body_cad.py','tools/internal_frame_cad.py',
             'tools/cad_validation_cache.py','assets/cad/Sesame-S3-Assembly.FCStd','assets/cad/instructions/assembly-cad-snapshot.json']]
         self.files+=list((ROOT/'assets/printing/internal-frame-s3/reference-v3').glob('*'))
+        self.files+=list((ROOT/'assets/printing/internal-frame-s3/reference-ears').glob('*'))
 
     def fingerprint(self,path):
         stat=path.stat();stamp=(stat.st_mtime_ns,stat.st_size,stat.st_ino,stat.st_ctime_ns)

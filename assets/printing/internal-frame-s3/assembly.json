@@ -184,25 +184,49 @@
   "electronics_shapes_checked": 710,
   "entry_script_sha256": "58c57f0199a88c9f269089f3cf531650b2e32f2364bc4459326e470db6e20954",
   "fit_note": "V3-derived example; current PCB/spacer datums retained. CAD and sampled route checks are not physical fit evidence.",
+  "head_cable_entry": {
+    "bottom_open": true,
+    "bottom_z_mm": 4.967756901864767,
+    "centre_x_mm": 0.43609945419250007,
+    "count": 2,
+    "entry_z_mm": 11.2,
+    "side_y_mm": [
+      -29.2619163931402,
+      29.272083606857294
+    ],
+    "source": "unchanged native V3 lower entries",
+    "top_corner_radius_mm": 1.6,
+    "top_z_mm": 14.967756901865,
+    "width_mm": 15.483191024289
+  },
   "head_fit": {
     "assembled_size_mm": [
       87.17675006469983,
       58.53399999999749,
-      55.000000000000234
+      53.77512122656712
     ],
-    "cable_entry_min_gap_mm": 0.31858805645208577,
+    "cable_electronics_samples_inside": 0,
+    "cable_entry_min_gap_mm": 0.3508770845785323,
     "cable_notches": {
       "bottom_open": true,
-      "centre_x_mm": -0.2257165000000001,
+      "bottom_z_mm": 4.967756901864767,
+      "centre_x_mm": 0.43609945419250007,
       "count": 2,
-      "top_corner_radius_mm": 2,
-      "top_z_mm": 55.0,
-      "width_mm": 8.0
+      "entry_z_mm": 11.2,
+      "side_y_mm": [
+        -29.2619163931402,
+        29.272083606857294
+      ],
+      "source": "unchanged native V3 lower entries",
+      "top_corner_radius_mm": 1.6,
+      "top_z_mm": 14.967756901865,
+      "width_mm": 15.483191024289
     },
-    "cable_reference_sha256": "66d639f4636e88c4483bbc5968a8e346f7be6bd79007361248f32442c109811f",
-    "cable_samples_classified": 10575,
+    "cable_reference_sha256": "4fb69654c6cb7ea7a8d09b53261f616bd9ad14966982249a335b4928154ecf32",
+    "cable_samples_classified": 666,
     "cable_samples_inside": 0,
-    "cable_surface_samples": 57012,
+    "cable_surface_samples": 61168,
+    "closed_upper_side_ports": 2,
     "display_window": {
       "bounds_mm": [
         [
@@ -230,6 +254,93 @@
       "width_mm": 22.501570271522
     },
     "display_window_unchanged": true,
+    "ear_bounds_mm": [
+      [
+        [
+          20.62625621831507,
+          15.446391023724637,
+          49.21112729376356
+        ],
+        [
+          34.785059693827,
+          25.15932765607367,
+          58.74287812843188
+        ]
+      ],
+      [
+        [
+          20.626256218323917,
+          -25.159327656071493,
+          49.21112729376356
+        ],
+        [
+          34.78505969382701,
+          -15.446391023719436,
+          58.74287812843189
+        ]
+      ]
+    ],
+    "ear_height_above_roof_mm": 6.775121226566888,
+    "ear_source": {
+      "base_z_mm": 38.62285690186518,
+      "centre_y_mm": 2.3832276781765103,
+      "credit": "Dorian Todd and contributors",
+      "files": {
+        "left": {
+          "bounds_mm": [
+            [
+              16.12625621832736,
+              4.9463910237255755,
+              38.62285690186518
+            ],
+            [
+              30.28505969382659,
+              14.659327656066672,
+              43.15560773653349
+            ]
+          ],
+          "sha256": "5eda2aaf7f7d7c87c53422639dcdfa1ca82059d8f57449feee21c63a01092046"
+        },
+        "right": {
+          "bounds_mm": [
+            [
+              16.126256218327516,
+              -14.659327656066615,
+              38.62285690186518
+            ],
+            [
+              30.28505969382659,
+              -4.946391023725546,
+              43.15560773653349
+            ]
+          ],
+          "sha256": "346860983baa060a4f66175a1d247258d2e00f2f680f9dd5665b66312e7da31b"
+        }
+      },
+      "git_blob_sha1": "984f8b88d6855bcd9e5d08a7dee3984fe53813ff",
+      "license": "Apache-2.0",
+      "source_object": "Part__Feature491 / COMPOUND001",
+      "source_path": "hardware/cad/Sesame-ESP32-v122.step",
+      "source_repository": "dorianborian/sesame-robot",
+      "source_to_body_matrix": [
+        -1.0,
+        0.0,
+        0.0,
+        26.0,
+        0.0,
+        0.0,
+        1.0,
+        0.0,
+        0.0,
+        1.0,
+        0.0,
+        -17.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    },
     "electronics_intersections": [],
     "electronics_shapes_checked": 710,
     "height_splice_z_mm": 47.7,
@@ -316,6 +427,51 @@
       }
     ],
     "lid_intersection_mm3": 0.0,
+    "lid_plan": {
+      "clearance_mm": 0.3,
+      "roof_z_mm": 51.967756901865,
+      "shape": "T-shaped rear roof with a front tongue between fixed ears",
+      "shoulder_start_x_mm": 20.37625621831507,
+      "tongue_half_width_mm": 15.146391023719435
+    },
+    "lid_seating_samples": [
+      {
+        "intersection_mm3": 0.0,
+        "lift_mm": 0
+      },
+      {
+        "intersection_mm3": 0.0,
+        "lift_mm": 0.5
+      },
+      {
+        "intersection_mm3": 0.0,
+        "lift_mm": 1
+      },
+      {
+        "intersection_mm3": 0.0,
+        "lift_mm": 1.5
+      },
+      {
+        "intersection_mm3": 0.0,
+        "lift_mm": 2
+      },
+      {
+        "intersection_mm3": 0.0,
+        "lift_mm": 4
+      },
+      {
+        "intersection_mm3": 0.0,
+        "lift_mm": 8
+      },
+      {
+        "intersection_mm3": 0.0,
+        "lift_mm": 12
+      },
+      {
+        "intersection_mm3": 0.0,
+        "lift_mm": 20
+      }
+    ],
     "mount_axes_xy_mm": [
       [
         -37.481216,
@@ -334,8 +490,12 @@
         27.362564
       ]
     ],
-    "raise_mm": 8.0,
+    "raise_mm": 0.0,
     "scope": "Final model fit and authored route samples; Rest/Standing leg bounds. No physical print or full-range motion test.",
+    "sealed_internal_voids": {
+      "count": 6,
+      "volume_mm3": 45.20322982127982
+    },
     "source_object": "Loftwork V3 shell and removable lid",
     "spacer_clearances_mm": [
       0.9729686483551492,
@@ -343,6 +503,7 @@
       0.7729181109239752,
       0.7664009098381039
     ],
+    "unified_external_faces": true,
     "usb_access_bounds_mm": [
       [
         -44.47500000338184,
@@ -407,10 +568,20 @@
   "parameters": {
     "battery_wire_cutout": "front-right",
     "head_cover": {
-      "cable_notch_top_z_mm": 55.0,
-      "cable_notch_width_mm": 8.0,
+      "cable_entry": {
+        "inner_low_y_mm": 25.5,
+        "inner_y_mm": 23.2,
+        "low_rise_z_mm": 29.0,
+        "pitch_x_mm": 3.8,
+        "upper_rise_z_mm": 40.0,
+        "z_mm": 11.2
+      },
+      "ear_extension_mm": 5.0,
+      "ear_forward_mm": 4.5,
+      "ear_spread_mm": 10.5,
       "height_splice_z_mm": 47.7,
-      "raise_mm": 8.0
+      "lid_clearance_mm": 0.3,
+      "raise_mm": 0.0
     },
     "mesh_deflection_mm": 0.08,
     "pcb_pilot_depth_mm": 4.2,
@@ -456,7 +627,7 @@
         [
           43.701750061318,
           29.272083606857294,
-          58.210127293762
+          58.742878128431386
         ]
       ],
       "closed_mesh": true,
@@ -469,7 +640,7 @@
         [
           43.701750061318,
           29.272083606857294,
-          53.24237039189723
+          53.77512122656662
         ]
       ],
       "print_rotation_axis_angle": [
@@ -479,37 +650,37 @@
         0
       ],
       "print_stl": "head-cover-print.stl",
-      "print_stl_sha256": "4fef82afa6fe1b12d38382cdc999844ba3f63430074d90cbeced64b639fc48c9",
-      "step_sha256": "94153802f08491de2d7841b4887fa9ba8c0a036ab55465e1d9573810d6eb49b0",
-      "stl_sha256": "f0a02531262bafb40f6753fd0580ef88c5bdfe9694f33088b27cf6c11ab8bc5d",
-      "triangles": 5312,
+      "print_stl_sha256": "bb12aa35f913f1452769336e59a96f680ddd52b7ad22ae6f2d9a79da7c74f042",
+      "step_sha256": "95845b5f953048296ddd33c87a4bc1e2a0aca6ac6d119ca9485522f6716a78c8",
+      "stl_sha256": "7d2eea31e0029c6e698e658775690312274bebcefa6d3d1d3eb602c3ac8eefc9",
+      "triangles": 5528,
       "valid_solid": true,
-      "volume_mm3": 24660.195988801876
+      "volume_mm3": 25402.924244892216
     },
     "head-lid": {
       "bounds_mm": [
         [
-          -38.25244061195,
-          -26.18020229635,
-          56.210127293762
+          -37.8386475085,
+          -25.93603235122,
+          48.210127293762
         ],
         [
           34.001911518725,
-          26.190369510066,
-          59.967756901865
+          25.9461995649348,
+          51.967756901865
         ]
       ],
       "closed_mesh": true,
       "print_bounds_mm": [
         [
-          -38.25244061195,
-          -26.190369510066006,
-          0.0
+          -37.8386475085,
+          -25.94619956493481,
+          4.831690603168681e-13
         ],
         [
           34.001911518725,
-          26.180202296349993,
-          3.7576296081030023
+          25.936032351219993,
+          3.7576296081034855
         ]
       ],
       "print_rotation_axis_angle": [
@@ -519,12 +690,12 @@
         180
       ],
       "print_stl": "head-lid-print.stl",
-      "print_stl_sha256": "176de9444418059bfcc2efd681f20565c4185d7048810d8f1409007684f52a0f",
-      "step_sha256": "4216104e406703d8e7d6804c05987bb80134f6de0821a145b126d21d1dd779cf",
-      "stl_sha256": "9ce340e4044cc0f096ab12b1017d7a0ee5feea19cebc187819d8ebd031025abd",
-      "triangles": 52,
+      "print_stl_sha256": "1162fd13576ae0f381d11f81d22739b1417f62dcabba5539316f30de6c6b28b2",
+      "step_sha256": "a2abd3273e1ac5b74922a00e10156c940c9e73a25b3b8edc36c72612837a5794",
+      "stl_sha256": "8d565919bbc4ecf9b29585600138c48f4a6edb72ceeaaa991c4a2d43dddf9dc8",
+      "triangles": 108,
       "valid_solid": true,
-      "volume_mm3": 13011.374214694664
+      "volume_mm3": 11839.613301699108
     },
     "internal-frame": {
       "bounds_mm": [
@@ -904,7 +1075,7 @@
       4.967756901865376
     ]
   ],
-  "source_script_sha256": "77dcf94f2f03b9bf0ed157624abeb4b3e092f4e3155d6dbe4ba968db915b9a57",
+  "source_script_sha256": "c483d9d92b777b903abfefe2943fd5bc0c7a950cb372226abd594a965837c373",
   "support_width_mm": 63.55037999999999,
   "unchanged_legs": {
     "L1": "081896568cc9776393c038d05ecc8caf01090c6971efebe799d064def4c92558",
@@ -919,50 +1090,50 @@
   "units": "mm",
   "validation_cache": [
     {
-      "cache_hit": false,
+      "cache_hit": true,
       "group": "electronics/frame",
-      "key": "610dc55163c87d4bdf981e9b666bdd15a27b6340051f7cc5068386bc1e29b9f6"
+      "key": "6d7c550578a7d7f1f53b95432cc57e83dcb9479036ba8d8b602afac224159171"
     },
     {
-      "cache_hit": false,
+      "cache_hit": true,
       "group": "electronics/spacer-0",
-      "key": "5c51b516a1223637c01ffc93a23c07d5b175b88ace8ae8b71c2c9b2347c9ede7"
+      "key": "0b07d103187fcf894b54111c1f99da91f24d82561835afe74b5eba2845c3e994"
     },
     {
-      "cache_hit": false,
+      "cache_hit": true,
       "group": "electronics/spacer-1",
-      "key": "434df0048e277b58b3d7b72dfb28299b32634ec762523229cf9294e7b7641886"
+      "key": "d03c9efc102d10a6d6a03805dbfc4cc759b91a2bc49fef5406de328e47924cc3"
     },
     {
-      "cache_hit": false,
+      "cache_hit": true,
       "group": "electronics/spacer-2",
-      "key": "ad4b5c300068db4ebd1b75fbf434652cb524d4b8a6b7dca4008ed7ef2ab6d437"
+      "key": "e78bb09a5ca22ede58e900d985f55d16cf49b4f5167d341e8798f72f868ce7a4"
     },
     {
-      "cache_hit": false,
+      "cache_hit": true,
       "group": "electronics/spacer-3",
-      "key": "f264f03331d38e6595f46f2cbbe3093ddd49564d0866fd0703925d2b81d5e8b3"
+      "key": "ae9d3f226ccb3bf640af54d52ac8a47e6f1bdd3f8841d96e1590476bc283b891"
     },
     {
-      "cache_hit": false,
+      "cache_hit": true,
       "group": "electronics/head",
-      "key": "a689155b6adc53522a4a730bb2639ae5ee08f02c8f4e65a228347d4a4d4c8899"
+      "key": "f71e710adb57adfbf40d4ec49422109d2f81e52745c340c5a853997d77c4ecc5"
     },
     {
-      "cache_hit": false,
+      "cache_hit": true,
       "group": "electronics/lid",
-      "key": "57d8f2f290d5f9d2c024080c746e7115a4b60931df4e1b642d2fbe30a3b84461"
+      "key": "a8d01bc03bdcd2f9263409e1fa67670b85e5b242e26ec103b58527da2d3a50f9"
     },
     {
-      "cache_hit": false,
+      "cache_hit": true,
       "group": "servo-bays",
-      "key": "9e219924a735214266fb4d5768409a2ab9c827f03c863b6bbf4d531de6e286ee"
+      "key": "8f662840367e0dab8f5ceebfdd8eb7905883dd042e9f98400ed91c3dd53ca613"
     },
     {
-      "cache_hit": false,
+      "cache_hit": true,
       "group": "ribbons",
-      "key": "0888f603bd740a2ecc8a603b62e82b2915af658b92cc2a17d856c5dae5406117"
+      "key": "4d92d0bd611f74ae0959499e9e5b5ac3820986a3197c4dd3242f77eafda5e758"
     }
   ],
-  "validation_checker_sha256": "72457d3041975b3e6948fbc36ed8f0d0c56a69a570530a4c074bb70d2be9b2a6"
+  "validation_checker_sha256": "7d142cc76af248bbf22c62debdcee3cf9baf11edd6424c18028c4f5997329b69"
 }

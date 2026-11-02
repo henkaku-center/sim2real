@@ -1,38 +1,48 @@
-# V3 example head: shell and removable lid
+# Low-roof head, fixed ears and removable lid
 
-The shared Loftwork V3 shell/lid is the starting geometry. A proper 180° Z
-rotation places its OLED face toward body +X, with Y left and Z up. The supplied
-lid is seated 20 mm below its stored exploded position. The upper shell and lid
-are raised 8 mm, splicing above the OLED aperture at body Z=47.7 mm.
+The November 2 instructor correction keeps the native V3 lower cable entries,
+closes both unwanted upper side openings, and removes the added tall side slots.
+The V3 main roof is no longer raised 8 mm. The original Sesame ear profiles are
+restored at the front corners, attached to the shell on fixed shoulders.
 
-Two bottom-open side notches are centred at X≈−0.225717 mm between the front and
-rear hip servos. Each is 8 mm wide, ends at Z=55 mm and has R2 top corners.
-Ribbons rise from the midpoint channels, pass inward through the notch, then fan
-out to the hub. Entry levels are staggered by 1.8 mm. The route is an authored
-illustration, not a live contact solver.
+The removable lid covers the rear roof and extends forward as a central tongue
+between the ears. This gives access behind the display while the ears remain
+part of the shell. Its upper seating flange remains; the inherited flared skirt
+is replaced by a straight slip-fit skirt so the lid can lower past the rim.
+The skirt and new shoulder/tongue seams have a provisional 0.3 mm CAD clearance.
+Nine sampled lid heights are checked for shell/ear intersections. Physical print
+fit and retention are unverified.
 
-The native OLED aperture and mounting features remain. No purchased OLED model
-is fitted in this head: actual display retention and pin clearance are unverified.
-An additional rear USB access cut follows the modeled S3 connector.
+## Cable path
 
-## Recorded checks
+Four ribbons enter side-by-side through each existing bottom-open notch, at
+body Z=11.2 mm. Their centres are spaced 3.8 mm in X. The native opening is about
+15.48 mm wide at that height and ends at Z≈14.97 mm. Each ribbon then rises
+inside the shell and fans toward its existing header. Two alternating upper
+levels keep this illustration below the lower lid. These are authored paths,
+not a live contact solver or measured cut lengths.
 
-`assembly.json` identifies the exact source and output meshes. The generator
-checks valid closed solids/meshes, zero shell/lid intersection, matching four
-head fixing axes, all 710 native electronics shapes and four separate spacers.
-Head-to-spacer gaps are approximately 0.973, 0.965, 0.773 and 0.766 mm.
-The current route receipt contains 57,012 ribbon surface samples and 16 leg
-bounds at Rest/Standing. Those samples clear the fitted head; this does not
-establish clearance for every continuous motion or physically bent ribbon.
+The native OLED aperture and lower mounting features remain unchanged. The
+purchased OLED is not fitted in this head model; retention and pin clearance
+still need an actual assembly check. Rear USB access remains available.
 
-Print `head-cover-print.stl` and `head-lid-print.stl` separately. Editable
-`head-cover.step` and `head-lid.step` retain assembly coordinates. Slicing results
-are recorded separately from CAD checks. No physical print/fit result is claimed.
+## Sources and checks
 
-The November 1 Bambu Studio trial uses supports for the shell/lid plate. An
-unsupported trial reported floating regions; enabling supports removed that
-warning. `head-slice-check.json` records the exact mesh hashes and estimates.
+The shell/lid starts from the shared Loftwork `printing_V3` kit. Ear surfaces are
+extracted from the pinned original `Sesame-ESP32-v122.step`, without mirroring or
+scaling their rounded caps. `reference-ears/source.json` records the source,
+coordinate transform, cut plane and normalized STEP hashes. Editable dimensions
+in `params.json` control ear placement, extension and the lid seam.
 
-Change the shape, expression, cable routing or mounting to suit your own robot.
+`assembly.json` records the native solids, all 710 electronics shapes, spacer
+clearances, mounting axes, shell/lid overlap, sampled ribbon surfaces, and
+Rest/Standing leg bounds. The internal ribbon samples are also checked against
+the native electronics. These checks do not establish physical print fit,
+display retention or clearance throughout every possible motion.
+
+Print `head-cover-print.stl` and `head-lid-print.stl` separately. Use the matching
+STEP files for editing. `head-slice-check.json` identifies the exact sliced files
+and settings; slicer estimates are not physical print results.
+
 Credit: Jom Jetsada / Loftwork V3 contributors; original Sesame by Dorian Todd
-and contributors. See `README.md` and `reference-v3/source.json` for provenance.
+and contributors (Apache-2.0). Students may freely modify or replace this example.

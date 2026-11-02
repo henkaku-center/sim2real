@@ -110,5 +110,9 @@ This speeds up the edit/review loop by doing less work, not by claiming that the
 full fit checks became faster. Native tests compare preview geometry with the
 delivered STEP, exercise an 8→10→8 mm notch edit, verify exact restoration of the
 preview outputs, and confirm an electronics-source change invalidates the cache.
+
+The November 2 head revision uses a native-height roof, fixed original-profile
+ears and a T-shaped lid. The edit/revert regression now changes roof lift rather
+than cutting a taller side slot; the lower cable openings stay native.
 The full build still checks all 710 electronics shapes and the authored ribbon
 samples. CAD and sampled-pose checks do not establish physical print fit.

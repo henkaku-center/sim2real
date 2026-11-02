@@ -45,7 +45,7 @@ function applyMode(){
   const record=status?.parts?.[part],selected=mode==='previous'?record?.previous:record?.current;
   if(selected){$('#version').textContent=`${mode==='previous'?'Previous':'Current'} · ${new Date(selected.built_at*1000).toLocaleTimeString()} · ${selected.seconds.toFixed(2)}s build`;
     const p=selected.parameters,size=selected.bounds_mm[0].map((v,i)=>(selected.bounds_mm[1][i]-v).toFixed(2)).join(' × ');
-    const dimensions=part==='head'?`Notch ${p.head_cover.cable_notch_width_mm} mm · lift ${p.head_cover.raise_mm} mm`:part==='frame'?`Pilot Ø${p.pcb_pilot_diameter_mm} mm · depth ${p.pcb_pilot_depth_mm} mm`:`Height ${p.pcb_standoff_height_mm} mm · bore Ø${p.pcb_spacer_bore_mm} mm`;
+    const dimensions=part==='head'?`${p.head_cover.cable_entry?'Low cable entries · fixed ears':'Notch '+p.head_cover.cable_notch_width_mm+' mm'} · lift ${p.head_cover.raise_mm} mm`:part==='frame'?`Pilot Ø${p.pcb_pilot_diameter_mm} mm · depth ${p.pcb_pilot_depth_mm} mm`:`Height ${p.pcb_standoff_height_mm} mm · bore Ø${p.pcb_spacer_bore_mm} mm`;
     $('#summary').textContent=`${dimensions} · ${size} mm. Drag to orbit; pinch to zoom.`;
     $('#download').hidden=false;$('#download').href='./'+selected.step;$('#download').download=part+'.step';}
 }
