@@ -10,17 +10,17 @@
   ],
   "supports_enabled": true,
   "support_feature_seconds": {
-    "Support": 405.1015625,
-    "Support interface": 16.87138557434082
+    "Support": 405.1101379394531,
+    "Support interface": 16.871665954589844
   },
   "object_count": 2,
   "return_code": 0,
   "warning": "",
   "models": {
     "head-cover-print.stl": "bb12aa35f913f1452769336e59a96f680ddd52b7ad22ae6f2d9a79da7c74f042",
-    "head-lid-print.stl": "1162fd13576ae0f381d11f81d22739b1417f62dcabba5539316f30de6c6b28b2"
+    "head-lid-print.stl": "551bf4bd003b8d8e43d99d9d74d6c81452c501a7b0e17c6071697bddbbcfbb9e"
   },
-  "estimated_seconds": 4738.328125,
-  "estimated_filament_g": 41.46,
-  "scope": "Low-roof fixed-ear shell and T-shaped slip-skirt lid; local slicing only, no physical print or printer upload."
+  "estimated_seconds": 4757.07275390625,
+  "estimated_filament_g": 41.66353225708008,
+  "scope": "Fixed-ear shell and T-shaped lid with restored native V3 captive underhang; local slicing only, no physical print or printer upload."
 }

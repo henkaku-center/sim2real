@@ -426,50 +426,235 @@
         "separated_from_head": true
       }
     ],
+    "lid_capture_samples": [
+      {
+        "intersection_mm3": 22.045575949373656,
+        "lift_mm": 0.25
+      },
+      {
+        "intersection_mm3": 37.79241591356514,
+        "lift_mm": 0.5
+      },
+      {
+        "intersection_mm3": 50.38988788487609,
+        "lift_mm": 1
+      }
+    ],
     "lid_intersection_mm3": 0.0,
     "lid_plan": {
+      "assembly_direction": "rear-to-front at fixed Z",
       "clearance_mm": 0.3,
+      "mating_profile": "unchanged native V3 captive underhang",
       "roof_z_mm": 51.967756901865,
       "shape": "T-shaped rear roof with a front tongue between fixed ears",
       "shoulder_start_x_mm": 20.37625621831507,
       "tongue_half_width_mm": 15.146391023719435
     },
-    "lid_seating_samples": [
+    "lid_slide_samples": [
       {
         "intersection_mm3": 0.0,
-        "lift_mm": 0
+        "rear_offset_mm": -86.254352130675,
+        "z_offset_mm": 0
       },
       {
         "intersection_mm3": 0.0,
-        "lift_mm": 0.5
+        "rear_offset_mm": -84.09799332740812,
+        "z_offset_mm": 0
       },
       {
         "intersection_mm3": 0.0,
-        "lift_mm": 1
+        "rear_offset_mm": -81.94163452414125,
+        "z_offset_mm": 0
       },
       {
         "intersection_mm3": 0.0,
-        "lift_mm": 1.5
+        "rear_offset_mm": -79.78527572087438,
+        "z_offset_mm": 0
       },
       {
         "intersection_mm3": 0.0,
-        "lift_mm": 2
+        "rear_offset_mm": -77.6289169176075,
+        "z_offset_mm": 0
       },
       {
         "intersection_mm3": 0.0,
-        "lift_mm": 4
+        "rear_offset_mm": -75.47255811434063,
+        "z_offset_mm": 0
       },
       {
         "intersection_mm3": 0.0,
-        "lift_mm": 8
+        "rear_offset_mm": -73.31619931107375,
+        "z_offset_mm": 0
       },
       {
         "intersection_mm3": 0.0,
-        "lift_mm": 12
+        "rear_offset_mm": -71.15984050780688,
+        "z_offset_mm": 0
       },
       {
         "intersection_mm3": 0.0,
-        "lift_mm": 20
+        "rear_offset_mm": -69.00348170454001,
+        "z_offset_mm": 0
+      },
+      {
+        "intersection_mm3": 0.0,
+        "rear_offset_mm": -66.84712290127312,
+        "z_offset_mm": 0
+      },
+      {
+        "intersection_mm3": 0.0,
+        "rear_offset_mm": -64.69076409800626,
+        "z_offset_mm": 0
+      },
+      {
+        "intersection_mm3": 0.0,
+        "rear_offset_mm": -62.53440529473937,
+        "z_offset_mm": 0
+      },
+      {
+        "intersection_mm3": 0.0,
+        "rear_offset_mm": -60.378046491472496,
+        "z_offset_mm": 0
+      },
+      {
+        "intersection_mm3": 0.0,
+        "rear_offset_mm": -58.22168768820563,
+        "z_offset_mm": 0
+      },
+      {
+        "intersection_mm3": 0.0,
+        "rear_offset_mm": -56.06532888493875,
+        "z_offset_mm": 0
+      },
+      {
+        "intersection_mm3": 0.0,
+        "rear_offset_mm": -53.908970081671875,
+        "z_offset_mm": 0
+      },
+      {
+        "intersection_mm3": 0.0,
+        "rear_offset_mm": -51.752611278405,
+        "z_offset_mm": 0
+      },
+      {
+        "intersection_mm3": 0.0,
+        "rear_offset_mm": -49.59625247513812,
+        "z_offset_mm": 0
+      },
+      {
+        "intersection_mm3": 0.0,
+        "rear_offset_mm": -47.43989367187125,
+        "z_offset_mm": 0
+      },
+      {
+        "intersection_mm3": 0.0,
+        "rear_offset_mm": -45.28353486860438,
+        "z_offset_mm": 0
+      },
+      {
+        "intersection_mm3": 0.0,
+        "rear_offset_mm": -43.1271760653375,
+        "z_offset_mm": 0
+      },
+      {
+        "intersection_mm3": 0.0,
+        "rear_offset_mm": -40.970817262070625,
+        "z_offset_mm": 0
+      },
+      {
+        "intersection_mm3": 0.0,
+        "rear_offset_mm": -38.81445845880375,
+        "z_offset_mm": 0
+      },
+      {
+        "intersection_mm3": 0.0,
+        "rear_offset_mm": -36.65809965553688,
+        "z_offset_mm": 0
+      },
+      {
+        "intersection_mm3": 0.0,
+        "rear_offset_mm": -34.501740852270004,
+        "z_offset_mm": 0
+      },
+      {
+        "intersection_mm3": 0.0,
+        "rear_offset_mm": -32.34538204900313,
+        "z_offset_mm": 0
+      },
+      {
+        "intersection_mm3": 0.0,
+        "rear_offset_mm": -30.189023245736248,
+        "z_offset_mm": 0
+      },
+      {
+        "intersection_mm3": 0.0,
+        "rear_offset_mm": -28.032664442469372,
+        "z_offset_mm": 0
+      },
+      {
+        "intersection_mm3": 0.0,
+        "rear_offset_mm": -25.876305639202503,
+        "z_offset_mm": 0
+      },
+      {
+        "intersection_mm3": 0.0,
+        "rear_offset_mm": -23.719946835935627,
+        "z_offset_mm": 0
+      },
+      {
+        "intersection_mm3": 0.0,
+        "rear_offset_mm": -21.56358803266875,
+        "z_offset_mm": 0
+      },
+      {
+        "intersection_mm3": 0.0,
+        "rear_offset_mm": -19.407229229401874,
+        "z_offset_mm": 0
+      },
+      {
+        "intersection_mm3": 0.0,
+        "rear_offset_mm": -17.250870426135,
+        "z_offset_mm": 0
+      },
+      {
+        "intersection_mm3": 0.0,
+        "rear_offset_mm": -15.09451162286813,
+        "z_offset_mm": 0
+      },
+      {
+        "intersection_mm3": 0.0,
+        "rear_offset_mm": -12.938152819601251,
+        "z_offset_mm": 0
+      },
+      {
+        "intersection_mm3": 0.0,
+        "rear_offset_mm": -10.781794016334375,
+        "z_offset_mm": 0
+      },
+      {
+        "intersection_mm3": 0.0,
+        "rear_offset_mm": -8.6254352130675,
+        "z_offset_mm": 0
+      },
+      {
+        "intersection_mm3": 0.0,
+        "rear_offset_mm": -6.469076409800621,
+        "z_offset_mm": 0
+      },
+      {
+        "intersection_mm3": 0.0,
+        "rear_offset_mm": -4.312717606533754,
+        "z_offset_mm": 0
+      },
+      {
+        "intersection_mm3": 0.0,
+        "rear_offset_mm": -2.156358803266877,
+        "z_offset_mm": 0
+      },
+      {
+        "intersection_mm3": 0.0,
+        "rear_offset_mm": -0.0,
+        "z_offset_mm": 0
       }
     ],
     "mount_axes_xy_mm": [
@@ -503,6 +688,20 @@
       0.7729181109239752,
       0.7664009098381039
     ],
+    "switch_opening": {
+      "centre_mm": [
+        -39.93685855186,
+        7.005083606829,
+        37.600941996849
+      ],
+      "diameter_mm": 5.0,
+      "normal": [
+        -0.9792599571520855,
+        0.0,
+        0.2026078387390177
+      ],
+      "source": "unchanged native V3 rear bore"
+    },
     "unified_external_faces": true,
     "usb_access_bounds_mm": [
       [
@@ -660,27 +859,27 @@
     "head-lid": {
       "bounds_mm": [
         [
-          -37.8386475085,
-          -25.93603235122,
-          48.210127293762
+          -38.25244061195,
+          -26.18020229635,
+          48.21012729376199
         ],
         [
           34.001911518725,
-          25.9461995649348,
+          26.190369510066,
           51.967756901865
         ]
       ],
       "closed_mesh": true,
       "print_bounds_mm": [
         [
-          -37.8386475085,
-          -25.94619956493481,
+          -38.25244061195,
+          -26.190369510066006,
           4.831690603168681e-13
         ],
         [
           34.001911518725,
-          25.936032351219993,
-          3.7576296081034855
+          26.180202296349993,
+          3.7576296081034926
         ]
       ],
       "print_rotation_axis_angle": [
@@ -690,12 +889,12 @@
         180
       ],
       "print_stl": "head-lid-print.stl",
-      "print_stl_sha256": "1162fd13576ae0f381d11f81d22739b1417f62dcabba5539316f30de6c6b28b2",
-      "step_sha256": "a2abd3273e1ac5b74922a00e10156c940c9e73a25b3b8edc36c72612837a5794",
-      "stl_sha256": "8d565919bbc4ecf9b29585600138c48f4a6edb72ceeaaa991c4a2d43dddf9dc8",
-      "triangles": 108,
+      "print_stl_sha256": "551bf4bd003b8d8e43d99d9d74d6c81452c501a7b0e17c6071697bddbbcfbb9e",
+      "step_sha256": "b91bf233cb61a89d0e8205741b7a362da05c06e517063e1c14ab3f10e7031880",
+      "stl_sha256": "053b743b5a6c6ced75f8bad519ac1db402bdfd1610c97e3bde9d53ad27657cca",
+      "triangles": 76,
       "valid_solid": true,
-      "volume_mm3": 11839.613301699108
+      "volume_mm3": 12106.210273047032
     },
     "internal-frame": {
       "bounds_mm": [
@@ -1075,7 +1274,7 @@
       4.967756901865376
     ]
   ],
-  "source_script_sha256": "c483d9d92b777b903abfefe2943fd5bc0c7a950cb372226abd594a965837c373",
+  "source_script_sha256": "1b1d12a893ed5e5228e26d0fd8fe898f2d99788586eb97a41a849c4851f7e905",
   "support_width_mm": 63.55037999999999,
   "unchanged_legs": {
     "L1": "081896568cc9776393c038d05ecc8caf01090c6971efebe799d064def4c92558",
@@ -1122,7 +1321,7 @@
     {
       "cache_hit": true,
       "group": "electronics/lid",
-      "key": "a8d01bc03bdcd2f9263409e1fa67670b85e5b242e26ec103b58527da2d3a50f9"
+      "key": "1f66893f870851d2d5dcbf2a94fc9acc2c77bb83bc451303832035d212382edc"
     },
     {
       "cache_hit": true,
@@ -1132,7 +1331,7 @@
     {
       "cache_hit": true,
       "group": "ribbons",
-      "key": "4d92d0bd611f74ae0959499e9e5b5ac3820986a3197c4dd3242f77eafda5e758"
+      "key": "50dc2d45c7db5375f0b6f28cabb25f04581993c0702538ee4bf925f7fed9ed3c"
     }
   ],
   "validation_checker_sha256": "7d142cc76af248bbf22c62debdcee3cf9baf11edd6424c18028c4f5997329b69"

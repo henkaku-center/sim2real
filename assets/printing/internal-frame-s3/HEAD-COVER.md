@@ -7,11 +7,18 @@ restored at the front corners, attached to the shell on fixed shoulders.
 
 The removable lid covers the rear roof and extends forward as a central tongue
 between the ears. This gives access behind the display while the ears remain
-part of the shell. Its upper seating flange remains; the inherited flared skirt
-is replaced by a straight slip-fit skirt so the lid can lower past the rim.
-The skirt and new shoulder/tongue seams have a provisional 0.3 mm CAD clearance.
-Nine sampled lid heights are checked for shell/ear intersections. Physical print
-fit and retention are unverified.
+part of the shell. Jom and Paul's original V3 flared underhang and matching shell
+overhang are retained: rear entry, horizontal travel at fixed height, no vertical
+seating. The earlier straight-skirt modification was incorrect and is removed.
+The native rail clearance is unchanged; the 0.3 mm parameter applies only to the
+new shoulder/tongue seams. Forty-one sampled slide positions clear the shell and
+ears, while lifts of 0.25, 0.5 and 1 mm deliberately intersect the capture lip.
+These establish the intended CAD assembly path, not printed friction or retention.
+
+Keep the original joint as the baseline. If printer/material variation needs
+adjustment, first print a representative rail section in the same orientation
+and settings. Check hand-sliding effort and retention before altering the fit;
+keep seams and first-layer expansion off the mating faces where practical.
 
 ## Cable path
 
@@ -44,5 +51,5 @@ Print `head-cover-print.stl` and `head-lid-print.stl` separately. Use the matchi
 STEP files for editing. `head-slice-check.json` identifies the exact sliced files
 and settings; slicer estimates are not physical print results.
 
-Credit: Jom Jetsada / Loftwork V3 contributors; original Sesame by Dorian Todd
+Credit: Jom Jetsada, Paul and Loftwork V3 contributors; original Sesame by Dorian Todd
 and contributors (Apache-2.0). Students may freely modify or replace this example.
