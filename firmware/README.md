@@ -120,17 +120,59 @@ Sesame Studio HTTP compatibility. It supports all nineteen motions in
 `manifest/motions.yaml`; `run NAME` aliases `motion NAME`, and forward/backward/
 left/right alias walk/walk_backward/turn_left/turn_right. Each stock sequence
 runs once using the reference controller's interpolation. Adjust or replace that
-motion implementation to get the speed and feel you want. No OTA or STA
-provisioning is part of this commissioning image. Normal AP mode is sufficient
-for the phone controller; the device provides DNS redirection plus an explicit
-`192.168.4.1` fallback, since captive portal auto-open is client-dependent.
+motion implementation to get the speed and feel you want. No OTA is part of
+this image. The AP is always up: the device provides DNS redirection plus an
+explicit `192.168.4.1` fallback, since captive portal auto-open is
+client-dependent.
+
+### Phone macros, home/lab Wi-Fi and remote CLI
+
+The phone page (`web_ui.h`) has motion buttons (each `?arm run` + `motion NAME`),
+calibration buttons for the selected joint, and editable macros kept in the
+phone's `localStorage`. Macro lines: one command per line or `;`; `?cmd`
+tolerates `ERR`; `wait MS` pauses; `{J}` is the selected joint;
+`motion`/`run`/`rest`/`sweep` wait until `status` reports `motion=none sweep=0`.
+A macro stops at the first untolerated `ERR`; **OUTPUTS OFF**/**Freeze** cancel it.
+`/cmd?c=A;B;C` also runs several commands in one request (stops at first `ERR`).
+The page header shows link quality: failures and round-trip time over the last
+30 requests, the phone's RSSI as the robot hears it (`ap_rssi`) and requests
+dropped before fully arriving (`http_drops`). `status` reports `up_s` and
+`reset` (e.g. `brownout`); the page logs `ROBOT RESTARTED` when uptime goes back.
+
+Phones often leave an AP without internet for another network mid-session
+(the page then reports `TimeoutError`). Joining an existing network avoids
+this, keeps the phone online and lets a computer on the same LAN drive the
+robot. Over USB with outputs off:
+
+```text
+wifi join SSID PASSWORD     # 2.4 GHz, no spaces; saved in NVS namespace sesame-net
+wifi                        # STA connected=1 ip=… mdns=sesame-s3-xxxx.local
+wifi forget                 # back to AP only
+```
+
+The AP stays up as a fallback and follows the network's channel. The OLED shows
+the LAN IP while outputs are off. HTTP has **no authentication**: anyone on that
+network can command the robot, so use a trusted home network only.
+
+```sh
+python3 tools/sesame_remote.py --host sesame-s3-xxxx.local "?arm run" "motion stand" "motion wave"
+```
+
+`tools/sesame_remote.py` applies the same macro rules and heartbeats while it
+waits, so scripts (and coding agents) can drive whole sequences.
 
 The reference bench mode selects one servo, while assembly centre selects several.
 `arm bench CH` supports 0–180° pointer targets. Students choose their own motion
 speeds and can change both bench and production control behaviour.
 Stock commands and microsecond commands pass the same gate. `stop` freezes;
-`off` cancels and releases. No external heartbeat for500ms disables outputs
-and cancels queues; internal sequence steps do **not** feed that watchdog.
+`off` cancels and releases. No owner message for 500 ms freezes every target in
+place, cancels queues and refuses new targets (`status` shows `hold=1`, OLED
+`HOLD`); torque is held so switching phone apps does not drop the robot. Any
+command from the owner resumes; after 600 s held, outputs go OFF. Clock
+measurement keeps the immediate 500 ms outputs-off watchdog. Internal sequence
+steps do **not** feed that watchdog. The hold is a firmware-local policy
+(`HOLD_MS` in `safe_action.h`), not yet reflected in the manifest's
+`watchdog_failsafe: outputs_off` contract.
 The S3 profile selects outputs-off instead of the simulator's rest failsafe
 as a reference design choice, not a rule for student firmware.
 
