@@ -67,19 +67,54 @@ def check_servo_bays(original,frame):
     return checks
 
 
-def check_ribbons(head,lid,cables,settings,mid):
+def check_ribbons(head,lid,cables,settings,mid,electronics):
     import FreeCAD as App
     import Part
-    core=Part.makeBox(60,50,45,App.Vector(-30,-25,10));core_hits=[s.common(core) for s in [head,lid]]
+    core_top=lid.BoundBox.ZMin-.3
+    core=Part.makeBox(46,48,core_top-10,App.Vector(-20,-24,10));core_hits=[s.common(core) for s in [head,lid]]
     assert all(s.isNull() or s.isValid() for s in core_hits);core_clear=all(abs(s.Volume)<1e-6 for s in core_hits)
+    print('V3: ribbon cavity certificate',core_clear,[s.Volume for s in core_hits],flush=True)
+    entry=cables['assembly_datums']['head_cable_entry'];width=entry['width_mm']-.1
+    portal=Part.makeBox(width,70,2,App.Vector(entry['centre_x_mm']-width/2,-35,entry['entry_z_mm']-1))
+    portal_hits=[s.common(portal) for s in [head,lid]]
+    assert all(s.isNull() or s.isValid() for s in portal_hits)
+    portal_clear=all(abs(s.Volume)<1e-6 for s in portal_hits);portal_box=portal.BoundBox
+    lower_cores=[Part.makeBox(17,52.6,18,App.Vector(-8,-26.3,10)),Part.makeBox(17,51.6,6,App.Vector(-8,-25.8,28)),
+                 Part.makeBox(17,50.4,5,App.Vector(-8,-25.2,34)),Part.makeBox(17,49,4,App.Vector(-8,-24.5,39))]
+    certified=[]
+    for box in lower_cores:
+        intersections=[s.common(box) for s in [head,lid]]
+        assert all(s.isNull() or s.isValid() for s in intersections)
+        if all(abs(s.Volume)<1e-6 for s in intersections):certified.append(box.BoundBox)
     hbox=head.BoundBox;lbox=lid.BoundBox;bad=[];queries=0
     for point in cables['surface_points_mm']:
         x,y,zz=point;v=App.Vector(*point)
         if not hbox.isInside(v) and not lbox.isInside(v):continue
-        if core_clear and -30<=x<=30 and -25<=y<=25 and 10<=zz<=55:continue
-        dx=abs(x-mid);half=settings['cable_notch_width_mm']/2;top=settings['cable_notch_top_z_mm']
-        if zz<lbox.ZMin and (dx<=half and zz<=top-2 or dx<=half-2 and zz<=top or (dx-half+2)**2+(zz-top+2)**2<=4):continue
+        if core_clear and -20<=x<=26 and -24<=y<=24 and 10<=zz<=core_top:continue
+        if portal_clear and portal_box.isInside(v):continue
+        if any(box.isInside(v) for box in certified):continue
         queries+=1
         if hbox.isInside(v) and head.isInside(v,1e-6,False) or lbox.isInside(v) and lid.isInside(v,1e-6,False):bad.append(point)
+        assert len(bad)<12,('ribbons in head',bad)
     assert not bad,('ribbons in head',len(bad),bad[:4])
-    return {'classified':queries,'inside':0}
+    print('V3: ribbon/head samples classified',queries,flush=True)
+    # Local broad phase for the now-internal risers, followed by native solids.
+    import math
+    members={}
+    for name,shape in electronics.items():
+        for i,solid in enumerate(shape.Solids or [shape]):members[(name,i)]=solid
+    bins={};boxes={name:shape.BoundBox for name,shape in members.items()}
+    for name,b in boxes.items():
+        for x in range(math.floor(b.XMin/4),math.floor(b.XMax/4)+1):
+            for y in range(math.floor(b.YMin/4),math.floor(b.YMax/4)+1):
+                for z in range(math.floor(b.ZMin/4),math.floor(b.ZMax/4)+1):bins.setdefault((x,y,z),[]).append(name)
+    hits=[];electronics_queries=0
+    for point in cables['surface_points_mm']:
+        vector=App.Vector(*point)
+        for name in bins.get(tuple(math.floor(v/4) for v in point),[]):
+            if not boxes[name].isInside(vector):continue
+            electronics_queries+=1
+            if members[name].isInside(vector,1e-6,False):hits.append({'part':name,'point':point})
+            assert len(hits)<12,('ribbon surfaces in electronics',hits)
+    assert not hits,('ribbon surfaces in electronics',len(hits),hits[:12])
+    return {'classified':queries,'inside':0,'electronics_classified':electronics_queries,'electronics_inside':0}

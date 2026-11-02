@@ -11,7 +11,7 @@ ROOT=Path(__file__).resolve().parents[1]
 
 def test_head_edit_leaves_frame_and_spacer_keys_unchanged():
     params=json.loads((ROOT/'assets/printing/internal-frame-s3/params.json').read_text());changed=copy.deepcopy(params)
-    changed['head_cover']['cable_notch_width_mm']+=1
+    changed['head_cover']['raise_mm']+=1
     assert key_for('head',params,{})!=key_for('head',changed,{})
     assert all(key_for(k,params,{})==key_for(k,changed,{}) for k in ['frame','spacer'])
     assert key_for('frame',params,{'code':'v1'})!=key_for('frame',params,{'code':'v2'})

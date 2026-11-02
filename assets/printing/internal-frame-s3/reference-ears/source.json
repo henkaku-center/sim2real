@@ -1,0 +1,60 @@
+{
+  "source_repository": "dorianborian/sesame-robot",
+  "source_path": "hardware/cad/Sesame-ESP32-v122.step",
+  "git_blob_sha1": "984f8b88d6855bcd9e5d08a7dee3984fe53813ff",
+  "source_object": "Part__Feature491 / COMPOUND001",
+  "credit": "Dorian Todd and contributors",
+  "license": "Apache-2.0",
+  "base_z_mm": 38.62285690186518,
+  "source_to_body_matrix": [
+    -1.0,
+    0.0,
+    0.0,
+    26.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    -17.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0
+  ],
+  "centre_y_mm": 2.3832276781765103,
+  "files": {
+    "left": {
+      "sha256": "5eda2aaf7f7d7c87c53422639dcdfa1ca82059d8f57449feee21c63a01092046",
+      "bounds_mm": [
+        [
+          16.12625621832736,
+          4.9463910237255755,
+          38.62285690186518
+        ],
+        [
+          30.28505969382659,
+          14.659327656066672,
+          43.15560773653349
+        ]
+      ]
+    },
+    "right": {
+      "sha256": "346860983baa060a4f66175a1d247258d2e00f2f680f9dd5665b66312e7da31b",
+      "bounds_mm": [
+        [
+          16.126256218327516,
+          -14.659327656066615,
+          38.62285690186518
+        ],
+        [
+          30.28505969382659,
+          -4.946391023725546,
+          43.15560773653349
+        ]
+      ]
+    }
+  }
+}

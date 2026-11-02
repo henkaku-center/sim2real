@@ -89,12 +89,18 @@ def test_fixings_and_battery_channel_remain_functional():
 def test_head_lid_electronics_and_cable_entries_are_checked():
     r=receipt();h=r['head_fit']
     assert h['source_object']=='Loftwork V3 shell and removable lid'
-    assert h['raise_mm']==8 and h['height_splice_z_mm']==47.7
-    assert all(abs(a-b)<.001 for a,b in zip(h['assembled_size_mm'],[87.17675,58.534,55]))
+    assert h['raise_mm']==0 and h['height_splice_z_mm']==47.7
+    assert all(abs(a-b)<.001 for a,b in zip(h['assembled_size_mm'][:2],[87.17675,58.534]))
+    assert h['assembled_size_mm'][2]<55 and len(h['ear_bounds_mm'])==2
+    assert h['closed_upper_side_ports']==2 and h['ear_height_above_roof_mm']>5
+    assert h['lid_plan']['shape'].startswith('T-shaped') and h['lid_plan']['clearance_mm']==.3
+    assert len(h['lid_seating_samples'])==9 and all(abs(s['intersection_mm3'])<1e-3 for s in h['lid_seating_samples'])
+    for name,entry in h['ear_source']['files'].items():assert sha(CANONICAL/'reference-ears'/f'{name}.step')==entry['sha256']
     assert h['display_window_unchanged'] and h['display_window']['width_mm']>20 and h['display_window']['height_mm']>11
     assert h['cable_notches']['bottom_open'] and h['cable_notches']['count']==2
-    assert h['cable_notches']['centre_x_mm']==r['channel_layout']['midpoint_x_mm']
-    assert h['cable_notches']['width_mm']==8 and h['cable_notches']['top_z_mm']==55
+    assert h['cable_notches']==r['head_cable_entry']
+    assert 15<h['cable_notches']['width_mm']<16 and h['cable_notches']['top_z_mm']<15
+    assert h['cable_electronics_samples_inside']==0
     assert min(h['spacer_clearances_mm'])>=.6 and abs(h['lid_intersection_mm3'])<1e-3
     assert r['electronics_shapes_checked']==710 and not r['electronics_intersections']
     assert h['cable_reference_sha256']==sha(CANONICAL/'head-cable-clearance.json')

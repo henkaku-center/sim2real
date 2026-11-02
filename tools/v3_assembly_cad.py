@@ -75,18 +75,91 @@ def frame_layout(frame,deck):
 def fit_head(ref,settings,mid,usb):
     """The same native head construction for interactive preview and full checks."""
     head=ref['head'].copy();original_window=window(head);z=settings['height_splice_z_mm'];raise_mm=settings['raise_mm']
+    entries=lower_entries(head,settings['cable_entry']['z_mm'])
+    # Reconstruct the two unwanted upper side openings from an intact section
+    # of the same tapered wall, including its native lid-seat profile.
+    port_x=(-21.7575,-6.7575);port_floor=42.210127293763
+    section=Part.makeFace(head.slice(V(1,0,0),mid),'Part::FaceMakerBullseye')
+    section=section.common(Part.makeBox(300,300,80,V(-150,-150,port_floor-.1)))
+    patch=section.extrude(V(port_x[1]-port_x[0]+.2,0,0));patch.translate(V(port_x[0]-.1-mid,0,0))
+    head=head.fuse(patch)
     assert original_window['bounds_mm'][1][2]<z
-    low=head.common(Part.makeBox(300,300,z+150,V(-150,-150,-150)));high=head.common(Part.makeBox(300,300,150-z,V(-150,-150,z)))
-    section=Part.makeFace(head.slice(V(0,0,1),z),'Part::FaceMakerBullseye')
-    head=low.fuse(section.extrude(V(0,0,raise_mm))).fuse(translated(high,[0,0,raise_mm]));lid=translated(ref['lid'],[0,0,raise_mm])
-    head=rounded_notches(head,mid,settings['cable_notch_width_mm'],settings['cable_notch_top_z_mm'])
+    if raise_mm:
+        low=head.common(Part.makeBox(300,300,z+150,V(-150,-150,-150)));high=head.common(Part.makeBox(300,300,150-z,V(-150,-150,z)))
+        section=Part.makeFace(head.slice(V(0,0,1),z),'Part::FaceMakerBullseye')
+        head=low.fuse(section.extrude(V(0,0,raise_mm))).fuse(translated(high,[0,0,raise_mm]))
+    lid=translated(ref['lid'],[0,0,raise_mm]);roof=lid.BoundBox.ZMax
+    ear_source=json.loads((REF.parent/'reference-ears/source.json').read_text());ears=[]
+    for name,record in ear_source['files'].items():
+        path=REF.parent/'reference-ears'/(name+'.step');assert sha(path)==record['sha256']
+        ear=Part.read(str(path));base=ear_source['base_z_mm'];extension=settings['ear_extension_mm']
+        section=Part.makeFace(ear.slice(V(0,0,1),base+.001),'Part::FaceMakerBullseye')
+        ear=translated(ear,[0,0,extension]).fuse(section.extrude(V(0,0,extension)))
+        ear.translate(V(settings['ear_forward_mm'],settings['ear_spread_mm']*(1 if name=='left' else -1),head.BoundBox.ZMax-1-base))
+        assert ear.isValid() and len(ear.Solids)==1
+        ears.append(ear)
+    # Fixed front shoulders support the ears. A T-shaped removable lid covers
+    # the rear roof and extends forward between them, as in the instructor sketch.
+    split_x=min(e.BoundBox.XMin for e in ears)-.25
+    tongue=min(abs(e.BoundBox.YMin if e.BoundBox.Center.y>0 else e.BoundBox.YMax) for e in ears)
+    corners=Part.makeCompound([Part.makeBox(100,100,100,V(split_x,tongue if side>0 else -100-tongue,0)) for side in [-1,1]])
+    shoulders=translated(lid.common(corners),[0,0,-.1])
+    gap=settings['lid_clearance_mm']
+    lid=lid.cut(Part.makeCompound([Part.makeBox(100,100,100,V(split_x-gap,tongue-gap if side>0 else -100-tongue+gap,0)) for side in [-1,1]]))
+    # Replace V3's outward-flared (dovetail) lower skirt with a straight slip
+    # skirt. Keep the upper seating flange, so the lid can lower past the rim.
+    rim=ref['head'].BoundBox.ZMax+raise_mm
+    skirt=Part.makeFace(lid.slice(V(0,0,1),rim-.01),'Part::FaceMakerBullseye').makeOffset2D(-gap,join=2)
+    if not skirt.Faces:skirt=Part.makeFace(skirt.Wires,'Part::FaceMakerBullseye')
+    skirt.translate(V(0,0,.01))
+    keep=skirt.extrude(V(0,0,-10)).fuse(Part.makeBox(300,300,100,V(-150,-150,rim)))
+    lid=lid.common(keep)
+    head=head.multiFuse([shoulders,*ears])
     usb_y=(usb.YMin+usb.YMax)/2;usb_z=(usb.ZMin+usb.ZMax)/2
     usb_cut=Part.makeBox(usb.XMin-head.BoundBox.XMin+2,12,7,V(head.BoundBox.XMin-1,usb_y-6,usb_z-3.5));head=head.cut(usb_cut)
+    assert head.isValid() and len(head.Solids)==1
+    refined=head.removeSplitter()
+    unified=refined.isValid() and abs(refined.Volume-head.Volume)<1e-3
+    if unified:head=refined
+    # Grafting the hollow original ear profiles onto the fixed roof shoulders
+    # encloses tiny internal pockets. Seal only those disconnected void shells;
+    # the exterior, OLED opening and bottom-open cable entries remain unchanged.
+    void_count=len(head.Shells)-1;before_volume=head.Volume
+    head=Part.makeSolid(max(head.Shells,key=lambda shell:shell.Area))
+    void_volume=head.Volume-before_volume
+    assert 0<=void_volume<before_volume*.01
+    for zz in [44.,46.]:
+        samples=ref['head'].common(Part.makeLine(V(mid,-35,zz),V(mid,35,zz))).Edges
+        assert len(samples)==2
+        for edge in samples:
+            point=V(sum(port_x)/2,edge.BoundBox.Center.y,zz)
+            assert not ref['head'].isInside(point,1e-6,False) and head.isInside(point,1e-6,False)
     assert all(s.isValid() and len(s.Solids)==1 and s.isClosed() for s in [head,lid])
     fitted_window=window(head)
     assert max(abs(a-b) for p,q in zip(original_window['bounds_mm'],fitted_window['bounds_mm']) for a,b in zip(p,q))<1e-5
     head_lid_overlap=head.common(lid);assert head_lid_overlap.isNull() or head_lid_overlap.isValid();assert abs(head_lid_overlap.Volume)<1e-3
-    return head,lid,fitted_window,head_lid_overlap,usb_cut
+    seating=[]
+    for lift in [0,.5,1,1.5,2,4,8,12,20]:
+        overlap=head.common(translated(lid,[0,0,lift]));assert overlap.isNull() or overlap.isValid()
+        assert abs(overlap.Volume)<1e-3,(lift,overlap.Volume)
+        seating.append({'lift_mm':lift,'intersection_mm3':overlap.Volume})
+    details={'cable_notches':entries,'closed_upper_side_ports':2,'ear_source':ear_source,
+             'sealed_internal_voids':{'count':void_count,'volume_mm3':void_volume},'unified_external_faces':unified,
+             'ear_bounds_mm':[bounds(e) for e in ears],'ear_height_above_roof_mm':max(e.BoundBox.ZMax for e in ears)-roof,
+             'lid_seating_samples':seating,'lid_plan':{'shape':'T-shaped rear roof with a front tongue between fixed ears','roof_z_mm':roof,
+                         'tongue_half_width_mm':tongue-gap,'shoulder_start_x_mm':split_x,'clearance_mm':gap}}
+    return head,lid,fitted_window,head_lid_overlap,usb_cut,details
+
+
+def lower_entries(head,z):
+    b=head.BoundBox;edges=head.common(Part.makeLine(V(-12,b.YMin+1,z),V(12,b.YMin+1,z))).Edges
+    assert len(edges)==2
+    edges=sorted(edges,key=lambda e:e.BoundBox.XMin);left=edges[0].BoundBox.XMax;right=edges[1].BoundBox.XMin
+    candidates=[v.Point.z for f in head.Faces if isinstance(f.Surface,Part.Plane) and abs(f.Surface.Axis.y)>.999
+                for v in f.Vertexes if abs(v.Point.x)<12 and v.Point.z<b.ZMin+12]
+    return {'count':2,'bottom_open':True,'source':'unchanged native V3 lower entries','centre_x_mm':(left+right)/2,
+            'width_mm':right-left,'bottom_z_mm':b.ZMin,'top_z_mm':max(candidates),'top_corner_radius_mm':1.6,
+            'entry_z_mm':z,'side_y_mm':[b.YMin,b.YMax]}
 
 
 def make_spacer(params):
@@ -150,10 +223,10 @@ def preview_part(params,out,kind='head'):
         if kind=='head':
             _,ref=load_references({'head','lid'});lo,hi=datums['usb_native_bounds_mm']
             usb=App.BoundBox(cx-hi[0],cy-hi[1],lo[2]+seat,cx-lo[0],cy-lo[1],hi[2]+seat)
-            head,lid,aperture,overlap,_=fit_head(ref,params['head_cover'],datums['midpoint_x_mm'],usb)
+            head,lid,aperture,overlap,_,features=fit_head(ref,params['head_cover'],datums['midpoint_x_mm'],usb)
             assert head.BoundBox.ZMin>=deck-1e-6
             shapes=[('head-cover',head),('head-lid',lid)]
-            details={'display_window':aperture,'lid_intersection_mm3':overlap.Volume}
+            details={'display_window':aperture,'lid_intersection_mm3':overlap.Volume,**features}
             checks=['closed valid shell/lid','unchanged OLED aperture','shell/lid overlap','head base above frame deck']
         elif kind=='frame':
             _,ref=load_references({'frame'});holes=[[cx-x,cy-y,seat] for x,y in datums['pcb_native_holes_mm']]
@@ -192,6 +265,7 @@ def build(params,out,include_cover=True,datums_only=False,fresh_checks=False,che
     pcb_holes=[[cx-x,cy-y,seat] for x,y in holes]
     mounts,hips,channel=frame_layout(frame,deck);mid=channel['midpoint_x_mm']
     datums={'reference_family':'loftwork-printing-v3','reference_sha256':sha(REF/'source.json'),'parameters':params,'pcb_seat_z_mm':seat,'servo_flange_seat_z_mm':deck,
+            'head_cable_entry':lower_entries(ref['head'],params['head_cover']['cable_entry']['z_mm']),
             'source_frame_bounds_mm':bounds(frame),'head_reference_bounds_mm':bounds(ref['head']),'parts':{'internal-frame':{'bounds_mm':bounds(frame)}},'servo_mounts':mounts,'hip_shaft_xy_mm':hips,'channel_layout':channel}
     out.mkdir(parents=True,exist_ok=True);write(out/'frame-datums.json',datums)
     if datums_only:return datums
@@ -204,7 +278,7 @@ def build(params,out,include_cover=True,datums_only=False,fresh_checks=False,che
     matrix=App.Matrix(-1,0,0,cx,0,-1,0,cy,0,0,1,seat,0,0,0,1)
     for s in electronics.values():s.transformShape(matrix)
     settings=params['head_cover'];z=settings['height_splice_z_mm'];raise_mm=settings['raise_mm']
-    head,lid,fitted_window,head_lid_overlap,usb_cut=fit_head(ref,settings,mid,electronics['S3Source_Part__Feature022'].BoundBox)
+    head,lid,fitted_window,head_lid_overlap,usb_cut,head_features=fit_head(ref,settings,mid,electronics['S3Source_Part__Feature022'].BoundBox)
     assert head.BoundBox.ZMin>=frame.BoundBox.ZMax-1e-6
     print('V3: checking electronics, spacers, shell and lid',flush=True)
     cache=CheckCache(check_cache or ROOT/'tests/artifacts/printing-check-cache',
@@ -260,7 +334,7 @@ def build(params,out,include_cover=True,datums_only=False,fresh_checks=False,che
     assert same(cables['assembly_datums'],datums),'Routing samples use different frame/PCB datums'
     assert cables['entry_min_gap_mm']>=.2
     print('V3: checking authored ribbon and leg clearance samples',flush=True)
-    ribbon_check=cache.run('ribbons',{'head':geometry_keys['head'],'lid':geometry_keys['lid'],'routes':sha(cables_path),'settings':settings,'midpoint':mid},lambda:check_ribbons(head,lid,cables,settings,mid))
+    ribbon_check=cache.run('ribbons',{'head':geometry_keys['head'],'lid':geometry_keys['lid'],'routes':sha(cables_path),'settings':settings,'midpoint':mid,'electronics':electronics_key},lambda:check_ribbons(head,lid,cables,settings,mid,electronics))
     queries=ribbon_check['classified']
     leg_checks=[];boxes=[bounds(head),bounds(lid)];limits=[[min(b[0][i] for b in boxes) for i in range(3)],[max(b[1][i] for b in boxes) for i in range(3)]]
     for item in cables['leg_samples']:
@@ -291,7 +365,7 @@ def build(params,out,include_cover=True,datums_only=False,fresh_checks=False,che
             'bottom_cover_fasteners':{'frame':frame_under,'cover':cover_under,'matching_axes':True,'frame_intersection_mm3':overlap.Volume},'head_mount_axes_xy_mm':frame_head,'servo_bay_checks':bay_checks,
             'battery_wire_cutout':{'location':'front-right','corner_radius_mm':1.,'source':'native V3 opening','other_channel_walls_intact':True,'new_cutout_wall_clear':True,'opposite_channel_section_checks':channel_checks},
             'pcb_fastening':{'board_thickness_mm':pcb_size[2],'spacer_height_mm':params['pcb_standoff_height_mm'],'screw_diameter_mm':params['pcb_screw_diameter_mm'],'screw_under_head_length_mm':params['pcb_screw_length_mm'],'nominal_frame_penetration_mm':penetration,'pilot_depth_mm':params['pcb_pilot_depth_mm'],'tip_clearance_mm':params['pcb_pilot_depth_mm']-penetration,'minimum_pilot_floor_mm':params['pcb_pilot_floor_mm'],'model_underside_projection_mm':-lowest,'model_deck_clearance_mm':params['pcb_standoff_height_mm']+lowest},
-            'head_fit':{'source_object':'Loftwork V3 shell and removable lid','raise_mm':raise_mm,'height_splice_z_mm':z,'assembled_size_mm':[limits[1][i]-limits[0][i] for i in range(3)],'display_window':fitted_window,'display_window_unchanged':True,'spacer_clearances_mm':spacer_gaps,'electronics_intersections':collisions,'electronics_shapes_checked':len(electronics),'mount_axes_xy_mm':head_axes,'lid_intersection_mm3':head_lid_overlap.Volume,'cable_notches':{'count':2,'bottom_open':True,'centre_x_mm':mid,'width_mm':settings['cable_notch_width_mm'],'top_z_mm':settings['cable_notch_top_z_mm'],'top_corner_radius_mm':2},'cable_surface_samples':len(cables['surface_points_mm']),'cable_samples_inside':0,'cable_samples_classified':queries,'cable_entry_min_gap_mm':cables['entry_min_gap_mm'],'cable_reference_sha256':sha(cables_path),'leg_pose_checks':leg_checks,'usb_access_bounds_mm':bounds(usb_cut),'scope':'Final model fit and authored route samples; Rest/Standing leg bounds. No physical print or full-range motion test.'},
+            'head_fit':{'source_object':'Loftwork V3 shell and removable lid','raise_mm':raise_mm,'height_splice_z_mm':z,'assembled_size_mm':[limits[1][i]-limits[0][i] for i in range(3)],'display_window':fitted_window,'display_window_unchanged':True,'spacer_clearances_mm':spacer_gaps,'electronics_intersections':collisions,'electronics_shapes_checked':len(electronics),'mount_axes_xy_mm':head_axes,'lid_intersection_mm3':head_lid_overlap.Volume,**head_features,'cable_surface_samples':len(cables['surface_points_mm']),'cable_samples_inside':0,'cable_samples_classified':queries,'cable_electronics_samples_inside':ribbon_check['electronics_inside'],'cable_entry_min_gap_mm':cables['entry_min_gap_mm'],'cable_reference_sha256':sha(cables_path),'leg_pose_checks':leg_checks,'usb_access_bounds_mm':bounds(usb_cut),'scope':'Final model fit and authored route samples; Rest/Standing leg bounds. No physical print or full-range motion test.'},
             'unchanged_legs':{name:sha(ROOT/'assets/stl/upstream'/f'{name}-v117.stl') for name in ['L1','L2','L3','L4','R1','R2','R3','R4']},'fit_note':'V3-derived example; current PCB/spacer datums retained. CAD and sampled route checks are not physical fit evidence.'}
     write(out/'assembly.json',report);print(json.dumps({'parts':list(parts),'head_spacer_gaps_mm':spacer_gaps,'ribbon_queries':queries,'support_width_mm':support},indent=2),flush=True)
     return report

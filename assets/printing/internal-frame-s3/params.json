@@ -3,10 +3,13 @@
   "units": "mm",
   "source_family": "loftwork-printing-v3",
   "head_cover": {
-    "raise_mm": 8.0,
+    "raise_mm": 0.0,
     "height_splice_z_mm": 47.7,
-    "cable_notch_width_mm": 8.0,
-    "cable_notch_top_z_mm": 55.0
+    "cable_entry": {"z_mm": 11.2, "pitch_x_mm": 3.8, "inner_y_mm": 23.2, "inner_low_y_mm": 25.5, "low_rise_z_mm": 29.0, "upper_rise_z_mm": 40.0},
+    "ear_extension_mm": 5.0,
+    "ear_forward_mm": 4.5,
+    "ear_spread_mm": 10.5,
+    "lid_clearance_mm": 0.3
   },
   "battery_wire_cutout": "front-right",
   "pcb_standoff_height_mm": 3.0,

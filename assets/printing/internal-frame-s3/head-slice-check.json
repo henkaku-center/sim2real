@@ -1,6 +1,6 @@
 {
   "tool": "Bambu Studio 02.08.02.61",
-  "date": "2026-11-01",
+  "date": "2026-11-02",
   "printer": "Bambu Lab P1S 0.4 nozzle",
   "layer_height_mm": 0.2,
   "wall_loops": 4,
@@ -10,18 +10,17 @@
   ],
   "supports_enabled": true,
   "support_feature_seconds": {
-    "Support": 337.6098327636719,
-    "Support interface": 7.7583794593811035
+    "Support": 405.1015625,
+    "Support interface": 16.87138557434082
   },
   "object_count": 2,
   "return_code": 0,
   "warning": "",
   "models": {
-    "head-cover-print.stl": "4fef82afa6fe1b12d38382cdc999844ba3f63430074d90cbeced64b639fc48c9",
-    "head-lid-print.stl": "176de9444418059bfcc2efd681f20565c4185d7048810d8f1409007684f52a0f"
+    "head-cover-print.stl": "bb12aa35f913f1452769336e59a96f680ddd52b7ad22ae6f2d9a79da7c74f042",
+    "head-lid-print.stl": "1162fd13576ae0f381d11f81d22739b1417f62dcabba5539316f30de6c6b28b2"
   },
-  "estimated_seconds": 4805.29052734375,
-  "estimated_filament_g": 42.27,
-  "scope": "Local slicing only; bridge paths remain. No physical print or printer upload.",
-  "unsupported_trial_warning": "It seems object head-cover-print.stl has floating regions. Please re-orient the object or enable support generation."
+  "estimated_seconds": 4738.328125,
+  "estimated_filament_g": 41.46,
+  "scope": "Low-roof fixed-ear shell and T-shaped slip-skirt lid; local slicing only, no physical print or printer upload."
 }

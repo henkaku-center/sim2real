@@ -54,16 +54,13 @@ class HeadPreviewTest(unittest.TestCase):
                 expected=Part.read(str(expected_dir/(name+'.step')))
                 actual=Part.read(str(out/(name+'.step')))
                 self.assertLess(abs(actual.Volume-expected.Volume),1e-3)
-                for a,b in [(actual,expected),(expected,actual)]:
-                    delta=a.cut(b)
-                    self.assertTrue(delta.isNull() or delta.isValid())
-                    self.assertLess(abs(delta.Volume),1e-3)
+                self.assertEqual((out/(name+'.step')).read_bytes(),(expected_dir/(name+'.step')).read_bytes())
             changed=copy.deepcopy(params)
-            changed['head_cover']['cable_notch_width_mm']=10
+            changed['head_cover']['raise_mm']+=2
             with patch.object(cad,'load_electronics',side_effect=AssertionError('cache miss')):
                 wider=cad.preview_head(changed,out)
                 self.assertTrue(wider['input_cache_hit'])
-                self.assertLess(wider['parts']['head-cover']['volume_mm3'],original['parts']['head-cover']['volume_mm3'])
+                self.assertGreater(wider['parts']['head-cover']['volume_mm3'],original['parts']['head-cover']['volume_mm3'])
                 restored=cad.preview_head(params,out)
                 self.assertEqual(restored['parts'],original['parts'])
                 # An electronics-source change must reload measurements.
