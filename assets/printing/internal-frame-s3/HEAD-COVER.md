@@ -41,6 +41,14 @@ measured wall thickness. `assembly.json` records the new centre and verifies
 that the old bore is closed and the new one is open. The guide places its existing
 switch model and terminal wires from this same bore datum.
 
+The old switch's rectangular internal recess is also removed; the healed rear
+wall is 2 mm thick at the former bore. A separate 6 mm wide, 8 mm high bottom-open
+notch on the right aligns with the native front-right frame power channel for
+the battery leads. The two midpoint servo-ribbon openings remain separate.
+`params.json` records the reference battery's underside placement, front/right
+lead orientation and slight insertion roll; APS checks the pack and lead route
+against the delivered solids.
+
 ## Sources and checks
 
 The shell/lid starts from the shared Loftwork `printing_V3` kit. Ear surfaces are

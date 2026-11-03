@@ -1,7 +1,7 @@
 {
   "scope": "Native reference-switch versus all carrier electronics. Same two-lug stand-in as the guide; not measured purchased-part fit or physical cable reach.",
   "checker_sha256": "ef74fd7dce0c0f6519d41fc9dad363145c247e900c6c7098cf08503f58e68deb",
-  "assembly_sha256": "0c0a586f36a398fbb6695becd14a38181f28e9f14a042a08525649e1c642bd75",
+  "assembly_sha256": "b8cda27a64cca96f7fe5cfbb0401e45a3d96af37dfeee8ca2f55f087df6d4706",
   "switch_reference_sha256": "07466e906d8b30a731328551ff3cdb2b21adfef703325d224d8139ed8d8dd0d6",
   "electronics_sha256": "d96973c182bf78b99527ad390e552871f7b5ec073eee68850c346b291ffa1b88",
   "results": {

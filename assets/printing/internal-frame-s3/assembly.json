@@ -1,5 +1,6 @@
 {
   "battery_wire_cutout": {
+    "centre_x_mm": 27.2648035,
     "corner_radius_mm": 1.0,
     "location": "front-right",
     "new_cutout_wall_clear": true,
@@ -205,6 +206,17 @@
       58.53399999999749,
       53.77512122656712
     ],
+    "battery_entry": {
+      "aligned_to": "native front-right frame power channel",
+      "bottom_open": true,
+      "bottom_z_mm": 4.967756901864767,
+      "centre_x_mm": 27.2648035,
+      "corner_radius_mm": 1.2,
+      "side": "right",
+      "top_z_mm": 12.967756901864767,
+      "width_mm": 6.0,
+      "wire_z_mm": 9.5
+    },
     "cable_electronics_samples_inside": 0,
     "cable_entry_min_gap_mm": 0.35087854709528865,
     "cable_notches": {
@@ -222,7 +234,7 @@
       "top_z_mm": 14.967756901865,
       "width_mm": 15.483191024289
     },
-    "cable_reference_sha256": "9d9aec1f5992faefa0d7790cd9b09c2ade640096a2ba9afc2d265c582e8223f6",
+    "cable_reference_sha256": "85d3764ea176c224db74e6412183254b6a99aa30fe6e7f717c214fa0eb9a85cd",
     "cable_samples_classified": 666,
     "cable_samples_inside": 0,
     "cable_surface_samples": 61168,
@@ -679,7 +691,7 @@
     "scope": "Final model fit and authored route samples; Rest/Standing leg bounds. No physical print or full-range motion test.",
     "sealed_internal_voids": {
       "count": 6,
-      "volume_mm3": 45.20409792625651
+      "volume_mm3": 45.20364245861856
     },
     "source_object": "Loftwork V3 shell and removable lid",
     "spacer_clearances_mm": [
@@ -701,12 +713,13 @@
         0.0,
         0.2026078387390177
       ],
-      "old_bore_filled_mm": 0.9999931539025448,
+      "old_bore_filled_mm": 2.0000000000010147,
       "old_centre_mm": [
         -39.93685855186,
         7.005083606829,
         37.600941996849
       ],
+      "old_recess_removed": true,
       "panel_centre_y_mm": 0.005083606858546474,
       "source": "rear-panel horizontally centred tail switch; original height retained above servo hub; former bore closed"
     },
@@ -773,8 +786,31 @@
     ]
   },
   "parameters": {
+    "battery_mount": {
+      "centre_mm": [
+        3.5,
+        0,
+        -6
+      ],
+      "envelope_mm": [
+        51,
+        28,
+        14
+      ],
+      "insertion_roll_deg": 20,
+      "insertion_travel_mm": 30,
+      "label_face": "down",
+      "lead_end": "front",
+      "leads_hand": "right"
+    },
     "battery_wire_cutout": "front-right",
     "head_cover": {
+      "battery_entry": {
+        "corner_radius_mm": 1.2,
+        "height_mm": 8.0,
+        "width_mm": 6.0,
+        "wire_z_mm": 9.5
+      },
       "cable_entry": {
         "inner_low_y_mm": 25.5,
         "inner_y_mm": 23.2,
@@ -857,12 +893,12 @@
         0
       ],
       "print_stl": "head-cover-print.stl",
-      "print_stl_sha256": "8b4a5d64c193efb7cf41a93136b703373a73019b59eba3311fd1e84413c27fea",
-      "step_sha256": "0f5b1ffdaf0288e9b18a5837ed160e4904b09511d37e04b024f84b1ef7a1c2ef",
-      "stl_sha256": "33c5921ccc2b8b991231350d1ef3cdeba6e6eb9a3ca72bf64468656e268c02bc",
-      "triangles": 5524,
+      "print_stl_sha256": "ca9c0240287bbcab4d147d40e93874ef6679ca91bbe9fd7d7ad1882e244b6c5a",
+      "step_sha256": "e6ab612ef38aca6401fe0c8e5fdd3c9c15c3f7abc9623a751bca71779ccba32d",
+      "stl_sha256": "49fbea2021290127dc2a492de3dcf18baac44b5a86c5b2a5c6d68865439848f2",
+      "triangles": 5652,
       "valid_solid": true,
-      "volume_mm3": 25383.26050751848
+      "volume_mm3": 25333.853517089683
     },
     "head-lid": {
       "bounds_mm": [
@@ -1282,7 +1318,7 @@
       4.967756901865376
     ]
   ],
-  "source_script_sha256": "12769d095f9b3042003375d4410b901f913a509ac9a3a2b08d548f2a38719479",
+  "source_script_sha256": "6705a3e761e642c918f414bb02a0668a2494acedf333115a524144a4daf067a6",
   "support_width_mm": 63.55037999999999,
   "unchanged_legs": {
     "L1": "081896568cc9776393c038d05ecc8caf01090c6971efebe799d064def4c92558",
@@ -1324,7 +1360,7 @@
     {
       "cache_hit": true,
       "group": "electronics/head",
-      "key": "af3b8a818c858771b1f1f262c945cca0b73ba68f6c443ca9ec089acda2f32615"
+      "key": "d447a3412b7a4453665af577da47dde89f42942d64413f726e0716b055005663"
     },
     {
       "cache_hit": true,
@@ -1339,7 +1375,7 @@
     {
       "cache_hit": false,
       "group": "ribbons",
-      "key": "19a629cdd97231c19aca31f6560db79068cf8a2c3486b8826b2203e0e0499248"
+      "key": "5248ca0e69f9ef2014ad87c0469f803d37b7ded256136a60e171aef037cc452e"
     }
   ],
   "validation_checker_sha256": "7d142cc76af248bbf22c62debdcee3cf9baf11edd6424c18028c4f5997329b69"

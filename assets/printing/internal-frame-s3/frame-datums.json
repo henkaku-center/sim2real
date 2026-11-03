@@ -51,8 +51,31 @@
     ]
   },
   "parameters": {
+    "battery_mount": {
+      "centre_mm": [
+        3.5,
+        0,
+        -6
+      ],
+      "envelope_mm": [
+        51,
+        28,
+        14
+      ],
+      "insertion_roll_deg": 20,
+      "insertion_travel_mm": 30,
+      "label_face": "down",
+      "lead_end": "front",
+      "leads_hand": "right"
+    },
     "battery_wire_cutout": "front-right",
     "head_cover": {
+      "battery_entry": {
+        "corner_radius_mm": 1.2,
+        "height_mm": 8.0,
+        "width_mm": 6.0,
+        "wire_z_mm": 9.5
+      },
       "cable_entry": {
         "inner_low_y_mm": 25.5,
         "inner_y_mm": 23.2,
