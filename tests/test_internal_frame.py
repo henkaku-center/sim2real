@@ -104,6 +104,10 @@ def test_head_lid_electronics_and_cable_entries_are_checked():
     assert abs(switch['centre_mm'][1]-switch['panel_centre_y_mm'])<1e-6
     assert switch['height_retained'] and switch['centre_mm'][2]==switch['old_centre_mm'][2]
     assert abs(switch['centre_mm'][1])<.01
+    assert switch['old_recess_removed'] and 1.99<switch['old_bore_filled_mm']<2.01
+    entry=h['battery_entry'];assert entry['side']=='right' and entry['bottom_open']
+    assert entry['centre_x_mm']==r['battery_wire_cutout']['centre_x_mm']
+    assert entry['width_mm']==6 and abs(entry['top_z_mm']-entry['bottom_z_mm']-8)<1e-6
     assert h['cable_notches']['bottom_open'] and h['cable_notches']['count']==2
     assert h['cable_notches']==r['head_cable_entry']
     assert 15<h['cable_notches']['width_mm']<16 and h['cable_notches']['top_z_mm']<15

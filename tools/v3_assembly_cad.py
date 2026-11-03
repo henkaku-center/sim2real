@@ -95,9 +95,11 @@ def fit_head(ref,settings,mid,usb):
     old_bores=[f.Surface for f in bore_faces]
     assert old_bores and all((b.Center-old_bores[0].Center).Length<1e-6 for b in old_bores)
     old=old_bores[0];cy=(head.BoundBox.YMin+head.BoundBox.YMax)/2
+    recess=[f for f in head.Faces if isinstance(f.Surface,Part.Plane) and f.BoundBox.XMax<-30 and f.BoundBox.YMin>old.Center.y-2.71 and f.BoundBox.YMax<old.Center.y+2.71 and f.BoundBox.ZMin>old.Center.z-5 and f.BoundBox.ZMax<old.Center.z+5]
+    assert len(recess)==5
     before_fill=head.Volume
-    head=head.defeaturing(bore_faces)
-    assert before_fill<head.Volume<before_fill+25
+    head=head.defeaturing(bore_faces+recess)
+    assert before_fill+60<head.Volume<before_fill+70
     cz=old.Center.z
     cx=old.Center.x-old.Axis.z/old.Axis.x*(cz-old.Center.z)
     switch_centre=V(cx,cy,cz)
@@ -126,6 +128,17 @@ def fit_head(ref,settings,mid,usb):
     head=head.multiFuse([shoulders,*ears])
     usb_y=(usb.YMin+usb.YMax)/2;usb_z=(usb.ZMin+usb.ZMax)/2
     usb_cut=Part.makeBox(usb.XMin-head.BoundBox.XMin+2,12,7,V(head.BoundBox.XMin-1,usb_y-6,usb_z-3.5));head=head.cut(usb_cut)
+    power=settings['battery_entry'];w=power['width_mm'];r=power['corner_radius_mm']
+    frame=ref['frame'];power_axes=cylinders(frame,1.,lambda f:f.Surface.Center.x>0 and f.Surface.Center.y<0 and abs(f.BoundBox.ZMax-frame.BoundBox.ZMax)<1e-5)
+    assert len(power_axes)==2
+    power_x=sum(x for x,y,lo,hi in power_axes)/2;bottom=head.BoundBox.ZMin-1;top=head.BoundBox.ZMin+power['height_mm']
+    cuts=[Part.makeBox(w,40,top-r-bottom,V(power_x-w/2,-55,bottom)),Part.makeBox(w-2*r,40,r,V(power_x-w/2+r,-55,top-r))]
+    cuts.extend(Part.makeCylinder(r,40,V(power_x+side*(w/2-r),-55,top-r),V(0,1,0)) for side in [-1,1])
+    head=head.cut(cuts[0].multiFuse(cuts[1:]))
+    battery_entry={'side':'right','centre_x_mm':power_x,'width_mm':w,'bottom_z_mm':bottom+1,'top_z_mm':top,'corner_radius_mm':r,'wire_z_mm':power['wire_z_mm'],'bottom_open':True,'aligned_to':'native front-right frame power channel'}
+    opening=head.common(Part.makeLine(V(power_x,-40,power['wire_z_mm']),V(power_x,-20,power['wire_z_mm'])))
+    opposite=head.common(Part.makeLine(V(power_x,20,power['wire_z_mm']),V(power_x,40,power['wire_z_mm'])))
+    assert sum(e.Length for e in opening.Edges)<1e-6 and sum(e.Length for e in opposite.Edges)>1
     assert head.isValid() and len(head.Solids)==1
     refined=head.removeSplitter()
     unified=refined.isValid() and abs(refined.Volume-head.Volume)<1e-3
@@ -164,12 +177,12 @@ def fit_head(ref,settings,mid,usb):
     switch_hole=switch_holes[0]
     assert (switch_hole.Center-switch_centre).cross(switch_hole.Axis).Length<1e-6
     old_fill=head.common(Part.makeLine(old.Center-old.Axis*5,old.Center+old.Axis*5))
-    old_fill_mm=sum(e.Length for e in old_fill.Edges);assert old_fill_mm>.9
+    old_fill_mm=sum(e.Length for e in old_fill.Edges);assert 1.99<old_fill_mm<2.01
     new_open=head.common(Part.makeLine(switch_centre-old.Axis*5,switch_centre+old.Axis*5))
     assert sum(e.Length for e in new_open.Edges)<1e-6
-    details={'cable_notches':entries,'closed_upper_side_ports':2,'ear_source':ear_source,
+    details={'cable_notches':entries,'battery_entry':battery_entry,'closed_upper_side_ports':2,'ear_source':ear_source,
               'switch_opening':{'centre_mm':list(switch_centre),'normal':list(switch_hole.Axis),'diameter_mm':5.,'source':'rear-panel horizontally centred tail switch; original height retained above servo hub; former bore closed',
-                                'old_centre_mm':list(old.Center),'panel_centre_y_mm':cy,'height_retained':True,'old_bore_filled_mm':old_fill_mm},
+                                'old_centre_mm':list(old.Center),'panel_centre_y_mm':cy,'height_retained':True,'old_bore_filled_mm':old_fill_mm,'old_recess_removed':True},
              'sealed_internal_voids':{'count':void_count,'volume_mm3':void_volume},'unified_external_faces':unified,
              'ear_bounds_mm':[bounds(e) for e in ears],'ear_height_above_roof_mm':max(e.BoundBox.ZMax for e in ears)-roof,
               'lid_capture_samples':capture,'lid_slide_samples':slide,'lid_plan':{'shape':'T-shaped rear roof with a front tongue between fixed ears','roof_z_mm':roof,
@@ -248,7 +261,7 @@ def preview_part(params,out,kind='head'):
         datums,cached=preview_datums(out);deck=datums['deck_z_mm'];seat=deck+params['pcb_standoff_height_mm']
         cx,cy=datums['pcb_half_size_mm']
         if kind=='head':
-            _,ref=load_references({'head','lid'});lo,hi=datums['usb_native_bounds_mm']
+            _,ref=load_references({'head','lid','frame'});lo,hi=datums['usb_native_bounds_mm']
             usb=App.BoundBox(cx-hi[0],cy-hi[1],lo[2]+seat,cx-lo[0],cy-lo[1],hi[2]+seat)
             head,lid,aperture,overlap,_,features=fit_head(ref,params['head_cover'],datums['midpoint_x_mm'],usb)
             assert head.BoundBox.ZMin>=deck-1e-6
@@ -390,7 +403,7 @@ def build(params,out,include_cover=True,datums_only=False,fresh_checks=False,che
             'pcb_side_margin_mm':(support-pcb_size[1])/2,'support_width_mm':support,'electronics_sha256':sha(ROOT/'assets/cad/Sesame-S3-Assembly.FCStd'),'electronics_shapes_checked':len(electronics),'electronics_intersections':collisions,'parts':parts,
             'pcb_hole_adjustment':{'source_axes':[[x,y] for x,y,lo,hi in old_holes],'destination_axes':[[x,y] for x,y,_ in pcb_holes],'source_diameter_mm':1.9,'pilot_diameter_mm':params['pcb_pilot_diameter_mm']},
             'bottom_cover_fasteners':{'frame':frame_under,'cover':cover_under,'matching_axes':True,'frame_intersection_mm3':overlap.Volume},'head_mount_axes_xy_mm':frame_head,'servo_bay_checks':bay_checks,
-            'battery_wire_cutout':{'location':'front-right','corner_radius_mm':1.,'source':'native V3 opening','other_channel_walls_intact':True,'new_cutout_wall_clear':True,'opposite_channel_section_checks':channel_checks},
+            'battery_wire_cutout':{'location':'front-right','centre_x_mm':port_x,'corner_radius_mm':1.,'source':'native V3 opening','other_channel_walls_intact':True,'new_cutout_wall_clear':True,'opposite_channel_section_checks':channel_checks},
             'pcb_fastening':{'board_thickness_mm':pcb_size[2],'spacer_height_mm':params['pcb_standoff_height_mm'],'screw_diameter_mm':params['pcb_screw_diameter_mm'],'screw_under_head_length_mm':params['pcb_screw_length_mm'],'nominal_frame_penetration_mm':penetration,'pilot_depth_mm':params['pcb_pilot_depth_mm'],'tip_clearance_mm':params['pcb_pilot_depth_mm']-penetration,'minimum_pilot_floor_mm':params['pcb_pilot_floor_mm'],'model_underside_projection_mm':-lowest,'model_deck_clearance_mm':params['pcb_standoff_height_mm']+lowest},
             'head_fit':{'source_object':'Loftwork V3 shell and removable lid','raise_mm':raise_mm,'height_splice_z_mm':z,'assembled_size_mm':[limits[1][i]-limits[0][i] for i in range(3)],'display_window':fitted_window,'display_window_unchanged':True,'spacer_clearances_mm':spacer_gaps,'electronics_intersections':collisions,'electronics_shapes_checked':len(electronics),'mount_axes_xy_mm':head_axes,'lid_intersection_mm3':head_lid_overlap.Volume,**head_features,'cable_surface_samples':len(cables['surface_points_mm']),'cable_samples_inside':0,'cable_samples_classified':queries,'cable_electronics_samples_inside':ribbon_check['electronics_inside'],'cable_entry_min_gap_mm':cables['entry_min_gap_mm'],'cable_reference_sha256':sha(cables_path),'leg_pose_checks':leg_checks,'usb_access_bounds_mm':bounds(usb_cut),'scope':'Final model fit and authored route samples; Rest/Standing leg bounds. No physical print or full-range motion test.'},
             'unchanged_legs':{name:sha(ROOT/'assets/stl/upstream'/f'{name}-v117.stl') for name in ['L1','L2','L3','L4','R1','R2','R3','R4']},'fit_note':'V3-derived example; current PCB/spacer datums retained. CAD and sampled route checks are not physical fit evidence.'}
