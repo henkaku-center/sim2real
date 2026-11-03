@@ -1,0 +1,1467 @@
+{
+  "battery_wire_cutout": {
+    "centre_x_mm": 79.2648035,
+    "corner_radius_mm": 1.0,
+    "location": "front-right",
+    "new_cutout_wall_clear": true,
+    "opposite_channel_section_checks": [
+      {
+        "left_right_intervals_mm": [
+          [],
+          []
+        ],
+        "x_mm": -79.2648035,
+        "z_mm": -5
+      },
+      {
+        "left_right_intervals_mm": [
+          [],
+          []
+        ],
+        "x_mm": -79.2648035,
+        "z_mm": -10
+      },
+      {
+        "left_right_intervals_mm": [
+          [
+            [
+              29.25,
+              30.25
+            ],
+            [
+              45.8,
+              46.85
+            ]
+          ],
+          [
+            [
+              29.25,
+              30.25
+            ],
+            [
+              45.8,
+              46.85
+            ]
+          ]
+        ],
+        "x_mm": -20,
+        "z_mm": -5
+      },
+      {
+        "left_right_intervals_mm": [
+          [
+            [
+              28.9,
+              30.25
+            ],
+            [
+              45.8,
+              46.85
+            ]
+          ],
+          [
+            [
+              28.9,
+              30.25
+            ],
+            [
+              45.8,
+              46.85
+            ]
+          ]
+        ],
+        "x_mm": -20,
+        "z_mm": -10
+      },
+      {
+        "left_right_intervals_mm": [
+          [
+            [
+              29.25,
+              30.25
+            ],
+            [
+              45.8,
+              46.85
+            ]
+          ],
+          [
+            [
+              29.25,
+              30.25
+            ],
+            [
+              45.8,
+              46.85
+            ]
+          ]
+        ],
+        "x_mm": -15,
+        "z_mm": -5
+      },
+      {
+        "left_right_intervals_mm": [
+          [
+            [
+              28.9,
+              30.25
+            ],
+            [
+              45.8,
+              46.85
+            ]
+          ],
+          [
+            [
+              28.9,
+              30.25
+            ],
+            [
+              45.8,
+              46.85
+            ]
+          ]
+        ],
+        "x_mm": -15,
+        "z_mm": -10
+      }
+    ],
+    "other_channel_walls_intact": true,
+    "source": "native V3 opening"
+  },
+  "bottom_cover_fasteners": {
+    "cover": [
+      [
+        -33.318834,
+        -4e-06
+      ],
+      [
+        86.759864,
+        -4e-06
+      ]
+    ],
+    "frame": [
+      [
+        -33.318838,
+        0.0
+      ],
+      [
+        86.75986,
+        0.0
+      ]
+    ],
+    "frame_intersection_mm3": 0.0,
+    "matching_axes": true
+  },
+  "channel_layout": {
+    "foot_lane_y_mm": 42.975,
+    "hip_lane_y_mm": 44.575,
+    "midpoint_x_mm": 1.2642835,
+    "side_offset_mm": 27.575000000000003
+  },
+  "coordinates": "X front/OLED, Y left, Z up; PCB USB toward rear",
+  "electronics_intersections": [],
+  "electronics_sha256": "d96973c182bf78b99527ad390e552871f7b5ec073eee68850c346b291ffa1b88",
+  "electronics_shapes_checked": 710,
+  "entry_script_sha256": "58c57f0199a88c9f269089f3cf531650b2e32f2364bc4459326e470db6e20954",
+  "fit_note": "V3-derived example; current PCB/spacer datums retained. CAD and sampled route checks are not physical fit evidence.",
+  "head_cable_entry": {
+    "bottom_open": true,
+    "bottom_z_mm": 4.967756901864767,
+    "centre_x_mm": 0.43609945419250007,
+    "count": 2,
+    "entry_z_mm": 11.2,
+    "side_y_mm": [
+      -44.26191639314019,
+      44.27208360685729
+    ],
+    "source": "unchanged native V3 lower entries",
+    "top_corner_radius_mm": 1.6,
+    "top_z_mm": 14.967756901865,
+    "width_mm": 15.483191024289
+  },
+  "head_fit": {
+    "assembled_size_mm": [
+      139.17675006469983,
+      88.53399999999748,
+      53.77512122656565
+    ],
+    "battery_entry": {
+      "aligned_to": "native front-right frame power channel",
+      "bottom_open": true,
+      "bottom_z_mm": 4.967756901864767,
+      "centre_x_mm": 79.2648035,
+      "corner_radius_mm": 1.2,
+      "side": "right",
+      "top_z_mm": 12.967756901864767,
+      "width_mm": 6.0,
+      "wire_z_mm": 9.5
+    },
+    "cable_checks": "not run: authored ribbon routes are for the base frame",
+    "cable_notches": {
+      "bottom_open": true,
+      "bottom_z_mm": 4.967756901864767,
+      "centre_x_mm": 0.43609945419250007,
+      "count": 2,
+      "entry_z_mm": 11.2,
+      "side_y_mm": [
+        -44.26191639314019,
+        44.27208360685729
+      ],
+      "source": "unchanged native V3 lower entries",
+      "top_corner_radius_mm": 1.6,
+      "top_z_mm": 14.967756901865,
+      "width_mm": 15.483191024289
+    },
+    "closed_upper_side_ports": 2,
+    "display_window": {
+      "bounds_mm": [
+        [
+          88.37167953737695,
+          -26.2457015289,
+          29.944536736023
+        ],
+        [
+          91.9151616437862,
+          -3.9949163931390004,
+          42.088578675467
+        ]
+      ],
+      "centre_mm": [
+        90.14342059058157,
+        -15.1203089610195,
+        36.016557705745
+      ],
+      "height_mm": 12.650455330359355,
+      "normal": [
+        0.9599687617804528,
+        -9.12882813470622e-16,
+        0.2801070802491511
+      ],
+      "width_mm": 22.250785135761
+    },
+    "display_window_unchanged": true,
+    "display_windows": [
+      {
+        "bounds_mm": [
+          [
+            88.37167953737695,
+            -26.2457015289,
+            29.944536736023
+          ],
+          [
+            91.9151616437862,
+            -3.9949163931390004,
+            42.088578675467
+          ]
+        ],
+        "centre_mm": [
+          90.14342059058157,
+          -15.1203089610195,
+          36.016557705745
+        ],
+        "height_mm": 12.650455330359355,
+        "normal": [
+          0.9599687617804528,
+          -9.12882813470622e-16,
+          0.2801070802491511
+        ],
+        "width_mm": 22.250785135761
+      },
+      {
+        "bounds_mm": [
+          [
+            88.37167953737695,
+            4.0050836068609605,
+            29.944536736022997
+          ],
+          [
+            91.9151616437862,
+            26.255868742622,
+            42.088578675467
+          ]
+        ],
+        "centre_mm": [
+          90.14342059058157,
+          15.13047617474148,
+          36.016557705745
+        ],
+        "height_mm": 12.650455330359359,
+        "normal": [
+          0.9599687617804528,
+          -9.12882813470622e-16,
+          0.2801070802491511
+        ],
+        "width_mm": 22.25078513576104
+      }
+    ],
+    "ear_bounds_mm": [
+      [
+        [
+          72.62625621831506,
+          30.446391023724637,
+          49.21112729376209
+        ],
+        [
+          86.78505969382701,
+          40.15932765607367,
+          58.74287812843041
+        ]
+      ],
+      [
+        [
+          72.62625621832392,
+          -40.1593276560715,
+          49.21112729376209
+        ],
+        [
+          86.78505969382701,
+          -30.446391023719436,
+          58.74287812843042
+        ]
+      ]
+    ],
+    "ear_height_above_roof_mm": 6.7751212265654175,
+    "ear_source": {
+      "base_z_mm": 38.62285690186518,
+      "centre_y_mm": 2.3832276781765103,
+      "credit": "Dorian Todd and contributors",
+      "files": {
+        "left": {
+          "bounds_mm": [
+            [
+              16.12625621832736,
+              4.9463910237255755,
+              38.62285690186518
+            ],
+            [
+              30.28505969382659,
+              14.659327656066672,
+              43.15560773653349
+            ]
+          ],
+          "sha256": "5eda2aaf7f7d7c87c53422639dcdfa1ca82059d8f57449feee21c63a01092046"
+        },
+        "right": {
+          "bounds_mm": [
+            [
+              16.126256218327516,
+              -14.659327656066615,
+              38.62285690186518
+            ],
+            [
+              30.28505969382659,
+              -4.946391023725546,
+              43.15560773653349
+            ]
+          ],
+          "sha256": "346860983baa060a4f66175a1d247258d2e00f2f680f9dd5665b66312e7da31b"
+        }
+      },
+      "git_blob_sha1": "984f8b88d6855bcd9e5d08a7dee3984fe53813ff",
+      "license": "Apache-2.0",
+      "source_object": "Part__Feature491 / COMPOUND001",
+      "source_path": "hardware/cad/Sesame-ESP32-v122.step",
+      "source_repository": "dorianborian/sesame-robot",
+      "source_to_body_matrix": [
+        -1.0,
+        0.0,
+        0.0,
+        26.0,
+        0.0,
+        0.0,
+        1.0,
+        0.0,
+        0.0,
+        1.0,
+        0.0,
+        -17.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    },
+    "electronics_intersections": [],
+    "electronics_shapes_checked": 710,
+    "height_splice_z_mm": 47.7,
+    "leg_pose_checks": [],
+    "lid_capture_samples": [
+      {
+        "intersection_mm3": 43.15515580746842,
+        "lift_mm": 0.25
+      },
+      {
+        "intersection_mm3": 73.9802670986021,
+        "lift_mm": 0.5
+      },
+      {
+        "intersection_mm3": 98.64035613151623,
+        "lift_mm": 1
+      }
+    ],
+    "lid_intersection_mm3": 0.0,
+    "lid_plan": {
+      "assembly_direction": "rear-to-front at fixed Z",
+      "clearance_mm": 0.3,
+      "mating_profile": "unchanged native V3 captive underhang",
+      "roof_z_mm": 51.967756901865,
+      "shape": "T-shaped rear roof with a front tongue between fixed ears",
+      "shoulder_start_x_mm": 72.37625621831506,
+      "tongue_half_width_mm": 30.146391023719435
+    },
+    "lid_slide_samples": [
+      {
+        "intersection_mm3": 0.0,
+        "rear_offset_mm": -138.25435213067502,
+        "z_offset_mm": 0
+      },
+      {
+        "intersection_mm3": 0.0,
+        "rear_offset_mm": -134.79799332740814,
+        "z_offset_mm": 0
+      },
+      {
+        "intersection_mm3": 0.0,
+        "rear_offset_mm": -131.34163452414126,
+        "z_offset_mm": 0
+      },
+      {
+        "intersection_mm3": 0.0,
+        "rear_offset_mm": -127.88527572087439,
+        "z_offset_mm": 0
+      },
+      {
+        "intersection_mm3": 0.0,
+        "rear_offset_mm": -124.42891691760752,
+        "z_offset_mm": 0
+      },
+      {
+        "intersection_mm3": 0.0,
+        "rear_offset_mm": -120.97255811434064,
+        "z_offset_mm": 0
+      },
+      {
+        "intersection_mm3": 0.0,
+        "rear_offset_mm": -117.51619931107376,
+        "z_offset_mm": 0
+      },
+      {
+        "intersection_mm3": 0.0,
+        "rear_offset_mm": -114.05984050780688,
+        "z_offset_mm": 0
+      },
+      {
+        "intersection_mm3": 0.0,
+        "rear_offset_mm": -110.60348170454002,
+        "z_offset_mm": 0
+      },
+      {
+        "intersection_mm3": 0.0,
+        "rear_offset_mm": -107.14712290127314,
+        "z_offset_mm": 0
+      },
+      {
+        "intersection_mm3": 0.0,
+        "rear_offset_mm": -103.69076409800627,
+        "z_offset_mm": 0
+      },
+      {
+        "intersection_mm3": 0.0,
+        "rear_offset_mm": -100.23440529473939,
+        "z_offset_mm": 0
+      },
+      {
+        "intersection_mm3": 0.0,
+        "rear_offset_mm": -96.77804649147251,
+        "z_offset_mm": 0
+      },
+      {
+        "intersection_mm3": 0.0,
+        "rear_offset_mm": -93.32168768820564,
+        "z_offset_mm": 0
+      },
+      {
+        "intersection_mm3": 0.0,
+        "rear_offset_mm": -89.86532888493876,
+        "z_offset_mm": 0
+      },
+      {
+        "intersection_mm3": 0.0,
+        "rear_offset_mm": -86.40897008167188,
+        "z_offset_mm": 0
+      },
+      {
+        "intersection_mm3": 0.0,
+        "rear_offset_mm": -82.952611278405,
+        "z_offset_mm": 0
+      },
+      {
+        "intersection_mm3": 0.0,
+        "rear_offset_mm": -79.49625247513814,
+        "z_offset_mm": 0
+      },
+      {
+        "intersection_mm3": 0.0,
+        "rear_offset_mm": -76.03989367187127,
+        "z_offset_mm": 0
+      },
+      {
+        "intersection_mm3": 0.0,
+        "rear_offset_mm": -72.58353486860439,
+        "z_offset_mm": 0
+      },
+      {
+        "intersection_mm3": 0.0,
+        "rear_offset_mm": -69.12717606533751,
+        "z_offset_mm": 0
+      },
+      {
+        "intersection_mm3": 0.0,
+        "rear_offset_mm": -65.67081726207063,
+        "z_offset_mm": 0
+      },
+      {
+        "intersection_mm3": 0.0,
+        "rear_offset_mm": -62.214458458803755,
+        "z_offset_mm": 0
+      },
+      {
+        "intersection_mm3": 0.0,
+        "rear_offset_mm": -58.75809965553689,
+        "z_offset_mm": 0
+      },
+      {
+        "intersection_mm3": 0.0,
+        "rear_offset_mm": -55.30174085227001,
+        "z_offset_mm": 0
+      },
+      {
+        "intersection_mm3": 0.0,
+        "rear_offset_mm": -51.845382049003135,
+        "z_offset_mm": 0
+      },
+      {
+        "intersection_mm3": 0.0,
+        "rear_offset_mm": -48.389023245736254,
+        "z_offset_mm": 0
+      },
+      {
+        "intersection_mm3": 0.0,
+        "rear_offset_mm": -44.932664442469374,
+        "z_offset_mm": 0
+      },
+      {
+        "intersection_mm3": 0.0,
+        "rear_offset_mm": -41.47630563920251,
+        "z_offset_mm": 0
+      },
+      {
+        "intersection_mm3": 0.0,
+        "rear_offset_mm": -38.019946835935635,
+        "z_offset_mm": 0
+      },
+      {
+        "intersection_mm3": 0.0,
+        "rear_offset_mm": -34.563588032668754,
+        "z_offset_mm": 0
+      },
+      {
+        "intersection_mm3": 0.0,
+        "rear_offset_mm": -31.107229229401877,
+        "z_offset_mm": 0
+      },
+      {
+        "intersection_mm3": 0.0,
+        "rear_offset_mm": -27.650870426134997,
+        "z_offset_mm": 0
+      },
+      {
+        "intersection_mm3": 0.0,
+        "rear_offset_mm": -24.194511622868134,
+        "z_offset_mm": 0
+      },
+      {
+        "intersection_mm3": 0.0,
+        "rear_offset_mm": -20.738152819601254,
+        "z_offset_mm": 0
+      },
+      {
+        "intersection_mm3": 0.0,
+        "rear_offset_mm": -17.281794016334377,
+        "z_offset_mm": 0
+      },
+      {
+        "intersection_mm3": 0.0,
+        "rear_offset_mm": -13.825435213067498,
+        "z_offset_mm": 0
+      },
+      {
+        "intersection_mm3": 0.0,
+        "rear_offset_mm": -10.36907640980062,
+        "z_offset_mm": 0
+      },
+      {
+        "intersection_mm3": 0.0,
+        "rear_offset_mm": -6.912717606533757,
+        "z_offset_mm": 0
+      },
+      {
+        "intersection_mm3": 0.0,
+        "rear_offset_mm": -3.4563588032668786,
+        "z_offset_mm": 0
+      },
+      {
+        "intersection_mm3": 0.0,
+        "rear_offset_mm": -0.0,
+        "z_offset_mm": 0
+      }
+    ],
+    "mount_axes_xy_mm": [
+      [
+        -37.481216,
+        -41.503848
+      ],
+      [
+        -37.481216,
+        41.503848
+      ],
+      [
+        92.132907,
+        -42.362564
+      ],
+      [
+        92.132907,
+        42.362564
+      ]
+    ],
+    "raise_mm": 0.0,
+    "scope": "Final model fit and authored route samples; Rest/Standing leg bounds. No physical print or full-range motion test.",
+    "sealed_internal_voids": {
+      "count": 6,
+      "volume_mm3": 45.20167416873301
+    },
+    "source_object": "Loftwork V3 shell and removable lid",
+    "spacer_clearances_mm": [
+      16.622083606854517,
+      16.611916393139996,
+      6.025000003380001,
+      6.025000003379716
+    ],
+    "switch_opening": {
+      "centre_mm": [
+        -39.93685855186,
+        0.005083606858548251,
+        37.600941996849
+      ],
+      "diameter_mm": 5.0,
+      "height_retained": true,
+      "normal": [
+        -0.9792599571520855,
+        0.0,
+        0.2026078387390177
+      ],
+      "old_bore_filled_mm": 2.0000000000080305,
+      "old_centre_mm": [
+        -39.93685855186,
+        22.005083606829,
+        37.600941996849
+      ],
+      "old_recess_removed": true,
+      "panel_centre_y_mm": 0.005083606858548251,
+      "source": "rear-panel horizontally centred tail switch; original height retained above servo hub; former bore closed"
+    },
+    "unified_external_faces": true,
+    "usb_access_bounds_mm": [
+      [
+        -44.47500000338184,
+        -17.430000000000007,
+        19.87632551137738
+      ],
+      [
+        -30.850000000000012,
+        -5.430000000000007,
+        26.87632551137738
+      ]
+    ]
+  },
+  "head_mount_axes_xy_mm": [
+    [
+      -37.481216,
+      -41.503848
+    ],
+    [
+      -37.481216,
+      41.503848
+    ],
+    [
+      92.132907,
+      -42.362564
+    ],
+    [
+      92.132907,
+      42.362564
+    ]
+  ],
+  "head_reference_bounds_mm": [
+    [
+      -43.47500000338184,
+      -44.26191639314019,
+      4.967756901864767
+    ],
+    [
+      95.701750061318,
+      44.27208360685729,
+      50.210127293762
+    ]
+  ],
+  "hip_shaft_xy_mm": {
+    "L1": [
+      80.217465,
+      52.975
+    ],
+    "L2": [
+      -28.583896000000003,
+      52.975
+    ],
+    "L5": [
+      31.197465,
+      52.975
+    ],
+    "R1": [
+      80.217465,
+      -52.975
+    ],
+    "R2": [
+      -28.583896000000003,
+      -52.975
+    ],
+    "R5": [
+      31.197465,
+      -52.975
+    ]
+  },
+  "parameters": {
+    "battery_mount": {
+      "centre_mm": [
+        3.5,
+        0,
+        -6
+      ],
+      "envelope_mm": [
+        51,
+        28,
+        14
+      ],
+      "insertion_roll_deg": 20,
+      "insertion_travel_mm": 30,
+      "label_face": "down",
+      "lead_end": "front",
+      "leads_hand": "right"
+    },
+    "battery_wire_cutout": "front-right",
+    "head_cover": {
+      "battery_entry": {
+        "corner_radius_mm": 1.2,
+        "height_mm": 8.0,
+        "width_mm": 6.0,
+        "wire_z_mm": 9.5
+      },
+      "cable_entry": {
+        "inner_low_y_mm": 25.5,
+        "inner_y_mm": 23.2,
+        "low_rise_z_mm": 29.0,
+        "pitch_x_mm": 3.8,
+        "upper_rise_z_mm": 40.0,
+        "z_mm": 11.2
+      },
+      "ear_extension_mm": 5.0,
+      "ear_forward_mm": 4.5,
+      "ear_spread_mm": 10.5,
+      "height_splice_z_mm": 47.7,
+      "lid_clearance_mm": 0.3,
+      "raise_mm": 0.0
+    },
+    "mesh_deflection_mm": 0.08,
+    "pcb_pilot_depth_mm": 4.2,
+    "pcb_pilot_diameter_mm": 1.3,
+    "pcb_pilot_floor_mm": 1.2,
+    "pcb_screw_diameter_mm": 1.6,
+    "pcb_screw_length_mm": 8.0,
+    "pcb_spacer_bore_mm": 1.9,
+    "pcb_standoff_height_mm": 3.0,
+    "pcb_standoff_radius_mm": 2.45,
+    "schema_version": 1,
+    "source_family": "loftwork-printing-v3",
+    "units": "mm",
+    "variant": {
+      "electronics": {
+        "bus": "shared I2C with the first OLED (0x3C) and servo hub",
+        "new_s3_pins": 0,
+        "s3_pins": [
+          "D17 (SDA)",
+          "E17 (SCL)"
+        ],
+        "second_display_i2c_address": "0x3D"
+      },
+      "eye_bar_mm": 8.0,
+      "eyes": 2,
+      "id": "two-eyes-six-legs",
+      "middle_legs": {
+        "bay_shift_mm": 2.98,
+        "bay_x_range_mm": [
+          4.0,
+          39.5
+        ],
+        "bay_y_limit_mm": 31.0,
+        "body_plane_x_mm": -3.5,
+        "head_plane_x_mm": 12.0,
+        "hub_channels": [
+          8,
+          9,
+          10,
+          11
+        ],
+        "leg_prints": [
+          "L5 hip print (copy of L1)",
+          "L6 foot print (copy of L3)",
+          "R5 hip print (copy of R1)",
+          "R6 foot print (copy of R3)"
+        ],
+        "lengthen_mm": 52.0,
+        "servos_added": 4
+      },
+      "prompt": "Add two more legs",
+      "stretch_plane_y_mm": 4.25,
+      "widen_mm": 30.0
+    }
+  },
+  "parts": {
+    "bottom-cover": {
+      "bounds_mm": [
+        [
+          -43.47500000218,
+          -54.69657965842,
+          -18.00198309813291
+        ],
+        [
+          95.701754200401,
+          54.696571380251,
+          -10.731983098127957
+        ]
+      ],
+      "closed_mesh": true,
+      "step_sha256": "ab44e4b81d97addc500ef82b7cf6639190efa31a7550574e8f62e24bf16b3bca",
+      "stl_sha256": "d7775694202b8cafda75eb1e37bd0916789e8c0feb88cbe4f2c51b8bc34db6d0",
+      "triangles": 3624,
+      "valid_solid": true,
+      "volume_mm3": 53253.77188393427
+    },
+    "head-cover": {
+      "bounds_mm": [
+        [
+          -43.47500000338001,
+          -44.2619163931402,
+          4.967756901865
+        ],
+        [
+          95.701750061318,
+          44.272083606857294,
+          58.742878128429915
+        ]
+      ],
+      "closed_mesh": true,
+      "print_bounds_mm": [
+        [
+          -43.47500000338001,
+          -44.2619163931402,
+          2.327027459614328e-13
+        ],
+        [
+          95.701750061318,
+          44.272083606857294,
+          53.77512122656515
+        ]
+      ],
+      "print_rotation_axis_angle": [
+        1,
+        0,
+        0,
+        0
+      ],
+      "print_stl": "head-cover-print.stl",
+      "print_stl_sha256": "cf082823405798dbdc122a38d6b4247ee01ebf9b517dd4fb196c60fd7335ddcf",
+      "step_sha256": "2bdc524f3051fe26c9f3672fa6091c4bf0d5cd2422cd99eb8ae6b9006a0ae368",
+      "stl_sha256": "61ec8ff27c851fb3e3e0221db495fddf07ad4187463fdbb2603275cb8c20da37",
+      "triangles": 5908,
+      "valid_solid": true,
+      "volume_mm3": 39546.33386425344
+    },
+    "head-lid": {
+      "bounds_mm": [
+        [
+          -38.25244061195,
+          -41.180202296350004,
+          48.210127293761985
+        ],
+        [
+          86.00191151872501,
+          41.190369510066,
+          51.967756901865
+        ]
+      ],
+      "closed_mesh": true,
+      "print_bounds_mm": [
+        [
+          -38.25244061195,
+          -41.190369510066006,
+          6.394884621840902e-14
+        ],
+        [
+          86.00191151872501,
+          41.18020229635,
+          3.7576296081030947
+        ]
+      ],
+      "print_rotation_axis_angle": [
+        1,
+        0,
+        0,
+        180
+      ],
+      "print_stl": "head-lid-print.stl",
+      "print_stl_sha256": "4ea1db26285018ad898af9a6773b38e4593c27d0df65203dfbd84ccd9e0c06e5",
+      "step_sha256": "d035b6c8fe5f7435933e873fdac158d298c0bcb71de0f499851fdfe98f522d41",
+      "stl_sha256": "62dc9f3eacd266fb9a80cac8d1e80b3936944d1c9a24292799486f61d63826bf",
+      "triangles": 164,
+      "valid_solid": true,
+      "volume_mm3": 35510.84987208582
+    },
+    "internal-frame": {
+      "bounds_mm": [
+        [
+          -43.47500000218,
+          -61.615,
+          -10.731983098136162
+        ],
+        [
+          95.701750061318,
+          61.61500000000001,
+          4.9677569509325
+        ]
+      ],
+      "closed_mesh": true,
+      "print_bounds_mm": [
+        [
+          -43.47500000218,
+          -61.61500000000001,
+          -4.906712369745492e-08
+        ],
+        [
+          95.701750061318,
+          61.615,
+          15.699740000001547
+        ]
+      ],
+      "print_rotation_axis_angle": [
+        1,
+        0,
+        0,
+        180
+      ],
+      "print_stl": "internal-frame-print.stl",
+      "print_stl_sha256": "6e4d8c4bd4ed72e7030a1adae4611d6e75aa42c44d8f4b20bd8348b847a7894a",
+      "step_sha256": "1459ab8b430effd799ab75931f96fb0e5211c002c4883a242aecb98c21611aca",
+      "stl_sha256": "052f182cfd68a8cc1f46a6d2161102b969a1a87fbcd7e669769431dc43bbc1bd",
+      "triangles": 26130,
+      "valid_solid": true,
+      "volume_mm3": 115079.3953470741
+    },
+    "pcb-spacer": {
+      "assembly_origins_mm": [
+        [
+          33.0,
+          23.2,
+          4.967756901865376
+        ],
+        [
+          33.0,
+          -23.200000000000003,
+          4.967756901865376
+        ],
+        [
+          -33.0,
+          23.2,
+          4.967756901865376
+        ],
+        [
+          -33.0,
+          -23.200000000000003,
+          4.967756901865376
+        ]
+      ],
+      "bounds_mm": [
+        [
+          -2.44695445698636,
+          -2.449238495902,
+          0.0
+        ],
+        [
+          2.45,
+          2.449238495902,
+          3.0
+        ]
+      ],
+      "closed_mesh": true,
+      "print_rotation_axis_angle": [
+        1,
+        0,
+        0,
+        0
+      ],
+      "quantity": 4,
+      "step_sha256": "65303c17249c9624041fe92f93fcf0732fe6963d0d38bae0d51b2459afec84c4",
+      "stl_sha256": "8b5c8dcfbe057933dd664d75ab8c7c47dc08ff43652d31724ca03cca2fff1e80",
+      "triangles": 504,
+      "valid_solid": true,
+      "volume_mm3": 48.06636759992385
+    }
+  },
+  "pcb_fastening": {
+    "board_thickness_mm": 1.6,
+    "minimum_pilot_floor_mm": 1.2,
+    "model_deck_clearance_mm": 1.6,
+    "model_underside_projection_mm": 1.4,
+    "nominal_frame_penetration_mm": 3.4000000000000004,
+    "pilot_depth_mm": 4.2,
+    "screw_diameter_mm": 1.6,
+    "screw_under_head_length_mm": 8.0,
+    "spacer_height_mm": 3.0,
+    "tip_clearance_mm": 0.7999999999999998
+  },
+  "pcb_hole_adjustment": {
+    "destination_axes": [
+      [
+        33.0,
+        23.2
+      ],
+      [
+        33.0,
+        -23.200000000000003
+      ],
+      [
+        -33.0,
+        23.2
+      ],
+      [
+        -33.0,
+        -23.200000000000003
+      ]
+    ],
+    "pilot_diameter_mm": 1.3,
+    "source_axes": [
+      [
+        84.4,
+        -38.0
+      ],
+      [
+        -33.6,
+        -38.0
+      ],
+      [
+        -33.6,
+        38.0
+      ],
+      [
+        84.4,
+        38.0
+      ]
+    ],
+    "source_diameter_mm": 1.9
+  },
+  "pcb_hole_diameter_mm": 2.0,
+  "pcb_mount_holes_mm": [
+    [
+      33.0,
+      23.2,
+      7.967756901865376
+    ],
+    [
+      33.0,
+      -23.200000000000003,
+      7.967756901865376
+    ],
+    [
+      -33.0,
+      23.2,
+      7.967756901865376
+    ],
+    [
+      -33.0,
+      -23.200000000000003,
+      7.967756901865376
+    ]
+  ],
+  "pcb_seat_z_mm": 7.967756901865376,
+  "pcb_side_margin_mm": 21.775189999999988,
+  "pcb_size_mm": [
+    70.0,
+    50.0,
+    1.6
+  ],
+  "reference_family": "loftwork-printing-v3",
+  "reference_sha256": "cca25720e7c03bf320f4a4b1b01727ba26d8da91f58a95d3e99273660aee8d27",
+  "schema_version": 2,
+  "servo_bay_checks": [
+    {
+      "max_surface_deviation_mm": 1.5888218580782548e-14,
+      "side": -1,
+      "source": "unchanged normalized V3 bay outside Y=\u00b147.8751",
+      "surface_samples": 1440,
+      "tolerance_mm": 0.2,
+      "translation_y_mm": 0,
+      "volume_difference_mm3": 0.0,
+      "worst_sample": [
+        [
+          88.2016148564715,
+          -56.91180755040378,
+          -7.624219019825291
+        ],
+        "BSplineSurface",
+        true
+      ]
+    },
+    {
+      "max_surface_deviation_mm": 2.1334777765716796e-14,
+      "side": 1,
+      "source": "unchanged normalized V3 bay outside Y=\u00b147.8751",
+      "surface_samples": 1188,
+      "tolerance_mm": 0.2,
+      "translation_y_mm": 0,
+      "volume_difference_mm3": 1.8189894035458565e-12,
+      "worst_sample": [
+        [
+          -36.65304689924606,
+          56.911807550407715,
+          -7.624219019825291
+        ],
+        "BSplineSurface",
+        true
+      ]
+    }
+  ],
+  "servo_flange_seat_z_mm": 4.967756901865376,
+  "servo_mounts": {
+    "L1": {
+      "caseCenter": [
+        74.842465,
+        52.975
+      ],
+      "holes": [
+        [
+          60.942465,
+          52.975
+        ],
+        [
+          88.742465,
+          52.975
+        ]
+      ]
+    },
+    "L2": {
+      "caseCenter": [
+        -23.208896000000003,
+        52.975
+      ],
+      "holes": [
+        [
+          -37.108896,
+          52.975
+        ],
+        [
+          -9.308896,
+          52.975
+        ]
+      ]
+    },
+    "L5": {
+      "caseCenter": [
+        25.822465,
+        52.975
+      ],
+      "holes": [
+        [
+          11.922465,
+          52.975
+        ],
+        [
+          39.722465,
+          52.975
+        ]
+      ]
+    },
+    "R1": {
+      "caseCenter": [
+        74.842465,
+        -52.975
+      ],
+      "holes": [
+        [
+          60.942465,
+          -52.975
+        ],
+        [
+          88.742465,
+          -52.975
+        ]
+      ]
+    },
+    "R2": {
+      "caseCenter": [
+        -23.208896000000003,
+        -52.975
+      ],
+      "holes": [
+        [
+          -37.108896,
+          -52.975
+        ],
+        [
+          -9.308896,
+          -52.975
+        ]
+      ]
+    },
+    "R5": {
+      "caseCenter": [
+        25.822465,
+        -52.975
+      ],
+      "holes": [
+        [
+          11.922465,
+          -52.975
+        ],
+        [
+          39.722465,
+          -52.975
+        ]
+      ]
+    }
+  },
+  "source": {
+    "credit": "V3 files shared by Jom Jetsada / Loftwork team; original Sesame by Dorian Todd and contributors.",
+    "family": "Loftwork printing_V3",
+    "files": {
+      "bottom": {
+        "bounds_mm": [
+          [
+            -43.47500000218,
+            -39.69657965842,
+            -18.00198309813291
+          ],
+          [
+            43.701754200401,
+            39.696571380251,
+            -10.731983098127957
+          ]
+        ],
+        "normalized_sha256": "e3e965ba8a1deae16991d1d6a3623ac33238bbacbc16f5db8771b107598d82ba",
+        "original_filename": "bottom-cover_v3.stp",
+        "original_sha256": "2941964bbdc59ea6d19554496f9186c0207076670b3e25f6d40b0a230366e822",
+        "repair": {
+          "free_edges": 3,
+          "patch_area_mm2": 0.07836587341449722
+        }
+      },
+      "frame": {
+        "bounds_mm": [
+          [
+            -43.47500000218,
+            -46.615,
+            -10.731983098136162
+          ],
+          [
+            43.701750061318,
+            46.615,
+            4.967756901865261
+          ]
+        ],
+        "normalized_sha256": "0ca2da207a8e8159ce160234b72e1c867f614461b1ba17fb6950e2fc7e513551",
+        "original_filename": "internal-frame_v3.stp",
+        "original_sha256": "ad839992f312e5620746c7eef9ae7cf00684bfad7c6caba2087c94a0385875a2",
+        "repair": null
+      },
+      "head": {
+        "bounds_mm": [
+          [
+            -43.47500000338,
+            -29.261916393140197,
+            4.967756901865
+          ],
+          [
+            43.701750061318,
+            29.272083606857294,
+            50.210127293762
+          ]
+        ],
+        "normalized_sha256": "e79dcec9dc24a4dee686a41d3896fcb76db6b488a872f589842697a01165a855",
+        "original_filename": "top-cover-shell_v3.stp",
+        "original_sha256": "51b485d709507860551224d774774df3b97d43f6d265c1513409fd69537abfbe",
+        "repair": null
+      },
+      "lid": {
+        "bounds_mm": [
+          [
+            -38.25244061195,
+            -26.18020229635,
+            48.210127293762
+          ],
+          [
+            34.001911518725,
+            26.190369510066,
+            51.967756901865
+          ]
+        ],
+        "normalized_sha256": "39864cf0e97531720f765361606bdf97970947f3273ec0e94a1e94a753f27a49",
+        "original_filename": "top-cover-lid_v3.stp",
+        "original_sha256": "329bb5156c8c1346d24d6299f4373d84f7deb081b3465c38a6d22062c68f0690",
+        "repair": null
+      }
+    },
+    "lid_seating_translation_z_mm": -20,
+    "normalizer_sha256": "4a4f92ad61a3af16bf67dfe077503cccd5aebcea3e4ee8a382e747087b29d55b",
+    "pcb_forward_adjustment_mm": 0.6,
+    "publication": "Adapted V3 geometry authorized by the instructor on 2026-10-31.",
+    "shared_date": "2026-09-17",
+    "source_to_body_matrix": [
+      -1.0,
+      0.0,
+      0.0,
+      43.70175432,
+      0.0,
+      -1.0,
+      0.0,
+      -429.272079467773,
+      0.0,
+      0.0,
+      1.0,
+      24.967756901864593,
+      0.0,
+      0.0,
+      0.0,
+      1.0
+    ],
+    "upstream": "dorianborian/sesame-robot",
+    "upstream_license": "Apache-2.0"
+  },
+  "source_frame_bounds_mm": [
+    [
+      -43.47500000218,
+      -61.615,
+      -10.73206899063
+    ],
+    [
+      95.701750061318,
+      61.615000000000634,
+      4.967756901865376
+    ]
+  ],
+  "source_script_sha256": "83d7dbc576957efed2baacb43fd9016e0309f88f8eb0608a7e63fc4ccbce106d",
+  "support_width_mm": 93.55037999999998,
+  "unchanged_legs": {
+    "L1": "081896568cc9776393c038d05ecc8caf01090c6971efebe799d064def4c92558",
+    "L2": "4e47eef40bf523aa0d7b0ac285f3086b3e6c5ccd347525f5c93bbf0c5bcd1fbf",
+    "L3": "136b0f28814629c654a45da1ebed93f496399c0d97007c6c02e1df4422be56a3",
+    "L4": "731819f13cd34efb4ab1b9121e9fae835a463ae11f6689670f7800113ec7b470",
+    "R1": "443f956016ad416699d8d5e56ab2fb0e36b10d42f02ff47ea02ae5986180e871",
+    "R2": "fab2770d0d7f1384c4888e2b3a25cd7a6729c2b4230894b4771a177b73c6452c",
+    "R3": "c2c35b4c948849878649d99e512af6702b5fcbbd2b30578bbec87ab15b8ec99e",
+    "R4": "131348a19491edad32f29d7a64109fdfadc3a03e01feedbf08dc1769e050938a"
+  },
+  "units": "mm",
+  "validation_cache": [
+    {
+      "cache_hit": false,
+      "group": "electronics/frame",
+      "key": "810d53ca0941c7494f87ca53698be25e66976b11829f6e7a25d711398d8ae5ef"
+    },
+    {
+      "cache_hit": true,
+      "group": "electronics/spacer-0",
+      "key": "2c8343c1aa8051300cc5c508fdcbc3974f8fb9557b4f5d657c3e64aa514a023d"
+    },
+    {
+      "cache_hit": true,
+      "group": "electronics/spacer-1",
+      "key": "4f942f9586d035dfa67ecafc98e0512b79181fd30da954cea402c2a7c1303ee1"
+    },
+    {
+      "cache_hit": true,
+      "group": "electronics/spacer-2",
+      "key": "9b98ce38695b6356f1665cf9e9d6f00e3fe6bcccc910bade368d7c508b380d9d"
+    },
+    {
+      "cache_hit": true,
+      "group": "electronics/spacer-3",
+      "key": "fefc58b46978817b680109f27b125d1e37c658d4daeec7bb17a3f4f48d5013dd"
+    },
+    {
+      "cache_hit": false,
+      "group": "electronics/head",
+      "key": "1710210377eb7fbaf7982e17d1d7b6e605abdcf7e643e9de34847c43a08a389c"
+    },
+    {
+      "cache_hit": false,
+      "group": "electronics/lid",
+      "key": "e2400cc60ca806203c4151963737cbf0e232aea7ed79bd24c67e4e592e05042d"
+    },
+    {
+      "cache_hit": false,
+      "group": "servo-bays",
+      "key": "a34cd28f01958c76c36a2b5f62356f630f1450b1361d15172a539152db1eb880"
+    }
+  ],
+  "validation_checker_sha256": "e3a7a196227ee8c46f048f249447b3d802529fe46167a259857e99c042336ea4",
+  "variant": {
+    "electronics": {
+      "bus": "shared I2C with the first OLED (0x3C) and servo hub",
+      "new_s3_pins": 0,
+      "s3_pins": [
+        "D17 (SDA)",
+        "E17 (SCL)"
+      ],
+      "second_display_i2c_address": "0x3D"
+    },
+    "eye_bar_mm": 8.0,
+    "eyes": 2,
+    "id": "two-eyes-six-legs",
+    "middle_legs": {
+      "bay_shift_mm": 2.98,
+      "bay_x_range_mm": [
+        4.0,
+        39.5
+      ],
+      "bay_y_limit_mm": 31.0,
+      "body_plane_x_mm": -3.5,
+      "head_plane_x_mm": 12.0,
+      "hub_channels": [
+        8,
+        9,
+        10,
+        11
+      ],
+      "leg_prints": [
+        "L5 hip print (copy of L1)",
+        "L6 foot print (copy of L3)",
+        "R5 hip print (copy of R1)",
+        "R6 foot print (copy of R3)"
+      ],
+      "lengthen_mm": 52.0,
+      "servos_added": 4
+    },
+    "prompt": "Add two more legs",
+    "stretch_plane_y_mm": 4.25,
+    "widen_mm": 30.0
+  }
+}

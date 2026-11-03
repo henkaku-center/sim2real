@@ -1,0 +1,95 @@
+{
+  "schema_version": 1,
+  "units": "mm",
+  "source_family": "loftwork-printing-v3",
+  "head_cover": {
+    "raise_mm": 0.0,
+    "height_splice_z_mm": 47.7,
+    "cable_entry": {
+      "z_mm": 11.2,
+      "pitch_x_mm": 3.8,
+      "inner_y_mm": 23.2,
+      "inner_low_y_mm": 25.5,
+      "low_rise_z_mm": 29.0,
+      "upper_rise_z_mm": 40.0
+    },
+    "battery_entry": {
+      "width_mm": 6.0,
+      "height_mm": 8.0,
+      "corner_radius_mm": 1.2,
+      "wire_z_mm": 9.5
+    },
+    "ear_extension_mm": 5.0,
+    "ear_forward_mm": 4.5,
+    "ear_spread_mm": 10.5,
+    "lid_clearance_mm": 0.3
+  },
+  "battery_wire_cutout": "front-right",
+  "battery_mount": {
+    "centre_mm": [
+      3.5,
+      0,
+      -6
+    ],
+    "envelope_mm": [
+      51,
+      28,
+      14
+    ],
+    "lead_end": "front",
+    "leads_hand": "right",
+    "label_face": "down",
+    "insertion_travel_mm": 30,
+    "insertion_roll_deg": 20
+  },
+  "pcb_standoff_height_mm": 3.0,
+  "pcb_standoff_radius_mm": 2.45,
+  "pcb_spacer_bore_mm": 1.9,
+  "pcb_screw_diameter_mm": 1.6,
+  "pcb_screw_length_mm": 8.0,
+  "pcb_pilot_diameter_mm": 1.3,
+  "pcb_pilot_depth_mm": 4.2,
+  "pcb_pilot_floor_mm": 1.2,
+  "mesh_deflection_mm": 0.08,
+  "variant": {
+    "id": "two-eyes-six-legs",
+    "prompt": "Add two more legs",
+    "widen_mm": 30.0,
+    "stretch_plane_y_mm": 4.25,
+    "eyes": 2,
+    "eye_bar_mm": 8.0,
+    "electronics": {
+      "second_display_i2c_address": "0x3D",
+      "bus": "shared I2C with the first OLED (0x3C) and servo hub",
+      "s3_pins": [
+        "D17 (SDA)",
+        "E17 (SCL)"
+      ],
+      "new_s3_pins": 0
+    },
+    "middle_legs": {
+      "lengthen_mm": 52.0,
+      "body_plane_x_mm": -3.5,
+      "head_plane_x_mm": 12.0,
+      "bay_x_range_mm": [
+        4.0,
+        39.5
+      ],
+      "bay_shift_mm": 2.98,
+      "bay_y_limit_mm": 31.0,
+      "servos_added": 4,
+      "hub_channels": [
+        8,
+        9,
+        10,
+        11
+      ],
+      "leg_prints": [
+        "L5 hip print (copy of L1)",
+        "L6 foot print (copy of L3)",
+        "R5 hip print (copy of R1)",
+        "R6 foot print (copy of R3)"
+      ]
+    }
+  }
+}

@@ -48,22 +48,25 @@ def check_electronics(solid,electronics):
     return collisions
 
 
-def check_servo_bays(original,frame):
+def check_servo_bays(original,frame,boundary=31.8751,tolerance=1e-4):
     import FreeCAD as App
     import Part
     checks=[]
     for side in [-1,1]:
-        boundary=31.8751;box=Part.makeBox(300,150-boundary,300,App.Vector(-150,boundary if side>0 else -150,-150))
+        box=Part.makeBox(400,200-boundary,300,App.Vector(-200,boundary if side>0 else -200,-150))
         before=original.common(box);after=frame.common(box);assert before.isValid() and after.isValid()
+        assert before.Volume>1,'Empty bay band: the check would pass vacuously'
         delta=abs(before.Volume-after.Volume);assert delta<1e-3
-        deviation=0.;samples=0
+        deviation=0.;samples=0;worst=None
         for a,b in [(before,after),(after,before)]:
             for face in a.Faces:
                 points,_=face.tessellate(.3)
                 for i in sorted({0,len(points)//2,len(points)-1}):
-                    if points:deviation=max(deviation,Part.Vertex(points[i]).distToShape(b)[0]);samples+=1
-        assert deviation<1e-4
-        checks.append({'side':side,'translation_y_mm':0,'volume_difference_mm3':delta,'max_surface_deviation_mm':deviation,'surface_samples':samples,'source':'unchanged normalized V3 bay outside Y=±31.8751'})
+                    if points:
+                        d=Part.Vertex(points[i]).distToShape(b)[0];samples+=1
+                        if d>deviation:deviation=d;worst=(tuple(points[i]),type(face.Surface).__name__,a is before)
+        assert deviation<tolerance,(deviation,worst)
+        checks.append({'side':side,'translation_y_mm':0,'volume_difference_mm3':delta,'max_surface_deviation_mm':deviation,'surface_samples':samples,'tolerance_mm':tolerance,'worst_sample':worst,'source':f'unchanged normalized V3 bay outside Y=±{boundary:g}'})
     return checks
 
 

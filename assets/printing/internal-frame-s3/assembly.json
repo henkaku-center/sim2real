@@ -1149,16 +1149,36 @@
       "side": -1,
       "source": "unchanged normalized V3 bay outside Y=\u00b131.8751",
       "surface_samples": 1062,
+      "tolerance_mm": 0.0001,
       "translation_y_mm": 0,
-      "volume_difference_mm3": 0.0
+      "volume_difference_mm3": 0.0,
+      "worst_sample": [
+        [
+          -36.9783615427273,
+          -41.82112387390325,
+          -8.60816425003777
+        ],
+        "BSplineSurface",
+        true
+      ]
     },
     {
       "max_surface_deviation_mm": 2.1482170038296686e-14,
       "side": 1,
       "source": "unchanged normalized V3 bay outside Y=\u00b131.8751",
       "surface_samples": 894,
+      "tolerance_mm": 0.0001,
       "translation_y_mm": 0,
-      "volume_difference_mm3": 0.0
+      "volume_difference_mm3": 0.0,
+      "worst_sample": [
+        [
+          -6.738823256223042,
+          34.202420697335306,
+          -8.478852634248332
+        ],
+        "BSplineSurface",
+        true
+      ]
     }
   ],
   "servo_flange_seat_z_mm": 4.967756901865376,
@@ -1346,7 +1366,7 @@
       4.967756901865376
     ]
   ],
-  "source_script_sha256": "75fbdc26a082434d151647f23af93ff9706dc39dc810c9ad68ef4ae52612fb10",
+  "source_script_sha256": "83d7dbc576957efed2baacb43fd9016e0309f88f8eb0608a7e63fc4ccbce106d",
   "support_width_mm": 63.55037999999999,
   "unchanged_legs": {
     "L1": "081896568cc9776393c038d05ecc8caf01090c6971efebe799d064def4c92558",
@@ -1361,51 +1381,51 @@
   "units": "mm",
   "validation_cache": [
     {
-      "cache_hit": true,
+      "cache_hit": false,
       "group": "electronics/frame",
-      "key": "6d7c550578a7d7f1f53b95432cc57e83dcb9479036ba8d8b602afac224159171"
+      "key": "92cd0c4fd6557abe13aa36c45aed73e5bffa77b8e017472b951b40a475d83cd5"
     },
     {
       "cache_hit": true,
       "group": "electronics/spacer-0",
-      "key": "0b07d103187fcf894b54111c1f99da91f24d82561835afe74b5eba2845c3e994"
+      "key": "2c8343c1aa8051300cc5c508fdcbc3974f8fb9557b4f5d657c3e64aa514a023d"
     },
     {
       "cache_hit": true,
       "group": "electronics/spacer-1",
-      "key": "d03c9efc102d10a6d6a03805dbfc4cc759b91a2bc49fef5406de328e47924cc3"
+      "key": "4f942f9586d035dfa67ecafc98e0512b79181fd30da954cea402c2a7c1303ee1"
     },
     {
       "cache_hit": true,
       "group": "electronics/spacer-2",
-      "key": "e78bb09a5ca22ede58e900d985f55d16cf49b4f5167d341e8798f72f868ce7a4"
+      "key": "9b98ce38695b6356f1665cf9e9d6f00e3fe6bcccc910bade368d7c508b380d9d"
     },
     {
       "cache_hit": true,
       "group": "electronics/spacer-3",
-      "key": "ae9d3f226ccb3bf640af54d52ac8a47e6f1bdd3f8841d96e1590476bc283b891"
+      "key": "fefc58b46978817b680109f27b125d1e37c658d4daeec7bb17a3f4f48d5013dd"
     },
     {
-      "cache_hit": true,
+      "cache_hit": false,
       "group": "electronics/head",
-      "key": "d447a3412b7a4453665af577da47dde89f42942d64413f726e0716b055005663"
+      "key": "77aabd19ebb0b8f4ca557270e58ce31d2da3453f9be2525c54d05dd97e33c06a"
     },
     {
-      "cache_hit": true,
+      "cache_hit": false,
       "group": "electronics/lid",
-      "key": "1f66893f870851d2d5dcbf2a94fc9acc2c77bb83bc451303832035d212382edc"
+      "key": "79f8a8b442bb8142adbfb7ac0b7fc4d54db6e92861b8f060b69c0a466882be86"
     },
     {
-      "cache_hit": true,
+      "cache_hit": false,
       "group": "servo-bays",
-      "key": "8f662840367e0dab8f5ceebfdd8eb7905883dd042e9f98400ed91c3dd53ca613"
+      "key": "bbb5612a091d176a3090f48ad1db141eab890beca5ebd7afa1d8d47d7f4ab751"
     },
     {
-      "cache_hit": true,
+      "cache_hit": false,
       "group": "ribbons",
-      "key": "5248ca0e69f9ef2014ad87c0469f803d37b7ded256136a60e171aef037cc452e"
+      "key": "7dad8103035ca93f45ad263556580b7cc29a786db8646cca542f8f245860e886"
     }
   ],
-  "validation_checker_sha256": "7d142cc76af248bbf22c62debdcee3cf9baf11edd6424c18028c4f5997329b69",
+  "validation_checker_sha256": "e3a7a196227ee8c46f048f249447b3d802529fe46167a259857e99c042336ea4",
   "variant": null
 }
