@@ -22,5 +22,5 @@
   },
   "estimated_seconds": 4757.07275390625,
   "estimated_filament_g": 41.66353225708008,
-  "scope": "Fixed-ear shell and T-shaped lid with restored native V3 captive underhang; local slicing only, no physical print or printer upload."
+  "scope": "Historical November 2 slicing of the exact model hashes above, before the centred tail-switch bore. The November 3 shell has native solid/mesh validation but has not been re-sliced or physically printed."
 }
