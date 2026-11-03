@@ -839,11 +839,11 @@
         ]
       ],
       "closed_mesh": true,
-      "step_sha256": "f7b97534e5187d0556a0f1b3b2e5cee1c30985346a2c5228b4e683d82a6208fc",
-      "stl_sha256": "0ee388eee091dbee86f6d349cd0907a28481dc850a5b7b6f10c78bc7a032f30e",
-      "triangles": 3368,
+      "step_sha256": "010677bd3d0c7384a0c7a0ef35187d5c1312cbebff84f4402982ba028cc3c4b5",
+      "stl_sha256": "cac0bb68f923405ab00221d97bea80f2a6c0abdad4467e04ef733296257b1d44",
+      "triangles": 3512,
       "valid_solid": true,
-      "volume_mm3": 36179.789022810335
+      "volume_mm3": 36179.77990119474
     },
     "head-cover": {
       "bounds_mm": [
@@ -958,12 +958,12 @@
         180
       ],
       "print_stl": "internal-frame-print.stl",
-      "print_stl_sha256": "a2be433259582e047ecdb0219a10339340c0aa7b1ddbecd2f8b3e9b8dd0dd941",
-      "step_sha256": "3be600b2b119c03ec8b73e978b7f3258c29687eee4da17604f00cabf24d64c01",
-      "stl_sha256": "9018c8fde2404cc806405d4f29480297a016c61ba59d85901f06672316bca7d4",
-      "triangles": 19832,
+      "print_stl_sha256": "244f691f9c55d44d3b88882bd593ae3c0dfb35e61a841cf9152fb61d6ce57436",
+      "step_sha256": "25522b6178f7a1298c5e63e72a1bb8ca1721167370de5759869f1d5bb4a70231",
+      "stl_sha256": "dd75503fb10753a683a174dcdfc95510566c0b39307e7bce1f265ec51f46bd03",
+      "triangles": 20302,
       "valid_solid": true,
-      "volume_mm3": 79100.4177186545
+      "volume_mm3": 79102.81744727731
     },
     "pcb-spacer": {
       "assembly_origins_mm": [
@@ -1049,19 +1049,19 @@
     "pilot_diameter_mm": 1.3,
     "source_axes": [
       [
+        32.4,
+        38.0
+      ],
+      [
         -33.6,
+        38.0
+      ],
+      [
+        32.4,
         -38.0
       ],
       [
         -33.6,
-        38.0
-      ],
-      [
-        32.4,
-        38.0
-      ],
-      [
-        32.4,
         -38.0
       ]
     ],
@@ -1102,20 +1102,40 @@
   "schema_version": 2,
   "servo_bay_checks": [
     {
-      "max_surface_deviation_mm": 0.0,
+      "max_surface_deviation_mm": 0.15137114368544888,
       "side": -1,
-      "source": "unchanged normalized V3 bay outside Y=\u00b131.8751",
-      "surface_samples": 0,
+      "source": "unchanged normalized V3 bay outside Y=\u00b147.8751",
+      "surface_samples": 1038,
+      "tolerance_mm": 0.2,
       "translation_y_mm": 0,
-      "volume_difference_mm3": 0.0
+      "volume_difference_mm3": 1.0346329872845672e-06,
+      "worst_sample": [
+        [
+          -43.47500000218,
+          -59.075,
+          4.854120538228
+        ],
+        "Plane",
+        true
+      ]
     },
     {
-      "max_surface_deviation_mm": 0.0,
+      "max_surface_deviation_mm": 2.1334777765716796e-14,
       "side": 1,
-      "source": "unchanged normalized V3 bay outside Y=\u00b131.8751",
-      "surface_samples": 0,
+      "source": "unchanged normalized V3 bay outside Y=\u00b147.8751",
+      "surface_samples": 870,
+      "tolerance_mm": 0.2,
       "translation_y_mm": 0,
-      "volume_difference_mm3": 0.0
+      "volume_difference_mm3": 9.094947017729282e-13,
+      "worst_sample": [
+        [
+          -36.65304689924606,
+          56.911807550407715,
+          -7.624219019825291
+        ],
+        "BSplineSurface",
+        true
+      ]
     }
   ],
   "servo_flange_seat_z_mm": 4.967756901865376,
@@ -1293,17 +1313,17 @@
   },
   "source_frame_bounds_mm": [
     [
-      -43.47500000218,
+      -43.47500000218001,
       -61.615,
       -10.73206899063
     ],
     [
-      43.701750061318,
+      43.70175006131801,
       61.615,
       4.967756901865376
     ]
   ],
-  "source_script_sha256": "75fbdc26a082434d151647f23af93ff9706dc39dc810c9ad68ef4ae52612fb10",
+  "source_script_sha256": "83d7dbc576957efed2baacb43fd9016e0309f88f8eb0608a7e63fc4ccbce106d",
   "support_width_mm": 93.55037999999999,
   "unchanged_legs": {
     "L1": "081896568cc9776393c038d05ecc8caf01090c6971efebe799d064def4c92558",
@@ -1318,47 +1338,47 @@
   "units": "mm",
   "validation_cache": [
     {
-      "cache_hit": true,
+      "cache_hit": false,
       "group": "electronics/frame",
-      "key": "800c3f0fc95bd2a62f709919b863cd444be9599312732b68a15bbbb19c8f9d0d"
+      "key": "92f9732faf1e79bb16c80df575c5a2725aa8374eae89d1e41f66b2b7c026fef3"
     },
     {
-      "cache_hit": true,
+      "cache_hit": false,
       "group": "electronics/spacer-0",
-      "key": "0b07d103187fcf894b54111c1f99da91f24d82561835afe74b5eba2845c3e994"
+      "key": "2c8343c1aa8051300cc5c508fdcbc3974f8fb9557b4f5d657c3e64aa514a023d"
     },
     {
-      "cache_hit": true,
+      "cache_hit": false,
       "group": "electronics/spacer-1",
-      "key": "d03c9efc102d10a6d6a03805dbfc4cc759b91a2bc49fef5406de328e47924cc3"
+      "key": "4f942f9586d035dfa67ecafc98e0512b79181fd30da954cea402c2a7c1303ee1"
     },
     {
-      "cache_hit": true,
+      "cache_hit": false,
       "group": "electronics/spacer-2",
-      "key": "e78bb09a5ca22ede58e900d985f55d16cf49b4f5167d341e8798f72f868ce7a4"
+      "key": "9b98ce38695b6356f1665cf9e9d6f00e3fe6bcccc910bade368d7c508b380d9d"
     },
     {
-      "cache_hit": true,
+      "cache_hit": false,
       "group": "electronics/spacer-3",
-      "key": "ae9d3f226ccb3bf640af54d52ac8a47e6f1bdd3f8841d96e1590476bc283b891"
+      "key": "fefc58b46978817b680109f27b125d1e37c658d4daeec7bb17a3f4f48d5013dd"
     },
     {
-      "cache_hit": true,
+      "cache_hit": false,
       "group": "electronics/head",
-      "key": "4cd4443cb0174784d6f1b159413aae8f1c735a097c0e2d300dadccb5829044ad"
+      "key": "26736b2284d8e7d172c3abc5f3ff25ecb4343259f4b91713853809bbe2898c2d"
     },
     {
-      "cache_hit": true,
+      "cache_hit": false,
       "group": "electronics/lid",
-      "key": "0cf0295d0d7a98b31a703975f03ffc108dcfcb14ba894c03b79893a30cd43bae"
+      "key": "453bd9bc5b96b450151e52566f6427e47a56c4190e7c8affcdadac992b3fa241"
     },
     {
       "cache_hit": false,
       "group": "servo-bays",
-      "key": "1479e9a36d489886bbd72b0d5a894484f732c819e94857d0d4ecdbabb35c7af3"
+      "key": "53f215d42e02c6dfdbd19a4215e90d324ddec986b3899e4f7355560d78ba7621"
     }
   ],
-  "validation_checker_sha256": "7d142cc76af248bbf22c62debdcee3cf9baf11edd6424c18028c4f5997329b69",
+  "validation_checker_sha256": "e3a7a196227ee8c46f048f249447b3d802529fe46167a259857e99c042336ea4",
   "variant": {
     "electronics": {
       "bus": "shared I2C with the first OLED (0x3C) and servo hub",

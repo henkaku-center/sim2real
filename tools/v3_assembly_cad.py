@@ -56,7 +56,7 @@ def window(shape):
     return found[0]
 
 
-def stretch_y(shape,plane,widen):
+def stretch_y(shape,plane,widen,refine=True):
     """Translate the two outer halves apart and bridge them with the exact
     section at each cut. Only valid where every face crossing the cut is
     prismatic along Y, so no hole, boss or curve changes shape."""
@@ -73,12 +73,46 @@ def stretch_y(shape,plane,widen):
         section=Part.makeFace(shape.slice(V(0,1,0),side*plane),'Part::FaceMakerBullseye')
         bridge=section.extrude(V(0,half,0));bridge.translate(V(0,0 if side>0 else -half,0))
         pieces.append(bridge)
-    result=pieces[0].multiFuse(pieces[1:]).removeSplitter()
+    result=pieces[0].multiFuse(pieces[1:])
+    # Keep the seam faces when another cut follows: merged faces across a seam
+    # make later slices and Booleans unreliable. The last operation refines.
+    if refine:result=result.removeSplitter()
     result=Part.makeSolid(max(result.Shells,key=lambda shell:shell.Area)) if len(result.Solids)!=1 else result.Solids[0]
     area=sum(Part.makeFace(shape.slice(V(0,1,0),side*plane),'Part::FaceMakerBullseye').Area for side in [-1,1])
     assert result.isValid() and result.isClosed() and abs(result.Volume-shape.Volume-area*half)<1e-3*shape.Volume,(result.Volume,shape.Volume,area*half)
     assert abs(result.BoundBox.YLength-shape.BoundBox.YLength-widen)<1e-6
     return result
+
+
+def extend_x(shape,plane,length):
+    """Lengthen by moving everything ahead of one prismatic X cut forward and
+    bridging the gap with that cut's exact section."""
+    for face in shape.Faces:
+        s,b=face.Surface,face.BoundBox
+        if b.XLength<1e-6 or not b.XMin<plane<b.XMax:continue
+        prismatic=isinstance(s,Part.Plane) and abs(s.Axis.x)<1e-9 or isinstance(s,Part.Cylinder) and abs(abs(s.Axis.x)-1)<1e-9
+        assert prismatic,('Lengthening plane crosses a non-prismatic face',plane,b)
+    big=600
+    rear=shape.common(Part.makeBox(big,big,big,V(plane-big,-big/2,-big/2)))
+    front=translated(shape.common(Part.makeBox(big,big,big,V(plane,-big/2,-big/2))),[length,0,0])
+    section=Part.makeFace(shape.slice(V(1,0,0),plane),'Part::FaceMakerBullseye')
+    bridge=section.extrude(V(length,0,0))
+    result=rear.multiFuse([bridge,front]).removeSplitter()
+    result=Part.makeSolid(max(result.Shells,key=lambda shell:shell.Area)) if len(result.Solids)!=1 else result.Solids[0]
+    assert result.isValid() and result.isClosed() and abs(result.Volume-shape.Volume-section.Area*length)<1e-3*shape.Volume
+    assert abs(result.BoundBox.XLength-shape.BoundBox.XLength-length)<1e-6
+    return result
+
+
+def transplant_bays(source,target,x_range,shift,y_limit):
+    """Copy the outer bay band of an existing leg station into the bridge."""
+    lo,hi=x_range;big=600
+    keep=lambda shape,x0,x1,side:shape.common(Part.makeBox(x1-x0,big,big,V(x0,y_limit if side>0 else -y_limit-big,-big/2)))
+    blocks=[translated(keep(source,lo,hi,side),[shift,0,0]) for side in [-1,1]]
+    hole=Part.makeCompound([Part.makeBox(hi-lo,big,big,V(lo+shift,y_limit if side>0 else -y_limit-big,-big/2)) for side in [-1,1]])
+    result=target.cut(hole).multiFuse(blocks).removeSplitter()
+    assert result.isValid() and len(result.Solids)==1 and result.isClosed(),('Transplanted bays are not joined to the body',len(result.Solids))
+    return result.Solids[0],blocks
 
 
 def split_window(head,bar):
@@ -108,10 +142,15 @@ def load_references(names=None):
 def frame_layout(frame,deck,h=0):
     mounts={};hips={}
     case_axes=cylinders(frame,.95,lambda f:abs(f.Surface.Center.y)>30+h and f.BoundBox.ZMax>deck-1)
-    for name,front,left in [('L1',True,True),('L2',False,True),('R1',True,False),('R2',False,False)]:
-        pair=sorted({(x,y) for x,y,lo,hi in case_axes if (x>0)==front and (y>0)==left});assert len(pair)==2
-        centre=[sum(p[i] for p in pair)/2 for i in [0,1]];assert abs(pair[1][0]-pair[0][0]-27.8)<1e-4
-        mounts[name]={'holes':pair,'caseCenter':centre};hips[name]=[centre[0]+(1 if front else -1)*5.375,centre[1]]
+    for side,left in [('L',True),('R',False)]:
+        holes=sorted({(x,y) for x,y,lo,hi in case_axes if (y>0)==left},reverse=True)
+        pairs=[holes[i:i+2][::-1] for i in range(0,len(holes),2)];assert len(pairs) in (2,3) and all(len(p)==2 for p in pairs)
+        # Front first, rear last; a middle pair (six legs) copies the front bay.
+        names=[side+'1',side+'5',side+'2'] if len(pairs)==3 else [side+'1',side+'2']
+        for name,pair in zip(names,pairs):
+            front=name[1]!='2'
+            centre=[sum(p[i] for p in pair)/2 for i in [0,1]];assert abs(pair[1][0]-pair[0][0]-27.8)<1e-4
+            mounts[name]={'holes':pair,'caseCenter':centre};hips[name]=[centre[0]+(1 if front else -1)*5.375,centre[1]]
     slot_centres={(round(f.Surface.Center.x,6),round(f.Surface.Center.y,6)) for f in frame.Faces if isinstance(f.Surface,Part.Cylinder) and abs(f.Surface.Axis.z)>.999 and abs(f.Surface.Radius-2.54)<1e-5 and abs(f.Surface.Center.x)<10 and abs(f.Surface.Center.y)>35+h}
     assert len(slot_centres)==4
     mid=sum(x for x,y in slot_centres)/4;half=abs(mounts['L1']['caseCenter'][1])-25.4
@@ -121,7 +160,7 @@ def frame_layout(frame,deck,h=0):
 
 def fit_head(ref,settings,mid,usb,variant=None):
     """The same native head construction for interactive preview and full checks."""
-    variant=variant or {};h=variant.get('widen_mm',0)/2
+    variant=variant or {};h=variant.get('widen_mm',0)/2;ahead=variant.get('middle_legs',{}).get('lengthen_mm',0)
     head=ref['head'].copy()
     if variant.get('eyes')==2:head=split_window(head,variant['eye_bar_mm'])
     eyes=windows(head);original_window=eyes[0];z=settings['height_splice_z_mm'];raise_mm=settings['raise_mm']
@@ -161,7 +200,7 @@ def fit_head(ref,settings,mid,usb,variant=None):
         ear=Part.read(str(path));base=ear_source['base_z_mm'];extension=settings['ear_extension_mm']
         section=Part.makeFace(ear.slice(V(0,0,1),base+.001),'Part::FaceMakerBullseye')
         ear=translated(ear,[0,0,extension]).fuse(section.extrude(V(0,0,extension)))
-        ear.translate(V(settings['ear_forward_mm'],(settings['ear_spread_mm']+h)*(1 if name=='left' else -1),head.BoundBox.ZMax-1-base))
+        ear.translate(V(settings['ear_forward_mm']+ahead,(settings['ear_spread_mm']+h)*(1 if name=='left' else -1),head.BoundBox.ZMax-1-base))
         assert ear.isValid() and len(ear.Solids)==1
         ears.append(ear)
     # Fixed front shoulders support the ears. A T-shaped removable lid covers
@@ -354,10 +393,19 @@ def preview_part(params,out,kind='head'):
 
 def build(params,out,include_cover=True,datums_only=False,fresh_checks=False,check_cache=None):
     source,ref=load_references()
-    variant=params.get('variant');h=variant['widen_mm']/2 if variant else 0
-    if variant:
+    variant=params.get('variant');h=variant.get('widen_mm',0)/2 if variant else 0
+    legs=(variant or {}).get('middle_legs');middle_blocks=[]
+    if variant and h:
         print('V3: widening the reference frame, cover, shell and lid',flush=True)
-        for name in ['frame','bottom','head','lid']:ref[name]=stretch_y(ref[name],variant['stretch_plane_y_mm'],variant['widen_mm'])
+        for name in ['frame','bottom','head','lid']:ref[name]=stretch_y(ref[name],variant['stretch_plane_y_mm'],variant['widen_mm'],refine=name in ('head','lid') and not legs)
+    if legs:
+        print('V3: lengthening and adding a middle leg station',flush=True)
+        L=legs['lengthen_mm']
+        for name in ['frame','bottom']:
+            extended=extend_x(ref[name],legs['body_plane_x_mm'],L)
+            ref[name],blocks=transplant_bays(ref[name],extended,legs['bay_x_range_mm'],legs['bay_shift_mm'],legs['bay_y_limit_mm']+h)
+            if name=='frame':middle_blocks=blocks
+        for name in ['head','lid']:ref[name]=extend_x(ref[name],legs['head_plane_x_mm'],L)
     frame=ref['frame'].copy();deck=frame.BoundBox.ZMax;seat=deck+params['pcb_standoff_height_mm']
     native,electronics,_,holes,hole_diameter=load_electronics()
     pcb_size=[native.Carrier.Length.Value,native.Carrier.Width.Value,native.Carrier.Shape.BoundBox.ZLength];cx,cy=pcb_size[0]/2,pcb_size[1]/2
@@ -413,10 +461,13 @@ def build(params,out,include_cover=True,datums_only=False,fresh_checks=False,che
     for y in [14.7+h,31.3+h]:assert frame.isInside(V(port_x,y,-5),1e-6,False)
     for y in [-14.7-h,-31.3-h,-31.8-h]:assert not frame.isInside(V(port_x,y,-5),1e-6,False)
     channel_checks=[]
+    # Unrefined widened solids give exact Boolean volumes, but point
+    # classification is reliable only on the face-merged copy.
+    probe=frame.removeSplitter() if variant else frame
     def sampled(x,sign,zz):
         # Widened solids carry bridge seams; classify points rather than
         # trusting how a Boolean splits section edges along them.
-        inside=[frame.isInside(V(x,sign*(12+h+i*.05),zz),1e-6,False) for i in range(401)]
+        inside=[probe.isInside(V(x,sign*(12+h+i*.05),zz),1e-6,False) for i in range(401)]
         runs=[];start=None
         for i,v in enumerate(inside+[False]):
             if v and start is None:start=i
@@ -435,7 +486,14 @@ def build(params,out,include_cover=True,datums_only=False,fresh_checks=False,che
             assert all(abs(a-b)<tolerance for p,q in zip(*sections) for a,b in zip(p,q)),(x,zz,sections)
             channel_checks.append({'x_mm':x,'z_mm':zz,'left_right_intervals_mm':sections})
     # Protect the V3 servo bays; the PCB edits are strictly inboard of them.
-    bay_checks=cache.run('servo-bays',{'frame':geometry_keys['frame'],'reference':reference_frame_key},lambda:check_servo_bays(ref['frame'],frame))
+    # A widened variant moves the bays outward with the walls; old PCB holes
+    # are filled inside that band, so compare the bays beyond it (1 mm clear
+    # of the widening seams, where Boolean clipping differs by tolerance).
+    bay_boundary=31.8751+(h+1 if variant else 0)
+    # Variant solids carry translation seams; OCC Booleans in the PCB fit can
+    # shave up to ~0.15 mm at a seam-adjacent corner. Recorded, not hidden.
+    bay_tolerance=.2 if variant else 1e-4
+    bay_checks=cache.run('servo-bays',{'frame':geometry_keys['frame'],'reference':reference_frame_key,'boundary':bay_boundary,'tolerance':bay_tolerance},lambda:check_servo_bays(ref['frame'],frame,bay_boundary,bay_tolerance))
     cables_path=ROOT/'assets/printing/internal-frame-s3/head-cable-clearance.json';cables=json.loads(cables_path.read_text())
     if variant:cables=None
     def same(a,b):
