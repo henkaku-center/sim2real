@@ -261,7 +261,7 @@ def preview_part(params,out,kind='head'):
         datums,cached=preview_datums(out);deck=datums['deck_z_mm'];seat=deck+params['pcb_standoff_height_mm']
         cx,cy=datums['pcb_half_size_mm']
         if kind=='head':
-            _,ref=load_references({'head','lid'});lo,hi=datums['usb_native_bounds_mm']
+            _,ref=load_references({'head','lid','frame'});lo,hi=datums['usb_native_bounds_mm']
             usb=App.BoundBox(cx-hi[0],cy-hi[1],lo[2]+seat,cx-lo[0],cy-lo[1],hi[2]+seat)
             head,lid,aperture,overlap,_,features=fit_head(ref,params['head_cover'],datums['midpoint_x_mm'],usb)
             assert head.BoundBox.ZMin>=deck-1e-6

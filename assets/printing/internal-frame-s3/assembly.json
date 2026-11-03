@@ -1318,7 +1318,7 @@
       4.967756901865376
     ]
   ],
-  "source_script_sha256": "6705a3e761e642c918f414bb02a0668a2494acedf333115a524144a4daf067a6",
+  "source_script_sha256": "b878d757426c06e9cb04892ad759444f8ae9e3a2debb5068681ce6c781c56653",
   "support_width_mm": 63.55037999999999,
   "unchanged_legs": {
     "L1": "081896568cc9776393c038d05ecc8caf01090c6971efebe799d064def4c92558",
@@ -1373,7 +1373,7 @@
       "key": "8f662840367e0dab8f5ceebfdd8eb7905883dd042e9f98400ed91c3dd53ca613"
     },
     {
-      "cache_hit": false,
+      "cache_hit": true,
       "group": "ribbons",
       "key": "5248ca0e69f9ef2014ad87c0469f803d37b7ded256136a60e171aef037cc452e"
     }
