@@ -266,6 +266,34 @@
       "width_mm": 22.501570271522
     },
     "display_window_unchanged": true,
+    "display_windows": [
+      {
+        "bounds_mm": [
+          [
+            36.371679537377,
+            -11.2457015289,
+            29.944536736023
+          ],
+          [
+            39.915161643786,
+            11.255868742622,
+            42.088578675467
+          ]
+        ],
+        "centre_mm": [
+          38.1434205905815,
+          0.005083606861000511,
+          36.016557705745
+        ],
+        "height_mm": 12.650455330359287,
+        "normal": [
+          0.9599687617804579,
+          9.72690938968264e-17,
+          0.2801070802491336
+        ],
+        "width_mm": 22.501570271522
+      }
+    ],
     "ear_bounds_mm": [
       [
         [
@@ -1318,7 +1346,7 @@
       4.967756901865376
     ]
   ],
-  "source_script_sha256": "b878d757426c06e9cb04892ad759444f8ae9e3a2debb5068681ce6c781c56653",
+  "source_script_sha256": "75fbdc26a082434d151647f23af93ff9706dc39dc810c9ad68ef4ae52612fb10",
   "support_width_mm": 63.55037999999999,
   "unchanged_legs": {
     "L1": "081896568cc9776393c038d05ecc8caf01090c6971efebe799d064def4c92558",
@@ -1378,5 +1406,6 @@
       "key": "5248ca0e69f9ef2014ad87c0469f803d37b7ded256136a60e171aef037cc452e"
     }
   ],
-  "validation_checker_sha256": "7d142cc76af248bbf22c62debdcee3cf9baf11edd6424c18028c4f5997329b69"
+  "validation_checker_sha256": "7d142cc76af248bbf22c62debdcee3cf9baf11edd6424c18028c4f5997329b69",
+  "variant": null
 }
