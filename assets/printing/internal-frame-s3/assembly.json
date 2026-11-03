@@ -206,7 +206,7 @@
       53.77512122656712
     ],
     "cable_electronics_samples_inside": 0,
-    "cable_entry_min_gap_mm": 0.3508770845785323,
+    "cable_entry_min_gap_mm": 0.35087854709528865,
     "cable_notches": {
       "bottom_open": true,
       "bottom_z_mm": 4.967756901864767,
@@ -222,7 +222,7 @@
       "top_z_mm": 14.967756901865,
       "width_mm": 15.483191024289
     },
-    "cable_reference_sha256": "4fb69654c6cb7ea7a8d09b53261f616bd9ad14966982249a335b4928154ecf32",
+    "cable_reference_sha256": "9d9aec1f5992faefa0d7790cd9b09c2ade640096a2ba9afc2d265c582e8223f6",
     "cable_samples_classified": 666,
     "cable_samples_inside": 0,
     "cable_surface_samples": 61168,
@@ -1322,7 +1322,7 @@
       "key": "ae9d3f226ccb3bf640af54d52ac8a47e6f1bdd3f8841d96e1590476bc283b891"
     },
     {
-      "cache_hit": false,
+      "cache_hit": true,
       "group": "electronics/head",
       "key": "af3b8a818c858771b1f1f262c945cca0b73ba68f6c443ca9ec089acda2f32615"
     },
@@ -1339,7 +1339,7 @@
     {
       "cache_hit": false,
       "group": "ribbons",
-      "key": "2bdd4266f46391feb335bb91b930c6554373e2c8464ff589d4239be8183009fc"
+      "key": "19a629cdd97231c19aca31f6560db79068cf8a2c3486b8826b2203e0e0499248"
     }
   ],
   "validation_checker_sha256": "7d142cc76af248bbf22c62debdcee3cf9baf11edd6424c18028c4f5997329b69"
