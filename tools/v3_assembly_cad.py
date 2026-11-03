@@ -89,6 +89,20 @@ def fit_head(ref,settings,mid,usb):
         section=Part.makeFace(head.slice(V(0,0,1),z),'Part::FaceMakerBullseye')
         head=low.fuse(section.extrude(V(0,0,raise_mm))).fuse(translated(high,[0,0,raise_mm]))
     lid=translated(ref['lid'],[0,0,raise_mm]);roof=lid.BoundBox.ZMax
+    # Remove the old bore faces and heal the tapered wall, then put the toggle at the
+    # rear panel's horizontal centre. Retain the original height above the hub.
+    bore_faces=[f for f in head.Faces if isinstance(f.Surface,Part.Cylinder) and abs(f.Surface.Radius-2.5)<1e-6 and f.Surface.Axis.x<-.9]
+    old_bores=[f.Surface for f in bore_faces]
+    assert old_bores and all((b.Center-old_bores[0].Center).Length<1e-6 for b in old_bores)
+    old=old_bores[0];cy=(head.BoundBox.YMin+head.BoundBox.YMax)/2
+    before_fill=head.Volume
+    head=head.defeaturing(bore_faces)
+    assert before_fill<head.Volume<before_fill+25
+    cz=old.Center.z
+    cx=old.Center.x-old.Axis.z/old.Axis.x*(cz-old.Center.z)
+    switch_centre=V(cx,cy,cz)
+    head=head.cut(Part.makeCylinder(2.5,20,switch_centre-old.Axis*10,old.Axis))
+    assert head.isValid() and len(head.Solids)==1
     ear_source=json.loads((REF.parent/'reference-ears/source.json').read_text());ears=[]
     for name,record in ear_source['files'].items():
         path=REF.parent/'reference-ears'/(name+'.step');assert sha(path)==record['sha256']
@@ -122,7 +136,7 @@ def fit_head(ref,settings,mid,usb):
     void_count=len(head.Shells)-1;before_volume=head.Volume
     head=Part.makeSolid(max(head.Shells,key=lambda shell:shell.Area))
     void_volume=head.Volume-before_volume
-    assert 0<=void_volume<before_volume*.01
+    assert 0<=void_volume<before_volume*.01,(void_volume,before_volume,len(head.Shells))
     for zz in [44.,46.]:
         samples=ref['head'].common(Part.makeLine(V(mid,-35,zz),V(mid,35,zz))).Edges
         assert len(samples)==2
@@ -148,8 +162,14 @@ def fit_head(ref,settings,mid,usb):
     switch_holes=[f.Surface for f in head.Faces if isinstance(f.Surface,Part.Cylinder) and abs(f.Surface.Radius-2.5)<1e-6 and f.Surface.Axis.x<-.9]
     assert len(switch_holes)==1
     switch_hole=switch_holes[0]
+    assert (switch_hole.Center-switch_centre).cross(switch_hole.Axis).Length<1e-6
+    old_fill=head.common(Part.makeLine(old.Center-old.Axis*5,old.Center+old.Axis*5))
+    old_fill_mm=sum(e.Length for e in old_fill.Edges);assert old_fill_mm>.9
+    new_open=head.common(Part.makeLine(switch_centre-old.Axis*5,switch_centre+old.Axis*5))
+    assert sum(e.Length for e in new_open.Edges)<1e-6
     details={'cable_notches':entries,'closed_upper_side_ports':2,'ear_source':ear_source,
-              'switch_opening':{'centre_mm':list(switch_hole.Center),'normal':list(switch_hole.Axis),'diameter_mm':5.,'source':'unchanged native V3 rear bore'},
+              'switch_opening':{'centre_mm':list(switch_centre),'normal':list(switch_hole.Axis),'diameter_mm':5.,'source':'rear-panel horizontally centred tail switch; original height retained above servo hub; former bore closed',
+                                'old_centre_mm':list(old.Center),'panel_centre_y_mm':cy,'height_retained':True,'old_bore_filled_mm':old_fill_mm},
              'sealed_internal_voids':{'count':void_count,'volume_mm3':void_volume},'unified_external_faces':unified,
              'ear_bounds_mm':[bounds(e) for e in ears],'ear_height_above_roof_mm':max(e.BoundBox.ZMax for e in ears)-roof,
               'lid_capture_samples':capture,'lid_slide_samples':slide,'lid_plan':{'shape':'T-shaped rear roof with a front tongue between fixed ears','roof_z_mm':roof,

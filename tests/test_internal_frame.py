@@ -99,6 +99,11 @@ def test_head_lid_electronics_and_cable_entries_are_checked():
     assert h['lid_plan']['mating_profile']=='unchanged native V3 captive underhang'
     for name,entry in h['ear_source']['files'].items():assert sha(CANONICAL/'reference-ears'/f'{name}.step')==entry['sha256']
     assert h['display_window_unchanged'] and h['display_window']['width_mm']>20 and h['display_window']['height_mm']>11
+    switch=h['switch_opening']
+    assert switch['diameter_mm']==5 and switch['old_bore_filled_mm']>.9
+    assert abs(switch['centre_mm'][1]-switch['panel_centre_y_mm'])<1e-6
+    assert switch['height_retained'] and switch['centre_mm'][2]==switch['old_centre_mm'][2]
+    assert abs(switch['centre_mm'][1])<.01
     assert h['cable_notches']['bottom_open'] and h['cable_notches']['count']==2
     assert h['cable_notches']==r['head_cable_entry']
     assert 15<h['cable_notches']['width_mm']<16 and h['cable_notches']['top_z_mm']<15
