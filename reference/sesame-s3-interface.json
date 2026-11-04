@@ -292,7 +292,7 @@
   "power": {
     "flash": "battery physically disconnected; USB only; servo leads may remain connected; outputs OFF at boot",
     "button_assembly": "unplug USB, then power from battery alone",
-    "serial_motion": "USB only, battery disconnected; arm bench CH, loosely fitted pointer and no legs; 0->90->180->90 on CH0..7 one at a time; wait for each rate-limited target, off between channels; USB capacity unmeasured",
+    "serial_motion": "USB only, battery disconnected; arm bench CH; direct targets without software slew ramp on CH0..7 one at a time; allow physical travel time, off between channels; USB capacity unmeasured",
     "unverified_isolation": "never combine USB and battery; unplug USB before battery-only load testing; no external supply or Wi-Fi requirement",
     "battery_load_test": "current BOOT routine is a static centre hold; finite repeated-motion load routine pending implementation/validation"
   },
@@ -402,7 +402,7 @@
     {
       "syntax": "arm bench CH",
       "mode": "off",
-      "meaning": "One physical CH0..7, rate-limited 0..180 commands with loose horn pointer and no legs; canonical bench path"
+      "meaning": "One physical CH0..7, direct 0..180 targets without software slew ramp; canonical bench path"
     },
     {
       "syntax": "arm channel CH",
@@ -452,7 +452,7 @@
     {
       "syntax": "sweep LOW HIGH",
       "mode": "single-channel-or-joint",
-      "meaning": "One low-high-neutral pass, 15deg/s; live watchdog"
+      "meaning": "One low-high-neutral pass; direct targets in bench mode, calibration rate in channel/joint modes; live watchdog"
     },
     {
       "syntax": "map NAME CH",

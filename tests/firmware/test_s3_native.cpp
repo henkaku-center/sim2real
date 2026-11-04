@@ -78,7 +78,7 @@ int main() {
   assert(g.step(520)); assert(!g.step(521)); assert(!g.active() && !g.enabled && g.timedOut);
   g.heartbeat(600); assert(!g.active()); // stale host cannot revive watchdog
   assert(g.arm(Mode::Hornless,0,1000)); assert(!g.arm(Mode::Hornless,1,1000));
-  assert(g.set(0,0,1000)); g.step(1020); near(g.current[0],89.7);
+  assert(g.set(0,0,1000)); g.step(1020); near(g.current[0],0);
   // A queued internal motion cannot keep itself alive by consuming waypoints.
   g.set(0,180,g.lastHeartbeat);
   assert(!g.step(1501));
@@ -87,7 +87,7 @@ int main() {
   for (int j=0;j<8;++j) { near(g.physical(j),90); assert(g.channel(j)==j); }
   assert(g.enabled==255); g.off();
   // Wrap-safe monotonic watchdog and no catch-up leap after a scheduler stall.
-  assert(g.arm(Mode::Hornless,0,0xffffff00)); g.set(0,180,0xffffff00);
+  assert(g.arm(Mode::Channel,0,0xffffff00)); g.set(0,95,0xffffff00);
   assert(g.step(0x00000010)); near(g.current[0],90.3);
   assert(!g.step(0x00000100));
   g.cal=cal; assert(g.arm(Mode::Run,-1,0));
@@ -118,21 +118,17 @@ int main() {
   assert(rawMode("invalid")==Mode::Off);
   assert(c.parse("arm bench 7 extra") && !c.is("arm",3));
   // Full commanded range on every raw channel, without changing production
-  // calibration limits, while preserving slew/watchdog and output exclusion.
+  // calibration limits, with direct targets, watchdog and output exclusion.
   SafeAction bench;uint32_t now=0;uint16_t wanted[16];
   for(int channel=0;channel<8;++channel) {
     assert(bench.arm(Mode::Bench,channel,now));assert(bench.enabled==0);
     assert(!bench.set((channel+1)%8,0,now));
     for(float target:{0.0f,90.0f,180.0f,90.0f}) {
       assert(bench.set(channel,target,now));near(bench.target[channel],target);
-      unsigned iterations=0;
-      while(!bench.settled()) {
-        const float prior=bench.current[channel];now+=20;bench.heartbeat(now);assert(bench.step(now));
-        assert(fabsf(bench.current[channel]-prior)<=CAL_RATE*.02f+.001f);
-        assert(planOutputs(bench,121,wanted));
-        for(int output=0;output<16;++output)assert((wanted[output]!=4096)==(output==channel));
-        assert(++iterations<1000);
-      }
+      now+=20;bench.heartbeat(now);assert(bench.step(now));
+      assert(bench.settled());
+      assert(planOutputs(bench,121,wanted));
+      for(int output=0;output<16;++output)assert((wanted[output]!=4096)==(output==channel));
       near(bench.current[channel],target,.011f);
     }
     assert(bench.cal.low[channel]==fmaxf(SOFT_LOW[channel],INITIAL_LOW));

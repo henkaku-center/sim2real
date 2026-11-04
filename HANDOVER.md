@@ -1,5 +1,15 @@
 # HANDOVER
 
+## Direct bench targets — November 4, 2026
+
+`arm bench CH` (including its `hornless` alias) now applies each position target
+without the 15°/s calibration ramp. Channel/joint/run modes are unchanged.
+This corrects the sluggish classroom identification workflow: software status
+on the student's S3 advanced only about 10°/s during the old ramp. Targets are
+still finite/range-checked, only the selected channel is enabled, and heartbeat
+timeout/off semantics remain. PWM clock calibration and its NVS format are
+unchanged. Earlier references to rate-limited bench targets below are historical.
+
 ## Student-owned projects — October 29, 2026
 
 The instructor's classroom feedback supersedes earlier firmware locks, mandatory

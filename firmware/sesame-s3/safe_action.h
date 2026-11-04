@@ -79,8 +79,8 @@ inline bool compatibleCalibrationManifest(const char (&recorded)[17]) {
 }
 
 // All PWM authority passes through this gate, including raw bench commands.
-// First enable cannot be slew-limited from an unknown physical shaft position.
-// It always starts at neutral; subsequent targets are slew-limited.
+// Bench mode writes the requested position without a software slew ramp.
+// Other motion modes start at neutral and retain their existing slew limits.
 class SafeAction {
  public:
   Calibration cal;
@@ -131,6 +131,12 @@ class SafeAction {
     if (!active()) return false;
     if (uint32_t(now - lastHeartbeat) > WATCHDOG_MS) {
       off(); timedOut = true; return false;
+    }
+    if (mode == Mode::Bench) {
+      lastStep = now;
+      for (int j = 0; j < 8; ++j)
+        if (enabled & (1u << j)) current[j] = target[j];
+      return true;
     }
     // Never turn a stalled loop into a large catch-up jump.
     uint32_t dt = now - lastStep; if (dt > 20) dt = 20;

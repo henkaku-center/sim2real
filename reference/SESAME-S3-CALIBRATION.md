@@ -147,17 +147,18 @@ status
 off
 ```
 
-Choose the speed and timing for your project. If this controller feels sluggish,
-change its motion implementation; its rate limits are not course requirements.
-For the unchanged reference, keep its heartbeat active and use `status` to see
-how it handles targets. Implement queues, direct targets or another control method
-when that better serves your idea. The reference has no shaft-position sensor.
+Bench mode now sends direct position targets without a software slew ramp.
+Allow time for the real servo to travel between commands, while keeping the
+heartbeat active. `status` confirms the commanded output, not that the shaft has
+arrived. Channel/joint calibration and run modes retain their existing rate
+limits; students can change those independently. The reference has no
+shaft-position sensor.
 
 After the final 90° target, send `off` and repeat the example for CH1,
 CH2, …, CH7. Only the selected channel emits servo PWM. A lost heartbeat stops
 outputs; `stop` freezes the current target, while `off` disables outputs. Full
-0–180 command bounds and rate limiting describe this implementation, which students
-can change. ACK/status confirms
+0–180 command bounds and direct bench targets describe this implementation, which
+students can change. ACK/status confirms
 commands, **not a measured shaft endpoint or physical pass**.
 
 `arm bench` deliberately bypasses logical-joint trim/limit overlays for this raw

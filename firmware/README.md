@@ -134,7 +134,8 @@ and cancels queues; internal sequence steps do **not** feed that watchdog.
 The S3 profile selects outputs-off instead of the simulator's rest failsafe
 as a reference design choice, not a rule for student firmware.
 
-Arming never enables outputs; the first actual target starts from neutral.
+Arming never enables outputs. Bench mode applies the requested position directly;
+other motion modes retain interpolation starting from neutral.
 There is no shaft feedback: the first move after release/reset cannot be
 slew-limited from an unknown real position. Support/unload the robot. OE must
 be connected and pulled high during reset to cover MCU resets/I²C failures;
