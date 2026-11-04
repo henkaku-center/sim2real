@@ -3,8 +3,10 @@
 #include <Wire.h>
 #include <WiFi.h>
 #include <DNSServer.h>
+#include <ESPmDNS.h>
 #include <Preferences.h>
 #include <esp_wifi.h>
+#include <esp_system.h>
 #include <esp_timer.h>
 #include <driver/gpio.h>
 #include <sys/socket.h>
@@ -42,7 +44,7 @@ ClockReport clockReport() {
 }
 Adafruit_PWMServoDriver pwm(PCA_ADDRESS);
 Adafruit_SSD1306 display(128, 64, &Wire, -1, 100000, 100000);
-Preferences prefs;
+Preferences prefs, netPrefs;
 NetworkServer http(80);
 NetworkClient client;
 DNSServer dns;
@@ -54,7 +56,8 @@ float lastCommanded[8] = {NAN,NAN,NAN,NAN,NAN,NAN,NAN,NAN};
 bool benchDisplay = true;
 uint32_t lastPWM = 0, buttonStart = 0;
 enum Owner { NONE, USB, WEB, BUTTON } owner = NONE;
-String ssid, country = "JP";
+String ssid, hostname, country = "JP";
+String staSsid, staPass; // optional home/lab network, NVS namespace sesame-net
 int wifiChannel = 1;
 float wifiPower = 8.5;
 const Motion* motion = nullptr;
@@ -62,6 +65,7 @@ unsigned motionIndex = 0;
 uint32_t waitStarted = 0;
 bool waiting = false;
 bool sweeping = false;
+uint32_t httpDrops = 0; // web requests not fully received in time
 float sweepLow = 0, sweepHigh = 0;
 unsigned sweepStage = 0;
 
@@ -173,10 +177,25 @@ String exportCalibration() {
   }
   return out + "]}";
 }
+// Distinguishes "the phone left the AP" from "the robot restarted" (e.g. a
+// brownout when all servos first energise) after the web console loses contact.
+const char* resetReason() {
+  switch (esp_reset_reason()) {
+    case ESP_RST_POWERON: return "poweron";
+    case ESP_RST_SW: return "software";
+    case ESP_RST_PANIC: return "panic";
+    case ESP_RST_INT_WDT: case ESP_RST_TASK_WDT: case ESP_RST_WDT: return "watchdog";
+    case ESP_RST_BROWNOUT: return "brownout";
+    case ESP_RST_USB: return "usb";
+    default: return "other";
+  }
+}
 String status() {
   String out = "mode=" + String(int(gate.mode)) + " outputs=" + String(gate.enabled) +
     " hub=" + String(ready) + " fault=" + String(fault) + " owner=" + String(int(owner)) +
-    " motion=" + String(motion ? motion->name : "none") + " profile=" + PULSE_PROFILE_ID + "\n";
+    " motion=" + String(motion ? motion->name : "none") + " sweep=" + String(sweeping) +
+    " hold=" + String(gate.held) + " up_s=" + String(millis() / 1000) + " reset=" + resetReason() +
+    " profile=" + PULSE_PROFILE_ID + "\n";
   for (int j = 0; j < 8; ++j) if (gate.enabled & (1u << j)) {
     out += "CH" + String(gate.channel(j)) + " current=" + String(gate.current[j], 2) +
       " target=" + String(gate.target[j], 2) + " physical=" + String(gate.physical(j), 2) +
@@ -201,16 +220,26 @@ String wifiStatus() {
   esp_err_t b = esp_wifi_get_country(&cc);
   esp_err_t c = esp_wifi_get_max_tx_power(&tx);
   char countryText[4] = {cc.cc[0], cc.cc[1], cc.cc[2], 0};
+  // Signal of each phone on our AP as the robot hears it (link diagnosis).
+  wifi_sta_list_t peers = {}; String rssi;
+  if (esp_wifi_ap_get_sta_list(&peers) == ESP_OK)
+    for (int i = 0; i < peers.num; ++i) rssi += (i ? "," : "") + String(peers.sta[i].rssi);
+  String sta = staSsid.length() ? " STA ssid=" + staSsid + " connected=" + String(WiFi.isConnected()) +
+    " ip=" + WiFi.localIP().toString() + " rssi=" + String(WiFi.RSSI()) + " mdns=" + hostname + ".local" : " STA none";
   return "AP ok=" + String(apOK) + " ssid=" + ssid + " ip=" + WiFi.softAPIP().toString() +
     " channel=" + String(config.ap.channel) + " hidden=" + String(config.ap.ssid_hidden) +
     " country=" + String(countryText) + " tx_dbm=" + String(tx / 4.0, 2) +
-    " clients=" + String(WiFi.softAPgetStationNum()) + " get_errors=" +
-    String(int(a)) + "," + String(int(b)) + "," + String(int(c));
+    " clients=" + String(WiFi.softAPgetStationNum()) + " ap_rssi=" + (rssi.length() ? rssi : "-") +
+    " http_drops=" + String(httpDrops) + " get_errors=" +
+    String(int(a)) + "," + String(int(b)) + "," + String(int(c)) + "\n" + sta;
 }
 void startWifi() {
-  // Explicit AP-only mode: no saved STA credentials or channel migration.
+  // The AP always stays up as the local fallback. An optional station joins a
+  // home/lab network (credentials in our own NVS, never the core's); the AP then
+  // follows that network's channel.
   WiFi.persistent(false);
-  bool modeOK = WiFi.mode(WIFI_AP);
+  WiFi.setHostname(hostname.c_str()); // before mode(): applied when STA starts
+  bool modeOK = WiFi.mode(staSsid.length() ? WIFI_AP_STA : WIFI_AP);
   esp_err_t cc = esp_wifi_set_country_code(country.c_str(), false);
   bool sleepOK = WiFi.setSleep(false);
   bool ipOK = WiFi.softAPConfig(IPAddress(192,168,4,1), IPAddress(192,168,4,1), IPAddress(255,255,255,0));
@@ -219,10 +248,24 @@ void startWifi() {
     wifiPower == 19.5 ? WIFI_POWER_19_5dBm : WIFI_POWER_8_5dBm;
   bool txOK = WiFi.setTxPower(power);
   apOK = modeOK && cc == ESP_OK && ipOK && started && txOK;
+  if (staSsid.length()) {
+    WiFi.setAutoReconnect(true);
+    WiFi.begin(staSsid.c_str(), staPass.length() ? staPass.c_str() : nullptr);
+  }
   Serial.printf("WIFI mode=%d country_err=%d sleep=%d ip=%d softAP=%d tx=%d\n", modeOK, int(cc), sleepOK, ipOK, started, txOK);
   Serial.println(wifiStatus());
   dns.stop();
   if (started) { dns.start(53, "*", WiFi.softAPIP()); http.begin(); }
+  if (MDNS.begin(hostname.c_str())) MDNS.addService("http", "tcp", 80);
+}
+void stationService() {
+  static bool was = false; static uint32_t checked = 0;
+  if (!staSsid.length() || millis() - checked < 1000) return;
+  checked = millis();
+  if (WiFi.isConnected() == was) return;
+  was = !was;
+  if (was) Serial.printf("STA connected ip=%s http://%s.local\n", WiFi.localIP().toString().c_str(), hostname.c_str());
+  else Serial.println("STA disconnected; retrying (AP still up)");
 }
 
 const char* HELP =
@@ -237,7 +280,11 @@ const char* HELP =
   "clock status | clock abort (measurement never writes calibration)\n"
   "servo NAME DEG | pose D0 D1 D2 D3 D4 D5 D6 D7 | rest\n"
   "OFF only: wifi JP|US|GB|DE|FR CHANNEL(1..11) TX_DBM(2|8.5|13|19.5)\n"
-  "Every active serial/web session needs heartbeat <500ms; use class console.\n"
+  "USB+OFF only: wifi join SSID [PASSWORD] (no spaces) | wifi forget\n"
+  "Web: /cmd?c=A;B;C runs in order, stops at first ERR.\n"
+  "No owner message for 500ms: freeze+hold torque (status hold=1); any owner\n"
+  "command resumes; outputs OFF after 600s held. Motions need live heartbeat.\n"
+  "Clock measurement still turns outputs OFF after 500ms without heartbeat.\n"
   "BOOT release while OFF: 30s assembly centre; BOOT press while active: OFF.";
 
 String dispatchCommand(const char* text, Owner source) {
@@ -260,6 +307,7 @@ String dispatchCommand(const char* text, Owner source) {
     cancelQueue(); gate.stop(now); return "OK STOP frozen; off releases torque";
   }
   if (gate.active() && owner != source) return "ERR owned by another transport; off first";
+  gate.heartbeat(now); // any owner message proves the link (and ends a hold)
   if (c.is("heartbeat", 1)) { gate.heartbeat(now); return ""; }
   if (clock == ClockCommand::Measure) {
     if (source != USB || !Serial) return "ERR clock measurement requires connected USB owner";
@@ -377,6 +425,19 @@ String dispatchCommand(const char* text, Owner source) {
     next.verified |= 1u << j;
   } else if (c.is("oscillator", 2) && c.integer(1, number) && number >= 20000000 && number <= 30000000) {
     next.oscillator = number; next.verified = 0;
+  } else if ((c.is("wifi", 3) || c.is("wifi", 4)) && !strcmp(c.words[1], "join")) {
+    if (source != USB) return "ERR change Wi-Fi via USB with servo power off";
+    if (strlen(c.words[2]) > 32 || (c.count == 4 && (strlen(c.words[3]) < 8 || strlen(c.words[3]) > 63)))
+      return "ERR SSID <=32, password 8..63 chars";
+    staSsid = c.words[2]; staPass = c.count == 4 ? c.words[3] : "";
+    if (!netPrefs.putString("ssid", staSsid) || (staPass.length() && !netPrefs.putString("pass", staPass)))
+      return "ERR NVS save";
+    if (!staPass.length()) netPrefs.remove("pass");
+    startWifi(); return "OK STA joining (saved); watch for 'STA connected' or run wifi\n" + wifiStatus();
+  } else if (c.is("wifi", 2) && !strcmp(c.words[1], "forget")) {
+    if (source != USB) return "ERR change Wi-Fi via USB with servo power off";
+    netPrefs.clear(); staSsid = staPass = "";
+    WiFi.disconnect(true); startWifi(); return "OK STA forgotten; AP only\n" + wifiStatus();
   } else if (c.is("wifi", 4) && c.integer(2, number) && c.number(3, value) && number >= 1 && number <= 11 &&
              (value == 2 || value == 8.5 || value == 13 || value == 19.5) &&
              (!strcmp(c.words[1], "JP") || !strcmp(c.words[1], "US") || !strcmp(c.words[1], "GB") ||
@@ -456,7 +517,13 @@ void httpService() {
     if (!client) return;
     client.setTimeout(1); request = ""; response = ""; responseSent = 0; requestStarted = millis();
   }
-  if (millis() - requestStarted > 250 || request.length() > 1024) { client.stop(); return; }
+  // 600 ms to receive the request (a weak link needs TCP retransmits); up to
+  // 1.5 s to drain a page. Nonblocking either way: only other clients wait.
+  const uint32_t age = millis() - requestStarted;
+  if ((!response.length() && age > 600) || age > 1500 || request.length() > 1024) {
+    if (!response.length()) ++httpDrops;
+    client.stop(); return;
+  }
   if (response.length()) {
     size_t remaining = response.length() - responseSent;
     int sent = ::send(client.fd(), response.c_str() + responseSent, remaining > 512 ? 512 : remaining, MSG_DONTWAIT);
@@ -473,9 +540,16 @@ void httpService() {
   if (!request.startsWith("GET ") || space < 0) { code = 400; body = "ERR HTTP"; }
   else if (path == "/status") body = status() + wifiStatus();
   else if (path.startsWith("/cmd?c=")) {
-    String text = urlDecode(path.substring(7));
-    body = command(text.c_str(), WEB);
-    if (body.startsWith("ERR")) code = 400;
+    // A;B;C runs in order and stops at the first ERR. Motions run in the
+    // background, so a later motion in the same batch replaces an earlier one.
+    String text = urlDecode(path.substring(7)) + ";";
+    for (int start = 0, end; (end = text.indexOf(';', start)) >= 0; start = end + 1) {
+      String one = text.substring(start, end); one.trim();
+      if (!one.length()) continue;
+      String out = command(one.c_str(), WEB);
+      if (out.length()) body += (body.length() ? "\n" : "") + out;
+      if (out.startsWith("ERR")) { code = 400; break; }
+    }
   } else { type = "text/html"; body = WEB_UI; }
   // Stream response with MSG_DONTWAIT on subsequent iterations. Arduino's
   // NetworkClient::write retries with blocking select; do not use it here.
@@ -532,9 +606,14 @@ void motionService() {
 void outputService() {
   uint32_t now = millis();
   bool wasActive = gate.active();
+  const bool wasHeld = gate.held;
   if (!gate.step(now)) {
-    if (wasActive) outputsOff("watchdog >500ms", ClockOutcome::Watchdog);
+    if (wasActive) outputsOff(wasHeld ? "link lost: hold expired" : "watchdog >500ms", ClockOutcome::Watchdog);
     return;
+  }
+  if (gate.held && !wasHeld) {
+    cancelQueue();
+    Serial.println("HOLD no owner message >500ms: frozen, torque held; any command resumes, OFF after 600s");
   }
   if (gate.mode == Mode::ClockMeasure) {
     if (!Serial) { outputsOff("clock USB disconnected", ClockOutcome::Disconnected); return; }
@@ -572,7 +651,10 @@ void faceService() {
   if (benchDisplay) {
     display.setCursor(0,0); display.setTextSize(1); display.setTextColor(SSD1306_WHITE);
     if (owner == BUTTON) display.printf("CMD Centre %lus", (unsigned long)((30000 - (millis() - buttonStart))/1000));
-    else display.print(gate.active() ? "CMD / BOOT: OFF" : "CMD / outputs OFF");
+    else if (gate.held) display.print("HOLD / BOOT: OFF");
+    else if (gate.active()) display.print("CMD / BOOT: OFF");
+    else if (WiFi.isConnected()) display.print("OFF " + WiFi.localIP().toString());
+    else display.print("CMD / outputs OFF");
     for (int row = 0; row < 4; ++row) for (int column = 0; column < 2; ++column) {
       const int ch = benchChannel(row, column);
       const char* name = "--";
@@ -588,7 +670,9 @@ void faceService() {
   display.fillRect(0, 0, 128, 10, SSD1306_BLACK);
   display.setCursor(0,0); display.setTextSize(1); display.setTextColor(SSD1306_WHITE);
   if (owner == BUTTON) display.printf("Centre %lus", (unsigned long)((30000 - (millis() - buttonStart))/1000));
+  else if (gate.held) display.print("HOLD / BOOT: OFF");
   else if (gate.active()) display.print("ACTIVE / BOOT: OFF");
+  else if (WiFi.isConnected()) display.print(WiFi.localIP().toString());
   else display.print(apOK ? ssid : "AP FAILED / USB help");
   display.display();
   if (faceFrame < 5 && face->frames[faceFrame+1]) ++faceFrame; else faceFrame = 0;
@@ -609,13 +693,18 @@ void setup() {
   setFace("rest");
   uint64_t mac = ESP.getEfuseMac();
   char name[32]; snprintf(name, sizeof(name), "Sesame-S3-%02X%02X", unsigned((mac >> 32)&255), unsigned((mac >> 40)&255)); ssid = name;
+  hostname = ssid; hostname.toLowerCase();
+  if (netPrefs.begin("sesame-net", false)) {
+    if (netPrefs.isKey("ssid")) staSsid = netPrefs.getString("ssid");
+    if (netPrefs.isKey("pass")) staPass = netPrefs.getString("pass");
+  }
   startWifi();
-  Serial.println("READY Sesame S3 calibration+controller; outputs OFF; help");
+  Serial.printf("READY Sesame S3 calibration+controller; outputs OFF; reset=%s; help\n", resetReason());
   Serial.printf("PROFILE %s neutral_us=%.2f manifest=%s\n", PULSE_PROFILE_ID, angleUs(NEUTRAL), MANIFEST_ID);
 }
 void loop() {
   outputService(); buttonService(); serialService(); outputService();
   httpService(); outputService();
-  dns.processNextRequest(); faceService(); outputService();
+  dns.processNextRequest(); stationService(); faceService(); outputService();
   delay(1);
 }

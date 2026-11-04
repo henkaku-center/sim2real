@@ -75,13 +75,21 @@ int main() {
   assert(g.set(3,180,0)); near(g.target[3],95); assert(g.enabled==(1<<3));
   g.step(20); near(g.current[3],90.3);
   g.stop(20); g.step(40); near(g.current[3],90.3); near(g.target[3],90.3);
-  assert(g.step(520)); assert(!g.step(521)); assert(!g.active() && !g.enabled && g.timedOut);
-  g.heartbeat(600); assert(!g.active()); // stale host cannot revive watchdog
+  // Link loss freezes in place and holds torque; it never moves or releases early.
+  g.set(3,95,40); g.step(60); near(g.current[3],90.6);
+  assert(g.step(540) && !g.held); assert(g.step(541) && g.held && g.enabled==(1<<3));
+  near(g.target[3],g.current[3]); float frozen=g.current[3];
+  assert(!g.set(3,95,g.lastHeartbeat)); g.step(560); near(g.current[3],frozen);
+  g.heartbeat(600); assert(!g.held); assert(g.set(3,95,600)); // owner resumes
+  assert(g.step(600+HOLD_MS) && g.held); assert(!g.step(601+HOLD_MS));
+  assert(!g.active() && !g.enabled && g.timedOut && !g.held);
+  g.heartbeat(700+HOLD_MS); assert(!g.active()); // stale host cannot revive watchdog
   assert(g.arm(Mode::Hornless,0,1000)); assert(!g.arm(Mode::Hornless,1,1000));
   assert(g.set(0,0,1000)); g.step(1020); near(g.current[0],89.7);
   // A queued internal motion cannot keep itself alive by consuming waypoints.
   g.set(0,180,g.lastHeartbeat);
-  assert(!g.step(1501));
+  assert(g.step(1501) && g.held); assert(!g.set(0,180,g.lastHeartbeat) && g.held);
+  assert(!g.step(1001+HOLD_MS));
   assert(g.arm(Mode::Assembly,-1,2000) && !g.enabled);
   assert(!g.set(0,180,2000)); assert(g.centre(2000));
   for (int j=0;j<8;++j) { near(g.physical(j),90); assert(g.channel(j)==j); }
@@ -89,7 +97,7 @@ int main() {
   // Wrap-safe monotonic watchdog and no catch-up leap after a scheduler stall.
   assert(g.arm(Mode::Hornless,0,0xffffff00)); g.set(0,180,0xffffff00);
   assert(g.step(0x00000010)); near(g.current[0],90.3);
-  assert(!g.step(0x00000100));
+  assert(g.step(0x00000100) && g.held); assert(!g.step(0xffffff01+HOLD_MS));
   g.cal=cal; assert(g.arm(Mode::Run,-1,0));
   g.set(0,180,0); near(g.target[0],177); g.step(20); near(g.current[0],91.2);
   assert(!g.set(8,90,20)); g.off();
@@ -140,6 +148,6 @@ int main() {
   }
   assert(bench.arm(Mode::Bench,0,now));assert(bench.set(0,-100,now));near(bench.target[0],0);
   assert(bench.set(0,300,now));near(bench.target[0],180);
-  assert(!bench.set(0,NAN,now));assert(!bench.step(now+WATCHDOG_MS+1));
+  assert(!bench.set(0,NAN,now));assert(bench.step(now+WATCHDOG_MS+1)&&bench.held);assert(!bench.step(now+HOLD_MS+1));
   std::cout << "S3 native safety/mapping/parser/motion tests passed\n";
 }
