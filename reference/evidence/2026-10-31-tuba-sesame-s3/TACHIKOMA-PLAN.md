@@ -2,7 +2,7 @@
 
 Base (unchanged, already printed): V3 `internal-frame` + `bottom-cover` + the 8
 legs from `Sesame Robot Build Guide/`. Only the upper body is new: it replaces
-the V3 `head-cover` (shell) and `head-lid`. Drawing: `tachikoma-plan.png`. Kit = the course V3 kit (`reference/printing` equivalent).
+the V3 `head-cover` (shell) and `head-lid`. Drawing: `tachikoma-plan.png`. Kit = the course V3 frame/head kit (Nov 2026).
 
 All numbers are from the kit's CAD (`assembly.json`, `head-cable-clearance.json`,
 `tail-switch-check.json`), in body coordinates: **X+ front, Y+ left, Z up**,
