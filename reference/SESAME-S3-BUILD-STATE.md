@@ -10,6 +10,44 @@ reproduced reset test. Earlier GPIO18 entries below are historical observations
 or assumptions, not the current course prerequisite. No new device operation
 or class-wide hardware success is claimed by this correction.
 
+## OLED VCC fault and PWM clock — 2026-10-15
+
+Symptoms: `hub=0` after most warm resets, OLED stuck on dotted lines/noise
+(two modules), web UI `ERR_EMPTY_RESPONSE`, BOOT centring silently ignored.
+Root cause: the OLED's VCC pin was not connected to the 3.3 V rail. The module
+back-fed through its own SDA/SCL pull-ups, holding both lines at ~1.5 V
+(measured with PCA9685 VCC = 3.3 V). Unplugging the OLED restored both lines to
+3.3 V and PCA9685 probes to 30/30; reconnecting VCC fixed both devices.
+First check for these symptoms: OLED VCC ↔ PCA9685 VCC continuity.
+
+Firmware bug found on the way (fixed with the `i2c` diagnostic commit): at 100 kHz a 128-byte
+SSD1306 chunk takes ~11.8 ms, longer than the old 5 ms Wire timeout, so every
+frame write was dropped. OLED now runs at 400 kHz (~3.1 ms/chunk), timeout
+10 ms. The new `i2c` console command reports line levels, probe failures and
+chunk timing per clock; after the repair all 100/200/400 kHz trials passed
+(0/10 failures each).
+
+Follow-up on the same robot, battery-only via the web UI (2026-10-22..29), still
+running the pre-GPIO7 build (OE on GPIO18; servos moved, OE wiring itself not
+inspected): web UI loads; `arm assembly`/`centre` worked. Observed channel
+identities matched the recommended map (L1 0, L2 1, L3 2, L4 3, R1 4, R2 5,
+R3 6, R4 7). Limits were set to the stand pose range (R1/L2 85–135, R2/L1
+45–95, R4/L3 0–95, R3/L4 85–180), all eight verified, saved; `arm run` was
+accepted. Signs stayed at defaults (per-joint direction check not reported);
+stand/wave outcome not recorded here. `wave` lifts L3 to 180° and needs its
+limit widened beyond 95°.
+
+Web UI pitfall: leaving the page (app switch, screenshot, screen off) clears
+"Keep heartbeat" and sends `off`, dropping the armed selection; the next
+`angle` then fails with `ERR select one channel/joint`. Phone keyboards may also
+auto-capitalise (`Verify`) or insert full-width characters → `ERR syntax`.
+
+PWM clock (CH15 reference, multimeter Hz mode, servos unplugged): 49.48 Hz at
+prescale 121 and 49.87 Hz at prescale 120 agree on ~24.72 MHz; two further
+readings of 53.72 Hz are treated as meter miscounts. Saved
+`oscillator 24725750` (NVS) as **provisional**; re-measure with a scope.
+Expected 49.89 Hz at prescale 120.
+
 ## USB install confirmed — 2026-10-12
 
 Installed source is now **71af7e0**, the Tim-compatible APS controller. Full-flash
