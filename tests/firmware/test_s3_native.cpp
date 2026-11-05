@@ -5,6 +5,7 @@
 #include "safe_action.h"
 #include "command_line.h"
 #include "bench_display.h"
+#include "power.h"
 #include "../../reference/vendor/tim-servo-debug/firmware/common/sesame_servo_map.h"
 
 using namespace sesame;
@@ -149,5 +150,44 @@ int main() {
   assert(bench.arm(Mode::Bench,0,now));assert(bench.set(0,-100,now));near(bench.target[0],0);
   assert(bench.set(0,300,now));near(bench.target[0],180);
   assert(!bench.set(0,NAN,now));assert(bench.step(now+WATCHDOG_MS+1)&&bench.held);assert(!bench.step(now+HOLD_MS+1));
-  std::cout << "S3 native safety/mapping/parser/motion tests passed\n";
+  // Staggered energise: eight newly requested channels start one per interval.
+  {
+    EnergiseStagger st; uint16_t current[16], want[16]; uint32_t t=1000;
+    for(auto& v:current)v=4096;
+    int starts[8]; int started=0;
+    for(int loop=0;loop<40&&started<8;++loop,t+=20) {
+      for(int ch=0;ch<16;++ch)want[ch]=ch<8?300:4096;
+      const bool waiting=st.apply(want,current,t,60);
+      int fresh=0;
+      for(int ch=0;ch<16;++ch)if(want[ch]!=4096&&current[ch]==4096){++fresh;starts[started++]=int(t);current[ch]=want[ch];}
+      assert(fresh<=1); assert(waiting==(started<8));
+    }
+    assert(started==8);
+    for(int k=1;k<8;++k)assert(starts[k]-starts[k-1]>=60);
+    // Running channels keep updating and may turn off immediately.
+    for(int ch=0;ch<16;++ch)want[ch]=ch==0?4096:(ch<8?320:4096);
+    assert(!st.apply(want,current,t,60)); assert(want[0]==4096&&want[1]==320);
+    // Interval 0 restores all-at-once start.
+    EnergiseStagger all; for(auto& v:current)v=4096;
+    for(int ch=0;ch<16;++ch)want[ch]=ch<8?300:4096;
+    assert(!all.apply(want,current,0,0)); for(int ch=0;ch<8;++ch)assert(want[ch]==300);
+    // Wrap-safe millis arithmetic.
+    EnergiseStagger wrap; for(int ch=0;ch<16;++ch)want[ch]=ch<2?300:4096;
+    assert(wrap.apply(want,current,0xffffffe0u,60)&&want[0]==300&&want[1]==4096);
+    for(int ch=0;ch<16;++ch)want[ch]=ch<2?300:4096; current[0]=300;
+    assert(!wrap.apply(want,current,0x0000001cu,60)&&want[1]==300);
+  }
+  // Battery monitor: 100k/33k divider (ratio 133/33), EMA and sag minimum.
+  {
+    BatteryMonitor b; const float ratio=133.0f/33.0f;
+    assert(!b.valid && !b.low(6.8f));
+    b.sample(2000,ratio); near(b.volts,8.0606f,.001f); near(b.minimum,b.volts,.001f);
+    b.sample(1500,ratio); near(b.minimum,6.0455f,.001f); assert(b.volts>7.8f && !b.low(6.8f));
+    for(int k=0;k<200;++k)b.sample(1600,ratio);
+    near(b.volts,6.4485f,.01f); assert(b.low(6.8f)); assert(!b.low(0));
+    b.reset(); near(b.minimum,b.volts,.001f);
+    for(int gpio:{1,5,6,8,9,10})assert(batteryPinAllowed(gpio,CLOCK_MEASURE_GPIO,SDA,SCL,OE));
+    for(int gpio:{-1,0,2,3,4,7,11,18})assert(!batteryPinAllowed(gpio,CLOCK_MEASURE_GPIO,SDA,SCL,OE));
+  }
+  std::cout << "S3 native safety/mapping/parser/motion/power tests passed\n";
 }

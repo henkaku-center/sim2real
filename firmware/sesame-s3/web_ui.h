@@ -10,6 +10,7 @@ constexpr char WEB_UI[] = R"HTML(<!doctype html><meta charset="utf-8">
 body{font:15px system-ui,sans-serif;margin:0 0 40px;background:#f4f4f4}
 header{position:sticky;top:0;background:#222;color:#fff;padding:6px 8px;z-index:1}
 #st{font:12px ui-monospace,monospace;white-space:pre-wrap;min-height:2.4em}
+#pw{color:#fc3;font:bold 12px ui-monospace,monospace;white-space:pre-wrap}
 section{background:#fff;margin:8px;padding:8px;border-radius:8px}
 h2{font-size:13px;margin:0 0 6px;color:#555;text-transform:uppercase}
 .g{display:grid;grid-template-columns:repeat(auto-fill,minmax(88px,1fr));gap:6px}
@@ -20,7 +21,7 @@ input,select,textarea{font:inherit;box-sizing:border-box}textarea{width:100%;hei
 .row{display:flex;gap:6px;margin-bottom:6px}.row>*{flex:1}
 pre{font:12px ui-monospace,monospace;white-space:pre-wrap;margin:0;max-height:40vh;overflow:auto}
 </style>
-<header><div id="st">connecting…</div>
+<header><div id="st">connecting…</div><div id="pw"></div>
 <div class="top"><button class="off" onclick="stopAll('off')">OUTPUTS OFF</button>
 <button class="fr" onclick="stopAll('stop')">Freeze</button></div></header>
 <section><h2>Motions (auto arm run)</h2><div class="g" id="motions"></div></section>
@@ -30,7 +31,7 @@ pre{font:12px ui-monospace,monospace;white-space:pre-wrap;margin:0;max-height:40
 <button onclick="macro('jog -5')">Jog −5</button><button onclick="macro('jog -1')">Jog −1</button>
 <button onclick="macro('jog 1')">Jog +1</button><button onclick="macro('jog 5')">Jog +5</button>
 <button onclick="macro('off;verify {J}')">Verify joint</button><button onclick="macro('off;save')">Save</button>
-<button onclick="macro('show')">Show</button><button onclick="macro('status;wifi')">Status</button>
+<button onclick="macro('show')">Show</button><button onclick="macro('status;wifi;power')">Status</button>
 </div></section>
 <section><h2>My macros</h2><div class="g" id="mine"></div>
 <details><summary>Edit</summary><input id="mname" placeholder="name" style="width:100%;margin:6px 0">
@@ -71,10 +72,15 @@ const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 async function status(){const[,t]=await req('/status');const g=k=>(t.match(new RegExp(' '+k+'=(\\S+)'))||[])[1];
 last={mode:MODES[+(t.match(/^mode=(\d)/)||[])[1]]||'?',out:g('outputs'),motion:g('motion'),sweep:g('sweep'),hold:g('hold'),owner:g('owner'),
 sta:(t.match(/STA.* ip=(\S+)/)||[])[1]};
-last.rssi=g('ap_rssi');last.drops=g('http_drops');const u=+g('up_s');if(u<up)say(`ROBOT RESTARTED (reset=${g('reset')}); outputs are OFF`);up=u;
+last.rssi=g('ap_rssi');last.drops=g('http_drops');last.reset=g('reset');last.batt=g('batt_v');last.bmin=g('batt_min');last.blow=g('batt_low');
+const u=+g('up_s');if(u<up)say(`ROBOT RESTARTED (reset=${last.reset}); outputs are OFF`+(/brownout|poweron/.test(last.reset)?
+'\n  power dipped (unless you switched it off): charge the battery; servo start is staggered, see "power"':''));up=u;
+$('#pw').textContent=last.blow==='1'?`LOW BATTERY ${last.batt} V: charge it`:
+last.reset==='brownout'?'last reset: BROWNOUT (low battery or servo surge): charge the battery':'';
 $('#st').textContent=`${last.hold==='1'?'HOLD ':''}${last.mode} outputs=${last.out} motion=${last.motion}${last.sweep==='1'?' sweeping':''}`+
 (last.sta&&last.sta!=='0.0.0.0'?`\nLAN http://${last.sta}  (${location.host})`:`\n${location.host}`)+
-`\n${linkText()} | phone rssi ${last.rssi} dBm | drops ${last.drops}`;return last}
+`\n${linkText()} | phone rssi ${last.rssi} dBm | drops ${last.drops}`+
+(last.batt&&last.batt!=='-'?` | batt ${last.batt} V (min ${last.bmin})`:'');return last}
 // Safety commands bypass the request queue.
 async function stopAll(c){run++;say('> '+c);try{say(await (await fetch('/cmd?c='+c,{signal:AbortSignal.timeout(3000)})).text())}
 catch(e){say('ERR no reply: '+e.name+'; check phone is still on Sesame Wi-Fi. BOOT button stops the robot')}}

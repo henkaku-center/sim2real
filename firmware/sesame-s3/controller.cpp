@@ -16,6 +16,7 @@
 #include "command_line.h"
 #include "clock_measurement.h"
 #include "bench_display.h"
+#include "power.h"
 #include "vendor/face-bitmaps.h"
 #include "web_ui.h"
 
@@ -44,7 +45,7 @@ ClockReport clockReport() {
 }
 Adafruit_PWMServoDriver pwm(PCA_ADDRESS);
 Adafruit_SSD1306 display(128, 64, &Wire, -1, 100000, 100000);
-Preferences prefs, netPrefs;
+Preferences prefs, netPrefs, powerPrefs;
 NetworkServer http(80);
 NetworkClient client;
 DNSServer dns;
@@ -66,6 +67,13 @@ uint32_t waitStarted = 0;
 bool waiting = false;
 bool sweeping = false;
 uint32_t httpDrops = 0; // web requests not fully received in time
+EnergiseStagger stagger;
+uint32_t staggerMs = STAGGER_DEFAULT_MS;
+BatteryMonitor battery;
+int batteryGpio = -1; // NVS namespace sesame-pwr; -1 = no divider fitted
+float batteryRatio = 0, batteryLow = BATTERY_LOW_DEFAULT_V;
+uint32_t batteryPinMv = 0, lastBatterySample = 0;
+bool powerNvs = false;
 float sweepLow = 0, sweepHigh = 0;
 unsigned sweepStage = 0;
 
@@ -190,12 +198,78 @@ const char* resetReason() {
     default: return "other";
   }
 }
+String powerWarning() {
+  if (battery.low(batteryLow)) return "LOW BATT " + String(battery.volts, 1) + "V";
+  if (esp_reset_reason() == ESP_RST_BROWNOUT) return "BROWNOUT: charge batt";
+  return "";
+}
+String powerStatus() {
+  return "POWER stagger_ms=" + String(staggerMs) + " battery_gpio=" + String(batteryGpio) +
+    " ratio=" + String(batteryRatio, 4) + " pin_mv=" + String(batteryPinMv) +
+    " batt_v=" + (battery.valid ? String(battery.volts, 2) : "-") +
+    " batt_min=" + (battery.valid ? String(battery.minimum, 2) : "-") +
+    " low_v=" + String(batteryLow, 2) + " reset=" + resetReason() + " nvs=" + String(powerNvs);
+}
+void configureBatteryPin() {
+  battery = BatteryMonitor();
+  if (batteryGpio >= 0) analogSetPinAttenuation(uint8_t(batteryGpio), ADC_11db); // ~0..3.1 V at the pin
+}
+void loadPower() {
+  powerNvs = powerPrefs.begin("sesame-pwr", false);
+  if (!powerNvs) return;
+  staggerMs = powerPrefs.getUInt("stagger", STAGGER_DEFAULT_MS);
+  if (staggerMs > STAGGER_MAX_MS) staggerMs = STAGGER_DEFAULT_MS;
+  batteryGpio = powerPrefs.getInt("gpio", -1);
+  batteryRatio = powerPrefs.getFloat("ratio", 0);
+  batteryLow = powerPrefs.getFloat("low", BATTERY_LOW_DEFAULT_V);
+  if (!batteryPinAllowed(batteryGpio, CLOCK_MEASURE_GPIO, sesame::SDA, sesame::SCL, OE) ||
+      !(batteryRatio >= 1 && batteryRatio <= 20)) batteryGpio = -1;
+  configureBatteryPin();
+}
+void batteryService() {
+  if (batteryGpio < 0 || millis() - lastBatterySample < 10) return;
+  lastBatterySample = millis();
+  batteryPinMv = analogReadMilliVolts(uint8_t(batteryGpio));
+  battery.sample(batteryPinMv, batteryRatio);
+}
+// power | power stagger MS | power low VOLTS | power battery GPIO RATIO|cal VOLTS|off
+String powerCommand(const CommandLine& c) {
+  float value = 0; int number = 0;
+  const char* saveError = " (session only: NVS unavailable)";
+  bool stored = true;
+  if (c.count == 1) return powerStatus();
+  if (c.is("power", 3) && !strcmp(c.words[1], "stagger")) {
+    if (!c.integer(2, number) || number < 0 || number > int(STAGGER_MAX_MS)) return "ERR power stagger 0..500";
+    staggerMs = number; stored = powerNvs && powerPrefs.putUInt("stagger", staggerMs);
+  } else if (c.is("power", 3) && !strcmp(c.words[1], "low")) {
+    if (!c.number(2, value) || value < 0 || value > 30) return "ERR power low VOLTS (0 disables)";
+    batteryLow = value; stored = powerNvs && powerPrefs.putFloat("low", batteryLow);
+  } else if (c.is("power", 3) && !strcmp(c.words[1], "battery") && !strcmp(c.words[2], "off")) {
+    batteryGpio = -1; configureBatteryPin(); stored = powerNvs && powerPrefs.putInt("gpio", -1);
+  } else if (c.is("power", 4) && !strcmp(c.words[1], "battery") && !strcmp(c.words[2], "cal")) {
+    if (batteryGpio < 0) return "ERR power battery GPIO RATIO first";
+    if (!c.number(3, value) || batteryPinMv < 200) return "ERR power battery cal VOLTS (meter reading; pin must read >=200mV)";
+    const float ratio = value * 1000.0f / batteryPinMv;
+    if (!(ratio >= 1 && ratio <= 20)) return "ERR ratio " + String(ratio, 3) + " outside 1..20; check divider";
+    batteryRatio = ratio; battery = BatteryMonitor(); stored = powerNvs && powerPrefs.putFloat("ratio", batteryRatio);
+  } else if (c.is("power", 4) && !strcmp(c.words[1], "battery")) {
+    if (!c.integer(2, number) || !batteryPinAllowed(number, CLOCK_MEASURE_GPIO, sesame::SDA, sesame::SCL, OE))
+      return "ERR battery GPIO: ADC1 pin 1,5,6,8,9,10 (not I2C/OE/clock)";
+    if (!c.number(3, value) || !(value >= 1 && value <= 20)) return "ERR RATIO = (Rtop+Rbottom)/Rbottom, 1..20";
+    batteryGpio = number; batteryRatio = value; configureBatteryPin();
+    stored = powerNvs && powerPrefs.putInt("gpio", batteryGpio) && powerPrefs.putFloat("ratio", batteryRatio);
+  } else return "ERR power | power stagger MS | power low VOLTS | power battery GPIO RATIO|cal VOLTS|off";
+  return "OK " + powerStatus() + (stored ? "" : saveError);
+}
 String status() {
   String out = "mode=" + String(int(gate.mode)) + " outputs=" + String(gate.enabled) +
     " hub=" + String(ready) + " fault=" + String(fault) + " owner=" + String(int(owner)) +
     " motion=" + String(motion ? motion->name : "none") + " sweep=" + String(sweeping) +
     " hold=" + String(gate.held) + " up_s=" + String(millis() / 1000) + " reset=" + resetReason() +
-    " profile=" + PULSE_PROFILE_ID + "\n";
+    " profile=" + PULSE_PROFILE_ID + " stagger_ms=" + String(staggerMs) +
+    " batt_v=" + (battery.valid ? String(battery.volts, 2) : "-") +
+    " batt_min=" + (battery.valid ? String(battery.minimum, 2) : "-") +
+    " batt_low=" + String(battery.low(batteryLow)) + "\n";
   for (int j = 0; j < 8; ++j) if (gate.enabled & (1u << j)) {
     out += "CH" + String(gate.channel(j)) + " current=" + String(gate.current[j], 2) +
       " target=" + String(gate.target[j], 2) + " physical=" + String(gate.physical(j), 2) +
@@ -280,6 +354,8 @@ const char* HELP =
   "clock status | clock abort (measurement never writes calibration)\n"
   "servo NAME DEG | pose D0 D1 D2 D3 D4 D5 D6 D7 | rest\n"
   "OFF only: wifi JP|US|GB|DE|FR CHANNEL(1..11) TX_DBM(2|8.5|13|19.5)\n"
+  "power | power stagger MS (0..500; one servo starts per MS, 0 = all at once)\n"
+  "power low VOLTS | power battery GPIO RATIO | power battery cal VOLTS | power battery off\n"
   "USB+OFF only: wifi join SSID [PASSWORD] (no spaces) | wifi forget\n"
   "Web: /cmd?c=A;B;C runs in order, stops at first ERR.\n"
   "No owner message for 500ms: freeze+hold torque (status hold=1); any owner\n"
@@ -300,6 +376,7 @@ String dispatchCommand(const char* text, Owner source) {
   if (c.is("show", 1) || c.is("subtrim", 1)) return showCalibration();
   if (c.is("export", 1)) return exportCalibration();
   if (c.is("wifi", 1)) return wifiStatus();
+  if (c.count && !strcmp(c.words[0], "power")) return powerCommand(c);
   if (c.is("bench", 1)) { benchDisplay = true; return "OK BENCH commanded angles, not feedback"; }
   if (c.is("off", 1)) { outputsOff("command"); return "OK OFF"; }
   if (c.is("stop", 1)) {
@@ -342,7 +419,7 @@ String dispatchCommand(const char* text, Owner source) {
       mode = rawMode(c.words[1]);
     }
     if (!gate.arm(mode, selected, now)) return "ERR arm: select valid channel/joint; run needs all verified+saved";
-    owner = source; cancelQueue();
+    owner = source; cancelQueue(); battery.reset(); // batt_min = sag during this session
     return "OK ARMED outputs OFF until target";
   }
   if (c.is("reference", 1)) {
@@ -627,6 +704,7 @@ void outputService() {
   lastPWM = now;
   uint16_t wanted[16];
   if (!planOutputs(gate, prescale, wanted)) { outputsOff("invalid map"); return; }
+  stagger.apply(wanted, lastTicks, now, staggerMs); // spread servo start-up surges
   bool any = false;
   for (int ch = 0; ch < 16; ++ch) {
     if (wanted[ch] != 4096) any = true;
@@ -641,16 +719,19 @@ void outputService() {
     fault = true; outputsOff("I2C/prescale fault"); return;
   }
   digitalWrite(OE, any ? LOW : HIGH);
-  for (int j = 0; j < 8; ++j) if (gate.enabled & (1u << j))
+  for (int j = 0; j < 8; ++j) if ((gate.enabled & (1u << j)) && lastTicks[gate.channel(j)] != 4096)
     lastCommanded[gate.channel(j)] = gate.physical(j);
 }
 void faceService() {
   if (!screen || millis() - lastFace < 250) return;
   lastFace = millis();
   display.clearDisplay();
+  // Alternate the top line with a power warning every 2 s.
+  const String warning = owner == BUTTON || (millis() / 2000) % 2 ? String() : powerWarning();
   if (benchDisplay) {
     display.setCursor(0,0); display.setTextSize(1); display.setTextColor(SSD1306_WHITE);
-    if (owner == BUTTON) display.printf("CMD Centre %lus", (unsigned long)((30000 - (millis() - buttonStart))/1000));
+    if (warning.length()) display.print(warning);
+    else if (owner == BUTTON) display.printf("CMD Centre %lus", (unsigned long)((30000 - (millis() - buttonStart))/1000));
     else if (gate.held) display.print("HOLD / BOOT: OFF");
     else if (gate.active()) display.print("CMD / BOOT: OFF");
     else if (WiFi.isConnected()) display.print("OFF " + WiFi.localIP().toString());
@@ -669,7 +750,8 @@ void faceService() {
   display.drawBitmap(0, 0, face->frames[faceFrame], 128, 64, SSD1306_WHITE);
   display.fillRect(0, 0, 128, 10, SSD1306_BLACK);
   display.setCursor(0,0); display.setTextSize(1); display.setTextColor(SSD1306_WHITE);
-  if (owner == BUTTON) display.printf("Centre %lus", (unsigned long)((30000 - (millis() - buttonStart))/1000));
+  if (warning.length()) display.print(warning);
+  else if (owner == BUTTON) display.printf("Centre %lus", (unsigned long)((30000 - (millis() - buttonStart))/1000));
   else if (gate.held) display.print("HOLD / BOOT: OFF");
   else if (gate.active()) display.print("ACTIVE / BOOT: OFF");
   else if (WiFi.isConnected()) display.print(WiFi.localIP().toString());
@@ -685,6 +767,7 @@ void setup() {
   Serial.setTxTimeoutMs(0); // an absent USB host must not block the watchdog
   Wire.begin(sesame::SDA, sesame::SCL); Wire.setClock(100000); Wire.setTimeOut(5);
   loadCalibration();
+  loadPower();
   ready = pwm.begin();
   if (ready && !configurePWM()) { ready = false; fault = true; }
   outputsOff("boot");
@@ -700,11 +783,14 @@ void setup() {
   }
   startWifi();
   Serial.printf("READY Sesame S3 calibration+controller; outputs OFF; reset=%s; help\n", resetReason());
+  if (esp_reset_reason() == ESP_RST_BROWNOUT)
+    Serial.println("WARN brownout reset: supply sagged (low battery or servo surge); charge battery; see power");
+  Serial.println(powerStatus());
   Serial.printf("PROFILE %s neutral_us=%.2f manifest=%s\n", PULSE_PROFILE_ID, angleUs(NEUTRAL), MANIFEST_ID);
 }
 void loop() {
   outputService(); buttonService(); serialService(); outputService();
   httpService(); outputService();
-  dns.processNextRequest(); stationService(); faceService(); outputService();
+  dns.processNextRequest(); stationService(); batteryService(); faceService(); outputService();
   delay(1);
 }

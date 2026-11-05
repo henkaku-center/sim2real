@@ -70,6 +70,12 @@ def interface():
         ("pose D0 D1 D2 D3 D4 D5 D6 D7", "run", "Bounded targets in canonical logical order"),
         ("rest", "run", "Named rest motion; applies measured trims/signs"),
         ("wifi COUNTRY CHANNEL TX_DBM", "off-usb-only", "JP/US/GB/DE/FR;1..11;2/8.5/13/19.5; session-only"),
+        ("power", "any", "Servo start stagger, optional battery divider config/voltage, last reset reason"),
+        ("power stagger MS", "any", "0..500; at most one servo leaves full-off per MS (0 = all at once); saved in NVS"),
+        ("power low VOLTS", "any", "Battery warning threshold (default 6.8, 0 disables); warns only, saved in NVS"),
+        ("power battery GPIO RATIO", "any", "Divider on ADC1 GPIO1/5/6/8/9/10; RATIO=(Rtop+Rbottom)/Rbottom, 1..20; saved in NVS"),
+        ("power battery cal VOLTS", "any", "Set RATIO from a meter reading of the battery; saved in NVS"),
+        ("power battery off", "any", "Disable battery sensing"),
     ]
     joint_schema = {
         "type": "object", "additionalProperties": False,

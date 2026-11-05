@@ -100,6 +100,24 @@ default partitions, PSRAM disabled. No PSRAM dependency or board-specific
 variant is required. I²C pins are explicitly2/3, not generic S3 defaults8/9.
 Build artifacts/hashes go to ignored `firmware/.build/sesame-s3/`.
 
+## Power: low battery and brownout resets
+
+If the robot restarts right after `arm run`/a motion (`reset=brownout` or
+`reset=poweron` in the web log) and the phone then loses the AP, the supply
+sagged when the servos started. The usual cause is a low battery, so charge it first.
+The firmware helps in three ways (settings are saved in NVS namespace `sesame-pwr`):
+
+- **Staggered start.** At most one servo goes from off to pulsing every
+  `power stagger MS` (default 60, `0` = all at once as before).
+- **Brownout warning.** After a brownout reset, the web header and OLED say so
+  until the next power cycle.
+- **Optional battery voltage.** Fit a divider from battery + to a free ADC1 pin
+  (GPIO1/5/6/8/9/10), e.g. 100 kΩ top / 33 kΩ bottom (8.4 V → 2.1 V), then
+  `power battery 5 4.03`, or calibrate it against a meter with `power battery cal 7.92`.
+  Status then shows `batt_v` and `batt_min` (the deepest sag since the last arm).
+  Below `power low VOLTS` (default 6.8), the UI and OLED warn you, but the robot
+  keeps running. Use `power` to see everything.
+
 ## Implementation and compatibility
 
 - `safe_action.h`: native-testable finite/range checks, rate limit, watchdog,

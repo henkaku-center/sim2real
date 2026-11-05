@@ -538,6 +538,36 @@
       "syntax": "wifi COUNTRY CHANNEL TX_DBM",
       "mode": "off-usb-only",
       "meaning": "JP/US/GB/DE/FR;1..11;2/8.5/13/19.5; session-only"
+    },
+    {
+      "syntax": "power",
+      "mode": "any",
+      "meaning": "Servo start stagger, optional battery divider config/voltage, last reset reason"
+    },
+    {
+      "syntax": "power stagger MS",
+      "mode": "any",
+      "meaning": "0..500; at most one servo leaves full-off per MS (0 = all at once); saved in NVS"
+    },
+    {
+      "syntax": "power low VOLTS",
+      "mode": "any",
+      "meaning": "Battery warning threshold (default 6.8, 0 disables); warns only, saved in NVS"
+    },
+    {
+      "syntax": "power battery GPIO RATIO",
+      "mode": "any",
+      "meaning": "Divider on ADC1 GPIO1/5/6/8/9/10; RATIO=(Rtop+Rbottom)/Rbottom, 1..20; saved in NVS"
+    },
+    {
+      "syntax": "power battery cal VOLTS",
+      "mode": "any",
+      "meaning": "Set RATIO from a meter reading of the battery; saved in NVS"
+    },
+    {
+      "syntax": "power battery off",
+      "mode": "any",
+      "meaning": "Disable battery sensing"
     }
   ],
   "calibration_schema": {
