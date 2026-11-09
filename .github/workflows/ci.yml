@@ -6,6 +6,24 @@ on:
   pull_request:
 
 jobs:
+  occt-parity:
+    # FreeCAD-free CAD kernel (OpenCascade WebAssembly) must match the FreeCAD
+    # pipeline on the base, two-eye and six-leg designs.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: tools/occt/package-lock.json
+      - run: npm ci
+        working-directory: tools/occt
+      - run: npm test
+        working-directory: tools/occt
+
   check:
     strategy:
       fail-fast: false

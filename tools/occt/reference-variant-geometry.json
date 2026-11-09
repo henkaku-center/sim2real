@@ -1,0 +1,293 @@
+{
+  "designs": {
+    "internal-frame-s3": {
+      "params": null,
+      "parts": {
+        "bottom": {
+          "bounds_mm": [
+            [
+              -44.80433531756,
+              -39.69657965842,
+              -18.0876454211
+            ],
+            [
+              43.701754200401,
+              39.696571380251,
+              -10.731983098126765
+            ]
+          ],
+          "closed": true,
+          "solids": 1,
+          "valid": true,
+          "volume_mm3": 27004.642590943622
+        },
+        "frame": {
+          "bounds_mm": [
+            [
+              -43.47500000218,
+              -46.615,
+              -10.73206899063
+            ],
+            [
+              43.701750061318,
+              46.615,
+              4.967756901865376
+            ]
+          ],
+          "closed": true,
+          "solids": 1,
+          "valid": true,
+          "volume_mm3": 60074.49748739233
+        },
+        "head": {
+          "bounds_mm": [
+            [
+              -43.47500000338184,
+              -29.2619163931402,
+              4.967756901864767
+            ],
+            [
+              43.701750061318,
+              29.272083606857294,
+              50.210127293762
+            ]
+          ],
+          "closed": true,
+          "solids": 1,
+          "valid": true,
+          "volume_mm3": 22495.667576454416
+        },
+        "lid": {
+          "bounds_mm": [
+            [
+              -38.25244061195,
+              -26.18020229635,
+              48.210127293762
+            ],
+            [
+              34.001911518725,
+              26.190369510066,
+              51.967756901865
+            ]
+          ],
+          "closed": true,
+          "solids": 1,
+          "valid": true,
+          "volume_mm3": 13011.374214694666
+        }
+      }
+    },
+    "internal-frame-s3-two-eyes": {
+      "params": {
+        "electronics": {
+          "bus": "shared I2C with the first OLED (0x3C) and servo hub",
+          "new_s3_pins": 0,
+          "s3_pins": [
+            "D17 (SDA)",
+            "E17 (SCL)"
+          ],
+          "second_display_i2c_address": "0x3D"
+        },
+        "eye_bar_mm": 8.0,
+        "eyes": 2,
+        "id": "two-eyes",
+        "prompt": "Give it two eyes",
+        "stretch_plane_y_mm": 4.25,
+        "widen_mm": 30.0
+      },
+      "parts": {
+        "bottom": {
+          "bounds_mm": [
+            [
+              -44.80433531756,
+              -54.69657965842,
+              -18.0876454211
+            ],
+            [
+              43.701754200401005,
+              54.696571380251,
+              -10.731983098126765
+            ]
+          ],
+          "closed": true,
+          "solids": 1,
+          "valid": true,
+          "volume_mm3": 36179.77990119474
+        },
+        "frame": {
+          "bounds_mm": [
+            [
+              -43.47500000218001,
+              -61.615,
+              -10.73206899063
+            ],
+            [
+              43.70175006131801,
+              61.615,
+              4.967756901865376
+            ]
+          ],
+          "closed": true,
+          "solids": 1,
+          "valid": true,
+          "volume_mm3": 79054.97761343454
+        },
+        "head": {
+          "bounds_mm": [
+            [
+              -43.47500000338184,
+              -44.26191639314019,
+              4.967756901864767
+            ],
+            [
+              43.701750061318,
+              44.27208360685729,
+              50.210127293762
+            ]
+          ],
+          "closed": true,
+          "solids": 1,
+          "valid": true,
+          "volume_mm3": 27286.290274770236
+        },
+        "lid": {
+          "bounds_mm": [
+            [
+              -38.25244061195,
+              -41.180202296350004,
+              48.210127293762
+            ],
+            [
+              34.00191151872501,
+              41.190369510066,
+              51.967756901865
+            ]
+          ],
+          "closed": true,
+          "solids": 1,
+          "valid": true,
+          "volume_mm3": 20928.461805476403
+        }
+      }
+    },
+    "internal-frame-s3-two-eyes-six-legs": {
+      "params": {
+        "electronics": {
+          "bus": "shared I2C with the first OLED (0x3C) and servo hub",
+          "new_s3_pins": 0,
+          "s3_pins": [
+            "D17 (SDA)",
+            "E17 (SCL)"
+          ],
+          "second_display_i2c_address": "0x3D"
+        },
+        "eye_bar_mm": 8.0,
+        "eyes": 2,
+        "id": "two-eyes-six-legs",
+        "middle_legs": {
+          "bay_shift_mm": 2.98,
+          "bay_x_range_mm": [
+            4.0,
+            39.5
+          ],
+          "bay_y_limit_mm": 31.0,
+          "body_plane_x_mm": -3.5,
+          "head_plane_x_mm": 12.0,
+          "hub_channels": [
+            8,
+            9,
+            10,
+            11
+          ],
+          "leg_prints": [
+            "L5 hip print (copy of L1)",
+            "L6 foot print (copy of L3)",
+            "R5 hip print (copy of R1)",
+            "R6 foot print (copy of R3)"
+          ],
+          "lengthen_mm": 52.0,
+          "servos_added": 4
+        },
+        "prompt": "Add two more legs",
+        "stretch_plane_y_mm": 4.25,
+        "widen_mm": 30.0
+      },
+      "parts": {
+        "bottom": {
+          "bounds_mm": [
+            [
+              -44.80433531756,
+              -54.69657965842,
+              -18.0876454211
+            ],
+            [
+              95.701754200401,
+              54.696571380251,
+              -10.731983098089216
+            ]
+          ],
+          "closed": true,
+          "solids": 1,
+          "valid": true,
+          "volume_mm3": 53253.77188393427
+        },
+        "frame": {
+          "bounds_mm": [
+            [
+              -43.47500000218,
+              -61.615,
+              -10.73206899063
+            ],
+            [
+              95.701750061318,
+              61.615000000000634,
+              4.967756901865376
+            ]
+          ],
+          "closed": true,
+          "solids": 1,
+          "valid": true,
+          "volume_mm3": 114979.82335242767
+        },
+        "head": {
+          "bounds_mm": [
+            [
+              -43.47500000338184,
+              -44.26191639314019,
+              4.967756901864767
+            ],
+            [
+              95.701750061318,
+              44.27208360685729,
+              50.210127293762
+            ]
+          ],
+          "closed": true,
+          "solids": 1,
+          "valid": true,
+          "volume_mm3": 36675.77361035807
+        },
+        "lid": {
+          "bounds_mm": [
+            [
+              -38.25244061195,
+              -41.180202296350004,
+              48.210127293762
+            ],
+            [
+              86.00191151872501,
+              41.190369510066,
+              51.967756901865
+            ]
+          ],
+          "closed": true,
+          "solids": 1,
+          "valid": true,
+          "volume_mm3": 36416.01381373323
+        }
+      }
+    }
+  },
+  "script_sha256": "83d7dbc576957efed2baacb43fd9016e0309f88f8eb0608a7e63fc4ccbce106d",
+  "source": "FreeCAD, tools/v3_assembly_cad.py variant stage"
+}
