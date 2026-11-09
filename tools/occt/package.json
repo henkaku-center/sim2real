@@ -1,0 +1,14 @@
+{
+  "name": "sim2real-occt",
+  "version": "1.0.0",
+  "description": "FreeCAD-free OpenCascade (WebAssembly) CAD kernel for sim2real",
+  "scripts": {
+    "test": "node --test parity.test.mjs"
+  },
+  "type": "module",
+  "dependencies": {
+    "replicad-opencascadejs": "^1.2.1"
+  },
+  "private": true,
+  "license": "UNLICENSED"
+}
