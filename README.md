@@ -45,7 +45,7 @@ file. See [CAD workflow](assets/cad/README.md) and
 
 - **macOS + Linux first.** Every student-facing tool must `pip install` / `npm install` cleanly on both. GPU-accelerated training (MJX/Warp, CUDA) is a Linux-workstation activity; development and evaluation run anywhere on CPU MuJoCo.
 - **AI-agent-friendly.** Deterministic CPU physics, headless test loops, numerical assertions, CDP-scripted browser checks. No GUI-only workflows on the critical path.
-- **CV-legible frameworks.** MuJoCo, Gymnasium, Stable-Baselines3, LeRobot — tools students can name in interviews. Pure-web simulation is a stretch achievement, never a milestone.
+- **Replaceable tools.** MuJoCo, Gymnasium, Stable-Baselines3 and LeRobot are reference choices, not boundaries on the designs or workflows students can explore.
 - **Adapters around an owned contract.** No engine (MuJoCo, Genesis, Isaac, Newton) or format (MJCF, URDF, USD) is the canonical representation. The APS-owned robot manifest and interfaces are.
 
 ## Planned layout

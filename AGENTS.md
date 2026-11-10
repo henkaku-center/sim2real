@@ -11,6 +11,8 @@ print/order/build the selected result. Sesame is a reference example, not the
 boundary of the project. Students own and fork their designs; hands-on learning
 and learning from one another's experiments matter. Manufactured/assembled PCBs
 remain an optional next-course path, not a manual-soldering requirement.
+Reusable community assets and results should shorten idea-to-built iteration
+from weeks toward hours; that is the ambition, not a measured turnaround claim.
 
 This is instructor intent, not a claim that the complete pipeline works today.
 Use `uv run python tools/check_design.py` for current dependency checks and the

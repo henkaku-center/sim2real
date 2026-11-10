@@ -5,6 +5,7 @@ from pathlib import Path
 import subprocess
 import sys
 import circuit
+import rule_drift
 
 ROOT=Path(__file__).resolve().parents[1]
 
@@ -15,7 +16,7 @@ def main():
         checks.append({'name':'live-routing-cad-export','ok':True,'result':circuit.check(ROOT)})
     except (ValueError,OSError,KeyError) as error:
         checks.append({'name':'live-routing-cad-export','ok':False,'error':str(error)})
-    suites=[('firmware-and-circuit', [sys.executable,'-m','pytest','-q','tests/test_s3_firmware.py','tests/test_s3_clock.py','tests/test_course_circuit.py']),
+    suites=[('firmware-and-circuit', [sys.executable,'-m','pytest','-q','tests/test_s3_firmware.py','tests/test_s3_clock.py','tests/test_course_circuit.py','tests/test_rule_drift.py']),
             ('two-eye-artifact-constraints',[sys.executable,'-m','pytest','-q','tests/test_two_eye_variant.py']),
             ('graph-to-scene-adapter',['node','--test','tests/circuit-view.test.mjs'])]
     for name,command in suites:
@@ -41,7 +42,8 @@ def main():
     ]
     ok=all(c['ok'] for c in checks)
     print(json.dumps({'ok':ok,'checks':checks,'mutation_example':'two-eyes','trace':trace,
-                      'end_to_end_accepted':False,
+                      'rule_drift':rule_drift.scan(),
+                      'end_to_end_coverage':'Not established by these checks',
                       'scope':'Dependency checks and current evidence limits; not a manufacturing or student-approval gate.'},indent=2))
     return 0 if ok else 1
 
