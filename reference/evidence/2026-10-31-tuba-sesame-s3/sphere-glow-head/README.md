@@ -24,7 +24,7 @@ Size: 104 × 92 × 65 mm (dome top 70 mm above the deck). About 43 g (1.2 mm) / 
 | Floor above the legs | 1.9 mm |
 | Dome half-width vs frame (raised feet are outside the frame) | ±46.0 vs ±46.6 mm |
 | V3 inside space lost | about 56 mm³, only in the two rear-top corners (lid-rail area, Z 37–50). Check nothing sits there. |
-| Single closed solid | yes |
+| Single closed solid, 0 non-manifold edges (after STL load) | yes (`edges.py`) |
 
 ## Print (Bambu)
 
