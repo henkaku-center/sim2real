@@ -47,6 +47,8 @@ jobs:
       - name: Type-check and build web
         run: npm run build
         working-directory: web
+      - name: Check circuit query and CAD reveal constraints
+        run: node --test tests/circuit-view.test.mjs
 
       # --- Python (uv) — includes the CDP browser smoke test, which needs
       # web/node_modules and the runner's system Chrome ---

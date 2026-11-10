@@ -1,12 +1,17 @@
 # sim2real
 
-Portable simulation and sim-to-real platform for the **Sesame** quadruped robot (8× MG90S servos, LOLIN ESP32-S2 Mini), built for the ChibaTech School of Design & Science course APS-II.
+Design-to-fabrication sim-to-real work for ChibaTech APS-II, using **Sesame** as
+the reference robot. The current scope and instructor intent live in
+[Project goal](AGENTS.md#project-goal), not in a fixed hardware/task checklist.
 
 The project owns the **robot definition, safety contract, task API, evaluation tests, browser experience, and backend adapters** while building on replaceable open-source engines — primarily **MuJoCo** as the cross-platform reference simulator.
 
 ## Status
 
-**Stage 0 complete.** The canonical manifest (`manifest/robot.yaml`), a manifest-generated MJCF, native viewer/benchmark, and a browser WASM shell all run from the same model, with native↔browser numerical parity CDP-tested on macOS + Linux in CI. Geometry is placeholder pending measured dimensions. Next: Stage 1 (stock motion playback, SafeAction command vocabulary) — see [ROADMAP.md](ROADMAP.md).
+Run `uv run python tools/check_design.py` for the current checked dependencies
+and the two-eye mutation trace. A successful geometry/export check is not
+end-to-end simulation, firmware or physical acceptance. [ROADMAP.md](ROADMAP.md)
+retains the earlier research history; it is not a live completion dashboard.
 
 ### Quick start
 

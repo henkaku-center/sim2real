@@ -1,0 +1,1781 @@
+{
+  "schema": "aps-circuit/1",
+  "id": "sesame-course-carrier",
+  "generatedBy": "tools/circuit.py",
+  "scope": "Current reference carrier external conductors only. Pin names identify carrier contacts, not verified module mating contacts or student wiring. Module internals, switch state, external cables and physical continuity are not inferred. Net colours are semantic overlays, not measured voltages or bare-wire insulation colours.",
+  "pins": [
+    {
+      "id": "aux.GND",
+      "component": "aux",
+      "address": "M12",
+      "evidence": [
+        "carrier-connections"
+      ],
+      "state": "connected",
+      "partIds": [
+        "auxiliary.pin.M12",
+        "aux.solder.M12"
+      ]
+    },
+    {
+      "id": "aux.SCL",
+      "component": "aux",
+      "address": "M14",
+      "evidence": [
+        "carrier-connections"
+      ],
+      "state": "connected",
+      "partIds": [
+        "auxiliary.pin.M14",
+        "aux.solder.M14"
+      ]
+    },
+    {
+      "id": "aux.SDA",
+      "component": "aux",
+      "address": "M15",
+      "evidence": [
+        "carrier-connections"
+      ],
+      "state": "connected",
+      "partIds": [
+        "auxiliary.pin.M15",
+        "aux.solder.M15"
+      ]
+    },
+    {
+      "id": "aux.VCC",
+      "component": "aux",
+      "address": "M13",
+      "evidence": [
+        "carrier-connections"
+      ],
+      "state": "connected",
+      "partIds": [
+        "auxiliary.pin.M13",
+        "aux.solder.M13"
+      ]
+    },
+    {
+      "id": "battery.+",
+      "component": "battery",
+      "address": "X16",
+      "evidence": [
+        "carrier-connections"
+      ],
+      "state": "connected",
+      "partIds": [
+        "auxiliary.pin.X16",
+        "aux.solder.X16"
+      ]
+    },
+    {
+      "id": "battery.-",
+      "component": "battery",
+      "address": "X17",
+      "evidence": [
+        "carrier-connections"
+      ],
+      "state": "connected",
+      "partIds": [
+        "auxiliary.pin.X17",
+        "aux.solder.X17"
+      ]
+    },
+    {
+      "id": "carrier.D11",
+      "component": "carrier",
+      "address": "D11",
+      "evidence": [
+        "assembly-cad-snapshot"
+      ],
+      "state": "unknown",
+      "partIds": [
+        "s3.socket_contact.D11",
+        "s3.socket_tail.D11",
+        "s3.bottom_solder.D11"
+      ]
+    },
+    {
+      "id": "carrier.E11",
+      "component": "carrier",
+      "address": "E11",
+      "evidence": [
+        "assembly-cad-snapshot"
+      ],
+      "state": "unknown",
+      "partIds": [
+        "s3.socket_contact.E11",
+        "s3.socket_tail.E11",
+        "s3.bottom_solder.E11"
+      ]
+    },
+    {
+      "id": "carrier.F11",
+      "component": "carrier",
+      "address": "F11",
+      "evidence": [
+        "assembly-cad-snapshot"
+      ],
+      "state": "unknown",
+      "partIds": [
+        "s3.socket_contact.F11",
+        "s3.socket_tail.F11",
+        "s3.bottom_solder.F11"
+      ]
+    },
+    {
+      "id": "carrier.G11",
+      "component": "carrier",
+      "address": "G11",
+      "evidence": [
+        "assembly-cad-snapshot"
+      ],
+      "state": "unknown",
+      "partIds": [
+        "s3.socket_contact.G11",
+        "s3.socket_tail.G11",
+        "s3.bottom_solder.G11"
+      ]
+    },
+    {
+      "id": "carrier.H11",
+      "component": "carrier",
+      "address": "H11",
+      "evidence": [
+        "assembly-cad-snapshot"
+      ],
+      "state": "unknown",
+      "partIds": [
+        "s3.socket_contact.H11",
+        "s3.socket_tail.H11",
+        "s3.bottom_solder.H11"
+      ]
+    },
+    {
+      "id": "carrier.I11",
+      "component": "carrier",
+      "address": "I11",
+      "evidence": [
+        "assembly-cad-snapshot"
+      ],
+      "state": "unknown",
+      "partIds": [
+        "s3.socket_contact.I11",
+        "s3.socket_tail.I11",
+        "s3.bottom_solder.I11"
+      ]
+    },
+    {
+      "id": "carrier.X3",
+      "component": "carrier",
+      "address": "X3",
+      "evidence": [
+        "assembly-cad-snapshot"
+      ],
+      "state": "unknown",
+      "partIds": [
+        "hub.socket_contact.X3",
+        "hub.socket_tail.X3",
+        "SocketBottomSolder_X3"
+      ]
+    },
+    {
+      "id": "carrier.X4",
+      "component": "carrier",
+      "address": "X4",
+      "evidence": [
+        "assembly-cad-snapshot"
+      ],
+      "state": "unknown",
+      "partIds": [
+        "hub.socket_contact.X4",
+        "hub.socket_tail.X4",
+        "SocketBottomSolder_X4"
+      ]
+    },
+    {
+      "id": "carrier.X5",
+      "component": "carrier",
+      "address": "X5",
+      "evidence": [
+        "assembly-cad-snapshot"
+      ],
+      "state": "unknown",
+      "partIds": [
+        "hub.socket_contact.X5",
+        "hub.socket_tail.X5",
+        "SocketBottomSolder_X5"
+      ]
+    },
+    {
+      "id": "carrier.X6",
+      "component": "carrier",
+      "address": "X6",
+      "evidence": [
+        "assembly-cad-snapshot"
+      ],
+      "state": "unknown",
+      "partIds": [
+        "hub.socket_contact.X6",
+        "hub.socket_tail.X6",
+        "SocketBottomSolder_X6"
+      ]
+    },
+    {
+      "id": "carrier.X7",
+      "component": "carrier",
+      "address": "X7",
+      "evidence": [
+        "assembly-cad-snapshot"
+      ],
+      "state": "unknown",
+      "partIds": [
+        "hub.socket_contact.X7",
+        "hub.socket_tail.X7",
+        "SocketBottomSolder_X7"
+      ]
+    },
+    {
+      "id": "carrier.X8",
+      "component": "carrier",
+      "address": "X8",
+      "evidence": [
+        "assembly-cad-snapshot"
+      ],
+      "state": "unknown",
+      "partIds": [
+        "hub.socket_contact.X8",
+        "hub.socket_tail.X8",
+        "SocketBottomSolder_X8"
+      ]
+    },
+    {
+      "id": "converter.IN+",
+      "component": "converter",
+      "address": "O17",
+      "evidence": [
+        "converter-installation"
+      ],
+      "state": "connected",
+      "partIds": [
+        "pins.O17",
+        "top_solder.O17",
+        "converter_hole_fill.O17",
+        "carrier_hole_fill.O17",
+        "bottom_solder.O17"
+      ]
+    },
+    {
+      "id": "converter.IN-",
+      "component": "converter",
+      "address": "V17",
+      "evidence": [
+        "converter-installation"
+      ],
+      "state": "connected",
+      "partIds": [
+        "pins.V17",
+        "top_solder.V17",
+        "converter_hole_fill.V17",
+        "carrier_hole_fill.V17",
+        "bottom_solder.V17"
+      ]
+    },
+    {
+      "id": "converter.OUT+",
+      "component": "converter",
+      "address": "O1",
+      "evidence": [
+        "converter-installation"
+      ],
+      "state": "connected",
+      "partIds": [
+        "pins.O1",
+        "top_solder.O1",
+        "converter_hole_fill.O1",
+        "carrier_hole_fill.O1",
+        "bottom_solder.O1"
+      ]
+    },
+    {
+      "id": "converter.OUT-",
+      "component": "converter",
+      "address": "V1",
+      "evidence": [
+        "converter-installation"
+      ],
+      "state": "connected",
+      "partIds": [
+        "pins.V1",
+        "top_solder.V1",
+        "converter_hole_fill.V1",
+        "carrier_hole_fill.V1",
+        "bottom_solder.V1"
+      ]
+    },
+    {
+      "id": "hub.CH15.SIGNAL",
+      "component": "hub",
+      "address": null,
+      "evidence": [
+        "interface"
+      ],
+      "state": "unknown",
+      "partIds": []
+    },
+    {
+      "id": "hub.GND",
+      "component": "hub",
+      "address": "A8",
+      "evidence": [
+        "pin-labels"
+      ],
+      "state": "connected",
+      "partIds": [
+        "hub.socket_contact.A8",
+        "hub.socket_tail.A8",
+        "SocketBottomSolder_A8"
+      ]
+    },
+    {
+      "id": "hub.OE",
+      "component": "hub",
+      "address": "A7",
+      "state": "no_connect",
+      "evidence": [
+        "pin-labels",
+        "oe-correction"
+      ],
+      "partIds": [
+        "hub.socket_contact.A7",
+        "hub.socket_tail.A7",
+        "SocketBottomSolder_A7"
+      ]
+    },
+    {
+      "id": "hub.SCL",
+      "component": "hub",
+      "address": "A6",
+      "evidence": [
+        "pin-labels"
+      ],
+      "state": "connected",
+      "partIds": [
+        "hub.socket_contact.A6",
+        "hub.socket_tail.A6",
+        "SocketBottomSolder_A6"
+      ]
+    },
+    {
+      "id": "hub.SDA",
+      "component": "hub",
+      "address": "A5",
+      "evidence": [
+        "pin-labels"
+      ],
+      "state": "connected",
+      "partIds": [
+        "hub.socket_contact.A5",
+        "hub.socket_tail.A5",
+        "SocketBottomSolder_A5"
+      ]
+    },
+    {
+      "id": "hub.V+",
+      "component": "hub",
+      "address": "A3",
+      "evidence": [
+        "pin-labels"
+      ],
+      "state": "connected",
+      "partIds": [
+        "hub.socket_contact.A3",
+        "hub.socket_tail.A3",
+        "SocketBottomSolder_A3"
+      ]
+    },
+    {
+      "id": "hub.VCC",
+      "component": "hub",
+      "address": "A4",
+      "evidence": [
+        "pin-labels"
+      ],
+      "state": "connected",
+      "partIds": [
+        "hub.socket_contact.A4",
+        "hub.socket_tail.A4",
+        "SocketBottomSolder_A4"
+      ]
+    },
+    {
+      "id": "s3.3V3",
+      "component": "s3",
+      "address": "C11",
+      "evidence": [
+        "pin-labels"
+      ],
+      "state": "connected",
+      "partIds": [
+        "s3.socket_contact.C11",
+        "s3.socket_tail.C11",
+        "s3.bottom_solder.C11"
+      ]
+    },
+    {
+      "id": "s3.5V",
+      "component": "s3",
+      "address": "A11",
+      "evidence": [
+        "pin-labels"
+      ],
+      "state": "connected",
+      "partIds": [
+        "s3.socket_contact.A11",
+        "s3.socket_tail.A11",
+        "s3.bottom_solder.A11"
+      ]
+    },
+    {
+      "id": "s3.GND",
+      "component": "s3",
+      "address": "B11",
+      "evidence": [
+        "pin-labels"
+      ],
+      "state": "connected",
+      "partIds": [
+        "s3.socket_contact.B11",
+        "s3.socket_tail.B11",
+        "s3.bottom_solder.B11"
+      ]
+    },
+    {
+      "id": "s3.GPIO1",
+      "component": "s3",
+      "address": "C17",
+      "evidence": [
+        "interface"
+      ],
+      "state": "unknown",
+      "partIds": [
+        "s3.socket_contact.C17",
+        "s3.socket_tail.C17",
+        "s3.bottom_solder.C17"
+      ]
+    },
+    {
+      "id": "s3.GPIO2",
+      "component": "s3",
+      "address": "D17",
+      "evidence": [
+        "interface"
+      ],
+      "state": "connected",
+      "partIds": [
+        "s3.socket_contact.D17",
+        "s3.socket_tail.D17",
+        "s3.bottom_solder.D17"
+      ]
+    },
+    {
+      "id": "s3.GPIO3",
+      "component": "s3",
+      "address": "E17",
+      "evidence": [
+        "interface"
+      ],
+      "state": "connected",
+      "partIds": [
+        "s3.socket_contact.E17",
+        "s3.socket_tail.E17",
+        "s3.bottom_solder.E17"
+      ]
+    },
+    {
+      "id": "s3.GPIO4",
+      "component": "s3",
+      "address": "F17",
+      "evidence": [
+        "interface"
+      ],
+      "state": "unknown",
+      "partIds": [
+        "s3.socket_contact.F17",
+        "s3.socket_tail.F17",
+        "s3.bottom_solder.F17"
+      ]
+    },
+    {
+      "id": "s3.GPIO5",
+      "component": "s3",
+      "address": "G17",
+      "evidence": [
+        "interface"
+      ],
+      "state": "unknown",
+      "partIds": [
+        "s3.socket_contact.G17",
+        "s3.socket_tail.G17",
+        "s3.bottom_solder.G17"
+      ]
+    },
+    {
+      "id": "s3.GPIO6",
+      "component": "s3",
+      "address": "H17",
+      "evidence": [
+        "interface"
+      ],
+      "state": "unknown",
+      "partIds": [
+        "s3.socket_contact.H17",
+        "s3.socket_tail.H17",
+        "s3.bottom_solder.H17"
+      ]
+    },
+    {
+      "id": "s3.GPIO7",
+      "component": "s3",
+      "address": "I17",
+      "evidence": [
+        "interface"
+      ],
+      "state": "unknown",
+      "partIds": [
+        "s3.socket_contact.I17",
+        "s3.socket_tail.I17",
+        "s3.bottom_solder.I17"
+      ]
+    },
+    {
+      "id": "s3.RX",
+      "component": "s3",
+      "address": "B17",
+      "evidence": [
+        "interface"
+      ],
+      "state": "unknown",
+      "partIds": [
+        "s3.socket_contact.B17",
+        "s3.socket_tail.B17",
+        "s3.bottom_solder.B17"
+      ]
+    },
+    {
+      "id": "s3.TX",
+      "component": "s3",
+      "address": "A17",
+      "evidence": [
+        "interface"
+      ],
+      "state": "unknown",
+      "partIds": [
+        "s3.socket_contact.A17",
+        "s3.socket_tail.A17",
+        "s3.bottom_solder.A17"
+      ]
+    },
+    {
+      "id": "switch.IN",
+      "component": "switch",
+      "address": "X15",
+      "evidence": [
+        "carrier-connections"
+      ],
+      "state": "connected",
+      "partIds": [
+        "auxiliary.pin.X15",
+        "aux.solder.X15"
+      ]
+    },
+    {
+      "id": "switch.OUT",
+      "component": "switch",
+      "address": "X14",
+      "evidence": [
+        "carrier-connections"
+      ],
+      "state": "connected",
+      "partIds": [
+        "auxiliary.pin.X14",
+        "aux.solder.X14"
+      ]
+    }
+  ],
+  "nets": [
+    {
+      "id": "SCL",
+      "label": "SCL",
+      "colour": "#2a9d4b",
+      "layer": "external",
+      "pins": [
+        "aux.SCL",
+        "hub.SCL",
+        "s3.GPIO3"
+      ],
+      "addresses": [
+        "A6",
+        "B6",
+        "C6",
+        "D6",
+        "E6",
+        "E14",
+        "E15",
+        "E16",
+        "E17",
+        "F6",
+        "F14",
+        "G6",
+        "G14",
+        "H6",
+        "H14",
+        "I6",
+        "I14",
+        "J6",
+        "J14",
+        "K14",
+        "L14",
+        "M14"
+      ],
+      "routes": [
+        [
+          "M14",
+          "J14",
+          "E14",
+          "E17"
+        ],
+        [
+          "J6",
+          "A6"
+        ],
+        [
+          "J6",
+          "J14"
+        ]
+      ],
+      "routeIds": [
+        "underside.wire.5",
+        "underside.wire.7",
+        "jumper.insulation.Green_J"
+      ],
+      "partIds": [
+        "SocketBottomSolder_A6",
+        "aux.solder.M14",
+        "auxiliary.pin.M14",
+        "hub.socket_contact.A6",
+        "hub.socket_tail.A6",
+        "jumper.core.Green_J",
+        "jumper.insulation.Green_J",
+        "jumper.solder.J14",
+        "jumper.solder.J6",
+        "s3.bottom_solder.E17",
+        "s3.socket_contact.E17",
+        "s3.socket_tail.E17",
+        "underside.solder.5.E14",
+        "underside.solder.5.E17",
+        "underside.solder.5.J14",
+        "underside.solder.5.M14",
+        "underside.solder.7.A6",
+        "underside.solder.7.J6",
+        "underside.wire.5",
+        "underside.wire.7"
+      ],
+      "conductivePartIds": [
+        "SocketBottomSolder_A6",
+        "aux.solder.M14",
+        "auxiliary.pin.M14",
+        "hub.socket_contact.A6",
+        "hub.socket_tail.A6",
+        "jumper.core.Green_J",
+        "jumper.solder.J14",
+        "jumper.solder.J6",
+        "s3.bottom_solder.E17",
+        "s3.socket_contact.E17",
+        "s3.socket_tail.E17",
+        "underside.solder.5.E14",
+        "underside.solder.5.E17",
+        "underside.solder.5.J14",
+        "underside.solder.5.M14",
+        "underside.solder.7.A6",
+        "underside.solder.7.J6",
+        "underside.wire.5",
+        "underside.wire.7"
+      ],
+      "insulationPartIds": [
+        "jumper.insulation.Green_J"
+      ],
+      "evidence": [
+        "carrier-connections",
+        "underside-wiring"
+      ]
+    },
+    {
+      "id": "SDA",
+      "label": "SDA",
+      "colour": "#2b6fd6",
+      "layer": "external",
+      "pins": [
+        "aux.SDA",
+        "hub.SDA",
+        "s3.GPIO2"
+      ],
+      "addresses": [
+        "A5",
+        "B5",
+        "C5",
+        "D5",
+        "D17",
+        "D18",
+        "E5",
+        "E18",
+        "F5",
+        "F18",
+        "G5",
+        "G18",
+        "H5",
+        "H18",
+        "I5",
+        "I18",
+        "J5",
+        "J18",
+        "K5",
+        "K18",
+        "L18",
+        "M15",
+        "M16",
+        "M17",
+        "M18"
+      ],
+      "routes": [
+        [
+          "K5",
+          "A5"
+        ],
+        [
+          "M18",
+          "K18",
+          "D18",
+          "D17"
+        ],
+        [
+          "M15",
+          "M18"
+        ],
+        [
+          "K5",
+          "K18"
+        ]
+      ],
+      "routeIds": [
+        "underside.wire.8",
+        "underside.wire.12",
+        "underside.wire.15",
+        "jumper.insulation.Blue_K"
+      ],
+      "partIds": [
+        "SocketBottomSolder_A5",
+        "aux.solder.M15",
+        "auxiliary.pin.M15",
+        "hub.socket_contact.A5",
+        "hub.socket_tail.A5",
+        "jumper.core.Blue_K",
+        "jumper.insulation.Blue_K",
+        "jumper.solder.K18",
+        "jumper.solder.K5",
+        "s3.bottom_solder.D17",
+        "s3.socket_contact.D17",
+        "s3.socket_tail.D17",
+        "underside.solder.12.D17",
+        "underside.solder.12.D18",
+        "underside.solder.12.K18",
+        "underside.solder.12.M18",
+        "underside.solder.15.M15",
+        "underside.solder.15.M18",
+        "underside.solder.8.A5",
+        "underside.solder.8.K5",
+        "underside.wire.12",
+        "underside.wire.15",
+        "underside.wire.8"
+      ],
+      "conductivePartIds": [
+        "SocketBottomSolder_A5",
+        "aux.solder.M15",
+        "auxiliary.pin.M15",
+        "hub.socket_contact.A5",
+        "hub.socket_tail.A5",
+        "jumper.core.Blue_K",
+        "jumper.solder.K18",
+        "jumper.solder.K5",
+        "s3.bottom_solder.D17",
+        "s3.socket_contact.D17",
+        "s3.socket_tail.D17",
+        "underside.solder.12.D17",
+        "underside.solder.12.D18",
+        "underside.solder.12.K18",
+        "underside.solder.12.M18",
+        "underside.solder.15.M15",
+        "underside.solder.15.M18",
+        "underside.solder.8.A5",
+        "underside.solder.8.K5",
+        "underside.wire.12",
+        "underside.wire.15",
+        "underside.wire.8"
+      ],
+      "insulationPartIds": [
+        "jumper.insulation.Blue_K"
+      ],
+      "evidence": [
+        "carrier-connections",
+        "underside-wiring"
+      ]
+    },
+    {
+      "id": "battery_negative",
+      "label": "GND",
+      "colour": "#111111",
+      "layer": "external",
+      "pins": [
+        "battery.-",
+        "converter.IN-"
+      ],
+      "addresses": [
+        "V17",
+        "W17",
+        "X17"
+      ],
+      "routes": [
+        [
+          "X17",
+          "V17"
+        ]
+      ],
+      "routeIds": [
+        "underside.wire.1"
+      ],
+      "partIds": [
+        "aux.solder.X17",
+        "auxiliary.pin.X17",
+        "bottom_solder.V17",
+        "carrier_hole_fill.V17",
+        "converter_hole_fill.V17",
+        "pins.V17",
+        "top_solder.V17",
+        "underside.solder.1.V17",
+        "underside.solder.1.X17",
+        "underside.wire.1"
+      ],
+      "conductivePartIds": [
+        "aux.solder.X17",
+        "auxiliary.pin.X17",
+        "bottom_solder.V17",
+        "carrier_hole_fill.V17",
+        "converter_hole_fill.V17",
+        "pins.V17",
+        "top_solder.V17",
+        "underside.solder.1.V17",
+        "underside.solder.1.X17",
+        "underside.wire.1"
+      ],
+      "insulationPartIds": [],
+      "evidence": [
+        "underside-wiring"
+      ]
+    },
+    {
+      "id": "battery_positive_to_switch",
+      "label": "BAT+",
+      "colour": "#d33333",
+      "layer": "external",
+      "pins": [
+        "battery.+",
+        "switch.IN"
+      ],
+      "addresses": [
+        "X15",
+        "X16"
+      ],
+      "routes": [
+        [
+          "X15",
+          "X16"
+        ]
+      ],
+      "routeIds": [
+        "underside.wire.16"
+      ],
+      "partIds": [
+        "aux.solder.X15",
+        "aux.solder.X16",
+        "auxiliary.pin.X15",
+        "auxiliary.pin.X16",
+        "underside.solder.16.X15",
+        "underside.solder.16.X16",
+        "underside.wire.16"
+      ],
+      "conductivePartIds": [
+        "aux.solder.X15",
+        "aux.solder.X16",
+        "auxiliary.pin.X15",
+        "auxiliary.pin.X16",
+        "underside.solder.16.X15",
+        "underside.solder.16.X16",
+        "underside.wire.16"
+      ],
+      "insulationPartIds": [],
+      "evidence": [
+        "underside-wiring"
+      ]
+    },
+    {
+      "id": "logic_VCC",
+      "label": "3V3",
+      "colour": "#d33333",
+      "layer": "external",
+      "pins": [
+        "aux.VCC",
+        "hub.VCC",
+        "s3.3V3"
+      ],
+      "addresses": [
+        "A4",
+        "B4",
+        "C4",
+        "C11",
+        "C12",
+        "C13",
+        "D4",
+        "D13",
+        "E4",
+        "E13",
+        "F4",
+        "F13",
+        "G4",
+        "G13",
+        "H4",
+        "H13",
+        "I4",
+        "I13",
+        "J4",
+        "J13",
+        "K4",
+        "K13",
+        "L4",
+        "L13",
+        "M13"
+      ],
+      "routes": [
+        [
+          "L4",
+          "A4"
+        ],
+        [
+          "M13",
+          "C13",
+          "C11"
+        ],
+        [
+          "L4",
+          "L13"
+        ]
+      ],
+      "routeIds": [
+        "underside.wire.9",
+        "underside.wire.13",
+        "jumper.insulation.Red_L"
+      ],
+      "partIds": [
+        "SocketBottomSolder_A4",
+        "aux.solder.M13",
+        "auxiliary.pin.M13",
+        "hub.socket_contact.A4",
+        "hub.socket_tail.A4",
+        "jumper.core.Red_L",
+        "jumper.insulation.Red_L",
+        "jumper.solder.L13",
+        "jumper.solder.L4",
+        "s3.bottom_solder.C11",
+        "s3.socket_contact.C11",
+        "s3.socket_tail.C11",
+        "underside.solder.13.C11",
+        "underside.solder.13.C13",
+        "underside.solder.13.M13",
+        "underside.solder.9.A4",
+        "underside.solder.9.L4",
+        "underside.wire.13",
+        "underside.wire.9"
+      ],
+      "conductivePartIds": [
+        "SocketBottomSolder_A4",
+        "aux.solder.M13",
+        "auxiliary.pin.M13",
+        "hub.socket_contact.A4",
+        "hub.socket_tail.A4",
+        "jumper.core.Red_L",
+        "jumper.solder.L13",
+        "jumper.solder.L4",
+        "s3.bottom_solder.C11",
+        "s3.socket_contact.C11",
+        "s3.socket_tail.C11",
+        "underside.solder.13.C11",
+        "underside.solder.13.C13",
+        "underside.solder.13.M13",
+        "underside.solder.9.A4",
+        "underside.solder.9.L4",
+        "underside.wire.13",
+        "underside.wire.9"
+      ],
+      "insulationPartIds": [
+        "jumper.insulation.Red_L"
+      ],
+      "evidence": [
+        "carrier-connections",
+        "underside-wiring"
+      ]
+    },
+    {
+      "id": "output_5V",
+      "label": "5V",
+      "colour": "#d33333",
+      "layer": "external",
+      "pins": [
+        "converter.OUT+",
+        "hub.V+",
+        "s3.5V"
+      ],
+      "addresses": [
+        "A3",
+        "A9",
+        "A10",
+        "A11",
+        "B1",
+        "B2",
+        "B3",
+        "B9",
+        "C1",
+        "D1",
+        "E1",
+        "F1",
+        "G1",
+        "H1",
+        "I1",
+        "J1",
+        "K1",
+        "L1",
+        "M1",
+        "N1",
+        "O1"
+      ],
+      "routes": [
+        [
+          "O1",
+          "B1",
+          "B3",
+          "A3"
+        ],
+        [
+          "A11",
+          "A9",
+          "B9"
+        ],
+        [
+          "B3",
+          "B9"
+        ]
+      ],
+      "routeIds": [
+        "underside.wire.6",
+        "underside.wire.11",
+        "jumper.insulation.Red_B"
+      ],
+      "partIds": [
+        "SocketBottomSolder_A3",
+        "bottom_solder.O1",
+        "carrier_hole_fill.O1",
+        "converter_hole_fill.O1",
+        "hub.socket_contact.A3",
+        "hub.socket_tail.A3",
+        "jumper.core.Red_B",
+        "jumper.insulation.Red_B",
+        "jumper.solder.B3",
+        "jumper.solder.B9",
+        "pins.O1",
+        "s3.bottom_solder.A11",
+        "s3.socket_contact.A11",
+        "s3.socket_tail.A11",
+        "top_solder.O1",
+        "underside.solder.11.A11",
+        "underside.solder.11.A9",
+        "underside.solder.11.B9",
+        "underside.solder.6.A3",
+        "underside.solder.6.B1",
+        "underside.solder.6.B3",
+        "underside.solder.6.O1",
+        "underside.wire.11",
+        "underside.wire.6"
+      ],
+      "conductivePartIds": [
+        "SocketBottomSolder_A3",
+        "bottom_solder.O1",
+        "carrier_hole_fill.O1",
+        "converter_hole_fill.O1",
+        "hub.socket_contact.A3",
+        "hub.socket_tail.A3",
+        "jumper.core.Red_B",
+        "jumper.solder.B3",
+        "jumper.solder.B9",
+        "pins.O1",
+        "s3.bottom_solder.A11",
+        "s3.socket_contact.A11",
+        "s3.socket_tail.A11",
+        "top_solder.O1",
+        "underside.solder.11.A11",
+        "underside.solder.11.A9",
+        "underside.solder.11.B9",
+        "underside.solder.6.A3",
+        "underside.solder.6.B1",
+        "underside.solder.6.B3",
+        "underside.solder.6.O1",
+        "underside.wire.11",
+        "underside.wire.6"
+      ],
+      "insulationPartIds": [
+        "jumper.insulation.Red_B"
+      ],
+      "evidence": [
+        "carrier-connections",
+        "underside-wiring"
+      ]
+    },
+    {
+      "id": "output_ground",
+      "label": "GND",
+      "colour": "#111111",
+      "layer": "external",
+      "pins": [
+        "aux.GND",
+        "converter.OUT-",
+        "hub.GND",
+        "s3.GND"
+      ],
+      "addresses": [
+        "A8",
+        "B8",
+        "B10",
+        "B11",
+        "C8",
+        "C10",
+        "D8",
+        "D9",
+        "D10",
+        "E10",
+        "F10",
+        "G10",
+        "H10",
+        "I10",
+        "J10",
+        "K10",
+        "L10",
+        "M10",
+        "M11",
+        "M12",
+        "N10",
+        "O10",
+        "P10",
+        "Q10",
+        "R10",
+        "S10",
+        "T10",
+        "U10",
+        "V1",
+        "V2",
+        "V3",
+        "V4",
+        "V5",
+        "V6",
+        "V7",
+        "V8",
+        "V9",
+        "V10"
+      ],
+      "routes": [
+        [
+          "V1",
+          "V10",
+          "B10"
+        ],
+        [
+          "M12",
+          "M10"
+        ],
+        [
+          "D10",
+          "D8",
+          "A8"
+        ],
+        [
+          "B10",
+          "B11"
+        ]
+      ],
+      "routeIds": [
+        "underside.wire.3",
+        "underside.wire.4",
+        "underside.wire.10",
+        "underside.wire.14"
+      ],
+      "partIds": [
+        "SocketBottomSolder_A8",
+        "aux.solder.M12",
+        "auxiliary.pin.M12",
+        "bottom_solder.V1",
+        "carrier_hole_fill.V1",
+        "converter_hole_fill.V1",
+        "hub.socket_contact.A8",
+        "hub.socket_tail.A8",
+        "pins.V1",
+        "s3.bottom_solder.B11",
+        "s3.socket_contact.B11",
+        "s3.socket_tail.B11",
+        "top_solder.V1",
+        "underside.solder.10.A8",
+        "underside.solder.10.D10",
+        "underside.solder.10.D8",
+        "underside.solder.14.B10",
+        "underside.solder.14.B11",
+        "underside.solder.3.B10",
+        "underside.solder.3.V1",
+        "underside.solder.3.V10",
+        "underside.solder.4.M10",
+        "underside.solder.4.M12",
+        "underside.wire.10",
+        "underside.wire.14",
+        "underside.wire.3",
+        "underside.wire.4"
+      ],
+      "conductivePartIds": [
+        "SocketBottomSolder_A8",
+        "aux.solder.M12",
+        "auxiliary.pin.M12",
+        "bottom_solder.V1",
+        "carrier_hole_fill.V1",
+        "converter_hole_fill.V1",
+        "hub.socket_contact.A8",
+        "hub.socket_tail.A8",
+        "pins.V1",
+        "s3.bottom_solder.B11",
+        "s3.socket_contact.B11",
+        "s3.socket_tail.B11",
+        "top_solder.V1",
+        "underside.solder.10.A8",
+        "underside.solder.10.D10",
+        "underside.solder.10.D8",
+        "underside.solder.14.B10",
+        "underside.solder.14.B11",
+        "underside.solder.3.B10",
+        "underside.solder.3.V1",
+        "underside.solder.3.V10",
+        "underside.solder.4.M10",
+        "underside.solder.4.M12",
+        "underside.wire.10",
+        "underside.wire.14",
+        "underside.wire.3",
+        "underside.wire.4"
+      ],
+      "insulationPartIds": [],
+      "evidence": [
+        "underside-wiring"
+      ]
+    },
+    {
+      "id": "switched_input_positive",
+      "label": "VIN+",
+      "colour": "#d33333",
+      "layer": "external",
+      "pins": [
+        "converter.IN+",
+        "switch.OUT"
+      ],
+      "addresses": [
+        "O14",
+        "O15",
+        "O16",
+        "O17",
+        "P14",
+        "Q14",
+        "R14",
+        "S14",
+        "T14",
+        "U14",
+        "V14",
+        "W14",
+        "X14"
+      ],
+      "routes": [
+        [
+          "X14",
+          "O14",
+          "O17"
+        ]
+      ],
+      "routeIds": [
+        "underside.wire.2"
+      ],
+      "partIds": [
+        "aux.solder.X14",
+        "auxiliary.pin.X14",
+        "bottom_solder.O17",
+        "carrier_hole_fill.O17",
+        "converter_hole_fill.O17",
+        "pins.O17",
+        "top_solder.O17",
+        "underside.solder.2.O14",
+        "underside.solder.2.O17",
+        "underside.solder.2.X14",
+        "underside.wire.2"
+      ],
+      "conductivePartIds": [
+        "aux.solder.X14",
+        "auxiliary.pin.X14",
+        "bottom_solder.O17",
+        "carrier_hole_fill.O17",
+        "converter_hole_fill.O17",
+        "pins.O17",
+        "top_solder.O17",
+        "underside.solder.2.O14",
+        "underside.solder.2.O17",
+        "underside.solder.2.X14",
+        "underside.wire.2"
+      ],
+      "insulationPartIds": [],
+      "evidence": [
+        "underside-wiring"
+      ]
+    }
+  ],
+  "routes": [
+    {
+      "id": "underside.wire.1",
+      "addresses": [
+        "X17",
+        "V17"
+      ],
+      "kind": "bare",
+      "evidence": [
+        "underside-wiring"
+      ]
+    },
+    {
+      "id": "underside.wire.2",
+      "addresses": [
+        "X14",
+        "O14",
+        "O17"
+      ],
+      "kind": "bare",
+      "evidence": [
+        "underside-wiring"
+      ]
+    },
+    {
+      "id": "underside.wire.3",
+      "addresses": [
+        "V1",
+        "V10",
+        "B10"
+      ],
+      "kind": "bare",
+      "evidence": [
+        "underside-wiring"
+      ]
+    },
+    {
+      "id": "underside.wire.4",
+      "addresses": [
+        "M12",
+        "M10"
+      ],
+      "kind": "bare",
+      "evidence": [
+        "underside-wiring"
+      ]
+    },
+    {
+      "id": "underside.wire.5",
+      "addresses": [
+        "M14",
+        "J14",
+        "E14",
+        "E17"
+      ],
+      "kind": "bare",
+      "evidence": [
+        "underside-wiring"
+      ]
+    },
+    {
+      "id": "underside.wire.6",
+      "addresses": [
+        "O1",
+        "B1",
+        "B3",
+        "A3"
+      ],
+      "kind": "bare",
+      "evidence": [
+        "underside-wiring"
+      ]
+    },
+    {
+      "id": "underside.wire.7",
+      "addresses": [
+        "J6",
+        "A6"
+      ],
+      "kind": "bare",
+      "evidence": [
+        "underside-wiring"
+      ]
+    },
+    {
+      "id": "underside.wire.8",
+      "addresses": [
+        "K5",
+        "A5"
+      ],
+      "kind": "bare",
+      "evidence": [
+        "underside-wiring"
+      ]
+    },
+    {
+      "id": "underside.wire.9",
+      "addresses": [
+        "L4",
+        "A4"
+      ],
+      "kind": "bare",
+      "evidence": [
+        "underside-wiring"
+      ]
+    },
+    {
+      "id": "underside.wire.10",
+      "addresses": [
+        "D10",
+        "D8",
+        "A8"
+      ],
+      "kind": "bare",
+      "evidence": [
+        "underside-wiring"
+      ]
+    },
+    {
+      "id": "underside.wire.11",
+      "addresses": [
+        "A11",
+        "A9",
+        "B9"
+      ],
+      "kind": "bare",
+      "evidence": [
+        "underside-wiring"
+      ]
+    },
+    {
+      "id": "underside.wire.12",
+      "addresses": [
+        "M18",
+        "K18",
+        "D18",
+        "D17"
+      ],
+      "kind": "bare",
+      "evidence": [
+        "underside-wiring"
+      ]
+    },
+    {
+      "id": "underside.wire.13",
+      "addresses": [
+        "M13",
+        "C13",
+        "C11"
+      ],
+      "kind": "bare",
+      "evidence": [
+        "underside-wiring"
+      ]
+    },
+    {
+      "id": "underside.wire.14",
+      "addresses": [
+        "B10",
+        "B11"
+      ],
+      "kind": "bare",
+      "evidence": [
+        "underside-wiring"
+      ]
+    },
+    {
+      "id": "underside.wire.15",
+      "addresses": [
+        "M15",
+        "M18"
+      ],
+      "kind": "bare",
+      "evidence": [
+        "underside-wiring"
+      ]
+    },
+    {
+      "id": "underside.wire.16",
+      "addresses": [
+        "X15",
+        "X16"
+      ],
+      "kind": "bare",
+      "evidence": [
+        "underside-wiring"
+      ]
+    },
+    {
+      "id": "jumper.insulation.Red_L",
+      "addresses": [
+        "L4",
+        "L13"
+      ],
+      "kind": "insulated",
+      "evidence": [
+        "carrier-connections"
+      ]
+    },
+    {
+      "id": "jumper.insulation.Red_B",
+      "addresses": [
+        "B3",
+        "B9"
+      ],
+      "kind": "insulated",
+      "evidence": [
+        "carrier-connections"
+      ]
+    },
+    {
+      "id": "jumper.insulation.Blue_K",
+      "addresses": [
+        "K5",
+        "K18"
+      ],
+      "kind": "insulated",
+      "evidence": [
+        "carrier-connections"
+      ]
+    },
+    {
+      "id": "jumper.insulation.Green_J",
+      "addresses": [
+        "J6",
+        "J14"
+      ],
+      "kind": "insulated",
+      "evidence": [
+        "carrier-connections"
+      ]
+    }
+  ],
+  "firmware": [
+    {
+      "id": "SDA",
+      "pin": "s3.GPIO2",
+      "role": "SDA",
+      "layer": "software",
+      "evidence": [
+        "firmware"
+      ]
+    },
+    {
+      "id": "SCL",
+      "pin": "s3.GPIO3",
+      "role": "SCL",
+      "layer": "software",
+      "evidence": [
+        "firmware"
+      ]
+    },
+    {
+      "id": "OE",
+      "pin": "s3.GPIO7",
+      "role": "OE",
+      "layer": "software",
+      "evidence": [
+        "firmware"
+      ]
+    },
+    {
+      "id": "CLOCK_MEASURE_GPIO",
+      "pin": "s3.GPIO4",
+      "role": "clock capture",
+      "layer": "software",
+      "evidence": [
+        "firmware"
+      ]
+    }
+  ],
+  "unknowns": [
+    {
+      "id": "hub-internals",
+      "pins": [
+        "hub.OE"
+      ],
+      "evidence": [
+        "oe-correction"
+      ],
+      "note": "Module-internal OE bias and traces are unknown. External no-connect does not establish a floating IC pin."
+    },
+    {
+      "id": "converter-internals",
+      "pins": [
+        "converter.IN-",
+        "converter.OUT-"
+      ],
+      "evidence": [
+        "converter-installation"
+      ],
+      "note": "Internal module connectivity is not modeled; separate external routing groups do not establish electrical isolation."
+    },
+    {
+      "id": "switch-state",
+      "pins": [
+        "switch.IN",
+        "switch.OUT"
+      ],
+      "evidence": [
+        "carrier-connections"
+      ],
+      "note": "Switch internals/state are outside the external routing graph."
+    },
+    {
+      "id": "clock-fixture",
+      "pins": [
+        "hub.CH15.SIGNAL",
+        "s3.GPIO4"
+      ],
+      "evidence": [
+        "interface"
+      ],
+      "note": "Firmware's optional clock fixture is not evidence of a fitted wire or an actual-board CH15 CAD binding."
+    },
+    {
+      "id": "usb-power",
+      "pins": [
+        "s3.5V",
+        "hub.V+"
+      ],
+      "evidence": [
+        "s3-installation"
+      ],
+      "note": "USB/battery isolation and load capacity are not established by this carrier graph."
+    }
+  ],
+  "evidence": {
+    "pin-labels": {
+      "kind": "design-pin-labels",
+      "note": "Carrier pin identities recorded in the course installation diagram and interface output_enable.provenance.hub_location. Addresses name fixed contacts; no module-internal net membership is asserted.",
+      "path": "manifest/circuit-annotations.json"
+    },
+    "oe-correction": {
+      "kind": "instructor-confirmation",
+      "date": "2026-11-10",
+      "note": "Instructor confirms no external OE wire and no added OE pull-up in this build. Internal module bias is unknown. This annotation can change with a variant's design.",
+      "path": "manifest/circuit-annotations.json"
+    },
+    "underside-wiring": {
+      "kind": "current-design-record",
+      "path": "assets/cad/instructions/underside-wiring.json"
+    },
+    "carrier-connections": {
+      "kind": "current-design-record",
+      "path": "assets/cad/instructions/carrier-connections.json"
+    },
+    "s3-installation": {
+      "kind": "current-design-record",
+      "path": "assets/cad/instructions/s3-installation.json"
+    },
+    "servo-hub-installation": {
+      "kind": "current-design-record",
+      "path": "assets/cad/instructions/servo-hub-installation.json"
+    },
+    "converter-installation": {
+      "kind": "current-design-record",
+      "path": "assets/cad/instructions/converter-installation.json"
+    },
+    "assembly-cad-snapshot": {
+      "kind": "current-design-record",
+      "path": "assets/cad/instructions/assembly-cad-snapshot.json"
+    },
+    "firmware": {
+      "kind": "software-assignment",
+      "path": "firmware/sesame-s3/manifest_generated.h",
+      "note": "An assignment does not establish a physical connection."
+    },
+    "interface": {
+      "kind": "pin-location-record",
+      "path": "reference/sesame-s3-interface.json"
+    }
+  },
+  "cadBinding": {
+    "valid": true,
+    "issues": []
+  },
+  "sources": [
+    {
+      "path": "assets/cad/Sesame-S3-Assembly.FCStd",
+      "sha256": "d96973c182bf78b99527ad390e552871f7b5ec073eee68850c346b291ffa1b88"
+    },
+    {
+      "path": "assets/cad/instructions/assembly-cad-snapshot.json",
+      "sha256": "a0f24bebeab693f6ed2698475d8a24709b82cbb7a71d143e6330ca769c0adaeb"
+    },
+    {
+      "path": "assets/cad/instructions/carrier-connections.json",
+      "sha256": "1004fc7db004c2fd0ed0783d35624065c56f4a6de3b03af9ffccd5146d5a477b"
+    },
+    {
+      "path": "assets/cad/instructions/converter-installation.json",
+      "sha256": "5eb34b40ce692f6549bed4f04f8e5ce963c17f4bceaf9b5490d01f61a934e082"
+    },
+    {
+      "path": "assets/cad/instructions/s3-installation.json",
+      "sha256": "16c2384dd88de7f785a5c043d16ffdffc375c349981cf899ee9a44cff427c22d"
+    },
+    {
+      "path": "assets/cad/instructions/servo-hub-installation.json",
+      "sha256": "6b66ea2d352a37dec84ce162ee2c85ce30cca402731c33413be0a2298b9cd4ce"
+    },
+    {
+      "path": "assets/cad/instructions/underside-wiring.json",
+      "sha256": "904c5248e6324469a0f623a37196159c7a57cac86061efee8c797d7b7cf3420d"
+    },
+    {
+      "path": "firmware/sesame-s3/manifest_generated.h",
+      "sha256": "8756e8929a5db4e501a127a2bd39f0a351321b49f48f51d75c53248401bfc225"
+    },
+    {
+      "path": "manifest/circuit-annotations.json",
+      "sha256": "c155f8009e56fae4bc19a89d98f9334bac739eefb0ee55f167f773187b5e8a33"
+    },
+    {
+      "path": "reference/sesame-s3-interface.json",
+      "sha256": "a5b6d58f8f91572dc9f2a82107f8246a0241695dcbcf54f9d0726f513edf9818"
+    },
+    {
+      "path": "tools/circuit.py",
+      "sha256": "9c7c8d70cec20e1815f3dba526bffa3606ed69a1d553734926583e5cb1a90a12"
+    }
+  ],
+  "fingerprint": "6cfe0c2c5a01999b0f80a044a41f96c2568108464797d87a066ac98616c15697"
+}

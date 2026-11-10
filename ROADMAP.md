@@ -1,4 +1,9 @@
-# APS-II Portable Robot Simulation Research and Roadmap
+# Historical APS-II simulation research and roadmap
+
+For current project intent and executable dependency checks, use
+[AGENTS.md](AGENTS.md#project-goal) and `uv run python tools/check_design.py`.
+The staged goals, tool assessments and teaching priorities below are dated
+research context, not limits on the design-mutation-to-fabrication ambition.
 
 **Reviewed:** 2026-07-23 (cross-platform stress test applied — see "Cross-platform reality check")
 **Status:** feasible as a staged research/teaching platform; infeasible if framed as writing and owning every engine

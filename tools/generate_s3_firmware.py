@@ -108,15 +108,13 @@ def interface():
         "button": {"pin": 0, "off_press_release": "raw CH0..7 neutral for30s", "active_press": "off", "held_at_boot": "must release before new press"},
         "output_enable": {
             "scope": "Software GPIO assignment, not a physical connection",
-            "external_connection": "no_connect",
-            "module_internal_bias": "unknown",
-            "assembly_correction": "Instructor confirmed 2026-11-10: OE was never externally connected or used in the course build; no added pull-up. Historical wiring assumptions below are superseded for this assembly.",
-            "circuit_graph": "https://aps.chibatech.dev/ii/circuit/circuit.json",
+            "physical_connection_source": "Query tools/circuit.py against current native routing and manifest/circuit-annotations.json; this software interface does not own physical connectivity.",
+            "circuit_graph": "https://aps.chibatech.dev/ii/sesame-build/assets/circuit-graph.json",
             "gpio": hw["oe"], "disabled_level": "HIGH", "enabled_level": "LOW",
             "carrier_address": "I17", "s3_header_part": "s3.male_pin.I17",
             "hub_address": "A7", "hub_header_part": "hub.male_pin.A7", "hub_signal": "OE",
             "pullup": {
-                "status": "historical-proposal-not-installed-in-course-build",
+                "status": "historical-proposal-not-current-design-evidence",
                 "rail": "3V3 logic VCC", "rail_address": "A4", "rail_part": "hub.male_pin.A4",
                 "reported_ohms": 4700, "universally_validated": False,
                 "reported_outputs_off_v": 3.2, "reported_voltage_state": "GPIO7 actively driving HIGH, not reset/high-impedance",

@@ -1,13 +1,12 @@
 # HANDOVER
 
-## External OE correction — November 10, 2026
+## Current design queries — November 10, 2026
 
-The instructor confirms OE was never externally connected and is not used in
-the course build. The GPIO7 declaration below is software-only; the historical
-wire/pull-up contract is not as-built evidence. Module-internal bias remains
-unknown. Query the course circuit graph or student's variant at
-`https://aps.chibatech.dev/ii/circuit/`. No firmware behavior or installed device
-was changed by this documentation correction.
+Use `python3 tools/circuit.py query hub.OE` for current design evidence and
+`uv run python tools/check_design.py` after mutations. Older wiring proposals
+below are historical, not a second design authority. The instructor's broader
+intent is stated once in `AGENTS.md#project-goal`; reference robot exercises are
+not the project ceiling. No installed hardware changed in this update.
 
 ## Direct bench targets — November 4, 2026
 

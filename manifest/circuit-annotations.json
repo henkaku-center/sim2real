@@ -1,0 +1,41 @@
+{
+  "schema": "sim2real-circuit-annotations/1",
+  "scope": "Current reference carrier external conductors only. Pin names identify carrier contacts, not verified module mating contacts or student wiring. Module internals, switch state, external cables and physical continuity are not inferred. Net colours are semantic overlays, not measured voltages or bare-wire insulation colours.",
+  "pins": [
+    {"id":"hub.V+","component":"hub","address":"A3","evidence":["pin-labels"]},
+    {"id":"hub.VCC","component":"hub","address":"A4","evidence":["pin-labels"]},
+    {"id":"hub.SDA","component":"hub","address":"A5","evidence":["pin-labels"]},
+    {"id":"hub.SCL","component":"hub","address":"A6","evidence":["pin-labels"]},
+    {"id":"hub.OE","component":"hub","address":"A7","state":"no_connect","evidence":["pin-labels","oe-correction"]},
+    {"id":"hub.GND","component":"hub","address":"A8","evidence":["pin-labels"]},
+    {"id":"s3.5V","component":"s3","address":"A11","evidence":["pin-labels"]},
+    {"id":"s3.GND","component":"s3","address":"B11","evidence":["pin-labels"]},
+    {"id":"s3.3V3","component":"s3","address":"C11","evidence":["pin-labels"]},
+    {"id":"switch.OUT","component":"switch","address":"X14","evidence":["carrier-connections"]},
+    {"id":"switch.IN","component":"switch","address":"X15","evidence":["carrier-connections"]},
+    {"id":"battery.+","component":"battery","address":"X16","evidence":["carrier-connections"]},
+    {"id":"battery.-","component":"battery","address":"X17","evidence":["carrier-connections"]},
+    {"id":"hub.CH15.SIGNAL","component":"hub","address":null,"evidence":["interface"]}
+  ],
+  "netLabels": [
+    {"anchorPin":"converter.OUT-","id":"output_ground","label":"GND","colour":"#111111"},
+    {"anchorPin":"converter.OUT+","id":"output_5V","label":"5V","colour":"#d33333"},
+    {"anchorPin":"s3.3V3","id":"logic_VCC","label":"3V3","colour":"#d33333"},
+    {"anchorPin":"hub.SCL","id":"SCL","label":"SCL","colour":"#2a9d4b"},
+    {"anchorPin":"hub.SDA","id":"SDA","label":"SDA","colour":"#2b6fd6"},
+    {"anchorPin":"converter.IN+","id":"switched_input_positive","label":"VIN+","colour":"#d33333"},
+    {"anchorPin":"battery.+","id":"battery_positive_to_switch","label":"BAT+","colour":"#d33333"},
+    {"anchorPin":"converter.IN-","id":"battery_negative","label":"GND","colour":"#111111"}
+  ],
+  "evidence": {
+    "pin-labels":{"kind":"design-pin-labels","note":"Carrier pin identities recorded in the course installation diagram and interface output_enable.provenance.hub_location. Addresses name fixed contacts; no module-internal net membership is asserted."},
+    "oe-correction":{"kind":"instructor-confirmation","date":"2026-11-10","note":"Instructor confirms no external OE wire and no added OE pull-up in this build. Internal module bias is unknown. This annotation can change with a variant's design."}
+  },
+  "unknowns": [
+    {"id":"hub-internals","pins":["hub.OE"],"evidence":["oe-correction"],"note":"Module-internal OE bias and traces are unknown. External no-connect does not establish a floating IC pin."},
+    {"id":"converter-internals","pins":["converter.IN-","converter.OUT-"],"evidence":["converter-installation"],"note":"Internal module connectivity is not modeled; separate external routing groups do not establish electrical isolation."},
+    {"id":"switch-state","pins":["switch.IN","switch.OUT"],"evidence":["carrier-connections"],"note":"Switch internals/state are outside the external routing graph."},
+    {"id":"clock-fixture","pins":["hub.CH15.SIGNAL","s3.GPIO4"],"evidence":["interface"],"note":"Firmware's optional clock fixture is not evidence of a fitted wire or an actual-board CH15 CAD binding."},
+    {"id":"usb-power","pins":["s3.5V","hub.V+"],"evidence":["s3-installation"],"note":"USB/battery isolation and load capacity are not established by this carrier graph."}
+  ]
+}

@@ -2,21 +2,35 @@
 
 Guidance for AI coding agents (any harness — Claude Code, Codex, Gemini CLI, pi, etc.) working in this repository. Vendor-specific files (`CLAUDE.md`, `GEMINI.md`, …) should be symlinks to this file if a harness requires them.
 
-## Project overview
+## Project goal
 
-Portable simulation and sim-to-real platform for the Sesame quadruped (8× MG90S servos). The course hardware default is now ESP32-S3 SuperMini + PCA9685; see `reference/SESAME-S3-BUILD-STATE.md`. The simulator manifest retains its S2-era baseline until the new physical joint mapping is verified. MuJoCo is the cross-platform reference core; accelerated/vendor backends are adapters. Read `HANDOVER.md` first for current state and next tasks, and `ROADMAP.md` for the full plan and its rationale.
+Prototype a design-to-fabrication sim-to-real pipeline for makers, manufacturing
+and courses: people prompt agents to mutate robot designs, check the consequences
+across CAD/packing, electronics, firmware and simulation, review and iterate, then
+print/order/build the selected result. Sesame is a reference example, not the
+boundary of the project. Students own and fork their designs; hands-on learning
+and learning from one another's experiments matter. Manufactured/assembled PCBs
+remain an optional next-course path, not a manual-soldering requirement.
+
+This is instructor intent, not a claim that the complete pipeline works today.
+Use `uv run python tools/check_design.py` for current dependency checks and the
+two-eye example's evidence limits. Do not promote a visual demo, absent record
+or historical roadmap into proven capability, failure, or a constraint on students.
+Keep assumptions in typed design records/tests, not repeated Markdown rules.
+
+The reference hardware is ESP32-S3 SuperMini + PCA9685. The simulator's older
+baseline is not automatically that hardware's digital twin. MuJoCo is the
+cross-platform reference engine; other backends are adapters. `ROADMAP.md` is
+historical research, not a narrower definition of the project goal above.
 
 ## APS-II dogfooding context
 
-**Circuit correction, November 10, 2026:** the instructor confirmed the course
-build has no external S3-to-hub OE wire and no added OE pull-up. GPIO7 in firmware
-is a software assignment, not evidence of that connection. Module-internal OE
-bias is unknown; do not diagnose a physical pin conflict from the declaration.
-Query the editable course graph at `https://aps.chibatech.dev/ii/circuit/` (or
-the student's fork) before asserting connectivity. Students may change any net;
-the baseline is not a restriction. Preserve this repo's manifest ownership for
-mechanics and generated models; PCB fabrication is a future optional realization,
-not a requirement to manually solder or replace the sim-to-real pipeline.
+Query `python3 tools/circuit.py query hub.OE` (or the student's fork) before
+asserting connectivity. This repo owns the design/query/highlight code and tests.
+APS publishes pinned derived bytes inside its existing wiring step, not a second
+graph site. After mutation, run `uv run python tools/check_design.py`; stale CAD,
+firmware or exported graph evidence must be resolved before publishing. No
+historical Markdown wiring claim overrides the current typed design/evidence.
 
 Everything in this repository that touches the Sesame robot, Karasu phone bridge, firmware flashing, SafeAction interface, simulator, calibration, hardware bring-up, or robot-control workflow is **current APS-II course dogfooding for the coming Fall course**, not speculative "next year" work. Treat findings as course-critical operational knowledge unless explicitly marked as long-term research.
 
@@ -25,7 +39,7 @@ When recording Sesame/Karasu/firmware discoveries:
 - put durable technical state in this repo (`reference/`, `tools/`, `DECISIONS.md`, or the relevant source tree),
 - cross-link APS-facing course notes in `../aps/` when useful,
 - avoid filing active APS-II robot work under `next-year/` in the APS repo,
-- keep the student-facing goal in mind: a reliable hand-built robot that performs two tricks and demonstrates the two-brain architecture.
+- Treat reference-build exercises as examples within the project goal above, not limits on what students can design.
 
 ## Student ownership and creative freedom — October 29, 2026
 
