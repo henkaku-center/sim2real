@@ -199,6 +199,11 @@
     "held_at_boot": "must release before new press"
   },
   "output_enable": {
+    "scope": "Software GPIO assignment, not a physical connection",
+    "external_connection": "no_connect",
+    "module_internal_bias": "unknown",
+    "assembly_correction": "Instructor confirmed 2026-11-10: OE was never externally connected or used in the course build; no added pull-up. Historical wiring assumptions below are superseded for this assembly.",
+    "circuit_graph": "https://aps.chibatech.dev/ii/circuit/circuit.json",
     "gpio": 7,
     "disabled_level": "HIGH",
     "enabled_level": "LOW",
@@ -208,6 +213,7 @@
     "hub_header_part": "hub.male_pin.A7",
     "hub_signal": "OE",
     "pullup": {
+      "status": "historical-proposal-not-installed-in-course-build",
       "rail": "3V3 logic VCC",
       "rail_address": "A4",
       "rail_part": "hub.male_pin.A4",

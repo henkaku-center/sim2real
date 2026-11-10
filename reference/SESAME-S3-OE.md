@@ -1,4 +1,18 @@
-# Course SuperMini output enable: GPIO7 / I17
+# Course OE: no external wire; GPIO7 is a software assignment
+
+**Correction — November 10, 2026.** The instructor explicitly confirmed OE was
+never externally connected and is not used in the course build. No external
+S3→hub OE wire or added pull-up is present. The hub's internal bias/trace is not
+verified. Do not infer a physical conflict or hardware-disable path from the
+GPIO7 firmware declaration. Software full-off still depends on I²C.
+
+The historical material below is retained as the origin of the software
+assignment, not current assembly instructions. Use the queryable external-wire
+graph at `https://aps.chibatech.dev/ii/circuit/` or the student's variant. A
+student may intentionally wire OE; record that in their variant rather than
+assuming the reference does so.
+
+## Historical October 25 proposal (superseded for physical wiring)
 
 October 25, 2026. The instructor selected **exposed GPIO7** as the canonical
 course controller's OE pin, replacing the previous GPIO18 expectation. This is

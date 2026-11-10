@@ -8,6 +8,16 @@ Portable simulation and sim-to-real platform for the Sesame quadruped (8× MG90S
 
 ## APS-II dogfooding context
 
+**Circuit correction, November 10, 2026:** the instructor confirmed the course
+build has no external S3-to-hub OE wire and no added OE pull-up. GPIO7 in firmware
+is a software assignment, not evidence of that connection. Module-internal OE
+bias is unknown; do not diagnose a physical pin conflict from the declaration.
+Query the editable course graph at `https://aps.chibatech.dev/ii/circuit/` (or
+the student's fork) before asserting connectivity. Students may change any net;
+the baseline is not a restriction. Preserve this repo's manifest ownership for
+mechanics and generated models; PCB fabrication is a future optional realization,
+not a requirement to manually solder or replace the sim-to-real pipeline.
+
 Everything in this repository that touches the Sesame robot, Karasu phone bridge, firmware flashing, SafeAction interface, simulator, calibration, hardware bring-up, or robot-control workflow is **current APS-II course dogfooding for the coming Fall course**, not speculative "next year" work. Treat findings as course-critical operational knowledge unless explicitly marked as long-term research.
 
 When recording Sesame/Karasu/firmware discoveries:
