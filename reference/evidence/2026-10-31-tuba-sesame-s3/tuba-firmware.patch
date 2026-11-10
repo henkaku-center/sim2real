@@ -1,5 +1,5 @@
 diff --git a/firmware/sesame-s3/controller.cpp b/firmware/sesame-s3/controller.cpp
-index 8880803..a87d3fb 100644
+index 8880803..31a5f3a 100644
 --- a/firmware/sesame-s3/controller.cpp
 +++ b/firmware/sesame-s3/controller.cpp
 @@ -14,6 +14,7 @@
@@ -173,7 +173,7 @@ index 8880803..a87d3fb 100644
      if (body.startsWith("ERR")) code = 400;
    } else { type = "text/html"; body = WEB_UI; }
    // Stream response with MSG_DONTWAIT on subsequent iterations. Arduino's
-@@ -508,6 +587,43 @@ void buttonService() {
+@@ -508,6 +587,42 @@ void buttonService() {
      else gate.heartbeat(millis()); // finite, local human-triggered action only
    }
  }
@@ -183,11 +183,10 @@ index 8880803..a87d3fb 100644
 +// Never runs while a USB host is connected; needs saved + all-verified
 +// calibration (arm run); BOOT, `off`, a fault or the watchdog end it until
 +// the next power-on (or `demo on`).
-+int poseJoint = 0;  // demo pose changes: next joint to move
 +const char* const DEMO_SEQUENCE[] = {"rest", "stand", "rest", "stand", "wave", "dance", "walk"};
 +bool startMotion(const char* name) {
 +  for (const auto& m : MOTIONS) if (!strcmp(name, m.name)) {
-+    cancelQueue(); motion = &m; motionIndex = 0; poseJoint = 0;
++    cancelQueue(); motion = &m; motionIndex = 0;
 +    if (living) alive.motionMood(name);
 +    return true;
 +  }
@@ -217,23 +216,7 @@ index 8880803..a87d3fb 100644
  void motionService() {
    if (sweeping && gate.settled()) {
      if (sweepStage == 0) gate.set(gate.selected, sweepHigh, gate.lastHeartbeat);
-@@ -520,6 +636,15 @@ void motionService() {
-     if (millis() - waitStarted < motion->steps[motionIndex-1].waitMs) return;
-     waiting = false;
-   }
-+  // Battery demo: a one-step pose (rest/stand) moves one joint at a time, so
-+  // only one servo is under load-change at once (8 together browned out).
-+  if (owner == DEMO && motion->count == 1 && motionIndex == 0) {
-+    const MotionStep& pose = motion->steps[0];
-+    while (poseJoint < 8 && (pose.degrees[poseJoint] < 0 ||
-+           ((gate.enabled & (1u << poseJoint)) && fabsf(gate.target[poseJoint] - pose.degrees[poseJoint]) < .01f))) ++poseJoint;
-+    if (poseJoint < 8) { gate.set(poseJoint, pose.degrees[poseJoint], gate.lastHeartbeat); ++poseJoint; return; }
-+    motionIndex = 1;
-+  }
-   if (motionIndex == motion->count) { Serial.println("OK MOTION complete"); motion = nullptr; return; }
-   const MotionStep& step = motion->steps[motionIndex++];
-   for (int j = 0; j < 8; ++j) if (step.degrees[j] >= 0) {
-@@ -532,6 +657,7 @@ void motionService() {
+@@ -532,6 +647,7 @@ void motionService() {
  void outputService() {
    uint32_t now = millis();
    bool wasActive = gate.active();
@@ -241,7 +224,7 @@ index 8880803..a87d3fb 100644
    if (!gate.step(now)) {
      if (wasActive) outputsOff("watchdog >500ms", ClockOutcome::Watchdog);
      return;
-@@ -546,8 +672,19 @@ void outputService() {
+@@ -546,8 +662,19 @@ void outputService() {
    motionService();
    if (now - lastPWM < 20) return;
    lastPWM = now;
@@ -262,7 +245,7 @@ index 8880803..a87d3fb 100644
    bool any = false;
    for (int ch = 0; ch < 16; ++ch) {
      if (wanted[ch] != 4096) any = true;
-@@ -557,16 +694,70 @@ void outputService() {
+@@ -557,16 +684,70 @@ void outputService() {
      }
    }
    // Check hub even when holding a stationary target; lost I2C latches off.
@@ -336,7 +319,7 @@ index 8880803..a87d3fb 100644
    lastFace = millis();
    display.clearDisplay();
    if (benchDisplay) {
-@@ -599,14 +790,29 @@ void setup() {
+@@ -599,14 +780,29 @@ void setup() {
    digitalWrite(OE, HIGH); pinMode(OE, OUTPUT); pinMode(0, INPUT_PULLUP);
    Serial.begin(115200);
    Serial.setTxTimeoutMs(0); // an absent USB host must not block the watchdog
@@ -369,7 +352,7 @@ index 8880803..a87d3fb 100644
    uint64_t mac = ESP.getEfuseMac();
    char name[32]; snprintf(name, sizeof(name), "Sesame-S3-%02X%02X", unsigned((mac >> 32)&255), unsigned((mac >> 40)&255)); ssid = name;
    startWifi();
-@@ -616,6 +822,6 @@ void setup() {
+@@ -616,6 +812,6 @@ void setup() {
  void loop() {
    outputService(); buttonService(); serialService(); outputService();
    httpService(); outputService();
