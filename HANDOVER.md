@@ -1,5 +1,26 @@
 # HANDOVER
 
+## Design checks, twin and real-to-sim tooling — November 12, 2026
+
+Three additions, all digital; nothing was measured on a robot.
+
+- **Leg clearance** (`tools/leg_clearance.py`, D21): each hip is free from straight
+  out to fully splayed, and meets the head cover 13° toward the middle of the body.
+  Evidence sits beside each printing design and `tools/check_design.py` fails when
+  it is stale.
+- **One twin** (`sim/twin.py`, `manifest/twin.yaml`, D22): `models/<design>.xml`
+  and `assets/printing/<design>/dynamics.json` are generated for the course body
+  and the two-eye variant. `models/sesame.xml` is the older upstream body
+  (`upstream-v117`); the browser twin in `web/` still loads it.
+- **Real-to-sim** (`tools/real2sim.py`, D23): run log, marker tracking, parameter
+  fit and report, validated on synthetic data only. The physical capture is one
+  page: `reference/REAL2SIM-CAPTURE.md`.
+
+Open decision for the instructor: `manifest/robot.yaml` still carries the Sesame
+Studio hip limits (45° toward the middle) and the S2 board name. Changing either
+changes the firmware `MANIFEST_ID` and needs the body-v1 provenance baseline
+re-audited, so both were left alone (D21, D22).
+
 ## Current design queries — November 10, 2026
 
 Use `python3 tools/circuit.py query hub.OE` for current design evidence and
