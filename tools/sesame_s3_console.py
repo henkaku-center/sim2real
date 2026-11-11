@@ -9,6 +9,14 @@ import time
 import serial
 
 
+def open_device(port):
+    """Open the USB port as the console does (this may reset the board). Shared with tools/real2sim.py."""
+    device = serial.Serial(port=None, baudrate=115200, timeout=0, write_timeout=.2)
+    device.dtr = False; device.rts = False; device.port = port
+    device.open(); device.dtr = True
+    return device
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--port", required=True)
@@ -20,9 +28,7 @@ def main():
             commands.put(line.strip())
         commands.put(":quit")
 
-    device = serial.Serial(port=None, baudrate=115200, timeout=0, write_timeout=.2)
-    device.dtr = False; device.rts = False; device.port = args.port
-    device.open(); device.dtr = True
+    device = open_device(args.port)
     print("Opening USB may reset the board. No automatic actuation.")
     print(":live enables 100ms heartbeats; :pause stops them; :quit sends off.")
     print("Start with help / show. Use only with the documented power isolation.")

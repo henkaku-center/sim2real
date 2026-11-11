@@ -19,6 +19,8 @@ Update when bumping anything below.
 | TypeScript | 6.0.x | |
 | PlayCanvas | 2.x | browser rendering |
 | pytest | 9.x | |
+| OpenCV (`opencv-python-headless`) | 5.0.x | marker tracking for `tools/real2sim.py`; dev group |
+| pyserial | 3.5 | recorder USB path; same pin as `firmware/toolchain.json` |
 | Playwright (Python) | latest | drives system Chrome; no browser download |
 
 ## Browsers

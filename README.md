@@ -40,6 +40,7 @@ file. See [CAD workflow](assets/cad/README.md) and
 | [AGENTS.md](AGENTS.md) | Conventions and guardrails for AI coding agents working in this repo (vendor-neutral) |
 | [DECISIONS.md](DECISIONS.md) | Append-only log of resolved questions and their rationale |
 | [reference/PRIOR-ART-SIM.md](reference/PRIOR-ART-SIM.md) | Full review of the community browser simulator (copied from the course repo) |
+| [reference/REAL2SIM-CAPTURE.md](reference/REAL2SIM-CAPTURE.md) | Optional real-to-sim calibration capture (`tools/real2sim.py`); synthetic validation only, nothing measured yet |
 
 ## Core principles
 

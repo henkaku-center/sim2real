@@ -5,6 +5,7 @@ from pathlib import Path
 import subprocess
 import sys
 import circuit
+import real2sim_status
 import rule_drift
 
 ROOT=Path(__file__).resolve().parents[1]
@@ -37,6 +38,7 @@ def main():
          'leg_pose_checks':variant['head_fit']['leg_pose_checks']},
         {'stage':'Mutated dynamics and mass/stability validation','state':'unverified',
          'scope':'This check does not establish a dynamics model and acceptance run for the changed robot. Geometry/rendering is not such evidence.'},
+        real2sim_status.stage(ROOT),
         {'stage':'Human review and iteration','state':'manual','scope':'Part of the intended workflow, not an asserted completed acceptance.'},
         {'stage':'Fabricated and assembled variant','state':'unverified','scope':'Exported printable files do not establish printing, ordering, assembly or physical performance.'},
     ]

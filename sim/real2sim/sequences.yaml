@@ -1,0 +1,105 @@
+# Excitation sequences for real-to-sim calibration (optional examples).
+#
+# Same step format as manifest/motions.yaml (pose / set / wait / repeat), in
+# firmware degrees. They live here, not in manifest/, because the firmware
+# manifest fingerprint covers manifest/motions.yaml and these are host-side.
+# The recorder always prepends "rest, hold" so that every run starts from the
+# same known pose; `wait` is the hold AFTER the commanded move has finished
+# when the command interface ramps (see recorder.firmware_timing).
+#
+# Internal angle q = (deg - 90) * sign: hips R1/L2 sign +1, R2/L1 sign -1;
+# feet R3/L4 sign +1, R4/L3 sign -1. Stand is hips q=+45°, feet q=+90°.
+
+schema_version: 1
+sequences:
+  # Stand up, half squat, stand, lie down: load-dependent sag and timing.
+  lift:
+    - pose: stand
+    - wait: 1000
+    - set: {R3: 135, R4: 45, L3: 45, L4: 135}
+    - wait: 800
+    - pose: stand
+    - wait: 800
+    - pose: rest
+    - wait: 1000
+
+  # Feet planted, hips shift the body forward then back: the feet must scrub,
+  # so the path depends on foot-floor friction.
+  sway:
+    - pose: stand
+    - wait: 800
+    - set: {R1: 110, L1: 70, R2: 20, L2: 160}
+    - wait: 600
+    - set: {R1: 160, L1: 20, R2: 70, L2: 110}
+    - wait: 600
+    - pose: stand
+    - wait: 600
+    - pose: rest
+    - wait: 800
+
+  # Feet planted, hips twist the body left then right (yaw).
+  twist:
+    - pose: stand
+    - wait: 800
+    - set: {R1: 110, L1: 20, R2: 20, L2: 110}
+    - wait: 600
+    - set: {R1: 160, L1: 70, R2: 70, L2: 160}
+    - wait: 600
+    - pose: stand
+    - wait: 600
+    - pose: rest
+    - wait: 800
+
+  # One long take for the capture session: lift, sway and twist back to back.
+  sysid:
+    - pose: stand
+    - wait: 1000
+    - set: {R3: 135, R4: 45, L3: 45, L4: 135}
+    - wait: 800
+    - pose: stand
+    - wait: 800
+    - set: {R1: 110, L1: 70, R2: 20, L2: 160}
+    - wait: 600
+    - set: {R1: 160, L1: 20, R2: 70, L2: 110}
+    - wait: 600
+    - pose: stand
+    - wait: 600
+    - set: {R1: 110, L1: 20, R2: 20, L2: 110}
+    - wait: 600
+    - set: {R1: 160, L1: 70, R2: 70, L2: 160}
+    - wait: 600
+    - pose: stand
+    - wait: 600
+    - pose: rest
+    - wait: 1000
+
+  # Small square steps on the feet, reached without a big jump. Informative
+  # about servo speed, torque and damping only when the command interface does
+  # not ramp (for example a student build without the 60 deg/s cap); with the
+  # reference firmware it is a slow knee bend.
+  steps:
+    - set: {R1: 135, R2: 45, L1: 45, L2: 135}
+    - wait: 400
+    - set: {R3: 105, R4: 75, L3: 75, L4: 105}
+    - wait: 150
+    - set: {R3: 120, R4: 60, L3: 60, L4: 120}
+    - wait: 150
+    - set: {R3: 135, R4: 45, L3: 45, L4: 135}
+    - wait: 150
+    - set: {R3: 150, R4: 30, L3: 30, L4: 150}
+    - wait: 150
+    - set: {R3: 165, R4: 15, L3: 15, L4: 165}
+    - wait: 150
+    - pose: stand
+    - wait: 600
+    - repeat:
+        count: 2
+        steps:
+          - set: {R3: 150, R4: 30, L3: 30, L4: 150}
+          - wait: 400
+          - pose: stand
+          - wait: 400
+          - set: {R3: 135, R4: 45, L3: 45, L4: 135}
+          - wait: 400
+          - pose: stand
+          - wait: 400

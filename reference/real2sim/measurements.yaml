@@ -1,0 +1,25 @@
+# Physical measurements for real-to-sim calibration.
+#
+# NOTHING HAS BEEN MEASURED YET: every value is null. Fill in what you measure
+# and leave the rest null; tools/real2sim.py reads this file. See
+# ../REAL2SIM-CAPTURE.md. manifest/robot.yaml stays the canonical robot
+# definition; values recorded here are evidence for updating it.
+status: not-measured
+measured_on: null   # date
+measured_by: null
+scale_resolution_g: null
+
+masses_g:
+  # Used by the fit: replaces the fitted mass scale (weighed, not estimated).
+  robot_complete_with_battery: null
+  # Recorded for the model; not used by the fit yet.
+  battery: null
+  one_leg_upper_with_foot_servo: null   # femur link plus the servo it carries
+  one_leg_lower_paddle: null
+  head_lid: null
+
+marker:
+  # Robot lying flat in the rest pose, marker stuck on the lid: height of the
+  # marker's paper above the floor. Used to place the marker in the torso frame.
+  centre_height_above_floor_at_rest_mm: null
+  printed_black_square_mm: null         # must be 40.0; reprint if it is not
