@@ -1,0 +1,205 @@
+# Inputs of the one digital twin that manifest/robot.yaml does not own.
+#
+# robot.yaml stays canonical for joint order, pins, angle conventions, limits,
+# poses and calibration. This file adds only: which hardware profile and which
+# printing design the default twin represents, and every dynamics number
+# (mass table, material and fill assumptions, actuator and contact parameters).
+#
+# Generated from this file, robot.yaml and assets/printing/<design>/assembly.json
+# by `uv run python -m sim.twin`:
+#   models/<design>.xml                      MuJoCo model (reference engine)
+#   assets/printing/<design>/dynamics.json   typed dynamics record for every consumer
+# `uv run python -m sim.twin --check` and tools/check_design.py fail when either
+# is stale. Nothing here has been weighed or measured on a course robot.
+#
+# Status of every entry:
+#   estimated           printed part: mesh volume x material density x fill fraction
+#   unmeasured-nominal  purchased part or parameter: listing, datasheet or assumed value
+#   measured            weighed/measured on the course robot (none yet)
+# Weighing a part later: set that entry's mass_kg, change its status to
+# `measured`, name the reading in `source`, then regenerate.
+
+schema_version: 1
+
+hardware:
+  # robot.yaml still carries the upstream S2 board at top level (`mcu.board`) and
+  # the S2 pins in `joints[].gpio_pin`: its raw bytes are the firmware calibration
+  # identity and a pinned input of the held body-v1 report, so the labels live here.
+  default_profile: sesame_s3
+  profiles:
+    sesame_s3:
+      status: current-course-default
+      mcu_board: esp32_s3_supermini
+      servo_driver: pca9685
+      robot_yaml: hardware_profiles.sesame_s3 # wiring, pulse profile and calibration stay there
+    lolin_s2_mini_baseline:
+      status: historical-upstream-baseline
+      mcu_board_from: mcu.board # read from robot.yaml, not repeated here
+      servo_driver: direct-gpio-pwm
+      robot_yaml: [mcu, "joints[].gpio_pin", servo_bus.pulse_us]
+
+designs:
+  directory: assets/printing
+  default: internal-frame-s3
+  generated: [internal-frame-s3, internal-frame-s3-two-eyes]
+  # variant -> base it is compared against in <variant>/dynamics-evidence.json.
+  # The six-leg design is not listed: it needs twelve joints and its own
+  # motions, which robot.yaml and motions.yaml do not describe.
+  variants: {internal-frame-s3-two-eyes: internal-frame-s3}
+  legs: "assets/stl/upstream/{joint}-v117.stl" # unchanged upstream leg prints
+  frame: "X front, Y left, Z up; design CAD origin; millimetres in the design, SI in the twin"
+
+leg_mount:
+  # Hip and foot axes in the leg drawing frame are read from sim/prepare_assets.py.
+  upper_top_above_frame_top_mm: 17.17
+  status: estimated
+  source: >-
+    assets/printing/internal-frame-s3/head-cable-clearance.json leg_samples: Rest
+    upper-leg top Z 22.1415 mm minus servo_flange_seat_z_mm 4.9678 mm. CAD
+    placement, not a measurement of an assembled robot.
+
+materials:
+  pla:
+    density_kg_m3: 1240.0
+    status: unmeasured-nominal
+    source: Generic PLA nominal density; the course filament was not weighed.
+
+print_profiles:
+  body-kit:
+    material: pla
+    fill_fraction: 0.605
+    status: estimated
+    source: >-
+      assets/printing/internal-frame-s3/slice-check.json: 45.25 g slicer estimate
+      for the frame plus four spacers (60.29 cm3 of mesh) at 1240 kg/m3; four
+      walls, 25% infill. Applied unchanged to the covers, head and lid.
+  legs:
+    material: pla
+    fill_fraction: 0.651
+    status: estimated
+    source: >-
+      assets/print/README.md: about 32 g slicer estimate for the eight-leg set
+      (39.63 cm3 of mesh) at 1240 kg/m3; two walls, 10% honeycomb infill.
+
+servo_envelope:
+  # Solid box standing in for one servo. Case centre to shaft comes from the
+  # design's servo_mounts; only the envelope itself is declared here.
+  long_mm: 22.8
+  width_mm: 12.2
+  height_mm: 28.5
+  tab_underside_above_base_mm: 16.0
+  status: unmeasured-nominal
+  source: TowerPro MG90S nominal drawing; the purchased servos were not measured.
+
+electronics_stack:
+  height_mm: 20.0
+  status: unmeasured-nominal
+  source: >-
+    Assumed height of the populated carrier above the PCB seat. Carrier parts are
+    spread uniformly over the PCB footprint; CAD component positions are not used.
+
+# One row per kind of part. `body` is torso, upper (per hip joint) or lower
+# (per foot joint). `at` names where assembly.json places it.
+mass_table:
+  - {id: internal-frame, body: torso, kind: printed, mesh: internal-frame.stl, print_profile: body-kit, status: estimated, mass_kg: null}
+  - {id: bottom-cover, body: torso, kind: printed, mesh: bottom-cover.stl, print_profile: body-kit, status: estimated, mass_kg: null}
+  - {id: head-cover, body: torso, kind: printed, mesh: head-cover.stl, print_profile: body-kit, status: estimated, mass_kg: null}
+  - {id: head-lid, body: torso, kind: printed, mesh: head-lid.stl, print_profile: body-kit, status: estimated, mass_kg: null}
+  - {id: pcb-spacer, body: torso, kind: printed, mesh: pcb-spacer.stl, at: pcb_spacers, print_profile: body-kit, status: estimated, mass_kg: null}
+  - {id: upper-leg, body: upper, kind: printed, mesh: leg, print_profile: legs, status: estimated, mass_kg: null}
+  - {id: foot, body: lower, kind: printed, mesh: leg, print_profile: legs, status: estimated, mass_kg: null}
+  - id: hip-servo
+    body: torso
+    kind: purchased
+    at: hip_servo_bays
+    status: unmeasured-nominal
+    mass_from: servo_model.mass_kg # robot.yaml, MG90S nominal
+    source: robot.yaml servo_model (MG90S nominal, unmeasured).
+  - id: foot-servo
+    body: lower
+    kind: purchased
+    at: foot_servo
+    status: unmeasured-nominal
+    mass_from: servo_model.mass_kg
+    source: >-
+      robot.yaml servo_model. Assumed carried by the foot print with its shaft on
+      the foot axis and its case centred in the paddle thickness; the horn stays
+      in the upper-leg print.
+  - id: battery
+    body: torso
+    kind: purchased
+    at: battery_mount
+    status: unmeasured-nominal
+    mass_kg: 0.047
+    source: "B0F3JB59B6 listing (reference/ELECTRONICS-CAD-SOURCES.md): 47 g, 51 x 28 x 14 mm."
+  - id: carrier-board
+    body: torso
+    kind: purchased
+    at: pcb_stack
+    status: unmeasured-nominal
+    mass_kg: 0.016
+    source: "Assumed: 50 x 70 mm carrier with headers, sockets, wiring and solder. No listing mass or scale reading."
+  - id: mcu-esp32-s3-supermini
+    body: torso
+    kind: purchased
+    at: pcb_stack
+    status: unmeasured-nominal
+    mass_kg: 0.003
+    source: "Assumed module mass. No listing mass or scale reading."
+  - id: servo-driver-pca9685
+    body: torso
+    kind: purchased
+    at: pcb_stack
+    status: unmeasured-nominal
+    mass_kg: 0.011
+    source: "Assumed module mass with headers. No listing mass or scale reading."
+  - id: converter
+    body: torso
+    kind: purchased
+    at: pcb_stack
+    status: unmeasured-nominal
+    mass_kg: 0.012
+    source: "Assumed mass of the B07NVSVW1N buck module. No listing mass or scale reading."
+  - id: oled-display
+    body: torso
+    kind: purchased
+    at: display_windows # one module per display window of the design
+    status: unmeasured-nominal
+    mass_kg: 0.006
+    source: "Assumed SSD1306 module mass with header. No listing mass or scale reading."
+  - id: power-switch
+    body: torso
+    kind: purchased
+    at: switch_opening
+    status: unmeasured-nominal
+    mass_kg: 0.004
+    source: "Assumed toggle switch mass. No listing mass or scale reading."
+  - id: fasteners
+    body: torso
+    kind: purchased
+    at: frame_centroid
+    status: unmeasured-nominal
+    mass_kg: 0.006
+    source: "Assumed total for servo, cover and PCB screws, lumped at the frame centroid."
+
+actuator:
+  # Position servo placeholder until system identification replaces it. Joint
+  # damping is derived, not declared: force limit / no-load speed, the linear
+  # torque-speed line through robot.yaml's two nominal servo values.
+  status: unmeasured-nominal
+  kp_Nm_per_rad: 0.6
+  force_limit_from: servo_model.stall_torque_Nm_at_4v8 # robot.yaml, nominal stall torque
+  no_load_speed_from: servo_model.speed_s_per_60deg_at_4v8 # robot.yaml, seconds per 60 degrees
+  source: >-
+    Gain carried over from the upstream-body baseline (sim/build_mjcf.py), not
+    fitted. That baseline's 0.01 N m s/rad damping lets a saturated servo exceed
+    the nominal speed; the speed line bounds it at the nominal no-load speed.
+
+contact:
+  status: unmeasured-nominal
+  friction: [0.9, 0.005, 0.0001] # sliding, torsional, rolling; every geom and the floor
+  source: Carried over from the upstream-body baseline; floor and print friction were not measured.
+
+simulation:
+  timestep_s: 0.002
+  spawn_clearance_mm: 0.5

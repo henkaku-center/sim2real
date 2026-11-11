@@ -8,11 +8,12 @@ from pathlib import Path
 import mujoco
 import yaml
 
+from sim import twin
 from sim.real2sim import fit as fitting
 from sim.real2sim import marker, report, runlog, synthetic
 
 ROOT = Path(__file__).resolve().parents[2]
-MODEL_PATH = ROOT / "models" / "sesame.xml"
+MODEL_PATH = twin.model_path()  # the course robot's generated twin (manifest/twin.yaml default design)
 MEASUREMENTS_PATH = ROOT / "reference" / "real2sim" / "measurements.yaml"
 SHEET_PATH = ROOT / "reference" / "real2sim" / "marker-sheet.pdf"
 

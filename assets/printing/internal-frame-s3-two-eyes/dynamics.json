@@ -1,0 +1,1188 @@
+{
+  "schema": "sim2real-dynamics/1",
+  "design": "internal-frame-s3-two-eyes",
+  "status": "simulated-model-unmeasured-parameters",
+  "scope": "Generated simulation model. Printed masses are estimated from mesh volume, purchased parts and actuator/contact parameters are nominal. Nothing was weighed or measured on a built robot.",
+  "generated_by": "sim/twin.py",
+  "engine": "MuJoCo (reference)",
+  "mjcf": {
+    "path": "models/internal-frame-s3-two-eyes.xml",
+    "sha256": "f35f6b6d4c18acbdce1f26f32a5a6cba31fa58ab735d5daa6d31a779c084d2c1"
+  },
+  "frame": {
+    "torso": "design CAD frame: X front, Y left, Z up, origin at the CAD origin",
+    "units": "SI: metres, kilograms, radians; inertia in kg m2 about each centre of mass",
+    "pose": "joint origins, axes and the centre of mass are at rest (every internal angle 0)"
+  },
+  "hardware_profile": {
+    "name": "sesame_s3",
+    "status": "current-course-default",
+    "mcu_board": "esp32_s3_supermini",
+    "servo_driver": "pca9685",
+    "robot_yaml": "hardware_profiles.sesame_s3"
+  },
+  "bodies": [
+    {
+      "name": "torso",
+      "parent": null,
+      "origin_in_parent_m": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "mass_kg": 0.28886404,
+      "com_m": [
+        0.0017133727,
+        0.000130054,
+        0.0075271233
+      ],
+      "inertia_kg_m2": {
+        "xx": 0.000387623093,
+        "yy": 0.000278015407,
+        "zz": 0.000475124567,
+        "xy": -4.66259192e-07,
+        "xz": -4.48762195e-06,
+        "yz": 1.33713118e-07
+      },
+      "parts": [
+        "internal-frame",
+        "bottom-cover",
+        "head-cover",
+        "head-lid",
+        "pcb-spacer.1",
+        "pcb-spacer.2",
+        "pcb-spacer.3",
+        "pcb-spacer.4",
+        "hip-servo.L1",
+        "hip-servo.L2",
+        "hip-servo.R1",
+        "hip-servo.R2",
+        "battery",
+        "carrier-board",
+        "mcu-esp32-s3-supermini",
+        "servo-driver-pca9685",
+        "converter",
+        "oled-display.1",
+        "oled-display.2",
+        "power-switch",
+        "fasteners"
+      ]
+    },
+    {
+      "name": "front_right_upper",
+      "parent": "torso",
+      "origin_in_parent_m": [
+        0.028217465,
+        -0.052975,
+        -0.00197000067
+      ],
+      "mass_kg": 0.00420344684,
+      "com_m": [
+        -0.00637965528,
+        -0.017390689,
+        0.0134958852
+      ],
+      "inertia_kg_m2": {
+        "xx": 8.35423925e-07,
+        "yy": 4.9948549e-07,
+        "zz": 5.96105449e-07,
+        "xy": -6.93543528e-08,
+        "xz": -8.84810348e-08,
+        "yz": -2.81716112e-07
+      },
+      "parts": [
+        "upper-leg.R1"
+      ]
+    },
+    {
+      "name": "front_right_lower",
+      "parent": "front_right_upper",
+      "origin_in_parent_m": [
+        0.0,
+        -0.03686,
+        0.0
+      ],
+      "mass_kg": 0.0172041836,
+      "com_m": [
+        0.00702694506,
+        -0.00796334507,
+        -8.2324698e-05
+      ],
+      "inertia_kg_m2": {
+        "xx": 2.40271433e-06,
+        "yy": 1.2375479e-06,
+        "zz": 3.03470874e-06,
+        "xy": -8.67999023e-11,
+        "xz": 1.28027838e-11,
+        "yz": -1.93759568e-08
+      },
+      "parts": [
+        "foot.R3",
+        "foot-servo.R3"
+      ]
+    },
+    {
+      "name": "back_right_upper",
+      "parent": "torso",
+      "origin_in_parent_m": [
+        -0.028583896,
+        -0.052975,
+        -0.00197000067
+      ],
+      "mass_kg": 0.00418982826,
+      "com_m": [
+        0.00636997921,
+        -0.0174252925,
+        0.0134621588
+      ],
+      "inertia_kg_m2": {
+        "xx": 8.31707049e-07,
+        "yy": 4.97864121e-07,
+        "zz": 5.93675942e-07,
+        "xy": 6.97581502e-08,
+        "xz": 8.89039476e-08,
+        "yz": -2.8022179e-07
+      },
+      "parts": [
+        "upper-leg.R2"
+      ]
+    },
+    {
+      "name": "back_right_lower",
+      "parent": "back_right_upper",
+      "origin_in_parent_m": [
+        0.0,
+        -0.03686,
+        0.0
+      ],
+      "mass_kg": 0.0171925833,
+      "com_m": [
+        -0.00702707897,
+        -0.00796365066,
+        -8.85635779e-05
+      ],
+      "inertia_kg_m2": {
+        "xx": 2.40117437e-06,
+        "yy": 1.23652763e-06,
+        "zz": 3.03413351e-06,
+        "xy": 1.07313232e-10,
+        "xz": 8.835748e-12,
+        "yz": -1.93276998e-08
+      },
+      "parts": [
+        "foot.R4",
+        "foot-servo.R4"
+      ]
+    },
+    {
+      "name": "front_left_upper",
+      "parent": "torso",
+      "origin_in_parent_m": [
+        0.028217465,
+        0.052975,
+        -0.00197000067
+      ],
+      "mass_kg": 0.00420691019,
+      "com_m": [
+        -0.00637904223,
+        0.0173769212,
+        0.01350435
+      ],
+      "inertia_kg_m2": {
+        "xx": 8.36840004e-07,
+        "yy": 4.99865765e-07,
+        "zz": 5.97136537e-07,
+        "xy": 6.93645207e-08,
+        "xz": -8.85086473e-08,
+        "yz": 2.82329966e-07
+      },
+      "parts": [
+        "upper-leg.L1"
+      ]
+    },
+    {
+      "name": "front_left_lower",
+      "parent": "front_left_upper",
+      "origin_in_parent_m": [
+        0.0,
+        0.03686,
+        0.0
+      ],
+      "mass_kg": 0.017188862,
+      "com_m": [
+        0.00702619837,
+        0.00796126003,
+        -9.36282868e-05
+      ],
+      "inertia_kg_m2": {
+        "xx": 2.401166e-06,
+        "yy": 1.23569568e-06,
+        "zz": 3.03485169e-06,
+        "xy": 1.1174551e-10,
+        "xz": 1.84956567e-10,
+        "yz": 1.9550281e-08
+      },
+      "parts": [
+        "foot.L3",
+        "foot-servo.L3"
+      ]
+    },
+    {
+      "name": "back_left_upper",
+      "parent": "torso",
+      "origin_in_parent_m": [
+        -0.028583896,
+        0.052975,
+        -0.00197000067
+      ],
+      "mass_kg": 0.00420468431,
+      "com_m": [
+        0.00637696233,
+        0.0173852474,
+        0.013498971
+      ],
+      "inertia_kg_m2": {
+        "xx": 8.35842041e-07,
+        "yy": 4.9958255e-07,
+        "zz": 5.96348617e-07,
+        "xy": -6.94294445e-08,
+        "xz": 8.85997203e-08,
+        "yz": 2.81955941e-07
+      },
+      "parts": [
+        "upper-leg.L2"
+      ]
+    },
+    {
+      "name": "back_left_lower",
+      "parent": "back_left_upper",
+      "origin_in_parent_m": [
+        0.0,
+        0.03686,
+        0.0
+      ],
+      "mass_kg": 0.0172042419,
+      "com_m": [
+        -0.00702815413,
+        0.00796139298,
+        -8.57659321e-05
+      ],
+      "inertia_kg_m2": {
+        "xx": 2.40316086e-06,
+        "yy": 1.23698636e-06,
+        "zz": 3.03568568e-06,
+        "xy": -1.02071883e-10,
+        "xz": 1.38199694e-10,
+        "yz": 1.95170943e-08
+      },
+      "parts": [
+        "foot.L4",
+        "foot-servo.L4"
+      ]
+    }
+  ],
+  "joints": [
+    {
+      "name": "R1",
+      "channel": 0,
+      "leg": "front_right",
+      "role": "hip",
+      "body": "front_right_upper",
+      "parent": "torso",
+      "origin_m": [
+        0.028217465,
+        -0.052975,
+        -0.00197000067
+      ],
+      "axis": [
+        0,
+        0,
+        1
+      ],
+      "sign": 1,
+      "limits_firmware_deg": [
+        45.0,
+        180.0
+      ],
+      "range_rad": [
+        -0.785398,
+        1.570796
+      ]
+    },
+    {
+      "name": "R2",
+      "channel": 1,
+      "leg": "back_right",
+      "role": "hip",
+      "body": "back_right_upper",
+      "parent": "torso",
+      "origin_m": [
+        -0.028583896,
+        -0.052975,
+        -0.00197000067
+      ],
+      "axis": [
+        0,
+        0,
+        -1
+      ],
+      "sign": -1,
+      "limits_firmware_deg": [
+        0.0,
+        135.0
+      ],
+      "range_rad": [
+        -0.785398,
+        1.570796
+      ]
+    },
+    {
+      "name": "L1",
+      "channel": 2,
+      "leg": "front_left",
+      "role": "hip",
+      "body": "front_left_upper",
+      "parent": "torso",
+      "origin_m": [
+        0.028217465,
+        0.052975,
+        -0.00197000067
+      ],
+      "axis": [
+        0,
+        0,
+        -1
+      ],
+      "sign": -1,
+      "limits_firmware_deg": [
+        0.0,
+        135.0
+      ],
+      "range_rad": [
+        -0.785398,
+        1.570796
+      ]
+    },
+    {
+      "name": "L2",
+      "channel": 3,
+      "leg": "back_left",
+      "role": "hip",
+      "body": "back_left_upper",
+      "parent": "torso",
+      "origin_m": [
+        -0.028583896,
+        0.052975,
+        -0.00197000067
+      ],
+      "axis": [
+        0,
+        0,
+        1
+      ],
+      "sign": 1,
+      "limits_firmware_deg": [
+        45.0,
+        180.0
+      ],
+      "range_rad": [
+        -0.785398,
+        1.570796
+      ]
+    },
+    {
+      "name": "R4",
+      "channel": 4,
+      "leg": "back_right",
+      "role": "foot",
+      "body": "back_right_lower",
+      "parent": "back_right_upper",
+      "origin_m": [
+        -0.028583896,
+        -0.089835,
+        -0.00197000067
+      ],
+      "axis": [
+        1,
+        0,
+        0
+      ],
+      "sign": -1,
+      "limits_firmware_deg": [
+        0.0,
+        180.0
+      ],
+      "range_rad": [
+        -1.570796,
+        1.570796
+      ]
+    },
+    {
+      "name": "R3",
+      "channel": 5,
+      "leg": "front_right",
+      "role": "foot",
+      "body": "front_right_lower",
+      "parent": "front_right_upper",
+      "origin_m": [
+        0.028217465,
+        -0.089835,
+        -0.00197000067
+      ],
+      "axis": [
+        1,
+        0,
+        0
+      ],
+      "sign": 1,
+      "limits_firmware_deg": [
+        0.0,
+        180.0
+      ],
+      "range_rad": [
+        -1.570796,
+        1.570796
+      ]
+    },
+    {
+      "name": "L3",
+      "channel": 6,
+      "leg": "front_left",
+      "role": "foot",
+      "body": "front_left_lower",
+      "parent": "front_left_upper",
+      "origin_m": [
+        0.028217465,
+        0.089835,
+        -0.00197000067
+      ],
+      "axis": [
+        -1,
+        0,
+        0
+      ],
+      "sign": -1,
+      "limits_firmware_deg": [
+        0.0,
+        180.0
+      ],
+      "range_rad": [
+        -1.570796,
+        1.570796
+      ]
+    },
+    {
+      "name": "L4",
+      "channel": 7,
+      "leg": "back_left",
+      "role": "foot",
+      "body": "back_left_lower",
+      "parent": "back_left_upper",
+      "origin_m": [
+        -0.028583896,
+        0.089835,
+        -0.00197000067
+      ],
+      "axis": [
+        -1,
+        0,
+        0
+      ],
+      "sign": 1,
+      "limits_firmware_deg": [
+        0.0,
+        180.0
+      ],
+      "range_rad": [
+        -1.570796,
+        1.570796
+      ]
+    }
+  ],
+  "mass_table": [
+    {
+      "id": "internal-frame",
+      "row": "internal-frame",
+      "body": "torso",
+      "kind": "printed",
+      "status": "estimated",
+      "mass_kg": 0.059327527,
+      "com_torso_m": [
+        0.000478197469,
+        0.000429304217,
+        -0.000865236795
+      ],
+      "basis": "79.082 cm3 mesh x 1240 kg/m3 x 0.605 fill (body-kit)"
+    },
+    {
+      "id": "bottom-cover",
+      "row": "bottom-cover",
+      "body": "torso",
+      "kind": "printed",
+      "status": "estimated",
+      "mass_kg": 0.0271475266,
+      "com_torso_m": [
+        0.00106780759,
+        1.6069777e-07,
+        -0.01501185
+      ],
+      "basis": "36.187 cm3 mesh x 1240 kg/m3 x 0.605 fill (body-kit)"
+    },
+    {
+      "id": "head-cover",
+      "row": "head-cover",
+      "body": "torso",
+      "kind": "printed",
+      "status": "estimated",
+      "mass_kg": 0.0226235104,
+      "com_torso_m": [
+        0.00165206199,
+        0.000414233481,
+        0.0290609082
+      ],
+      "basis": "30.157 cm3 mesh x 1240 kg/m3 x 0.605 fill (body-kit)"
+    },
+    {
+      "id": "head-lid",
+      "row": "head-lid",
+      "body": "torso",
+      "kind": "printed",
+      "status": "estimated",
+      "mass_kg": 0.015021477,
+      "com_torso_m": [
+        -0.00368304242,
+        4.35544126e-06,
+        0.0500791295
+      ],
+      "basis": "20.023 cm3 mesh x 1240 kg/m3 x 0.605 fill (body-kit)"
+    },
+    {
+      "id": "pcb-spacer.1",
+      "row": "pcb-spacer",
+      "body": "torso",
+      "kind": "printed",
+      "status": "estimated",
+      "mass_kg": 3.59996405e-05,
+      "com_torso_m": [
+        0.033,
+        0.0232,
+        0.0064677569
+      ],
+      "basis": "0.048 cm3 mesh x 1240 kg/m3 x 0.605 fill (body-kit)"
+    },
+    {
+      "id": "pcb-spacer.2",
+      "row": "pcb-spacer",
+      "body": "torso",
+      "kind": "printed",
+      "status": "estimated",
+      "mass_kg": 3.59996405e-05,
+      "com_torso_m": [
+        0.033,
+        -0.0232,
+        0.0064677569
+      ],
+      "basis": "0.048 cm3 mesh x 1240 kg/m3 x 0.605 fill (body-kit)"
+    },
+    {
+      "id": "pcb-spacer.3",
+      "row": "pcb-spacer",
+      "body": "torso",
+      "kind": "printed",
+      "status": "estimated",
+      "mass_kg": 3.59996405e-05,
+      "com_torso_m": [
+        -0.033,
+        0.0232,
+        0.0064677569
+      ],
+      "basis": "0.048 cm3 mesh x 1240 kg/m3 x 0.605 fill (body-kit)"
+    },
+    {
+      "id": "pcb-spacer.4",
+      "row": "pcb-spacer",
+      "body": "torso",
+      "kind": "printed",
+      "status": "estimated",
+      "mass_kg": 3.59996405e-05,
+      "com_torso_m": [
+        -0.033,
+        -0.0232,
+        0.0064677569
+      ],
+      "basis": "0.048 cm3 mesh x 1240 kg/m3 x 0.605 fill (body-kit)"
+    },
+    {
+      "id": "hip-servo.L1",
+      "row": "hip-servo",
+      "body": "torso",
+      "kind": "purchased",
+      "status": "unmeasured-nominal",
+      "mass_kg": 0.0134,
+      "com_torso_m": [
+        0.022842465,
+        0.052975,
+        0.0032177569
+      ],
+      "basis": "robot.yaml servo_model (MG90S nominal, unmeasured)."
+    },
+    {
+      "id": "hip-servo.L2",
+      "row": "hip-servo",
+      "body": "torso",
+      "kind": "purchased",
+      "status": "unmeasured-nominal",
+      "mass_kg": 0.0134,
+      "com_torso_m": [
+        -0.023208896,
+        0.052975,
+        0.0032177569
+      ],
+      "basis": "robot.yaml servo_model (MG90S nominal, unmeasured)."
+    },
+    {
+      "id": "hip-servo.R1",
+      "row": "hip-servo",
+      "body": "torso",
+      "kind": "purchased",
+      "status": "unmeasured-nominal",
+      "mass_kg": 0.0134,
+      "com_torso_m": [
+        0.022842465,
+        -0.052975,
+        0.0032177569
+      ],
+      "basis": "robot.yaml servo_model (MG90S nominal, unmeasured)."
+    },
+    {
+      "id": "hip-servo.R2",
+      "row": "hip-servo",
+      "body": "torso",
+      "kind": "purchased",
+      "status": "unmeasured-nominal",
+      "mass_kg": 0.0134,
+      "com_torso_m": [
+        -0.023208896,
+        -0.052975,
+        0.0032177569
+      ],
+      "basis": "robot.yaml servo_model (MG90S nominal, unmeasured)."
+    },
+    {
+      "id": "battery",
+      "row": "battery",
+      "body": "torso",
+      "kind": "purchased",
+      "status": "unmeasured-nominal",
+      "mass_kg": 0.047,
+      "com_torso_m": [
+        0.0035,
+        0.0,
+        -0.006
+      ],
+      "basis": "B0F3JB59B6 listing (reference/ELECTRONICS-CAD-SOURCES.md): 47 g, 51 x 28 x 14 mm."
+    },
+    {
+      "id": "carrier-board",
+      "row": "carrier-board",
+      "body": "torso",
+      "kind": "purchased",
+      "status": "unmeasured-nominal",
+      "mass_kg": 0.016,
+      "com_torso_m": [
+        0.0,
+        -1.77635684e-18,
+        0.0179677569
+      ],
+      "basis": "Assumed: 50 x 70 mm carrier with headers, sockets, wiring and solder. No listing mass or scale reading."
+    },
+    {
+      "id": "mcu-esp32-s3-supermini",
+      "row": "mcu-esp32-s3-supermini",
+      "body": "torso",
+      "kind": "purchased",
+      "status": "unmeasured-nominal",
+      "mass_kg": 0.003,
+      "com_torso_m": [
+        0.0,
+        -1.77635684e-18,
+        0.0179677569
+      ],
+      "basis": "Assumed module mass. No listing mass or scale reading."
+    },
+    {
+      "id": "servo-driver-pca9685",
+      "row": "servo-driver-pca9685",
+      "body": "torso",
+      "kind": "purchased",
+      "status": "unmeasured-nominal",
+      "mass_kg": 0.011,
+      "com_torso_m": [
+        0.0,
+        -1.77635684e-18,
+        0.0179677569
+      ],
+      "basis": "Assumed module mass with headers. No listing mass or scale reading."
+    },
+    {
+      "id": "converter",
+      "row": "converter",
+      "body": "torso",
+      "kind": "purchased",
+      "status": "unmeasured-nominal",
+      "mass_kg": 0.012,
+      "com_torso_m": [
+        0.0,
+        -1.77635684e-18,
+        0.0179677569
+      ],
+      "basis": "Assumed mass of the B07NVSVW1N buck module. No listing mass or scale reading."
+    },
+    {
+      "id": "oled-display.1",
+      "row": "oled-display",
+      "body": "torso",
+      "kind": "purchased",
+      "status": "unmeasured-nominal",
+      "mass_kg": 0.006,
+      "com_torso_m": [
+        0.0381434206,
+        -0.015120309,
+        0.0360165577
+      ],
+      "basis": "Assumed SSD1306 module mass with header. No listing mass or scale reading."
+    },
+    {
+      "id": "oled-display.2",
+      "row": "oled-display",
+      "body": "torso",
+      "kind": "purchased",
+      "status": "unmeasured-nominal",
+      "mass_kg": 0.006,
+      "com_torso_m": [
+        0.0381434206,
+        0.0151304762,
+        0.0360165577
+      ],
+      "basis": "Assumed SSD1306 module mass with header. No listing mass or scale reading."
+    },
+    {
+      "id": "power-switch",
+      "row": "power-switch",
+      "body": "torso",
+      "kind": "purchased",
+      "status": "unmeasured-nominal",
+      "mass_kg": 0.004,
+      "com_torso_m": [
+        -0.0399368586,
+        5.08360686e-06,
+        0.037600942
+      ],
+      "basis": "Assumed toggle switch mass. No listing mass or scale reading."
+    },
+    {
+      "id": "fasteners",
+      "row": "fasteners",
+      "body": "torso",
+      "kind": "purchased",
+      "status": "unmeasured-nominal",
+      "mass_kg": 0.006,
+      "com_torso_m": [
+        0.000478197469,
+        0.000429304217,
+        -0.000865236795
+      ],
+      "basis": "Assumed total for servo, cover and PCB screws, lumped at the frame centroid."
+    },
+    {
+      "id": "upper-leg.R1",
+      "row": "upper-leg",
+      "body": "front_right_upper",
+      "kind": "printed",
+      "status": "estimated",
+      "mass_kg": 0.00420344684,
+      "com_torso_m": [
+        0.0218378097,
+        -0.070365689,
+        0.0115258845
+      ],
+      "basis": "5.207 cm3 mesh x 1240 kg/m3 x 0.651 fill (legs)"
+    },
+    {
+      "id": "foot.R3",
+      "row": "foot",
+      "body": "front_right_lower",
+      "kind": "printed",
+      "status": "estimated",
+      "mass_kg": 0.00380418358,
+      "com_torso_m": [
+        0.0352497356,
+        -0.10691563,
+        -0.00234230899
+      ],
+      "basis": "4.713 cm3 mesh x 1240 kg/m3 x 0.651 fill (legs)"
+    },
+    {
+      "id": "foot-servo.R3",
+      "row": "foot-servo",
+      "body": "front_right_lower",
+      "kind": "purchased",
+      "status": "unmeasured-nominal",
+      "mass_kg": 0.0134,
+      "com_torso_m": [
+        0.0352428982,
+        -0.09521,
+        -0.00197000067
+      ],
+      "basis": "robot.yaml servo_model. Assumed carried by the foot print with its shaft on the foot axis and its case centred in the paddle thickness; the horn stays in the upper-leg print."
+    },
+    {
+      "id": "upper-leg.R2",
+      "row": "upper-leg",
+      "body": "back_right_upper",
+      "kind": "printed",
+      "status": "estimated",
+      "mass_kg": 0.00418982826,
+      "com_torso_m": [
+        -0.0222139168,
+        -0.0704002925,
+        0.0114921581
+      ],
+      "basis": "5.190 cm3 mesh x 1240 kg/m3 x 0.651 fill (legs)"
+    },
+    {
+      "id": "foot.R4",
+      "row": "foot",
+      "body": "back_right_lower",
+      "kind": "printed",
+      "status": "estimated",
+      "mass_kg": 0.00379258325,
+      "com_torso_m": [
+        -0.0356167899,
+        -0.106944902,
+        -0.00237147813
+      ],
+      "basis": "4.698 cm3 mesh x 1240 kg/m3 x 0.651 fill (legs)"
+    },
+    {
+      "id": "foot-servo.R4",
+      "row": "foot-servo",
+      "body": "back_right_lower",
+      "kind": "purchased",
+      "status": "unmeasured-nominal",
+      "mass_kg": 0.0134,
+      "com_torso_m": [
+        -0.0356093292,
+        -0.09521,
+        -0.00197000067
+      ],
+      "basis": "robot.yaml servo_model. Assumed carried by the foot print with its shaft on the foot axis and its case centred in the paddle thickness; the horn stays in the upper-leg print."
+    },
+    {
+      "id": "upper-leg.L1",
+      "row": "upper-leg",
+      "body": "front_left_upper",
+      "kind": "printed",
+      "status": "estimated",
+      "mass_kg": 0.00420691019,
+      "com_torso_m": [
+        0.0218384228,
+        0.0703519212,
+        0.0115343493
+      ],
+      "basis": "5.211 cm3 mesh x 1240 kg/m3 x 0.651 fill (legs)"
+    },
+    {
+      "id": "foot.L3",
+      "row": "foot",
+      "body": "front_left_lower",
+      "kind": "printed",
+      "status": "estimated",
+      "mass_kg": 0.00378886205,
+      "com_torso_m": [
+        0.0352463696,
+        0.106943039,
+        -0.00239476242
+      ],
+      "basis": "4.694 cm3 mesh x 1240 kg/m3 x 0.651 fill (legs)"
+    },
+    {
+      "id": "foot-servo.L3",
+      "row": "foot-servo",
+      "body": "front_left_lower",
+      "kind": "purchased",
+      "status": "unmeasured-nominal",
+      "mass_kg": 0.0134,
+      "com_torso_m": [
+        0.0352428982,
+        0.09521,
+        -0.00197000067
+      ],
+      "basis": "robot.yaml servo_model. Assumed carried by the foot print with its shaft on the foot axis and its case centred in the paddle thickness; the horn stays in the upper-leg print."
+    },
+    {
+      "id": "upper-leg.L2",
+      "row": "upper-leg",
+      "body": "back_left_upper",
+      "kind": "printed",
+      "status": "estimated",
+      "mass_kg": 0.00420468431,
+      "com_torso_m": [
+        -0.0222069337,
+        0.0703602474,
+        0.0115289703
+      ],
+      "basis": "5.209 cm3 mesh x 1240 kg/m3 x 0.651 fill (legs)"
+    },
+    {
+      "id": "foot.L4",
+      "row": "foot",
+      "body": "back_left_lower",
+      "kind": "printed",
+      "status": "estimated",
+      "mass_kg": 0.00380424187,
+      "com_torso_m": [
+        -0.0356216344,
+        0.106906662,
+        -0.00235786713
+      ],
+      "basis": "4.713 cm3 mesh x 1240 kg/m3 x 0.651 fill (legs)"
+    },
+    {
+      "id": "foot-servo.L4",
+      "row": "foot-servo",
+      "body": "back_left_lower",
+      "kind": "purchased",
+      "status": "unmeasured-nominal",
+      "mass_kg": 0.0134,
+      "com_torso_m": [
+        -0.0356093292,
+        0.09521,
+        -0.00197000067
+      ],
+      "basis": "robot.yaml servo_model. Assumed carried by the foot print with its shaft on the foot axis and its case centred in the paddle thickness; the horn stays in the upper-leg print."
+    }
+  ],
+  "assumptions": {
+    "materials": {
+      "pla": {
+        "density_kg_m3": 1240.0,
+        "status": "unmeasured-nominal"
+      }
+    },
+    "print_profiles": {
+      "body-kit": {
+        "material": "pla",
+        "fill_fraction": 0.605,
+        "status": "estimated"
+      },
+      "legs": {
+        "material": "pla",
+        "fill_fraction": 0.651,
+        "status": "estimated"
+      }
+    },
+    "servo_envelope": {
+      "long_mm": 22.8,
+      "width_mm": 12.2,
+      "height_mm": 28.5,
+      "tab_underside_above_base_mm": 16.0,
+      "status": "unmeasured-nominal"
+    },
+    "electronics_stack": {
+      "height_mm": 20.0,
+      "status": "unmeasured-nominal"
+    },
+    "leg_mount": {
+      "upper_top_above_frame_top_mm": 17.17,
+      "status": "estimated"
+    }
+  },
+  "totals": {
+    "mass_kg": 0.37445878,
+    "com_torso_m": [
+      0.00128019235,
+      0.000102009342,
+      0.0059455771
+    ],
+    "mass_by_status_kg": {
+      "estimated": 0.15625878,
+      "unmeasured-nominal": 0.2182,
+      "measured": 0.0
+    }
+  },
+  "actuators": {
+    "type": "position servo",
+    "status": "unmeasured-nominal",
+    "kp_Nm_per_rad": 0.6,
+    "force_limit_Nm": 0.176,
+    "no_load_speed_rad_s": 10.4719755,
+    "joint_damping_Nm_s_per_rad": 0.016806762,
+    "joint_damping_rule": "force_limit_Nm / no_load_speed_rad_s (linear torque-speed line)",
+    "order": [
+      "R1",
+      "R2",
+      "L1",
+      "L2",
+      "R4",
+      "R3",
+      "L3",
+      "L4"
+    ]
+  },
+  "contact": {
+    "status": "unmeasured-nominal",
+    "floor_friction": [
+      0.9,
+      0.005,
+      0.0001
+    ],
+    "collision_boxes_m": {
+      "torso_geom": {
+        "centre": [
+          0.000113378525,
+          0.0,
+          -0.00651711345
+        ],
+        "half_size": [
+          0.043588377,
+          0.0616150017,
+          0.0114848702
+        ]
+      },
+      "torso_head_geom": {
+        "centre": [
+          0.000113376617,
+          5.08308411e-06,
+          0.0318553174
+        ],
+        "half_size": [
+          0.0435883751,
+          0.0442670002,
+          0.0268875606
+        ]
+      },
+      "front_right_upper_geom": {
+        "centre": [
+          -0.00378672957,
+          -0.0183871135,
+          0.00886775732
+        ],
+        "half_size": [
+          0.0101600001,
+          0.0247603407,
+          0.0152400002
+        ]
+      },
+      "front_right_lower_geom": {
+        "centre": [
+          0.00702543318,
+          -0.0177967678,
+          -2.22434998e-05
+        ],
+        "half_size": [
+          0.00476250017,
+          0.029210001,
+          0.00952499962
+        ]
+      },
+      "back_right_upper_geom": {
+        "centre": [
+          0.00378672957,
+          -0.0183871135,
+          0.00886775732
+        ],
+        "half_size": [
+          0.0101600001,
+          0.0247603407,
+          0.0152400002
+        ]
+      },
+      "back_right_lower_geom": {
+        "centre": [
+          -0.00702543318,
+          -0.0177967678,
+          -2.22434998e-05
+        ],
+        "half_size": [
+          0.00476250017,
+          0.029210001,
+          0.00952499962
+        ]
+      },
+      "front_left_upper_geom": {
+        "centre": [
+          -0.00378672957,
+          0.0183871135,
+          0.00886775732
+        ],
+        "half_size": [
+          0.0101600001,
+          0.0247603407,
+          0.0152400002
+        ]
+      },
+      "front_left_lower_geom": {
+        "centre": [
+          0.00702543318,
+          0.0177967678,
+          -2.22434998e-05
+        ],
+        "half_size": [
+          0.00476250017,
+          0.029210001,
+          0.00952499962
+        ]
+      },
+      "back_left_upper_geom": {
+        "centre": [
+          0.00378672957,
+          0.0183871135,
+          0.00886775732
+        ],
+        "half_size": [
+          0.0101600001,
+          0.0247603407,
+          0.0152400002
+        ]
+      },
+      "back_left_lower_geom": {
+        "centre": [
+          -0.00702543318,
+          0.0177967678,
+          -2.22434998e-05
+        ],
+        "half_size": [
+          0.00476250017,
+          0.029210001,
+          0.00952499962
+        ]
+      }
+    }
+  },
+  "simulation": {
+    "timestep_s": 0.002,
+    "spawn_height_m": 0.0185019836
+  },
+  "source_hashes": {
+    "manifest/robot.yaml": "3eb4e19b57bd4d45f4ab85fd57e03d018628a07a8f09cc9dc26c223d9853156b",
+    "manifest/twin.yaml": "cf885b222add75f2e1d22db1ee3b46bac413a7bf6fe058e8ffd9890a4226e3d3",
+    "sim/twin.py": "84fe013eac44e7f3361ef9b0ed5270e567813ad5e3f81b11ec143a0991269d81",
+    "sim/manifest.py": "a747eb1e2fac3939e616cf07c5d4a4dd5ee6d826efbe12418a3dc2421d5b2f42",
+    "sim/prepare_assets.py": "459d6b558e8a89355cf235b029b51ae8bd64f9b8c79fc3b79588c4d98fc446ac",
+    "assets/printing/internal-frame-s3-two-eyes/assembly.json": "fb8d4f65700d90ef89a4276ac626ed5e2696b020fb9f80d99e100e23a939bdb6",
+    "assets/printing/internal-frame-s3-two-eyes/internal-frame.stl": "dd75503fb10753a683a174dcdfc95510566c0b39307e7bce1f265ec51f46bd03",
+    "assets/printing/internal-frame-s3-two-eyes/bottom-cover.stl": "cac0bb68f923405ab00221d97bea80f2a6c0abdad4467e04ef733296257b1d44",
+    "assets/printing/internal-frame-s3-two-eyes/head-cover.stl": "dfb2167e076b30d0d8fdea00646be3929da5faec42ad4e9753cf2e2bb6a8730c",
+    "assets/printing/internal-frame-s3-two-eyes/head-lid.stl": "14429e33f84e667f6b9c60eb78fcf7b7b68b3282c94b57371f66b91a20cb1113",
+    "assets/printing/internal-frame-s3-two-eyes/pcb-spacer.stl": "8b5c8dcfbe057933dd664d75ab8c7c47dc08ff43652d31724ca03cca2fff1e80",
+    "assets/stl/upstream/R1-v117.stl": "443f956016ad416699d8d5e56ab2fb0e36b10d42f02ff47ea02ae5986180e871",
+    "assets/stl/upstream/R2-v117.stl": "fab2770d0d7f1384c4888e2b3a25cd7a6729c2b4230894b4771a177b73c6452c",
+    "assets/stl/upstream/L1-v117.stl": "081896568cc9776393c038d05ecc8caf01090c6971efebe799d064def4c92558",
+    "assets/stl/upstream/L2-v117.stl": "4e47eef40bf523aa0d7b0ac285f3086b3e6c5ccd347525f5c93bbf0c5bcd1fbf",
+    "assets/stl/upstream/R4-v117.stl": "131348a19491edad32f29d7a64109fdfadc3a03e01feedbf08dc1769e050938a",
+    "assets/stl/upstream/R3-v117.stl": "c2c35b4c948849878649d99e512af6702b5fcbbd2b30578bbec87ab15b8ec99e",
+    "assets/stl/upstream/L3-v117.stl": "136b0f28814629c654a45da1ebed93f496399c0d97007c6c02e1df4422be56a3",
+    "assets/stl/upstream/L4-v117.stl": "731819f13cd34efb4ab1b9121e9fae835a463ae11f6689670f7800113ec7b470"
+  }
+}

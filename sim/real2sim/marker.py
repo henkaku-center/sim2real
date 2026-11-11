@@ -1,6 +1,6 @@
 """Printed fiducial marker: sheet, detection, torso pose, camera calibration.
 
-Choice (DECISIONS.md D21): OpenCV's ArUco detector with ``DICT_4X4_50`` and
+Choice (DECISIONS.md D23): OpenCV's ArUco detector with ``DICT_4X4_50`` and
 ``cv2.solvePnP(..., SOLVEPNP_IPPE_SQUARE)`` for the single head-lid marker;
 a ChArUco board and ``cv2.calibrateCamera`` for the camera intrinsics.
 

@@ -1,9 +1,10 @@
-"""Headless step-rate benchmark for models/sesame.xml.
+"""Headless step-rate benchmark for a named model (default: the course twin).
 
-Usage: uv run python sim/bench.py [--steps N] [--repeats R]
+Usage: uv run python sim/bench.py [--design NAME] [--steps N] [--repeats R]
 
-Prints steps/second and real-time factor (model timestep 0.002 s => 500
-steps/s is real time). Runs single-threaded on one core.
+NAME is a printing design from manifest/twin.yaml, or upstream-v117 for the
+upstream-body baseline (models/sesame.xml). Prints steps/second and real-time
+factor. Runs single-threaded on one core.
 """
 
 from __future__ import annotations
@@ -17,12 +18,12 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))  # repo root
 
 import mujoco
 
-from sim.build_mjcf import MODEL_PATH, TIMESTEP
 from sim.manifest import load_manifest
+from sim.twin import model_path
 
 
-def bench(steps: int) -> float:
-    model = mujoco.MjModel.from_xml_path(str(MODEL_PATH))
+def bench(steps: int, design: str | None = None) -> float:
+    model = mujoco.MjModel.from_xml_path(str(model_path(design)))
     data = mujoco.MjData(model)
     manifest = load_manifest()
     stand = manifest.pose_internal("stand")
@@ -36,16 +37,19 @@ def bench(steps: int) -> float:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--design", help="model name (default: the course twin)")
     parser.add_argument("--steps", type=int, default=50_000)
     parser.add_argument("--repeats", type=int, default=3)
     args = parser.parse_args()
 
-    rates = [bench(args.steps) for _ in range(args.repeats)]
+    path = model_path(args.design)
+    timestep = mujoco.MjModel.from_xml_path(str(path)).opt.timestep
+    rates = [bench(args.steps, args.design) for _ in range(args.repeats)]
     best = max(rates)
-    print(f"model: {MODEL_PATH.name}  timestep: {TIMESTEP} s  steps: {args.steps}")
+    print(f"model: {path.name}  timestep: {timestep} s  steps: {args.steps}")
     for i, r in enumerate(rates):
         print(f"  run {i}: {r:,.0f} steps/s")
-    print(f"best: {best:,.0f} steps/s  ({best * TIMESTEP:,.0f}x real time)")
+    print(f"best: {best:,.0f} steps/s  ({best * timestep:,.0f}x real time)")
 
 
 if __name__ == "__main__":

@@ -4,6 +4,9 @@ Launches the Vite dev server + headless Chrome (system install, no download),
 drives the sim through the window.__sim test hook, and compares qpos after an
 identical command sequence against a native Python run of the same MJCF.
 
+The browser still loads models/sesame.xml, the upstream-body baseline
+(`upstream-v117`), not the course twin; the native side uses the same file.
+
 Skipped locally when Chrome or web/node_modules are missing, unless
 REQUIRE_BROWSER_TESTS=1 (set in CI) forces a hard failure.
 """
@@ -24,6 +27,7 @@ import pytest
 
 from sim.build_mjcf import MODEL_PATH
 from sim.manifest import load_manifest
+from sim.twin import LEGACY_UPSTREAM
 
 REPO_ROOT = Path(__file__).parent.parent
 WEB_DIR = REPO_ROOT / "web"
@@ -179,7 +183,7 @@ def test_motion_playback_matches_native(page):
             return await sim.getState();
         }"""
     )
-    _, data = play_native("wave")
+    _, data = play_native("wave", design=LEGACY_UPSTREAM)
     np.testing.assert_allclose(
         np.array(state["qpos"]),
         data.qpos,

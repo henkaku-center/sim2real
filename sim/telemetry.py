@@ -16,7 +16,7 @@ Signature metrics (all SI / degrees, world frame, z-up x-forward):
 - paw_air_frac[J]    fraction of motion time foot J had no floor contact
 - paw_max_z[J]       max height of foot J's paddle tip
 
-CLI: uv run python -m sim.telemetry [motion ...]
+CLI: uv run python -m sim.telemetry [--design NAME] [motion ...]
 """
 
 from __future__ import annotations
@@ -43,15 +43,16 @@ def skeleton(model, data) -> dict[str, list[float]]:
     }
 
 
-def motion_signature(motion_name: str, settle_steps: int = 500) -> dict:
+def motion_signature(motion_name: str, settle_steps: int = 500, design: str | None = None) -> dict:
+    """Signature of one stock motion on a named model (default: the course twin)."""
     import mujoco
 
-    from sim.build_mjcf import MODEL_PATH
+    from sim.twin import model_path
 
     manifest = load_manifest()
     doc = load_motions()
     events = flatten(doc["motions"][motion_name], manifest.raw["poses"])
-    model = mujoco.MjModel.from_xml_path(str(MODEL_PATH))
+    model = mujoco.MjModel.from_xml_path(str(model_path(design)))
     data = mujoco.MjData(model)
     schedule = ctrl_schedule(events, manifest, model.opt.timestep)
     total_steps = (schedule[-1][0] if schedule else 0) + settle_steps
@@ -115,11 +116,15 @@ def motion_signature(motion_name: str, settle_steps: int = 500) -> dict:
 
 
 def main() -> None:
-    import sys
+    import argparse
 
-    names = sys.argv[1:] or sorted(load_motions()["motions"])
+    parser = argparse.ArgumentParser(description="Motion telemetry signatures.")
+    parser.add_argument("--design", help="model name (default: the course twin; upstream-v117 for the baseline)")
+    parser.add_argument("motions", nargs="*")
+    args = parser.parse_args()
+    names = args.motions or sorted(load_motions()["motions"])
     for name in names:
-        sig = motion_signature(name)
+        sig = motion_signature(name, design=args.design)
         air = " ".join(f"{k}:{v:.2f}" for k, v in sig["paw_air_frac"].items())
         print(
             f"{name:14s} disp=({sig['disp_x']:+.3f},{sig['disp_y']:+.3f}) "

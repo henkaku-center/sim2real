@@ -417,7 +417,78 @@ top-deck notch profile is recovered from the source CAD, the old roof opening is
 filled, and the profile is rotated 180° around the frame centre to cut the new
 opening. Servo bays, PCB mounts, frame orientation and leg files remain unchanged.
 
-## D21. Real-to-sim calibration: ArUco marker and a scipy fit (2026-11-12)
+## D21. CAD-derived leg clearance check; hip-limit change held (2026-11-12)
+
+A student's hip print met the head cover. `tools/leg_clearance.py` sweeps each
+hip and foot servo against a printed body design with exact mesh contact and
+writes `leg-clearance.json` beside it. `tools/check_design.py` reports that as
+CAD-derived evidence and fails when its input hashes are stale; cable clearance
+stays unverified. No physical test is claimed.
+
+Datums: hip and foot axes from `sim/prepare_assets.py` (D2); the vertical seat
+and print-to-corner assignment from the base design's recorded leg samples in
+`head-cable-clearance.json`, which the placement reproduces within 1 µm and which
+match the upstream top-down drawing (wide foot-servo side toward the middle).
+`prepare_assets.py` puts the mirrored print at each corner and 0.216 mm higher;
+those two choices are not used here. That height changes no contact edge.
+
+Course body `internal-frame-s3`, nominal CAD: 2.33 mm at rest to the head-cover
+side wall; first contact 13.0° toward the middle (servo 103 for L1/R2, 77 for
+R1/L2), 0.5 mm left at 10°. Toward the end the head-cover gap stays 2.33 mm;
+front hips cross a frame-corner overlap of at most 0.36 mm at L1 9.4–21.0° and
+R1 159.0–170.6°; rear hips keep 0.21 mm. Feet are contact-free on the grid. The
+two-eye variant gives the same figures. Stock `walk` and `point` put R2 at 100
+(0.5 mm left); nine stock motions cross the front frame band.
+
+`manifest/robot.yaml` hip `limits_deg` are unchanged by this entry. The Sesame
+Studio values allow 45° toward the middle. The CAD-supported proposal is L1/R2
+`[0, 100]` and R1/L2 `[80, 180]`: 10°, the stock motions' own extreme, 3.0° and
+0.5 mm short of contact. Applying it changes an effective input of the held
+body-v1 report (`tools/revalidate_body_provenance.py` rejects joint-limit edits
+without a validator rerun) and the S3 manifest ID with its saved-calibration
+bounds, so it is left for its own decision. Treating the front frame band as a
+stop would exclude L1 = 0 and R1 = 180 and is left for a physical check.
+
+## D22. One generated twin per printing design (2026-11-12)
+
+**Decision:** `sim/twin.py` generates the MuJoCo model and a typed dynamics record
+(`assets/printing/<design>/dynamics.json`) for a named printing design from
+`manifest/robot.yaml`, the new `manifest/twin.yaml` and the design's `assembly.json`.
+The default design is `internal-frame-s3`; `sim/telemetry.py`, `sim/motions.py`,
+`sim/bench.py` and `sim/view.py` take a model name and default to it.
+`tools/check_design.py` fails when a committed model, record or variant evidence
+no longer follows from its inputs.
+
+- **Legs.** Each labelled upstream leg print goes to its labelled corner without
+  mirroring, wide side of the upper print toward the middle of the body (upstream
+  top-down drawing), top 17.17 mm above the frame top. Placement is checked vertex
+  by vertex against the Rest and Standing samples in the base design's
+  `head-cable-clearance.json`. The upstream-body baseline mounts the opposite-handed
+  print at each corner; that baseline is unchanged.
+- **Masses.** One table, one status per row: printed parts are mesh volume × 1240
+  kg/m³ × a fill fraction tied to the slicer receipts (`estimated`); servos,
+  battery, carrier parts, converter, displays, switch and fasteners are
+  `unmeasured-nominal`. The foot servo is carried by the foot link. Nothing was weighed.
+- **Actuator.** Joint damping is the manifest's nominal stall torque divided by its
+  nominal no-load speed. The baseline's 0.01 N·m·s/rad lets a saturated servo exceed
+  that speed; in simulation the baseline's `dance` tips past vertical before
+  recovering and its `point` flips, while both generated twins end every stock
+  motion upright. These are simulation observations, not physical results.
+- **Variant evidence.** `sim/twin_evidence.py` records mass, centre of mass,
+  Standing-pose support margin, a seeded mass-uncertainty sample and stock-motion
+  telemetry for two-eyes against the base, labelled `simulated-unmeasured-parameters`.
+- **Left as they are.** `manifest/robot.yaml`, `sim/build_mjcf.py`,
+  `sim/prepare_assets.py` and `sim/manifest.py` are byte-identical: all four are
+  pinned inputs of the held body-v1 report, and robot.yaml's raw bytes are the
+  firmware calibration identity (`MANIFEST_ID`). The S3 default and the historical
+  S2 label therefore live in `manifest/twin.yaml`; changing `mcu.board` in
+  robot.yaml needs a provenance repair and a firmware-identity decision first.
+  `models/sesame.xml` stays the upstream-body baseline under the explicit name
+  `upstream-v117`, and the browser twin still loads it.
+- **Out of scope.** The six-leg design: it needs twelve joints and its own motions,
+  which the manifest does not describe. The generator refuses it with that reason.
+
+## D23. Real-to-sim calibration: ArUco marker and a scipy fit (2026-11-12)
 
 The torso is observed with one printed OpenCV ArUco marker on the head lid
 (`DICT_4X4_50`, id 0, 40 mm), found with `cv2.aruco.ArucoDetector` and posed
