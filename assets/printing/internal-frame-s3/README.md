@@ -33,6 +33,8 @@ patch closes that boundary without filling its screw openings.
 - Each part also has an assembly-coordinate STL and editable STEP.
 - `params.json`, `assembly.json`, `frame-datums.json` and
   `head-cable-clearance.json`: parameters, provenance and numerical check results.
+- `leg-clearance.json`: CAD-derived sweep of every hip and foot servo against
+  these parts (see Leg clearance below).
 
 Slicing receipts identify the exact checked meshes. With the Bambu Studio P1S
 0.4 mm / Generic PLA profile, 0.2 mm layers, four walls and 25% infill, the frame
@@ -72,6 +74,26 @@ ribbon surfaces and Rest/Standing leg bounds. Run
 
 These are CAD and sampled-pose checks, not physical fit or full-motion validation.
 Students may modify or replace the design, firmware and motion as they wish.
+
+## Leg clearance
+
+`uv run python tools/leg_clearance.py internal-frame-s3` turns each hip and foot
+servo through 0–180° against the frame, covers and lid with exact mesh contact;
+`--write` records `leg-clearance.json` and `--check` compares its input hashes.
+The unchanged upstream leg prints are placed by their hip axes, with the wide
+foot-servo side toward the middle of the body.
+
+In nominal CAD each hip print rests 2.33 mm from the head-cover side wall. Swung
+toward the middle of the body it meets that wall at 13.0° (servo 103 for L1 and
+R2, 77 for R1 and L2), with 0.5 mm left at 10°. Swung toward the ends the wall
+gap stays 2.33 mm. The front hip prints overlap the frame's front corners by at
+most 0.36 mm between L1 9.4–21.0° and R1 159.0–170.6° and are free again beyond;
+the rear prints keep 0.21 mm. The foot prints touch nothing on the checked grid.
+
+This is evidence about the reference geometry, without print tolerance, servo or
+horn play, cables or servo cases, and without a physical test. The summary also
+lists which manifest limits and stock motions reach or come within 1 mm of these
+figures.
 
 ## Credit
 
