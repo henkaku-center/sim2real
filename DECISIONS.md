@@ -487,3 +487,44 @@ no longer follows from its inputs.
   `upstream-v117`, and the browser twin still loads it.
 - **Out of scope.** The six-leg design: it needs twelve joints and its own motions,
   which the manifest does not describe. The generator refuses it with that reason.
+
+## D23. Real-to-sim calibration: ArUco marker and a scipy fit (2026-11-12)
+
+The torso is observed with one printed OpenCV ArUco marker on the head lid
+(`DICT_4X4_50`, id 0, 40 mm), found with `cv2.aruco.ArucoDetector` and posed
+with `cv2.solvePnP(..., SOLVEPNP_IPPE_SQUARE)`; camera intrinsics come from a
+printed ChArUco board through `cv2.calibrateCamera`. ArUco rather than a
+separate AprilTag library because OpenCV ships AprilTag only as further
+dictionaries and a corner-refinement mode of this same detector
+(`DICT_APRILTAG_*`, `CORNER_REFINE_APRILTAG`), so a second compiled dependency
+would add nothing; the tutorial recommends the smallest dictionary that fits,
+and 4 × 4 bits give 6.7 mm cells on a 40 mm marker. ChArUco because the
+calibration tutorial calls its corners "much more accurate" than marker
+corners and it tolerates partial views. Sources, read 2026-11-12: OpenCV
+tutorials "Detection of ArUco Markers" and "Calibration with ArUco and ChArUco"
+(`docs.opencv.org/5.x/d5/dae/tutorial_aruco_detection.html`,
+`…/da/d13/tutorial_aruco_calibration.html`; the site serves a browser challenge
+to scripted clients, so the same pages were read from their source,
+`doc/tutorials/objdetect/` in opencv/opencv@247ea514, identical on 4.x@38af4e35),
+plus `aruco_dictionary.hpp`, `aruco_detector.hpp` and the `SOLVEPNP_IPPE_SQUARE`
+corner order in `calib3d.hpp`. Installed as `opencv-python-headless` 5.0.0.93
+in the `dev` group; `uv.lock` holds wheels for macOS arm64/x86-64 and
+manylinux x86-64/aarch64 (verified locally on macOS x86-64 only; Linux is CI's
+to confirm). `pyserial` 3.5 joins the same group for the recorder's USB path.
+
+Fitting uses `scipy.optimize.least_squares` on batched `mujoco.rollout`
+rollouts rather than MuJoCo's bundled `mujoco.sysid`: that package identifies
+an `MjSpec` against named MuJoCo sensors and needs colorama, tabulate, jinja2,
+plotly and matplotlib just to import, while this problem is a compiled
+`MjModel` without sensors, watched by a camera in an unknown frame, with the
+firmware ramp and the servo speed limit outside the model.
+
+The fit matches torso height, roll and pitch; forward/sideways position and yaw
+are reported but excluded, because foot slip makes them jump by millimetres for
+tiny parameter changes. That choice, the two coarse secant stages and the test
+tolerances came out of five optimiser/residual configurations and two sets of
+hidden values tried on the same synthetic cases, so the tolerances in
+`tests/test_real2sim_fit.py` describe those cases and are not an independent
+accuracy claim. Nothing has been measured: `tools/real2sim.py` is validated on
+synthetic data, and `reference/REAL2SIM-CAPTURE.md` describes the capture and
+its stated limits.

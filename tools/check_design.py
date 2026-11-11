@@ -6,6 +6,7 @@ import subprocess
 import sys
 import circuit
 import leg_clearance
+import real2sim_status
 import rule_drift
 
 ROOT=Path(__file__).resolve().parents[1]
@@ -81,6 +82,7 @@ def main():
              'standing_margin_mm':{k:simulated['standing'][k]['margin_mm'] for k in (simulated['base'],simulated['variant'])},
              'standing_margin_under_mass_uncertainty_mm':{k:simulated['mass_uncertainty'][k]['margin_mm'] for k in (simulated['base'],simulated['variant'])}},
          'scope':twin_evidence.SCOPE+' A stale state means the committed records no longer follow from their inputs.'},
+        real2sim_status.stage(ROOT),
         {'stage':'Human review and iteration','state':'manual','scope':'Part of the intended workflow, not an asserted completed acceptance.'},
         {'stage':'Fabricated and assembled variant','state':'unverified','scope':'Exported printable files do not establish printing, ordering, assembly or physical performance.'},
     ]
