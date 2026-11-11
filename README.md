@@ -20,6 +20,7 @@ uv sync                      # Python env (locked)
 uv run pytest                # full test suite
 uv run python sim/view.py    # native viewer (macOS: uv run mjpython sim/view.py)
 uv run python sim/bench.py   # physics step-rate benchmark
+uv run python -m sim.twin --check   # generated twins and dynamics records are current
 cd web && npm ci && npm run dev   # browser sim at http://localhost:5173
 ```
 
@@ -52,7 +53,10 @@ file. See [CAD workflow](assets/cad/README.md) and
 
 ```
 manifest/robot.yaml     # APS-owned contract: joints, pins, limits, calibration (frozen first)
-models/sesame.xml       # MJCF, visual + collision geometry separated
+manifest/twin.yaml      # twin inputs: default hardware and design, mass table, nominal actuator/contact values
+models/<design>.xml     # generated MJCF per printing design; default internal-frame-s3 (sim/twin.py)
+assets/printing/<design>/dynamics.json   # the same twin as a typed record for consumers without MuJoCo
+models/sesame.xml       # upstream narrow-body baseline, named upstream-v117; the browser still loads this one
 assets/                 # GLB exports, .blend sources
 sim/                    # Python: mujoco native, Gymnasium env, later MJX
 web/                    # Vite + TS + @mujoco/mujoco + PlayCanvas

@@ -1,4 +1,7 @@
-"""Schema and playback checks for manifest/motions.yaml (stock motion library)."""
+"""Schema and playback checks for manifest/motions.yaml (stock motion library).
+
+Playback runs on the default model, the course twin (sim.twin).
+"""
 
 import numpy as np
 import pytest
@@ -104,16 +107,16 @@ def test_wave_paw_stays_off_the_ground():
     # hit the floor. With STL-measured geometry it must wave in the air.
     import mujoco
 
-    from sim.build_mjcf import MODEL_PATH
     from sim.manifest import load_manifest
     from sim.motions import flatten, load_motions
 
     from sim.telemetry import site_id
+    from sim.twin import load_model
 
     man = load_manifest()
     doc = load_motions()
     events = flatten(doc["motions"]["wave"], man.raw["poses"])
-    model = mujoco.MjModel.from_xml_path(str(MODEL_PATH))
+    model = load_model()
     data = mujoco.MjData(model)
     sched = ctrl_schedule(events, man, model.opt.timestep)
     paw = site_id(model, "front_left_paw")

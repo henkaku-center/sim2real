@@ -7,19 +7,25 @@ each motion MEANS ("a bow drops the head", "turn_left yaws CCW", "the waving
 paw is airborne") as numeric invariants, verified against the prior-art
 simulator where noted.
 
+These thresholds belong to the upstream-body baseline (models/sesame.xml,
+named `upstream-v117`), whose behaviour was checked against the prior-art
+simulator. The course twin and its variants are asserted, with their own
+numbers, in tests/test_twin_evidence.py.
+
 Expected cost: ~15 s for all motions (headless, no rendering).
 """
 
 import pytest
 
 from sim.telemetry import motion_signature
+from sim.twin import LEGACY_UPSTREAM
 
 _cache: dict[str, dict] = {}
 
 
 def sig(name: str) -> dict:
     if name not in _cache:
-        _cache[name] = motion_signature(name)
+        _cache[name] = motion_signature(name, design=LEGACY_UPSTREAM)
     return _cache[name]
 
 
@@ -108,8 +114,10 @@ def test_dead_ends_flat_on_the_ground():
 
 
 @pytest.mark.xfail(
-    reason="placeholder masses/CoM: 'point' flips the robot in sim; the real "
-    "robot points stably. Revisit after weighing parts (NEEDS-HARDWARE).",
+    reason="upstream-body baseline only: its placeholder servo has no speed "
+    "limit and 'point' flips the robot in sim. The course twin bounds servo "
+    "speed and stays upright (tests/test_twin_evidence.py); neither is a "
+    "physical result.",
     strict=True,
 )
 def test_point_stays_upright():

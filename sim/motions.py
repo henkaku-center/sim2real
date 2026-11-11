@@ -74,20 +74,21 @@ def ctrl_schedule(
     return out
 
 
-def play_native(motion_name: str, settle_steps: int = 500):
+def play_native(motion_name: str, settle_steps: int = 500, design: str | None = None):
     """Run a motion in native MuJoCo; returns (model, data) at the end.
 
     Starts from the default state, plays the full schedule, then holds the
-    final targets for settle_steps.
+    final targets for settle_steps. `design` names the model (sim.twin
+    model_path); the default is the course twin.
     """
     import mujoco
 
-    from sim.build_mjcf import MODEL_PATH
+    from sim.twin import model_path
 
     manifest = load_manifest()
     doc = load_motions()
     events = flatten(doc["motions"][motion_name], manifest.raw["poses"])
-    model = mujoco.MjModel.from_xml_path(str(MODEL_PATH))
+    model = mujoco.MjModel.from_xml_path(str(model_path(design)))
     data = mujoco.MjData(model)
     schedule = ctrl_schedule(events, manifest, model.opt.timestep)
     total_steps = (schedule[-1][0] if schedule else 0) + settle_steps

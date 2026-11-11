@@ -448,3 +448,42 @@ body-v1 report (`tools/revalidate_body_provenance.py` rejects joint-limit edits
 without a validator rerun) and the S3 manifest ID with its saved-calibration
 bounds, so it is left for its own decision. Treating the front frame band as a
 stop would exclude L1 = 0 and R1 = 180 and is left for a physical check.
+
+## D22. One generated twin per printing design (2026-11-12)
+
+**Decision:** `sim/twin.py` generates the MuJoCo model and a typed dynamics record
+(`assets/printing/<design>/dynamics.json`) for a named printing design from
+`manifest/robot.yaml`, the new `manifest/twin.yaml` and the design's `assembly.json`.
+The default design is `internal-frame-s3`; `sim/telemetry.py`, `sim/motions.py`,
+`sim/bench.py` and `sim/view.py` take a model name and default to it.
+`tools/check_design.py` fails when a committed model, record or variant evidence
+no longer follows from its inputs.
+
+- **Legs.** Each labelled upstream leg print goes to its labelled corner without
+  mirroring, wide side of the upper print toward the middle of the body (upstream
+  top-down drawing), top 17.17 mm above the frame top. Placement is checked vertex
+  by vertex against the Rest and Standing samples in the base design's
+  `head-cable-clearance.json`. The upstream-body baseline mounts the opposite-handed
+  print at each corner; that baseline is unchanged.
+- **Masses.** One table, one status per row: printed parts are mesh volume × 1240
+  kg/m³ × a fill fraction tied to the slicer receipts (`estimated`); servos,
+  battery, carrier parts, converter, displays, switch and fasteners are
+  `unmeasured-nominal`. The foot servo is carried by the foot link. Nothing was weighed.
+- **Actuator.** Joint damping is the manifest's nominal stall torque divided by its
+  nominal no-load speed. The baseline's 0.01 N·m·s/rad lets a saturated servo exceed
+  that speed; in simulation the baseline's `dance` tips past vertical before
+  recovering and its `point` flips, while both generated twins end every stock
+  motion upright. These are simulation observations, not physical results.
+- **Variant evidence.** `sim/twin_evidence.py` records mass, centre of mass,
+  Standing-pose support margin, a seeded mass-uncertainty sample and stock-motion
+  telemetry for two-eyes against the base, labelled `simulated-unmeasured-parameters`.
+- **Left as they are.** `manifest/robot.yaml`, `sim/build_mjcf.py`,
+  `sim/prepare_assets.py` and `sim/manifest.py` are byte-identical: all four are
+  pinned inputs of the held body-v1 report, and robot.yaml's raw bytes are the
+  firmware calibration identity (`MANIFEST_ID`). The S3 default and the historical
+  S2 label therefore live in `manifest/twin.yaml`; changing `mcu.board` in
+  robot.yaml needs a provenance repair and a firmware-identity decision first.
+  `models/sesame.xml` stays the upstream-body baseline under the explicit name
+  `upstream-v117`, and the browser twin still loads it.
+- **Out of scope.** The six-leg design: it needs twelve joints and its own motions,
+  which the manifest does not describe. The generator refuses it with that reason.
