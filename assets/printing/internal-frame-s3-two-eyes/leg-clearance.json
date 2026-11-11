@@ -1,0 +1,613 @@
+{
+  "schema": 1,
+  "design": "internal-frame-s3-two-eyes",
+  "scope": "CAD-derived, not physical. Exact triangle-mesh contact (python-fcl) between the unchanged upstream v117 leg prints and this design's printed body parts, one hip moving at a time with the others at rest; feet on a grid over each hip's contact-free angles. Nominal geometry: no print tolerance, servo or horn play, trim error, cables, screws, servo cases, ground contact or loaded deflection.",
+  "not_modelled": [
+    "hip and foot servo cases, horns and screws: the design directory has no positioned servo solids",
+    "ribbon cables and connectors",
+    "two or more joints of different legs moving at once, beyond the neighbour sample",
+    "ground contact, loads and dynamics"
+  ],
+  "definitions": {
+    "toward_middle, toward_end": "Swing from rest toward the middle of the body (the print's wide side) or toward the nearer end (the Standing direction), in degrees from rest.",
+    "free_servo_deg": "Contact-free servo interval that contains rest.",
+    "contact_bands": "Servo intervals in contact with one part. A transient band has free travel on both sides.",
+    "max_overlap_mm": "Transient bands: smallest shift of the print along +-X, +-Y or +-Z that clears the contact, at the worst sampled angle. An upper bound of the penetration depth; null if no such shift within settings.overlap_limit_mm clears it.",
+    "near_bands_servo_deg": "Servo intervals where the smallest gap is below settings.near_gap_mm, contact included.",
+    "gap_profile_mm": "Smallest distance to each reachable part at whole servo degrees 0..180; 0 is contact.",
+    "out_of_reach_vertical_gap_mm": "Parts wholly above or below the hip print's fixed height range."
+  },
+  "coordinates": "X front/OLED, Y left, Z up; PCB USB toward rear",
+  "units": "mm, servo degrees",
+  "checker_sha256": "b7fbeefe52b0a1b7b9c2d4374c4f2cbdc263f5d2725680cd45a24a1fd73cc847",
+  "inputs": {
+    "head-cover.stl": "dfb2167e076b30d0d8fdea00646be3929da5faec42ad4e9753cf2e2bb6a8730c",
+    "head-lid.stl": "14429e33f84e667f6b9c60eb78fcf7b7b68b3282c94b57371f66b91a20cb1113",
+    "internal-frame.stl": "dd75503fb10753a683a174dcdfc95510566c0b39307e7bce1f265ec51f46bd03",
+    "bottom-cover.stl": "cac0bb68f923405ab00221d97bea80f2a6c0abdad4467e04ef733296257b1d44",
+    "assets/stl/upstream/L1-v117.stl": "081896568cc9776393c038d05ecc8caf01090c6971efebe799d064def4c92558",
+    "assets/stl/upstream/L3-v117.stl": "136b0f28814629c654a45da1ebed93f496399c0d97007c6c02e1df4422be56a3",
+    "assets/stl/upstream/R1-v117.stl": "443f956016ad416699d8d5e56ab2fb0e36b10d42f02ff47ea02ae5986180e871",
+    "assets/stl/upstream/R3-v117.stl": "c2c35b4c948849878649d99e512af6702b5fcbbd2b30578bbec87ab15b8ec99e",
+    "assets/stl/upstream/L2-v117.stl": "4e47eef40bf523aa0d7b0ac285f3086b3e6c5ccd347525f5c93bbf0c5bcd1fbf",
+    "assets/stl/upstream/L4-v117.stl": "731819f13cd34efb4ab1b9121e9fae835a463ae11f6689670f7800113ec7b470",
+    "assets/stl/upstream/R2-v117.stl": "fab2770d0d7f1384c4888e2b3a25cd7a6729c2b4230894b4771a177b73c6452c",
+    "assets/stl/upstream/R4-v117.stl": "131348a19491edad32f29d7a64109fdfadc3a03e01feedbf08dc1769e050938a"
+  },
+  "assembly_datums_sha256": "bef2bc287a87d306c5eb33bcbe2e7364403e09bba9d882c585d20749892fca84",
+  "assembly_datums": {
+    "hip_shaft_xy_mm": {
+      "L1": [28.217465, 52.975],
+      "L2": [-28.583896000000003, 52.975],
+      "R1": [28.217465, -52.975],
+      "R2": [-28.583896000000003, -52.975]
+    },
+    "servo_flange_seat_z_mm": 4.967756901865376,
+    "coordinates": "X front/OLED, Y left, Z up; PCB USB toward rear",
+    "units": "mm"
+  },
+  "datums": {
+    "template_frame": "upstream v117 leg STL: x fore-aft, y up, z lateral, millimetres",
+    "hip_axis_x_mm": 1.5,
+    "hip_axis_abs_z_mm": 23.04,
+    "foot_axis_y_mm": 15.25,
+    "foot_axis_abs_z_mm": 59.9,
+    "y_at_servo_flange_seat_mm": 22.184,
+    "upstream_assembly_y_at_frame_top_mm": 21.968,
+    "placement": "Template (x, y, z) maps to body (x, -z, y); a print whose file side is not its body side is turned 180 degrees about the vertical. The hip axis lands on hip_shaft_xy_mm and template y_at_servo_flange_seat_mm on servo_flange_seat_z_mm. The print's wide (foot-servo) side then faces the middle of the body at every corner, as in the upstream top-down drawing.",
+    "servo_convention": "Hip yaw about +Z, anticlockwise seen from above, is servo_deg - 90. Foot rotation about the template +x axis through the foot axis is servo_deg - 90. Rest is 90 on every joint.",
+    "source": "Hip and foot axes: sim/prepare_assets.py (upstream horn circle fits, DECISIONS.md D2). Vertical seat and print-to-corner assignment: the base design's recorded leg samples in assets/printing/internal-frame-s3/head-cable-clearance.json, which this placement reproduces. sim/prepare_assets.py assigns the mirrored print to each corner and uses the upstream stack height (y 21.968 at the frame top, 0.216 mm higher); datum_sensitivity reports the effect of that height."
+  },
+  "settings": {
+    "scan_step_deg": 0.5,
+    "angle_tolerance_deg": 0.005,
+    "profile_step_deg": 1,
+    "near_gap_mm": 1.0,
+    "overlap_step_deg": 0.5,
+    "overlap_limit_mm": 2.0,
+    "overlap_tolerance_mm": 0.005,
+    "foot_grid_deg": 5,
+    "foot_gap_grid_deg": 15,
+    "neighbour_foot_grid_deg": 30
+  },
+  "datum_sensitivity": {
+    "alternative": {
+      "y_at_servo_flange_seat_mm": 21.968,
+      "meaning": "upstream assembly stack height: prints 0.216 mm higher"
+    },
+    "same_contact_bands": true,
+    "max_contact_edge_shift_deg": 0.0
+  },
+  "hips": {
+    "L1": {
+      "leg": "front_left",
+      "print": "L1-v117.stl",
+      "hip_shaft_xy_mm": [28.217465, 52.975],
+      "wide_side_faces": "rear",
+      "toward_middle_servo_direction": "increasing",
+      "rest": {
+        "servo_deg": 90.0,
+        "gap_mm": 2.33,
+        "partner": "head-cover",
+        "gaps_mm": {
+          "head-cover": 2.33,
+          "head-lid": 27.178,
+          "internal-frame": 9.79,
+          "bottom-cover": 16.381
+        }
+      },
+      "toward_middle": {
+        "body_direction": "rear",
+        "servo_direction": "increasing",
+        "travel_deg": 90.0,
+        "first_contact_deg": 12.97,
+        "first_contact_servo_deg": 102.97,
+        "partner": "head-cover",
+        "first_contact_by_part_deg": {
+          "head-cover": 12.97,
+          "head-lid": null,
+          "internal-frame": 26.83,
+          "bottom-cover": null
+        },
+        "free_deg": 12.97,
+        "gap_below_near_from_deg": 7.23,
+        "min_gap_mm": 0.0,
+        "min_gap_at_deg": 12.97,
+        "min_gap_at_servo_deg": 102.97,
+        "min_gap_partner": "head-cover",
+        "sampled_gap_range_by_part_mm": {
+          "head-cover": [0.167, 2.33],
+          "internal-frame": [5.458, 9.79]
+        }
+      },
+      "toward_end": {
+        "body_direction": "front",
+        "servo_direction": "decreasing",
+        "travel_deg": 90.0,
+        "first_contact_deg": 68.96,
+        "first_contact_servo_deg": 21.04,
+        "partner": "internal-frame",
+        "first_contact_by_part_deg": {
+          "head-cover": null,
+          "head-lid": null,
+          "internal-frame": 68.96,
+          "bottom-cover": null
+        },
+        "free_deg": 68.96,
+        "gap_below_near_from_deg": 57.2,
+        "min_gap_mm": 0.0,
+        "min_gap_at_deg": 68.96,
+        "min_gap_at_servo_deg": 21.04,
+        "min_gap_partner": "internal-frame",
+        "sampled_gap_range_by_part_mm": {
+          "head-cover": [2.32, 2.337],
+          "internal-frame": [0.094, 11.116]
+        }
+      },
+      "free_servo_deg": [21.04, 102.97],
+      "contact_bands": [
+        {
+          "partner": "internal-frame",
+          "servo_deg": [9.41, 21.04],
+          "toward_middle_deg": [-80.59, -68.96],
+          "transient": true,
+          "max_overlap_mm": 0.36,
+          "max_overlap_at_servo_deg": 18.62
+        },
+        {
+          "partner": "head-cover",
+          "servo_deg": [102.97, 180.0],
+          "toward_middle_deg": [12.97, 90.0],
+          "transient": false
+        },
+        {
+          "partner": "internal-frame",
+          "servo_deg": [116.83, 180.0],
+          "toward_middle_deg": [26.83, 90.0],
+          "transient": false
+        }
+      ],
+      "near_bands_servo_deg": [
+        [0.0, 32.8],
+        [97.23, 180.0]
+      ],
+      "out_of_reach_vertical_gap_mm": {
+        "head-lid": 26.069,
+        "bottom-cover": 2.393
+      },
+      "gap_profile_mm": {
+        "servo_step_deg": 1,
+        "head-cover": [2.33, 2.33, 2.333, 2.337, 2.332, 2.329, 2.327, 2.328, 2.331, 2.335, 2.33, 2.327, 2.325, 2.326, 2.329, 2.333, 2.328, 2.325, 2.324, 2.324, 2.327, 2.332, 2.327, 2.323, 2.322, 2.323, 2.326, 2.33, 2.325, 2.322, 2.321, 2.322, 2.325, 2.329, 2.325, 2.321, 2.32, 2.321, 2.324, 2.329, 2.324, 2.321, 2.32, 2.321, 2.324, 2.329, 2.324, 2.321, 2.32, 2.321, 2.324, 2.329, 2.324, 2.321, 2.32, 2.322, 2.325, 2.329, 2.325, 2.322, 2.321, 2.322, 2.325, 2.33, 2.326, 2.323, 2.322, 2.323, 2.327, 2.332, 2.327, 2.324, 2.324, 2.325, 2.328, 2.333, 2.329, 2.326, 2.325, 2.327, 2.33, 2.335, 2.331, 2.328, 2.327, 2.329, 2.332, 2.337, 2.333, 2.33, 2.33, 2.143, 1.958, 1.775, 1.594, 1.408, 1.224, 1.041, 0.862, 0.684, 0.509, 0.337, 0.167, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        "internal-frame": [0.789, 0.685, 0.585, 0.491, 0.401, 0.316, 0.236, 0.161, 0.09, 0.025, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.094, 0.187, 0.275, 0.359, 0.438, 0.512, 0.581, 0.646, 0.706, 0.761, 0.872, 1.033, 1.198, 1.368, 1.541, 1.718, 1.901, 2.098, 2.308, 2.527, 2.75, 2.969, 3.185, 3.398, 3.607, 3.812, 4.013, 4.21, 4.402, 4.59, 4.774, 4.936, 5.092, 5.243, 5.396, 5.556, 5.719, 5.884, 6.052, 6.222, 6.394, 6.568, 6.744, 6.923, 7.103, 7.286, 7.473, 7.661, 7.853, 8.046, 8.242, 8.439, 8.638, 8.839, 9.041, 9.244, 9.449, 9.654, 9.861, 10.068, 10.277, 10.486, 10.695, 10.906, 11.116, 10.859, 10.503, 10.147, 9.79, 9.433, 9.074, 8.715, 8.356, 7.995, 7.635, 7.273, 6.911, 6.549, 6.186, 5.822, 5.458, 5.092, 4.726, 4.359, 3.991, 3.623, 3.255, 2.886, 2.516, 2.147, 1.778, 1.409, 1.04, 0.671, 0.303, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+      }
+    },
+    "R1": {
+      "leg": "front_right",
+      "print": "R1-v117.stl",
+      "hip_shaft_xy_mm": [28.217465, -52.975],
+      "wide_side_faces": "rear",
+      "toward_middle_servo_direction": "decreasing",
+      "rest": {
+        "servo_deg": 90.0,
+        "gap_mm": 2.34,
+        "partner": "head-cover",
+        "gaps_mm": {
+          "head-cover": 2.34,
+          "head-lid": 27.181,
+          "internal-frame": 9.79,
+          "bottom-cover": 16.381
+        }
+      },
+      "toward_middle": {
+        "body_direction": "rear",
+        "servo_direction": "decreasing",
+        "travel_deg": 90.0,
+        "first_contact_deg": 13.03,
+        "first_contact_servo_deg": 76.97,
+        "partner": "head-cover",
+        "first_contact_by_part_deg": {
+          "head-cover": 13.03,
+          "head-lid": null,
+          "internal-frame": 26.83,
+          "bottom-cover": null
+        },
+        "free_deg": 13.03,
+        "gap_below_near_from_deg": 7.29,
+        "min_gap_mm": 0.0,
+        "min_gap_at_deg": 13.03,
+        "min_gap_at_servo_deg": 76.97,
+        "min_gap_partner": "head-cover",
+        "sampled_gap_range_by_part_mm": {
+          "head-cover": [0.004, 2.34],
+          "internal-frame": [5.092, 9.79]
+        }
+      },
+      "toward_end": {
+        "body_direction": "front",
+        "servo_direction": "increasing",
+        "travel_deg": 90.0,
+        "first_contact_deg": 68.96,
+        "first_contact_servo_deg": 158.96,
+        "partner": "internal-frame",
+        "first_contact_by_part_deg": {
+          "head-cover": null,
+          "head-lid": null,
+          "internal-frame": 68.96,
+          "bottom-cover": null
+        },
+        "free_deg": 68.96,
+        "gap_below_near_from_deg": 57.2,
+        "min_gap_mm": 0.0,
+        "min_gap_at_deg": 68.96,
+        "min_gap_at_servo_deg": 158.96,
+        "min_gap_partner": "internal-frame",
+        "sampled_gap_range_by_part_mm": {
+          "head-cover": [2.33, 2.347],
+          "internal-frame": [0.094, 11.117]
+        }
+      },
+      "free_servo_deg": [76.97, 158.96],
+      "contact_bands": [
+        {
+          "partner": "internal-frame",
+          "servo_deg": [0.0, 63.17],
+          "toward_middle_deg": [26.83, 90.0],
+          "transient": false
+        },
+        {
+          "partner": "head-cover",
+          "servo_deg": [0.0, 76.97],
+          "toward_middle_deg": [13.03, 90.0],
+          "transient": false
+        },
+        {
+          "partner": "internal-frame",
+          "servo_deg": [158.96, 170.59],
+          "toward_middle_deg": [-80.59, -68.96],
+          "transient": true,
+          "max_overlap_mm": 0.36,
+          "max_overlap_at_servo_deg": 161.38
+        }
+      ],
+      "near_bands_servo_deg": [
+        [0.0, 82.71],
+        [147.2, 180.0]
+      ],
+      "out_of_reach_vertical_gap_mm": {
+        "head-lid": 26.069,
+        "bottom-cover": 2.393
+      },
+      "gap_profile_mm": {
+        "servo_step_deg": 1,
+        "head-cover": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.004, 0.177, 0.347, 0.52, 0.694, 0.872, 1.052, 1.234, 1.418, 1.604, 1.785, 1.968, 2.153, 2.34, 2.34, 2.343, 2.347, 2.342, 2.339, 2.338, 2.338, 2.341, 2.345, 2.34, 2.337, 2.336, 2.336, 2.339, 2.343, 2.338, 2.335, 2.334, 2.335, 2.337, 2.342, 2.337, 2.334, 2.332, 2.333, 2.336, 2.341, 2.336, 2.332, 2.331, 2.332, 2.335, 2.34, 2.335, 2.332, 2.331, 2.331, 2.334, 2.339, 2.334, 2.331, 2.33, 2.331, 2.334, 2.339, 2.334, 2.331, 2.33, 2.331, 2.334, 2.339, 2.334, 2.331, 2.331, 2.332, 2.335, 2.34, 2.335, 2.332, 2.331, 2.332, 2.335, 2.341, 2.336, 2.333, 2.332, 2.334, 2.337, 2.342, 2.337, 2.334, 2.334, 2.335, 2.338, 2.343, 2.339, 2.336, 2.335, 2.337, 2.34, 2.345, 2.341, 2.338, 2.338, 2.339, 2.342, 2.347, 2.343, 2.34, 2.34],
+        "internal-frame": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.303, 0.671, 1.04, 1.409, 1.778, 2.147, 2.516, 2.886, 3.255, 3.623, 3.991, 4.359, 4.726, 5.092, 5.458, 5.822, 6.186, 6.549, 6.911, 7.273, 7.635, 7.995, 8.356, 8.715, 9.074, 9.433, 9.79, 10.147, 10.503, 10.859, 11.117, 10.906, 10.696, 10.486, 10.277, 10.069, 9.862, 9.655, 9.449, 9.245, 9.041, 8.839, 8.638, 8.439, 8.242, 8.046, 7.853, 7.662, 7.473, 7.287, 7.103, 6.923, 6.744, 6.568, 6.394, 6.222, 6.052, 5.884, 5.719, 5.556, 5.396, 5.243, 5.092, 4.936, 4.774, 4.59, 4.402, 4.21, 4.013, 3.813, 3.608, 3.399, 3.186, 2.971, 2.751, 2.529, 2.309, 2.099, 1.901, 1.718, 1.541, 1.368, 1.198, 1.033, 0.872, 0.761, 0.706, 0.646, 0.581, 0.512, 0.438, 0.359, 0.275, 0.187, 0.094, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.025, 0.09, 0.161, 0.236, 0.316, 0.401, 0.491, 0.585, 0.685, 0.789]
+      }
+    },
+    "L2": {
+      "leg": "back_left",
+      "print": "L2-v117.stl",
+      "hip_shaft_xy_mm": [-28.583896000000003, 52.975],
+      "wide_side_faces": "front",
+      "toward_middle_servo_direction": "decreasing",
+      "rest": {
+        "servo_deg": 90.0,
+        "gap_mm": 2.33,
+        "partner": "head-cover",
+        "gaps_mm": {
+          "head-cover": 2.33,
+          "head-lid": 27.178,
+          "internal-frame": 9.737,
+          "bottom-cover": 16.363
+        }
+      },
+      "toward_middle": {
+        "body_direction": "front",
+        "servo_direction": "decreasing",
+        "travel_deg": 90.0,
+        "first_contact_deg": 12.97,
+        "first_contact_servo_deg": 77.03,
+        "partner": "head-cover",
+        "first_contact_by_part_deg": {
+          "head-cover": 12.97,
+          "head-lid": null,
+          "internal-frame": 26.75,
+          "bottom-cover": null
+        },
+        "free_deg": 12.97,
+        "gap_below_near_from_deg": 7.23,
+        "min_gap_mm": 0.0,
+        "min_gap_at_deg": 12.97,
+        "min_gap_at_servo_deg": 77.03,
+        "min_gap_partner": "head-cover",
+        "sampled_gap_range_by_part_mm": {
+          "head-cover": [0.167, 2.33],
+          "internal-frame": [5.411, 9.737]
+        }
+      },
+      "toward_end": {
+        "body_direction": "rear",
+        "servo_direction": "increasing",
+        "travel_deg": 90.0,
+        "first_contact_deg": null,
+        "first_contact_servo_deg": null,
+        "partner": null,
+        "first_contact_by_part_deg": {
+          "head-cover": null,
+          "head-lid": null,
+          "internal-frame": null,
+          "bottom-cover": null
+        },
+        "free_deg": 90.0,
+        "gap_below_near_from_deg": 62.01,
+        "min_gap_mm": 0.209,
+        "min_gap_at_deg": 71.1,
+        "min_gap_at_servo_deg": 161.1,
+        "min_gap_partner": "internal-frame",
+        "sampled_gap_range_by_part_mm": {
+          "head-cover": [2.32, 2.337],
+          "internal-frame": [0.212, 11.095]
+        }
+      },
+      "free_servo_deg": [77.03, 180.0],
+      "contact_bands": [
+        {
+          "partner": "internal-frame",
+          "servo_deg": [0.0, 63.25],
+          "toward_middle_deg": [26.75, 90.0],
+          "transient": false
+        },
+        {
+          "partner": "head-cover",
+          "servo_deg": [0.0, 77.03],
+          "toward_middle_deg": [12.97, 90.0],
+          "transient": false
+        }
+      ],
+      "near_bands_servo_deg": [
+        [0.0, 82.77],
+        [152.01, 176.08]
+      ],
+      "out_of_reach_vertical_gap_mm": {
+        "head-lid": 26.069,
+        "bottom-cover": 2.393
+      },
+      "gap_profile_mm": {
+        "servo_step_deg": 1,
+        "head-cover": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.167, 0.337, 0.509, 0.684, 0.862, 1.041, 1.224, 1.408, 1.594, 1.775, 1.958, 2.143, 2.33, 2.33, 2.333, 2.337, 2.332, 2.329, 2.327, 2.328, 2.331, 2.335, 2.33, 2.327, 2.325, 2.326, 2.329, 2.333, 2.328, 2.325, 2.324, 2.324, 2.327, 2.332, 2.327, 2.323, 2.322, 2.323, 2.326, 2.33, 2.325, 2.322, 2.321, 2.322, 2.325, 2.329, 2.325, 2.322, 2.32, 2.321, 2.324, 2.329, 2.324, 2.321, 2.32, 2.321, 2.324, 2.329, 2.324, 2.321, 2.32, 2.321, 2.324, 2.329, 2.324, 2.321, 2.32, 2.321, 2.325, 2.329, 2.325, 2.322, 2.321, 2.322, 2.325, 2.33, 2.326, 2.323, 2.322, 2.323, 2.327, 2.332, 2.327, 2.324, 2.324, 2.325, 2.328, 2.333, 2.329, 2.326, 2.325, 2.327, 2.33, 2.335, 2.331, 2.328, 2.327, 2.329, 2.332, 2.337, 2.333, 2.33, 2.33],
+        "internal-frame": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.275, 0.642, 1.009, 1.377, 1.745, 2.113, 2.48, 2.848, 3.216, 3.583, 3.95, 4.317, 4.682, 5.047, 5.411, 5.775, 6.138, 6.5, 6.862, 7.224, 7.585, 7.945, 8.305, 8.664, 9.023, 9.38, 9.737, 10.094, 10.449, 10.804, 11.095, 10.885, 10.675, 10.466, 10.258, 10.05, 9.843, 9.637, 9.432, 9.228, 9.025, 8.824, 8.624, 8.425, 8.229, 8.034, 7.841, 7.651, 7.463, 7.278, 7.095, 6.915, 6.738, 6.562, 6.388, 6.217, 6.047, 5.88, 5.716, 5.553, 5.395, 5.243, 5.092, 4.936, 4.774, 4.59, 4.402, 4.21, 4.013, 3.812, 3.607, 3.398, 3.185, 2.974, 2.771, 2.577, 2.395, 2.217, 2.044, 1.873, 1.706, 1.543, 1.395, 1.288, 1.23, 1.18, 1.125, 1.065, 1.001, 0.931, 0.857, 0.778, 0.695, 0.606, 0.513, 0.415, 0.313, 0.212, 0.226, 0.249, 0.277, 0.31, 0.348, 0.391, 0.439, 0.491, 0.549, 0.611, 0.678, 0.749, 0.826, 0.907, 0.993, 1.083, 1.178, 1.278, 1.382]
+      }
+    },
+    "R2": {
+      "leg": "back_right",
+      "print": "R2-v117.stl",
+      "hip_shaft_xy_mm": [-28.583896000000003, -52.975],
+      "wide_side_faces": "front",
+      "toward_middle_servo_direction": "increasing",
+      "rest": {
+        "servo_deg": 90.0,
+        "gap_mm": 2.34,
+        "partner": "head-cover",
+        "gaps_mm": {
+          "head-cover": 2.34,
+          "head-lid": 27.181,
+          "internal-frame": 9.737,
+          "bottom-cover": 16.363
+        }
+      },
+      "toward_middle": {
+        "body_direction": "front",
+        "servo_direction": "increasing",
+        "travel_deg": 90.0,
+        "first_contact_deg": 13.03,
+        "first_contact_servo_deg": 103.03,
+        "partner": "head-cover",
+        "first_contact_by_part_deg": {
+          "head-cover": 13.03,
+          "head-lid": null,
+          "internal-frame": 26.75,
+          "bottom-cover": null
+        },
+        "free_deg": 13.03,
+        "gap_below_near_from_deg": 7.29,
+        "min_gap_mm": 0.0,
+        "min_gap_at_deg": 13.03,
+        "min_gap_at_servo_deg": 103.03,
+        "min_gap_partner": "head-cover",
+        "sampled_gap_range_by_part_mm": {
+          "head-cover": [0.004, 2.34],
+          "internal-frame": [5.047, 9.737]
+        }
+      },
+      "toward_end": {
+        "body_direction": "rear",
+        "servo_direction": "decreasing",
+        "travel_deg": 90.0,
+        "first_contact_deg": null,
+        "first_contact_servo_deg": null,
+        "partner": null,
+        "first_contact_by_part_deg": {
+          "head-cover": null,
+          "head-lid": null,
+          "internal-frame": null,
+          "bottom-cover": null
+        },
+        "free_deg": 90.0,
+        "gap_below_near_from_deg": 62.15,
+        "min_gap_mm": 0.234,
+        "min_gap_at_deg": 71.4,
+        "min_gap_at_servo_deg": 18.6,
+        "min_gap_partner": "internal-frame",
+        "sampled_gap_range_by_part_mm": {
+          "head-cover": [2.33, 2.347],
+          "internal-frame": [0.244, 11.096]
+        }
+      },
+      "free_servo_deg": [0.0, 103.03],
+      "contact_bands": [
+        {
+          "partner": "head-cover",
+          "servo_deg": [103.03, 180.0],
+          "toward_middle_deg": [13.03, 90.0],
+          "transient": false
+        },
+        {
+          "partner": "internal-frame",
+          "servo_deg": [116.75, 180.0],
+          "toward_middle_deg": [26.75, 90.0],
+          "transient": false
+        }
+      ],
+      "near_bands_servo_deg": [
+        [3.94, 27.85],
+        [97.29, 180.0]
+      ],
+      "out_of_reach_vertical_gap_mm": {
+        "head-lid": 26.069,
+        "bottom-cover": 2.393
+      },
+      "gap_profile_mm": {
+        "servo_step_deg": 1,
+        "head-cover": [2.34, 2.34, 2.343, 2.347, 2.342, 2.339, 2.338, 2.338, 2.341, 2.345, 2.34, 2.337, 2.335, 2.336, 2.339, 2.343, 2.338, 2.335, 2.334, 2.334, 2.337, 2.342, 2.337, 2.334, 2.332, 2.333, 2.336, 2.341, 2.335, 2.332, 2.331, 2.332, 2.335, 2.34, 2.335, 2.332, 2.331, 2.331, 2.334, 2.339, 2.334, 2.331, 2.33, 2.331, 2.334, 2.339, 2.334, 2.331, 2.33, 2.331, 2.334, 2.339, 2.334, 2.331, 2.331, 2.332, 2.335, 2.34, 2.335, 2.332, 2.331, 2.332, 2.336, 2.341, 2.336, 2.333, 2.332, 2.334, 2.337, 2.342, 2.337, 2.335, 2.334, 2.335, 2.338, 2.343, 2.339, 2.336, 2.336, 2.337, 2.34, 2.345, 2.341, 2.338, 2.338, 2.339, 2.342, 2.347, 2.343, 2.34, 2.34, 2.153, 1.968, 1.785, 1.604, 1.418, 1.234, 1.052, 0.872, 0.694, 0.52, 0.347, 0.177, 0.004, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        "internal-frame": [1.382, 1.278, 1.179, 1.084, 0.994, 0.909, 0.829, 0.753, 0.682, 0.615, 0.554, 0.498, 0.446, 0.4, 0.359, 0.323, 0.292, 0.266, 0.244, 0.25, 0.354, 0.452, 0.546, 0.635, 0.72, 0.799, 0.874, 0.944, 1.01, 1.07, 1.126, 1.18, 1.23, 1.288, 1.395, 1.543, 1.706, 1.873, 2.044, 2.217, 2.395, 2.577, 2.771, 2.975, 3.186, 3.399, 3.608, 3.813, 4.013, 4.21, 4.402, 4.59, 4.774, 4.936, 5.092, 5.243, 5.395, 5.553, 5.716, 5.88, 6.047, 6.217, 6.388, 6.562, 6.738, 6.915, 7.095, 7.278, 7.463, 7.651, 7.842, 8.034, 8.229, 8.426, 8.624, 8.824, 9.026, 9.228, 9.432, 9.637, 9.844, 10.051, 10.258, 10.467, 10.676, 10.886, 11.096, 10.804, 10.449, 10.094, 9.737, 9.38, 9.023, 8.664, 8.305, 7.945, 7.585, 7.224, 6.862, 6.5, 6.138, 5.775, 5.411, 5.047, 4.682, 4.317, 3.95, 3.583, 3.216, 2.848, 2.48, 2.113, 1.745, 1.377, 1.009, 0.642, 0.275, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+      }
+    }
+  },
+  "feet": {
+    "L3": {
+      "leg": "front_left",
+      "print": "L3-v117.stl",
+      "hip": "L1",
+      "free_servo_deg": [0.0, 180.0],
+      "contact_free_on_grid": true,
+      "grid": {
+        "hip_servo_deg": [0.0, 100.0],
+        "hip_angles": 18,
+        "step_deg": 5,
+        "poses": 666,
+        "gap_step_deg": 15
+      },
+      "body_contacts": [],
+      "body_contact_count": 0,
+      "min_body_gap_mm": 8.087,
+      "min_body_gap_partner": "internal-frame",
+      "min_body_gap_at": {
+        "hip_servo_deg": 30.0,
+        "foot_servo_deg": 60.0
+      },
+      "own_hip_print_contact_bands_servo_deg": [],
+      "own_hip_print_min_gap_mm": 3.164,
+      "own_hip_print_min_gap_at_servo_deg": 30.0
+    },
+    "R3": {
+      "leg": "front_right",
+      "print": "R3-v117.stl",
+      "hip": "R1",
+      "free_servo_deg": [0.0, 180.0],
+      "contact_free_on_grid": true,
+      "grid": {
+        "hip_servo_deg": [80.0, 180.0],
+        "hip_angles": 18,
+        "step_deg": 5,
+        "poses": 666,
+        "gap_step_deg": 15
+      },
+      "body_contacts": [],
+      "body_contact_count": 0,
+      "min_body_gap_mm": 8.087,
+      "min_body_gap_partner": "internal-frame",
+      "min_body_gap_at": {
+        "hip_servo_deg": 150.0,
+        "foot_servo_deg": 120.0
+      },
+      "own_hip_print_contact_bands_servo_deg": [],
+      "own_hip_print_min_gap_mm": 3.164,
+      "own_hip_print_min_gap_at_servo_deg": 150.0
+    },
+    "L4": {
+      "leg": "back_left",
+      "print": "L4-v117.stl",
+      "hip": "L2",
+      "free_servo_deg": [0.0, 180.0],
+      "contact_free_on_grid": true,
+      "grid": {
+        "hip_servo_deg": [80.0, 180.0],
+        "hip_angles": 21,
+        "step_deg": 5,
+        "poses": 777,
+        "gap_step_deg": 15
+      },
+      "body_contacts": [],
+      "body_contact_count": 0,
+      "min_body_gap_mm": 8.624,
+      "min_body_gap_partner": "internal-frame",
+      "min_body_gap_at": {
+        "hip_servo_deg": 150.0,
+        "foot_servo_deg": 120.0
+      },
+      "own_hip_print_contact_bands_servo_deg": [],
+      "own_hip_print_min_gap_mm": 3.164,
+      "own_hip_print_min_gap_at_servo_deg": 150.0
+    },
+    "R4": {
+      "leg": "back_right",
+      "print": "R4-v117.stl",
+      "hip": "R2",
+      "free_servo_deg": [0.0, 180.0],
+      "contact_free_on_grid": true,
+      "grid": {
+        "hip_servo_deg": [0.0, 100.0],
+        "hip_angles": 21,
+        "step_deg": 5,
+        "poses": 777,
+        "gap_step_deg": 15
+      },
+      "body_contacts": [],
+      "body_contact_count": 0,
+      "min_body_gap_mm": 8.641,
+      "min_body_gap_partner": "internal-frame",
+      "min_body_gap_at": {
+        "hip_servo_deg": 30.0,
+        "foot_servo_deg": 60.0
+      },
+      "own_hip_print_contact_bands_servo_deg": [],
+      "own_hip_print_min_gap_mm": 3.164,
+      "own_hip_print_min_gap_at_servo_deg": 30.0
+    }
+  },
+  "neighbours": [
+    {
+      "legs": [
+        "L1",
+        "L2"
+      ],
+      "hip_servo_deg": {
+        "L1": 102.97,
+        "L2": 77.03
+      },
+      "min_gap_mm": 10.594,
+      "prints": [
+        "L1",
+        "L2"
+      ],
+      "foot_servo_deg": {},
+      "foot_grid_step_deg": 30
+    },
+    {
+      "legs": [
+        "R1",
+        "R2"
+      ],
+      "hip_servo_deg": {
+        "R1": 76.97,
+        "R2": 103.03
+      },
+      "min_gap_mm": 10.514,
+      "prints": [
+        "R1",
+        "R2"
+      ],
+      "foot_servo_deg": {},
+      "foot_grid_step_deg": 30
+    }
+  ]
+}

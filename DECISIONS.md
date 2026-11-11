@@ -417,7 +417,39 @@ top-deck notch profile is recovered from the source CAD, the old roof opening is
 filled, and the profile is rotated 180° around the frame centre to cut the new
 opening. Servo bays, PCB mounts, frame orientation and leg files remain unchanged.
 
-## D21. One generated twin per printing design (2026-11-12)
+## D21. CAD-derived leg clearance check; hip-limit change held (2026-11-12)
+
+A student's hip print met the head cover. `tools/leg_clearance.py` sweeps each
+hip and foot servo against a printed body design with exact mesh contact and
+writes `leg-clearance.json` beside it. `tools/check_design.py` reports that as
+CAD-derived evidence and fails when its input hashes are stale; cable clearance
+stays unverified. No physical test is claimed.
+
+Datums: hip and foot axes from `sim/prepare_assets.py` (D2); the vertical seat
+and print-to-corner assignment from the base design's recorded leg samples in
+`head-cable-clearance.json`, which the placement reproduces within 1 µm and which
+match the upstream top-down drawing (wide foot-servo side toward the middle).
+`prepare_assets.py` puts the mirrored print at each corner and 0.216 mm higher;
+those two choices are not used here. That height changes no contact edge.
+
+Course body `internal-frame-s3`, nominal CAD: 2.33 mm at rest to the head-cover
+side wall; first contact 13.0° toward the middle (servo 103 for L1/R2, 77 for
+R1/L2), 0.5 mm left at 10°. Toward the end the head-cover gap stays 2.33 mm;
+front hips cross a frame-corner overlap of at most 0.36 mm at L1 9.4–21.0° and
+R1 159.0–170.6°; rear hips keep 0.21 mm. Feet are contact-free on the grid. The
+two-eye variant gives the same figures. Stock `walk` and `point` put R2 at 100
+(0.5 mm left); nine stock motions cross the front frame band.
+
+`manifest/robot.yaml` hip `limits_deg` are unchanged by this entry. The Sesame
+Studio values allow 45° toward the middle. The CAD-supported proposal is L1/R2
+`[0, 100]` and R1/L2 `[80, 180]`: 10°, the stock motions' own extreme, 3.0° and
+0.5 mm short of contact. Applying it changes an effective input of the held
+body-v1 report (`tools/revalidate_body_provenance.py` rejects joint-limit edits
+without a validator rerun) and the S3 manifest ID with its saved-calibration
+bounds, so it is left for its own decision. Treating the front frame band as a
+stop would exclude L1 = 0 and R1 = 180 and is left for a physical check.
+
+## D22. One generated twin per printing design (2026-11-12)
 
 **Decision:** `sim/twin.py` generates the MuJoCo model and a typed dynamics record
 (`assets/printing/<design>/dynamics.json`) for a named printing design from

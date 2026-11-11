@@ -26,5 +26,15 @@ PYTHONPATH=/Applications/FreeCAD.app/Contents/Resources/lib QT_QPA_PLATFORM=offs
 
 Checked: valid closed solids, electronics/spacer clearances, head/frame screw
 axes, cover fasteners, servo-bay preservation, lid capture and slide, battery
-notch and switch opening. Not checked: authored ribbon routes (they belong to
-the base frame datums), leg poses against the head, physical print or fit.
+notch and switch opening. Not checked by this pipeline: authored ribbon routes
+(they belong to the base frame datums), leg poses against the head, physical
+print or fit.
+
+Leg clearance is recorded separately in `leg-clearance.json`
+(`uv run python tools/leg_clearance.py internal-frame-s3-two-eyes --write`): a
+CAD-derived sweep of every hip and foot servo against this variant's own frame,
+covers and lid. Walls and hip shafts both move out 15 mm, so the figures equal
+the base kit's: 2.33 mm at rest and first contact with the head-cover side wall
+13.0° toward the middle of the body. This directory has no recorded leg samples
+or ribbon routes of its own; the legs are placed on its `hip_shaft_xy_mm` with
+the base kit's leg datums. Nominal CAD, not a physical fit test.
