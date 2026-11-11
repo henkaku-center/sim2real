@@ -38,3 +38,20 @@ the base kit's: 2.33 mm at rest and first contact with the head-cover side wall
 13.0° toward the middle of the body. This directory has no recorded leg samples
 or ribbon routes of its own; the legs are placed on its `hip_shaft_xy_mm` with
 the base kit's leg datums. Nominal CAD, not a physical fit test.
+
+## Regeneration time (measured 2026-11-12)
+
+Regenerating this design from `params.json` and re-running every digital check
+took **484 s** (8 min 4 s) on an Intel Core i7-8700B Mac, and left the working
+tree byte-identical:
+
+| Stage | Command | Time |
+|---|---|---|
+| CAD, exports and validation, no cache | the FreeCAD command above with `--fresh-checks` | 425 s |
+| Leg clearance | `uv run python tools/leg_clearance.py internal-frame-s3-two-eyes --write` | 5 s |
+| Dynamics twin | `uv run python -m sim.twin` | 2 s |
+| Variant dynamics evidence | `uv run python -m sim.twin_evidence` | 34 s |
+| Design check | `uv run python tools/check_design.py` | 18 s |
+
+This is the digital part only. Printing, wiring a second display, assembly and
+any physical test are not included and have not been done.
