@@ -20,10 +20,11 @@ REPORT = 'assets/body/v1/report.json'
 MANIFEST = 'manifest/robot.yaml'
 PROOF = 'input_revalidation'
 METHOD = 'executed-manifest-exact-v4'
-# Baseline: the validator rerun of 2026-11-12 (commit below), executed with the
-# manifest as committed there: course hip limits, S3 board name and three
-# readable calibration identities (DECISIONS.md D24). No difference from that
-# manifest is excepted. The list is empty, so any later manifest edit, firmware
+# Baseline: the second validator rerun of 2026-11-12 (commit below), executed
+# with the manifest as committed there: course hip limits, S3 board name, three
+# readable calibration identities, typed joint directions and the course body
+# in hardware_revision (DECISIONS.md D24). No difference from that manifest is
+# excepted. The list is empty, so any later manifest edit, firmware
 # metadata included, is an effective input change until it is audited and
 # listed here as an exact delta under hardware_profiles.sesame_s3: `add` with
 # its value, or `replace` with the original and the new value. Typed canonical
@@ -31,9 +32,9 @@ METHOD = 'executed-manifest-exact-v4'
 # The five firmware-only deltas excepted against the October baseline (b38d4b3,
 # method v3) are part of the executed manifest now.
 ALLOWED_MANIFEST_CHANGES = []
-AUDITED_REPORT_COMMIT = 'cf8241dcb69a0d37157745bba544677680d592ae'
-AUDITED_REPORT_SHA256 = '438d14c3dcdfa4c931a48ff45230e2c42f2272991f96d7ac45507905e6555866'
-AUDITED_PRESERVED_SHA256 = 'f019deaf0a63e4fb13573b21d8b2afa09523f5d6433e67e31a1028050590d061'
+AUDITED_REPORT_COMMIT = '828862d1442db375b68e6594a39d6773eac281d4'
+AUDITED_REPORT_SHA256 = '6140419622fce237df203555dd1bc2daf00d22e77e857a43dd419310358e60b7'
+AUDITED_PRESERVED_SHA256 = 'f7b11526aaa98c2831f6328bbc32213f6d1dcfb526edb703d64af9b205495591'
 # The consumers that executed at the baseline, byte for byte; unchanged since
 # b38d4b3. make_job consumes joints and neutral through sim/manifest.py.
 AUDITED_CONSUMERS = {

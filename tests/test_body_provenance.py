@@ -12,7 +12,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'tools'))
 import revalidate_body_provenance as provenance
 
-# The current baseline (validator rerun of 2026-11-12) excepts no manifest
+# The current baseline (final validator rerun of 2026-11-12) excepts no manifest
 # difference. These fixture deltas keep the exact-delta mechanism under test
 # without claiming that the real manifest carries any.
 FIXTURE_CHANGES = [
@@ -92,13 +92,13 @@ def delta_repo(fixture_repo, monkeypatch):
 
 def test_committed_revalidation_is_true_and_keeps_hold():
     proof = provenance.verify(ROOT)
-    assert proof['original_commit'] == provenance.AUDITED_REPORT_COMMIT == 'cf8241dcb69a0d37157745bba544677680d592ae'
+    assert proof['original_commit'] == provenance.AUDITED_REPORT_COMMIT == '828862d1442db375b68e6594a39d6773eac281d4'
     assert proof['validator_executed'] is False
     assert proof['method'] == 'executed-manifest-exact-v4'
     # The validator ran with the manifest as it is: nothing is excepted.
     assert proof['allowed_manifest_changes'] == provenance.ALLOWED_MANIFEST_CHANGES == []
     assert proof['original_manifest_yaml'].encode() == (ROOT / provenance.MANIFEST).read_bytes()
-    assert proof['original_input_hashes'][provenance.MANIFEST] == '3b38a3fef45c53b7a4c918d1973a213bb3fec4291fd253d0b0807b7958326728'
+    assert proof['original_input_hashes'][provenance.MANIFEST] == 'a9ae157f0485eaaa2f0e5fbf4748c61567922420a1d02e5689b80066d2ea13a5'
     report = json.loads((ROOT / provenance.REPORT).read_bytes())
     assert report['status'] == 'FAIL-DRAFT' and not report['release_ready'] and not report['geometry_pass']
     # The rerun sampled the course hip range: -10 to +90 degrees.

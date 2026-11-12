@@ -529,11 +529,13 @@ accuracy claim. Nothing has been measured: `tools/real2sim.py` is validated on
 synthetic data, and `reference/REAL2SIM-CAPTURE.md` describes the capture and
 its stated limits.
 
-## D24. Course hip limits and S3 board in the manifest (2026-11-12)
+## D24. Course hip limits, S3 board and joint directions in the manifest (2026-11-12)
 
 Instructor decision, 2026-11-12: "Sesame Studio hip limits and the old S2 board
 name - update this." This supersedes the held parts of D21 (hip limits) and D22
-(`mcu.board`, and `manifest/robot.yaml` staying byte-identical).
+(`mcu.board`, and `manifest/robot.yaml` staying byte-identical). The joint
+directions and the printed-parts line were added the same day, before release,
+so the manifest identity changes once.
 
 - **Hip limits.** `limits_deg` is `[0, 100]` for L1 and R2 and `[80, 180]` for R1
   and L2, the D21 proposal: 10° toward the middle of the body, the stock motions'
@@ -547,9 +549,28 @@ name - update this." This supersedes the held parts of D21 (hip limits) and D22
   `servo_bus.pulse_us` stay, because code and tests read them, and are labelled
   historical upstream baseline where they appear. `manifest/twin.yaml` now reads
   both board names from robot.yaml.
+- **Joint directions.** The instructor sat with a student's robot whose
+  assistant had sent hip commands the wrong way and swept hips symmetrically
+  about 90°. It had read "positive internal q = leg segment swings down, for
+  every joint" in this manifest, which was false for hips. The convention now
+  separates the roles: a positive q turns a hip toward its own end of the body
+  in the horizontal plane and swings a foot down. Each joint carries
+  `points_at_deg` (where it points at 0, 90 and 180) and `fitted_travel_deg`
+  (a fitted hip turns one way only from Rest, a quarter turn: front hips
+  forward, rear hips backward; feet 0–180), as the instructor confirmed on the
+  built robot. All eight rows agree with the signs, both generated twins, the
+  upstream baseline model and the leg-clearance evidence and placement;
+  `tests/test_joint_directions.py` fails if they stop agreeing. The firmware
+  interface exports them for the APS handoff. `limits_deg` still reaches 10°
+  past Rest toward the middle, because stock `walk` and `point` put R2 at 100.
+- **Printed parts.** `hardware_revision.printed_parts` names the course body:
+  the Loftwork-V3-derived frame and covers in `assets/printing/internal-frame-s3`
+  with the upstream v117 legs. The upstream v121 line stays as history.
 - **Firmware identity.** `MANIFEST_ID` changes from `8d75c0ea0b2c68e7` to
-  `b3c3fc7ae0ac0856`; `8d75c0ea0b2c68e7` joins `e669b916d178ac0a` and
-  `bd7675604b98ae46` as a readable earlier identity.
+  `fe108150ee38fa10`; `8d75c0ea0b2c68e7` joins `e669b916d178ac0a` and
+  `bd7675604b98ae46` as a readable earlier identity. This branch briefly
+  generated `b3c3fc7ae0ac0856` before the directions were added; it was never
+  flashed and is not a readable identity.
 - **Saved calibration.** A record's validity no longer depends on the manifest's
   soft limits, which would have discarded any record holding the earlier hip
   limits. A record saved under a readable identity loads with every stored value
@@ -563,11 +584,13 @@ name - update this." This supersedes the held parts of D21 (hip limits) and D22
   flashed and no device was used.
 - **Body v1.** Joint limits are an input of the held body-v1 report, so the
   validator was rerun with the same FreeCAD build (1.1.3, OCCT 7.8.1) and
-  `tools/revalidate_body_provenance.py` is re-baselined on that run with no
+  `tools/revalidate_body_provenance.py` is re-baselined on a rerun with no
   excepted manifest differences (`reference/BODY-PROVENANCE.md`). The draft still
   fails acceptance. Sampled motion findings against the retained frame went from
   58 to 38 because the hip range is narrower: no pose sampled in both runs
-  changed.
+  changed. The directions and printed-parts edits do not change the body job,
+  but that control excepts no manifest difference, so the validator ran a second
+  time on the final manifest and the baseline is that second run.
 - **Simulation.** `models/sesame.xml`, the two twins, their dynamics records and
   the two-eye evidence are regenerated with the hip range −10° to +90°.
 

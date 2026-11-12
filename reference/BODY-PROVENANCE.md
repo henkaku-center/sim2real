@@ -13,17 +13,31 @@ calibration identities. Joint limits are an effective input of the body job:
 `tools/check_body.py::make_job` samples each joint across its manifest range.
 This was therefore not a metadata refresh. The validator was run again.
 
-**Run.** `uv run python tools/check_body.py`, the command in
+The same day the manifest gained typed joint directions (`points_at_deg`,
+`fitted_travel_deg`), a corrected convention comment and the course body in
+`hardware_revision.printed_parts`. Those edits leave the body job numerically
+the same. They are still manifest differences outside the tool's exact-delta
+list, which is empty, so the validator ran a second time on the final manifest.
+The baseline is that second run.
+
+**Runs.** `uv run python tools/check_body.py`, the command in
 `reference/BODY-CAD.md`, on macOS x86-64 with `/Applications/FreeCAD.app`:
 FreeCAD 1.1.3 (build `145529fe`), OCCT 7.8.1, Python 3.11.14, motion checks with
-python-fcl 0.7.0.11. This is the build recorded in the October report. Wall time
-9 min 48 s. Exit code 1, because the draft still fails acceptance.
+python-fcl 0.7.0.11. This is the build recorded in the October report. Each run
+exits with code 1, because the draft still fails acceptance.
 
-**Result.** `FAIL-DRAFT`, `geometry_pass: false`, `release_ready: false`.
+| Run | Commit | Manifest SHA-256 | Wall time |
+|---|---|---|---|
+| First rerun (hip limits, board) | `cf8241d` | `3b38a3fe…` | 9 min 48 s |
+| Second rerun (final manifest), the baseline | `828862d` | `a9ae157f…` | 9 min 4 s |
 
-- Static results are unchanged: 6,732 body/component pairs with the same eight
-  retained-interface findings, 36 body/body pairs without intersection, fastener
-  alignment 12/12, wall findings on the retained frame and bottom cover.
+**Result.** `FAIL-DRAFT`, `geometry_pass: false`, `release_ready: false`. The two
+reruns agree in every finding.
+
+- Static results are unchanged from October: 6,732 body/component pairs with
+  the same eight retained-interface findings, 36 body/body pairs without
+  intersection, fastener alignment 12/12, wall findings on the retained frame
+  and bottom cover.
 - Sampled motion: 9,648 pairs and 38 findings, against 10,656 and 58 in October.
   Hips are sampled from −10° to +90° instead of −45° to +90°. All 8,784 rows
   present in both reports have the same status and distance. Of the 58 October
@@ -32,19 +46,26 @@ python-fcl 0.7.0.11. This is the build recorded in the October report. Wall time
   coupled midpoint is now 40°, inside the upper-leg contact with the retained
   frame already recorded for hips at +20° to +60°. All 38 are against the
   retained frame; none involves a new body part.
-- Exports: 19 generated files changed and 26 are byte-identical. Among the part
-  files, the four riser STL/3MF pairs keep their vertices, area and volume with
-  a different triangle order, and the frame, bottom and assembled STEP files
-  keep their solid, face, edge and vertex counts and their bounds, with volumes
-  equal within 2e-9 mm³. `v1/README.md` was edited by hand to state the result.
+- Exports: in the baseline run every STEP, STL and 3MF file, the scene and the
+  static findings are byte-identical to their October versions. Five generated
+  files differ, all of them motion results: `report.json`, `rom-animation.json`,
+  `index.html`, `rom-preview.gif` and `rom-sweep.png`. `v1/README.md` was edited
+  by hand to state the result.
+- The first rerun wrote eleven part files differently: the four riser STL/3MF
+  pairs with the same vertices, area and volume in another triangle order, and
+  the frame, bottom and assembled STEP files with the same solid, face, edge and
+  vertex counts and bounds, volumes equal within 2e-9 mm³. The second run
+  returned to the October bytes, so that was run-to-run variation of the
+  exporter with the same geometry, not an effect of the manifest.
 
 **How it is recorded.**
 
-- Commit `cf8241dcb69a0d37157745bba544677680d592ae` holds the validator's
+- Commit `828862d1442db375b68e6594a39d6773eac281d4` holds the validator's
   canonical report, without a revalidation record, next to the manifest it
   executed. `tools/revalidate_body_provenance.py` names that commit, the report
   digest, the digest of the preserved-file map and the eight consumer hashes,
-  which are unchanged since October.
+  which are unchanged since October. Commit `cf8241d` holds the first rerun and
+  stays in history as a superseded baseline.
 - `ALLOWED_MANIFEST_CHANGES` is empty and the method is
   `executed-manifest-exact-v4`. The committed manifest is byte for byte the
   executed one and no difference is excepted. The five firmware-only deltas that
@@ -62,7 +83,7 @@ python-fcl 0.7.0.11. This is the build recorded in the October report. Wall time
 ```sh
 python tools/revalidate_body_provenance.py  # read-only verification
 # With explicit provenance-repair authority, after an audited exact delta:
-python tools/revalidate_body_provenance.py --write --baseline cf8241dcb69a0d37157745bba544677680d592ae
+python tools/revalidate_body_provenance.py --write --baseline 828862d1442db375b68e6594a39d6773eac281d4
 python -m pytest -q tests/test_body_provenance.py tests/test_body_cad.py
 ```
 
@@ -72,7 +93,8 @@ commit, as earlier pull requests were.
 
 In CI the body-CAD job takes the full FreeCAD route for this change and ends at
 its fit-acceptance step, as every full run of the held draft has. That step
-reports the draft's `FAIL-DRAFT`; it is a result, not a waived failure.
+reports the draft's `FAIL-DRAFT`; it is a result, not a waived failure. On the
+first rerun's commit both CI runners reproduced the committed numbers.
 
 ## Earlier baseline: October 5 run and its metadata refreshes
 
