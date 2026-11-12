@@ -19,30 +19,23 @@ ROOT = Path(__file__).resolve().parents[1]
 REPORT = 'assets/body/v1/report.json'
 MANIFEST = 'manifest/robot.yaml'
 PROOF = 'input_revalidation'
-METHOD = 'unused-s3-firmware-metadata-v3'
-# Exact reviewed deltas from the original execution manifest, not a blanket
-# exclusion of hardware_profiles. Typed canonical JSON comparisons also reject
-# bool/int/float substitutions, additional fields and broader compatibility IDs.
-ALLOWED_MANIFEST_CHANGES = [
-    {'operation': 'add', 'path': ['hardware_profiles', 'sesame_s3', 'pulse_profile'],
-     'value': {'id': 'tim-pca9685-150-512-v1', 'reference_oscillator_hz': 25000000,
-               'reference_prescale': 121, 'reference_ticks': [150, 512],
-               'interpolation': 'floor-reference-ticks'}},
-    {'operation': 'add', 'path': ['hardware_profiles', 'sesame_s3', 'clock_measure_gpio'],
-     'value': 4},
-    {'operation': 'add', 'path': ['hardware_profiles', 'sesame_s3', 'calibration_compatible_manifest_ids'],
-     'value': ['e669b916d178ac0a', 'bd7675604b98ae46']},
-    {'operation': 'replace', 'path': ['hardware_profiles', 'sesame_s3', 'intended_channels_status'],
-     'original_value': 'unverified-do-not-use-as-default',
-     'value': 'recommended-default-not-physically-verified'},
-    {'operation': 'replace', 'path': ['hardware_profiles', 'sesame_s3', 'oe'],
-     'original_value': 18, 'value': 7},
-]
-AUDITED_REPORT_COMMIT = 'b38d4b3d249f9c09171277f01ba4b387f7660578'
-AUDITED_REPORT_SHA256 = 'b5b4e730806144de953699aa48299bf74d62928f0a6f22dc67c2ea7adfcd9a68'
-AUDITED_PRESERVED_SHA256 = '4a1707a9e731533c736e70fec4f5e62ca43a73772af565ac5ff30401f0c9fc47'
-# Audited at b38d4b3 and rechecked at 4cebb23: make_job consumes joints/neutral;
-# these unchanged consumers do not use the five firmware-only fields above.
+METHOD = 'executed-manifest-exact-v4'
+# Baseline: the validator rerun of 2026-11-12 (commit below), executed with the
+# manifest as committed there: course hip limits, S3 board name and three
+# readable calibration identities (DECISIONS.md D24). No difference from that
+# manifest is excepted. The list is empty, so any later manifest edit, firmware
+# metadata included, is an effective input change until it is audited and
+# listed here as an exact delta under hardware_profiles.sesame_s3: `add` with
+# its value, or `replace` with the original and the new value. Typed canonical
+# JSON comparisons reject bool/int/float substitutions and additional fields.
+# The five firmware-only deltas excepted against the October baseline (b38d4b3,
+# method v3) are part of the executed manifest now.
+ALLOWED_MANIFEST_CHANGES = []
+AUDITED_REPORT_COMMIT = 'cf8241dcb69a0d37157745bba544677680d592ae'
+AUDITED_REPORT_SHA256 = '438d14c3dcdfa4c931a48ff45230e2c42f2272991f96d7ac45507905e6555866'
+AUDITED_PRESERVED_SHA256 = 'f019deaf0a63e4fb13573b21d8b2afa09523f5d6433e67e31a1028050590d061'
+# The consumers that executed at the baseline, byte for byte; unchanged since
+# b38d4b3. make_job consumes joints and neutral through sim/manifest.py.
 AUDITED_CONSUMERS = {
     'sim/build_mjcf.py': 'c3d5cb2a6519dd7e0111e48fd98a7856eab099677435a23b2e226377aea98343',
     'sim/prepare_assets.py': '459d6b558e8a89355cf235b029b51ae8bd64f9b8c79fc3b79588c4d98fc446ac',

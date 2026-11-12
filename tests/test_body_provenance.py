@@ -12,6 +12,17 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'tools'))
 import revalidate_body_provenance as provenance
 
+# The current baseline (validator rerun of 2026-11-12) excepts no manifest
+# difference. These fixture deltas keep the exact-delta mechanism under test
+# without claiming that the real manifest carries any.
+FIXTURE_CHANGES = [
+    {'operation': 'add', 'path': ['hardware_profiles', 'sesame_s3', 'fixture_profile'],
+     'value': {'id': 'fixture-profile-v1', 'ticks': [150, 512]}},
+    {'operation': 'add', 'path': ['hardware_profiles', 'sesame_s3', 'fixture_gpio'], 'value': 4},
+    {'operation': 'replace', 'path': ['hardware_profiles', 'sesame_s3', 'oe'],
+     'original_value': 7, 'value': 8},
+]
+
 
 @pytest.fixture
 def fixture_repo(tmp_path, monkeypatch):
@@ -67,13 +78,33 @@ def fixture_repo(tmp_path, monkeypatch):
     return tmp_path, baseline, files
 
 
+@pytest.fixture
+def delta_repo(fixture_repo, monkeypatch):
+    """The same repository with an audited delta list and a manifest that carries exactly those deltas."""
+    root, baseline, files = fixture_repo
+    monkeypatch.setattr(provenance, 'ALLOWED_MANIFEST_CHANGES', copy.deepcopy(FIXTURE_CHANGES))
+    data = yaml.safe_load(files[provenance.MANIFEST])
+    for change in FIXTURE_CHANGES:
+        data['hardware_profiles']['sesame_s3'][change['path'][-1]] = copy.deepcopy(change['value'])
+    (root / provenance.MANIFEST).write_text(yaml.safe_dump(data))
+    return root, baseline, files
+
+
 def test_committed_revalidation_is_true_and_keeps_hold():
     proof = provenance.verify(ROOT)
-    assert proof['original_commit'] == provenance.AUDITED_REPORT_COMMIT
+    assert proof['original_commit'] == provenance.AUDITED_REPORT_COMMIT == 'cf8241dcb69a0d37157745bba544677680d592ae'
     assert proof['validator_executed'] is False
-    assert proof['method'] == 'unused-s3-firmware-metadata-v3'
-    assert proof['allowed_manifest_changes'] == provenance.ALLOWED_MANIFEST_CHANGES
-    assert proof['original_input_hashes'][provenance.MANIFEST] == '2912c38dd40bd622694a103be345d6c2a7374ef05b85a5a511314ff0ccc58bae'
+    assert proof['method'] == 'executed-manifest-exact-v4'
+    # The validator ran with the manifest as it is: nothing is excepted.
+    assert proof['allowed_manifest_changes'] == provenance.ALLOWED_MANIFEST_CHANGES == []
+    assert proof['original_manifest_yaml'].encode() == (ROOT / provenance.MANIFEST).read_bytes()
+    assert proof['original_input_hashes'][provenance.MANIFEST] == '3b38a3fef45c53b7a4c918d1973a213bb3fec4291fd253d0b0807b7958326728'
+    report = json.loads((ROOT / provenance.REPORT).read_bytes())
+    assert report['status'] == 'FAIL-DRAFT' and not report['release_ready'] and not report['geometry_pass']
+    # The rerun sampled the course hip range: -10 to +90 degrees.
+    assert sorted({row['hip_deg'] for row in report['rom'] if row['mode'] == 'hip'})[::20] == [-10.0, 90.0]
+    assert (report['summary']['rom_pairs'], report['summary']['rom_failures']) == (9648, 38)
+    assert report['summary']['new_body_rom_failures'] == 0 and report['summary']['static_failures'] == 8
 
 
 def test_refresh_preserves_reconstructible_execution_and_is_idempotent(fixture_repo):
@@ -94,19 +125,27 @@ def test_refresh_preserves_reconstructible_execution_and_is_idempotent(fixture_r
     assert (root / provenance.REPORT).read_bytes() == first
 
 
-def test_exact_firmware_deltas_preserve_effective_body_identity(fixture_repo):
+def test_current_baseline_excepts_no_manifest_difference(fixture_repo):
     root, baseline, files = fixture_repo
     old = files[provenance.MANIFEST]
-    original = yaml.safe_load(old)
-    revised = copy.deepcopy(original)
-    hw = revised['hardware_profiles']['sesame_s3']
-    for change in provenance.ALLOWED_MANIFEST_CHANGES:
-        hw[change['path'][-1]] = copy.deepcopy(change['value'])
-    expected = provenance.sha(provenance.encoded(original))
-    assert provenance.effective_identity(old, yaml.safe_dump(revised)) == expected
+    assert provenance.ALLOWED_MANIFEST_CHANGES == [] and old == (ROOT / provenance.MANIFEST).read_bytes()
+    expected = provenance.sha(provenance.encoded(yaml.safe_load(old)))
     assert provenance.effective_identity(old, (ROOT / provenance.MANIFEST).read_bytes()) == expected
     provenance.refresh(root, baseline)
     assert provenance.verify(root)['effective_manifest_sha256'] == expected
+
+
+def test_exact_audited_deltas_preserve_effective_body_identity(delta_repo):
+    root, baseline, files = delta_repo
+    old = files[provenance.MANIFEST]
+    expected = provenance.sha(provenance.encoded(yaml.safe_load(old)))
+    assert provenance.effective_identity(old, (root / provenance.MANIFEST).read_bytes()) == expected
+    # The executed manifest itself no longer matches once deltas are declared.
+    with pytest.raises(ValueError, match='unaudited firmware metadata value'):
+        provenance.effective_identity(old, old)
+    provenance.refresh(root, baseline)
+    proof = provenance.verify(root)
+    assert proof['effective_manifest_sha256'] == expected and proof['allowed_manifest_changes'] == FIXTURE_CHANGES
 
 
 @pytest.mark.parametrize('field,value', [
@@ -119,11 +158,43 @@ def test_exact_firmware_deltas_preserve_effective_body_identity(fixture_repo):
     ('calibration_compatible_manifest_ids', ['bd7675604b98ae46', '0000000000000000']),
     ('calibration_compatible_manifest_ids', 'bd7675604b98ae46'),
     ('calibration_compatible_manifest_ids', []),
+    ('calibration_compatible_manifest_ids', ['e669b916d178ac0a', 'bd7675604b98ae46']),
+    ('calibration_compatible_manifest_ids', ['e669b916d178ac0a', 'bd7675604b98ae46', '8d75c0ea0b2c68e7', '0000000000000000']),
     ('intended_channels_status', 'physically-verified'),
     ('pulse_profile', {'id': 'different-profile'}),
 ])
-def test_changed_allowed_field_values_are_not_a_blanket_exception(fixture_repo, field, value):
+def test_firmware_fields_excepted_before_the_rerun_are_effective_inputs_now(fixture_repo, field, value):
+    """The October baseline excepted these fields; the rerun baseline excepts none."""
     root, baseline, files = fixture_repo
+    data = yaml.safe_load((root / provenance.MANIFEST).read_text())
+    assert provenance.encoded(data['hardware_profiles']['sesame_s3'][field]) != provenance.encoded(value)
+    data['hardware_profiles']['sesame_s3'][field] = value
+    (root / provenance.MANIFEST).write_text(yaml.safe_dump(data))
+    with pytest.raises(ValueError, match='effective inputs changed'):
+        provenance.refresh(root, baseline)
+    assert (root / provenance.REPORT).read_bytes() == files[provenance.REPORT]
+
+
+@pytest.mark.parametrize('field', ['clock_measure_gpio', 'calibration_compatible_manifest_ids',
+                                 'intended_channels_status', 'pulse_profile', 'oe'])
+def test_missing_firmware_field_is_rejected(fixture_repo, field):
+    root, baseline, files = fixture_repo
+    data = yaml.safe_load((root / provenance.MANIFEST).read_text())
+    del data['hardware_profiles']['sesame_s3'][field]
+    (root / provenance.MANIFEST).write_text(yaml.safe_dump(data))
+    with pytest.raises(ValueError, match='effective inputs changed'):
+        provenance.refresh(root, baseline)
+    assert (root / provenance.REPORT).read_bytes() == files[provenance.REPORT]
+
+
+@pytest.mark.parametrize('field,value', [
+    ('fixture_gpio', 5), ('fixture_gpio', 4.0), ('fixture_gpio', True), ('fixture_gpio', '4'),
+    ('oe', 7), ('oe', 9), ('oe', 8.0), ('oe', True), ('oe', '8'),
+    ('fixture_profile', {'id': 'different-profile'}),
+    ('fixture_profile', {'id': 'fixture-profile-v1', 'ticks': [150, 512], 'extra': 1}),
+])
+def test_changed_audited_delta_values_are_not_a_blanket_exception(delta_repo, field, value):
+    root, baseline, files = delta_repo
     data = yaml.safe_load((root / provenance.MANIFEST).read_text())
     data['hardware_profiles']['sesame_s3'][field] = value
     (root / provenance.MANIFEST).write_text(yaml.safe_dump(data))
@@ -132,14 +203,23 @@ def test_changed_allowed_field_values_are_not_a_blanket_exception(fixture_repo, 
     assert (root / provenance.REPORT).read_bytes() == files[provenance.REPORT]
 
 
-@pytest.mark.parametrize('field', ['clock_measure_gpio', 'calibration_compatible_manifest_ids',
-                                 'intended_channels_status', 'pulse_profile', 'oe'])
-def test_missing_audited_field_is_rejected(fixture_repo, field):
-    root, baseline, files = fixture_repo
+@pytest.mark.parametrize('field', ['fixture_gpio', 'fixture_profile', 'oe'])
+def test_missing_audited_delta_field_is_rejected(delta_repo, field):
+    root, baseline, files = delta_repo
     data = yaml.safe_load((root / provenance.MANIFEST).read_text())
     del data['hardware_profiles']['sesame_s3'][field]
     (root / provenance.MANIFEST).write_text(yaml.safe_dump(data))
     with pytest.raises(ValueError, match='unaudited firmware metadata value'):
+        provenance.refresh(root, baseline)
+    assert (root / provenance.REPORT).read_bytes() == files[provenance.REPORT]
+
+
+def test_audited_deltas_do_not_admit_other_manifest_changes(delta_repo):
+    root, baseline, files = delta_repo
+    data = yaml.safe_load((root / provenance.MANIFEST).read_text())
+    data['joints'][0]['limits_deg'][0] += 1
+    (root / provenance.MANIFEST).write_text(yaml.safe_dump(data))
+    with pytest.raises(ValueError, match='effective inputs changed outside the exact allowed firmware deltas'):
         provenance.refresh(root, baseline)
     assert (root / provenance.REPORT).read_bytes() == files[provenance.REPORT]
 
@@ -202,13 +282,16 @@ def test_tampered_provenance_or_results_rejected(fixture_repo, mutation):
     elif mutation == 'executed_claim': proof['validator_executed'] = True
     elif mutation == 'coverage': del proof['preserved_sha256']['sim/manifest.py']
     elif mutation == 'missing_proof': del report[provenance.PROOF]
-    elif mutation == 'allowed_metadata': proof['allowed_manifest_changes'][1]['value'] = 5
+    elif mutation == 'allowed_metadata': proof['allowed_manifest_changes'].append(copy.deepcopy(FIXTURE_CHANGES[2]))
     elif mutation == 'method': proof['method'] = 'unused-s3-pulse-profile-addition-v1'
     with pytest.raises(ValueError): provenance.verify(root, report)
 
 
-def test_blind_hash_replacement_is_not_accepted(fixture_repo):
-    root, baseline, files = fixture_repo
+def test_blind_hash_replacement_is_not_accepted(delta_repo):
+    # A manifest that differs from the executed one, even by audited deltas only,
+    # cannot be blessed by writing its hash into the report.
+    root, baseline, files = delta_repo
+    assert (root / provenance.MANIFEST).read_bytes() != files[provenance.MANIFEST]
     report = json.loads(files[provenance.REPORT])
     report['input_hashes'][provenance.MANIFEST] = provenance.sha((root / provenance.MANIFEST).read_bytes())
     (root / provenance.REPORT).write_bytes(provenance.encoded(report))

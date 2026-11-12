@@ -16,10 +16,16 @@ Three additions, all digital; nothing was measured on a robot.
   fit and report, validated on synthetic data only. The physical capture is one
   page: `reference/REAL2SIM-CAPTURE.md`.
 
-Open decision for the instructor: `manifest/robot.yaml` still carries the Sesame
-Studio hip limits (45° toward the middle) and the S2 board name. Changing either
-changes the firmware `MANIFEST_ID` and needs the body-v1 provenance baseline
-re-audited, so both were left alone (D21, D22).
+Decided by the instructor on November 12 and applied (D24): `manifest/robot.yaml`
+carries the course hip limits (L1/R2 0–100, R1/L2 80–180: 10° toward the middle
+of the body, CAD-derived) and names the ESP32-S3 SuperMini with its PCA9685; the
+S2 Mini facts that remain are labelled historical. The firmware `MANIFEST_ID` is
+now `b3c3fc7ae0ac0856`. Calibration saved under `8d75c0ea0b2c68e7`,
+`e669b916d178ac0a` or `bd7675604b98ae46` loads unchanged, including stored hip
+limits wider than the new soft limits, which stay in force for that robot until
+its owner changes them. The body-v1 validator was rerun and its provenance
+baseline renewed; the draft still fails acceptance. Nothing was flashed or
+measured.
 
 ## Current design queries — November 10, 2026
 
