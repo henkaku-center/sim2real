@@ -57,7 +57,7 @@ def interface():
         ("unmap NAME", "off", "Unassign joint before swapping channels"),
         ("sign NAME SIGN", "off", "Absolute physical sign +1/-1; invalidates verification"),
         ("trim NAME DEG", "off", "Physical-angle offset, -15..15; invalidates verification"),
-        ("limits NAME LOW HIGH", "off", "Measured firmware envelope within manifest, including90"),
+        ("limits NAME LOW HIGH", "off", "Measured firmware envelope inside the manifest soft range, including90; an edit outside it is refused and changes nothing"),
         ("verify NAME", "off", "Owner attests measured mapping/direction/limits; not auto-detection"),
         ("oscillator HZ", "off", "Measured20..30MHz; reapplies prescaler, clears ALL verification"),
         ("save", "off", "Persist one versioned/checksummed NVS calibration record"),
@@ -176,6 +176,7 @@ def interface():
                   "meaning": "Commanded angles, not measured shaft limits or a physical pass from ACK"},
         "calibration_compatibility": {"read_manifest_ids": hw["calibration_compatible_manifest_ids"],
                   "behavior": "Read valid checksum/layout-compatible saved records without changing channel/sign/trim/limits/oscillator/verified values; do not rewrite NVS until explicit save",
+                  "stored_limits": "A loaded record keeps its stored joint limits, including limits wider than the manifest soft range that were saved under an earlier listed identity. They bound that joint's commands exactly as saved and are neither clamped nor rewritten; boot and show name the joints concerned with the current soft range. An explicit save stores the same values under the current identity. A new limits edit stays inside the manifest soft range.",
                   "normalization": "OE update preserves saved maps, including measured/custom maps, without normalization. Only when explicitly tasked to normalize matching recommended wiring: while OFF, export then unmap all eight before remapping; preserve other values; map edits clear verification"},
         "ap": {"ssid": "Sesame-S3-<last-two-MAC-bytes>", "password": "sesame123", "ip": "192.168.4.1",
                "country": "JP", "channel": 1, "requested_tx_dbm": 8.5, "hardware_visibility": "unverified"},
@@ -186,10 +187,10 @@ def interface():
             "properties": {"version": {"const": 1}, "manifest_id": {"type": "string", "pattern": "^[0-9a-f]{16}$"},
                            "oscillator_hz": {"type": "integer", "minimum": 20000000, "maximum": 30000000},
                            "joints": {"type": "array", "items": joint_schema, "minItems": 8, "maxItems": 8}},
-            "$comment": "Joint order must match joint_map; names/channels unique; limits subset of manifest and include90. NVS namespace sesame-s3, key record. Binary record adds magic and checksum; firmware validates all invariants."},
+            "$comment": "Joint order must match joint_map; names/channels unique; limits within 0..180 and include90. New limits edits stay inside the manifest soft range; a stored record may hold wider limits saved under an earlier listed identity. NVS namespace sesame-s3, key record. Binary record adds magic and checksum; firmware validates all invariants."},
         "calibration_math": {"physical_angle": "90 + trim + physical_sign * manifest_sign * (firmware_angle - 90)",
                              "internal_angle": "manifest_sign * (firmware_angle - 90)",
-                             "clamps": "intersect measured firmware limits, manifest soft limits, and post-trim physical0..180"},
+                             "clamps": "intersect the record's stored firmware limits and post-trim physical0..180; manifest soft limits bound fresh defaults and new limits edits"},
     }
 
 

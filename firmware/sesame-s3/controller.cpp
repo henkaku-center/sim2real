@@ -124,30 +124,30 @@ bool configurePWM() {
   return prescale == expected && clearPWM();
 }
 
-struct Record { uint32_t magic; char manifest[17]; Calibration cal; uint32_t checksum; };
-uint32_t checksum(const Record& record) {
-  const auto* bytes = reinterpret_cast<const uint8_t*>(&record);
-  uint32_t h = 2166136261u;
-  for (size_t i = 0; i < offsetof(Record, checksum); ++i) h = (h ^ bytes[i]) * 16777619u;
-  return h;
+// Joints whose stored limits lie outside the manifest's soft range, with that
+// range. Such limits are used as saved; this only makes them visible.
+String widerStoredLimits() {
+  String out;
+  for (int j = 0; j < 8; ++j) if (gate.cal.beyondSoft(j))
+    out += " " + String(NAMES[j]) + "(soft " + String(SOFT_LOW[j]) + ".." + String(SOFT_HIGH[j]) + ")";
+  return out;
 }
 bool saveCalibration() {
   if (!nvs || !gate.cal.valid()) return false;
   Record r;
-  memset(&r, 0, sizeof(r));
-  r.magic = 0x53334331; strcpy(r.manifest, MANIFEST_ID); r.cal = gate.cal;
-  r.checksum = checksum(r);
+  fillRecord(r, gate.cal);
   return prefs.putBytes("record", &r, sizeof(r)) == sizeof(r);
 }
 void loadCalibration() {
   nvs = prefs.begin("sesame-s3", false);
   Record r;
   if (nvs && prefs.getBytesLength("record") == sizeof(r) &&
-      prefs.getBytes("record", &r, sizeof(r)) == sizeof(r) && r.magic == 0x53334331 &&
-      compatibleCalibrationManifest(r.manifest) && r.checksum == checksum(r) && r.cal.valid()) {
+      prefs.getBytes("record", &r, sizeof(r)) == sizeof(r) && acceptRecord(r)) {
     gate.cal = r.cal; saved = true;
     Serial.println(!memcmp(r.manifest, MANIFEST_ID, sizeof(r.manifest)) ?
       "CAL loaded NVS" : "CAL loaded compatible NVS; values preserved; show; explicit save updates record identity");
+    const String wider = widerStoredLimits();
+    if (wider.length()) Serial.println("CAL stored limits beyond the manifest soft range kept as saved:" + wider);
   } else Serial.println("CAL recommended map defaults; physical verification not implied; arm bench CH for pointer tests; show/help");
 }
 String showCalibration() {
@@ -159,6 +159,8 @@ String showCalibration() {
       " trim=" + String(gate.cal.trim[j], 2) + " limits=" + String(gate.cal.low[j], 2) + "," +
       String(gate.cal.high[j], 2) + " verified=" + String(bool(gate.cal.verified & (1u << j))) + "\n";
   }
+  const String wider = widerStoredLimits();
+  if (wider.length()) out += "stored limits beyond the manifest soft range, used as saved:" + wider + "\n";
   return out;
 }
 String exportCalibration() {
@@ -372,7 +374,8 @@ String dispatchCommand(const char* text, Owner source) {
   } else if (c.is("trim", 3) && j >= 0 && c.number(2, value)) {
     next.trim[j] = value; next.verified &= ~(1u << j);
   } else if (c.is("limits", 4) && j >= 0 && c.number(2, value) && c.number(3, second)) {
-    next.low[j] = value; next.high[j] = second; next.verified &= ~(1u << j);
+    if (!next.setLimits(j, value, second))
+      return "ERR limits outside the manifest soft range " + String(SOFT_LOW[j]) + ".." + String(SOFT_HIGH[j]) + "; unchanged";
   } else if (c.is("verify", 2) && j >= 0 && next.channel[j] >= 0) {
     next.verified |= 1u << j;
   } else if (c.is("oscillator", 2) && c.integer(1, number) && number >= 20000000 && number <= 30000000) {

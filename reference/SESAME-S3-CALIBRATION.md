@@ -87,10 +87,16 @@ Finish with `off` before connecting the servo plugs.
 
 Fresh defaults use this map, with verification flags still false. Existing valid
 saved records—including unassigned or different mappings—are **preserved**, not
-silently overwritten. The compatible pre-update manifest ID is
-`bd7675604b98ae46` and `e669b916d178ac0a`; checksum, calibration validity and record layout are still
-checked. Loading a compatible record does not write NVS. An explicit `save`
-records the current identity with the current calibration values.
+silently overwritten. The compatible earlier manifest IDs are
+`bd7675604b98ae46`, `e669b916d178ac0a` and `8d75c0ea0b2c68e7`; checksum, record
+structure and record layout are still checked. Loading a compatible record does
+not write NVS. An explicit `save` records the current identity with the current
+calibration values.
+
+Since November 12 the manifest's hip soft limits are narrower (below). A saved
+record keeps its own limits: where a stored limit is wider than the soft limit,
+the stored value stays in force for that joint, and boot and `show` list the
+joint with the current soft range. Nothing is clamped or rewritten.
 
 The agent reads `show` first and preserves saved measured/custom maps by default.
 An OE firmware update does not normalize them. Only when explicitly tasked to
@@ -179,8 +185,11 @@ logical-joint limits remain distinct from the bare bench command range.
 Existing/default joint envelopes are not widened by this update. Use
 `sign NAME SIGN`, `trim NAME DEG` and `limits NAME LOW HIGH` to apply actual
 chosen calibration values while OFF; do not invent them from the pointer
-sequence. Manifest limits remain R1/L2 45–180°, R2/L1 0–135°, feet 0–180°,
-with post-trim electrical clamps and the same Tim pulse conversion.
+sequence. Manifest soft limits are R1/L2 80–180°, R2/L1 0–100°, feet 0–180°
+(hips: 10° toward the middle of the course body, from CAD leg clearance; they
+were 45–180° and 0–135° until November 12), with post-trim electrical clamps and
+the same Tim pulse conversion. A new `limits` entry stays inside them; an entry
+outside is refused and leaves the record as it was.
 
 `verify NAME` records an observation-based assertion, not a sensor result;
 `save` persists and `export` returns the record. No battery load-test routine,

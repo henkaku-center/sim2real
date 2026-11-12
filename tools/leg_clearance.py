@@ -664,16 +664,24 @@ def compare(evidence, robot, motions, near_gap=None):
             continue
         hip = hips[name]
         lo, hi = joint['limits_deg']
-        free_lo, free_hi = hip['free_servo_deg']
         middle = 1 if hip['toward_middle_servo_direction'] == 'increasing' else -1
-        row = {'joint': name, 'limits_deg': [lo, hi], 'free_servo_deg': [free_lo, free_hi],
-               'exceeds': bool(lo < free_lo or hi > free_hi), 'ends': {}}
+        # A stop is a contact band with no free travel beyond it. A transient
+        # band has free travel on both sides and is listed, not counted as a stop.
+        stops = [band['servo_deg'] for band in hip['contact_bands'] if not band['transient']]
+        stop_lo = max([b for a, b in stops if b < REST], default=0.0)
+        stop_hi = min([a for a, b in stops if a > REST], default=180.0)
+        crossed = [{key: band[key] for key in ('partner', 'servo_deg', 'max_overlap_mm') if key in band}
+                   for band in hip['contact_bands'] if band['transient'] and band['servo_deg'][0] < hi and band['servo_deg'][1] > lo]
+        row = {'joint': name, 'limits_deg': [lo, hi], 'free_servo_deg': hip['free_servo_deg'],
+               'between_stops_servo_deg': [stop_lo, stop_hi],
+               'exceeds': bool(lo < stop_lo or hi > stop_hi),
+               'transient_bands_within_limits': crossed, 'ends': {}}
         for label, value in (('low', lo), ('high', hi)):
             gap, partner = _gap_at(hip, value)
             found = _classify_point(hip, value, near_gap) or {'kind': 'clear', 'partner': partner, 'gap_mm': gap}
-            beyond = max(0.0, free_lo - value) if label == 'low' else max(0.0, value - free_hi)
+            beyond = max(0.0, stop_lo - value) if label == 'low' else max(0.0, value - stop_hi)
             row['ends'][label] = {'servo_deg': value, 'direction': 'toward_middle' if (value - REST) * middle > 0 else 'toward_end',
-                                  'beyond_free_range_deg': round(beyond, 2), **found}
+                                  'beyond_stop_deg': round(beyond, 2), **found}
         limits.append(row)
     for joint in robot['joints']:
         foot = evidence['feet'].get(joint['name'])
@@ -707,10 +715,14 @@ def compare(evidence, robot, motions, near_gap=None):
         'near_gap_mm': near_gap,
         'limits': limits,
         'limits_exceed_free_range': [row['joint'] for row in limits if row['exceeds']],
+        'limits_cross_transient_bands': [row['joint'] for row in limits if row.get('transient_bands_within_limits')],
         'motions': found_motions,
         'motions_checked': len(motions['motions']),
-        'scope': 'Hip targets and the travel between consecutive targets of each stock motion, against the '
-                 'single-hip CAD sweep. Feet are contact-free on the recorded grid. CAD-derived, not physical.',
+        'scope': 'Manifest limits against the stops of the single-hip CAD sweep: a limit exceeds the free range '
+                 'when it lies past a contact band with no free travel beyond it. A transient band inside the '
+                 'limits, with free travel on both sides, is listed separately. Hip targets and the travel '
+                 'between consecutive targets of each stock motion are classified against the same sweep. '
+                 'Feet are contact-free on the recorded grid. CAD-derived, not physical.',
     }
 
 

@@ -48,7 +48,7 @@
       <body name="front_right_upper" pos="0.028217465 -0.037975 -0.00197000067">
         <inertial pos="-0.00637965528 -0.017390689 0.0134958852" mass="0.00420344684" fullinertia="8.35423925e-07 4.9948549e-07 5.96105449e-07 -6.93543528e-08 -8.84810348e-08 -2.81716112e-07"/>
         <joint name="R1" type="hinge" axis="0 0 1"
-               range="-0.785398 1.570796" damping="0.016806762"/>
+               range="-0.174533 1.570796" damping="0.016806762"/>
         <site name="front_right_hip" pos="0 0 0"/>
         <geom name="front_right_upper_geom" type="box" group="3"
               pos="-0.00378672957 -0.0183871135 0.00886775732" size="0.0101600001 0.0247603407 0.0152400002" rgba="0.80 0.12 0.08 1"/>
@@ -71,7 +71,7 @@
       <body name="back_right_upper" pos="-0.028583896 -0.037975 -0.00197000067">
         <inertial pos="0.00636997921 -0.0174252925 0.0134621588" mass="0.00418982826" fullinertia="8.31707049e-07 4.97864121e-07 5.93675942e-07 6.97581502e-08 8.89039476e-08 -2.8022179e-07"/>
         <joint name="R2" type="hinge" axis="0 0 -1"
-               range="-0.785398 1.570796" damping="0.016806762"/>
+               range="-0.174533 1.570796" damping="0.016806762"/>
         <site name="back_right_hip" pos="0 0 0"/>
         <geom name="back_right_upper_geom" type="box" group="3"
               pos="0.00378672957 -0.0183871135 0.00886775732" size="0.0101600001 0.0247603407 0.0152400002" rgba="0.80 0.12 0.08 1"/>
@@ -94,7 +94,7 @@
       <body name="front_left_upper" pos="0.028217465 0.037975 -0.00197000067">
         <inertial pos="-0.00637904223 0.0173769212 0.01350435" mass="0.00420691019" fullinertia="8.36840004e-07 4.99865765e-07 5.97136537e-07 6.93645207e-08 -8.85086473e-08 2.82329966e-07"/>
         <joint name="L1" type="hinge" axis="0 0 -1"
-               range="-0.785398 1.570796" damping="0.016806762"/>
+               range="-0.174533 1.570796" damping="0.016806762"/>
         <site name="front_left_hip" pos="0 0 0"/>
         <geom name="front_left_upper_geom" type="box" group="3"
               pos="-0.00378672957 0.0183871135 0.00886775732" size="0.0101600001 0.0247603407 0.0152400002" rgba="0.80 0.12 0.08 1"/>
@@ -117,7 +117,7 @@
       <body name="back_left_upper" pos="-0.028583896 0.037975 -0.00197000067">
         <inertial pos="0.00637696233 0.0173852474 0.013498971" mass="0.00420468431" fullinertia="8.35842041e-07 4.9958255e-07 5.96348617e-07 -6.94294445e-08 8.85997203e-08 2.81955941e-07"/>
         <joint name="L2" type="hinge" axis="0 0 1"
-               range="-0.785398 1.570796" damping="0.016806762"/>
+               range="-0.174533 1.570796" damping="0.016806762"/>
         <site name="back_left_hip" pos="0 0 0"/>
         <geom name="back_left_upper_geom" type="box" group="3"
               pos="0.00378672957 0.0183871135 0.00886775732" size="0.0101600001 0.0247603407 0.0152400002" rgba="0.80 0.12 0.08 1"/>
@@ -142,16 +142,16 @@
   <actuator>
     <position name="R1" joint="R1" kp="0.6"
               forcerange="-0.176 0.176"
-              ctrlrange="-0.785398 1.570796"/>
+              ctrlrange="-0.174533 1.570796"/>
     <position name="R2" joint="R2" kp="0.6"
               forcerange="-0.176 0.176"
-              ctrlrange="-0.785398 1.570796"/>
+              ctrlrange="-0.174533 1.570796"/>
     <position name="L1" joint="L1" kp="0.6"
               forcerange="-0.176 0.176"
-              ctrlrange="-0.785398 1.570796"/>
+              ctrlrange="-0.174533 1.570796"/>
     <position name="L2" joint="L2" kp="0.6"
               forcerange="-0.176 0.176"
-              ctrlrange="-0.785398 1.570796"/>
+              ctrlrange="-0.174533 1.570796"/>
     <position name="R4" joint="R4" kp="0.6"
               forcerange="-0.176 0.176"
               ctrlrange="-1.570796 1.570796"/>

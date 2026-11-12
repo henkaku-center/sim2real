@@ -19,7 +19,7 @@
   },
   "coordinates": "X front/OLED, Y left, Z up; PCB USB toward rear",
   "units": "mm, servo degrees",
-  "checker_sha256": "b7fbeefe52b0a1b7b9c2d4374c4f2cbdc263f5d2725680cd45a24a1fd73cc847",
+  "checker_sha256": "d4a4270080aec602b2390115dcdb83be7fd91d8a855db62c02b3af1313cdc165",
   "inputs": {
     "head-cover.stl": "dfb2167e076b30d0d8fdea00646be3929da5faec42ad4e9753cf2e2bb6a8730c",
     "head-lid.stl": "14429e33f84e667f6b9c60eb78fcf7b7b68b3282c94b57371f66b91a20cb1113",

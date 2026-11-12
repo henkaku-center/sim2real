@@ -2,9 +2,9 @@
 #pragma once
 #include <stdint.h>
 namespace sesame {
-constexpr char MANIFEST_ID[] = "8d75c0ea0b2c68e7";
+constexpr char MANIFEST_ID[] = "b3c3fc7ae0ac0856";
 constexpr char PULSE_PROFILE_ID[] = "tim-pca9685-150-512-v1";
-constexpr const char* COMPATIBLE_MANIFEST_IDS[] = {"e669b916d178ac0a", "bd7675604b98ae46"};
+constexpr const char* COMPATIBLE_MANIFEST_IDS[] = {"e669b916d178ac0a", "bd7675604b98ae46", "8d75c0ea0b2c68e7"};
 constexpr uint32_t NEUTRAL = 90;
 constexpr float PULSE_MIN = 732.0;
 constexpr float PULSE_MAX = 2498.56;
@@ -29,8 +29,8 @@ constexpr uint32_t OLED_ADDRESS = 60;
 constexpr const char* NAMES[] = {"R1", "R2", "L1", "L2", "R4", "R3", "L3", "L4"};
 constexpr int SIGNS[] = {1, -1, -1, 1, -1, 1, -1, 1};
 constexpr int DEFAULT_CHANNELS[] = {4, 5, 0, 1, 7, 6, 2, 3};
-constexpr int SOFT_LOW[] = {45, 0, 0, 45, 0, 0, 0, 0};
-constexpr int SOFT_HIGH[] = {180, 135, 135, 180, 180, 180, 180, 180};
+constexpr int SOFT_LOW[] = {80, 0, 0, 80, 0, 0, 0, 0};
+constexpr int SOFT_HIGH[] = {180, 100, 100, 180, 180, 180, 180, 180};
 constexpr int TRIMS[] = {0, 0, 0, 0, 0, 0, 0, 0};
 struct MotionStep { int16_t degrees[8]; uint16_t waitMs; };
 struct Motion { const char* name; const MotionStep* steps; uint16_t count; };

@@ -1,8 +1,8 @@
 # Inputs of the one digital twin that manifest/robot.yaml does not own.
 #
-# robot.yaml stays canonical for joint order, pins, angle conventions, limits,
-# poses and calibration. This file adds only: which hardware profile and which
-# printing design the default twin represents, and every dynamics number
+# robot.yaml stays canonical for the board, joint order, pins, angle conventions,
+# limits, poses and calibration. This file adds only: which hardware profile and
+# which printing design the default twin represents, and every dynamics number
 # (mass table, material and fill assumptions, actuator and contact parameters).
 #
 # Generated from this file, robot.yaml and assets/printing/<design>/assembly.json
@@ -22,21 +22,22 @@
 schema_version: 1
 
 hardware:
-  # robot.yaml still carries the upstream S2 board at top level (`mcu.board`) and
-  # the S2 pins in `joints[].gpio_pin`: its raw bytes are the firmware calibration
-  # identity and a pinned input of the held body-v1 report, so the labels live here.
+  # robot.yaml owns the board names. `mcu.board` and `mcu.servo_driver` there are
+  # the course hardware; `mcu.upstream_baseline` is the historical upstream S2
+  # board that `joints[].gpio_pin` and `servo_bus.pulse_us` still describe. This
+  # file only says which profile the default twin represents and where to read it.
   default_profile: sesame_s3
   profiles:
     sesame_s3:
       status: current-course-default
-      mcu_board: esp32_s3_supermini
-      servo_driver: pca9685
+      mcu_board_from: mcu.board
+      servo_driver_from: mcu.servo_driver
       robot_yaml: hardware_profiles.sesame_s3 # wiring, pulse profile and calibration stay there
     lolin_s2_mini_baseline:
-      status: historical-upstream-baseline
-      mcu_board_from: mcu.board # read from robot.yaml, not repeated here
-      servo_driver: direct-gpio-pwm
-      robot_yaml: [mcu, "joints[].gpio_pin", servo_bus.pulse_us]
+      status_from: mcu.upstream_baseline.status
+      mcu_board_from: mcu.upstream_baseline.board
+      servo_driver_from: mcu.upstream_baseline.servo_driver
+      robot_yaml: [mcu.upstream_baseline, "joints[].gpio_pin", servo_bus.pulse_us]
 
 designs:
   directory: assets/printing

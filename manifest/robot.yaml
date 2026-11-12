@@ -9,6 +9,13 @@
 # software/sesame-studio/sesame_studio.py, docs/build-guide/assets/sesame-angle-guide.png.
 # Items marked `status: unmeasured-nominal` or `assumed` await physical
 # confirmation (see HANDOVER.md open questions; log answers in DECISIONS.md).
+#
+# Course hardware (instructor decision 2026-11-12, DECISIONS.md D24): an
+# ESP32-S3 SuperMini with a PCA9685 servo driver, wired as in
+# `hardware_profiles.sesame_s3`. The upstream firmware above was written for a
+# LOLIN S2 Mini driving servos from its own GPIO pins. What remains of that
+# board here (`mcu.upstream_baseline`, `servo_bus.pulse_us`, `joints[].gpio_pin`)
+# is the historical upstream baseline and is labelled so where it appears.
 
 schema_version: 1
 robot: sesame
@@ -29,19 +36,32 @@ conventions:
   # every joint. Per-joint `sign` encodes the servo mounting direction from
   # the upstream angle guide: servos are mounted point-symmetrically, so
   # sign = +1 for {R1, L2, R3, L4} and -1 for {R2, L1, R4, L3}. With these
-  # signs all four hips share the internal soft range [-45°, +90°] and all
+  # signs all four hips share the internal soft range [-10°, +90°] and all
   # four feet share [-90°, +90°] (status: assumed until confirmed on the
-  # physical robot).
+  # physical robot). For a hip, negative q swings the leg toward the middle of
+  # the body and positive q toward the nearer end (the Standing direction).
   firmware_neutral_deg: 90
 
 mcu:
-  board: lolin_esp32_s2_mini
+  board: esp32_s3_supermini # course board; pins, addresses and pulses: hardware_profiles.sesame_s3
+  servo_driver: pca9685 # 16-channel I2C PWM driver; the S3 drives no servo from its own pins
   note: two-brain architecture — MCU does real-time PWM only (aps DECISIONS.md D1)
+  # Historical upstream baseline, not the course robot: the board the upstream
+  # firmware was written for. Kept because `joints[].gpio_pin` and
+  # `servo_bus.pulse_us` below still describe it.
+  upstream_baseline:
+    status: historical-upstream-baseline
+    board: lolin_esp32_s2_mini
+    servo_driver: direct-gpio-pwm
 
 servo_bus:
   pwm_hz: 50
-  pulse_us: [732, 2929] # ESP32Servo attach(pin, 732, 2929) ↔ 0..180°
   angle_range_deg: [0, 180]
+  # Historical upstream baseline (LOLIN S2 Mini, direct GPIO): ESP32Servo
+  # attach(pin, 732, 2929) ↔ 0..180°. The course S3 does not use this range;
+  # its pulses come from hardware_profiles.sesame_s3.pulse_profile.
+  pulse_us: [732, 2929]
+  pulse_us_status: historical-upstream-baseline
 
 servo_model:
   type: MG90S
@@ -53,63 +73,75 @@ servo_model:
 
 # Joint list. ORDER IS CANONICAL: list index == firmware servo channel.
 # Firmware enum (movement-sequences.h): R1=0 R2=1 L1=2 L2=3 R4=4 R3=5 L3=6 L4=7.
-# gpio_pin: LOLIN S2 Mini hand-wired baseline (sesame-firmware-main.ino).
-# limits_deg: [soft_lo, soft_hi] from Sesame Studio input validation; hard
-# limits are the servo's 0..180.
+# channel: that logical index. It is not a PCA9685 output; the course S3 maps
+#   joints to driver outputs in hardware_profiles.sesame_s3.intended_channels.
+# gpio_pin: historical upstream baseline, the LOLIN S2 Mini hand-wired pin
+#   (sesame-firmware-main.ino). The course S3 drives no servo from these pins.
+# limits_deg: [soft_lo, soft_hi] in firmware degrees; hard limits are the
+#   servo's 0..180.
+#   Hips: CAD-derived for the course body `internal-frame-s3`, from
+#   assets/printing/internal-frame-s3/leg-clearance.json (tools/leg_clearance.py,
+#   DECISIONS.md D21 and D24). Toward the middle of the body: 10°, the stock
+#   motions' own extreme, 3.0° and 0.5 mm short of first contact with the
+#   head-cover side wall. Toward the ends: the full 90°; on the way the front
+#   hip prints pass a frame-corner overlap of at most 0.36 mm. Nominal CAD, not
+#   a physical measurement. These values replace the Sesame Studio input
+#   validation for the hips (45° toward the middle), which this body cannot reach.
+#   Feet: Sesame Studio input validation; contact-free in the same sweep.
 # sign: internal positive direction multiplier (status: assumed, see conventions).
 joints:
   - name: R1
     channel: 0
-    gpio_pin: 1
+    gpio_pin: 1 # historical upstream S2 Mini pin, not the S3 wiring
     leg: front_right
     role: hip
-    limits_deg: [45, 180]
+    limits_deg: [80, 180]
     sign: 1
   - name: R2
     channel: 1
-    gpio_pin: 2
+    gpio_pin: 2 # historical upstream S2 Mini pin, not the S3 wiring
     leg: back_right
     role: hip
-    limits_deg: [0, 135]
+    limits_deg: [0, 100]
     sign: -1
   - name: L1
     channel: 2
-    gpio_pin: 4
+    gpio_pin: 4 # historical upstream S2 Mini pin, not the S3 wiring
     leg: front_left
     role: hip
-    limits_deg: [0, 135]
+    limits_deg: [0, 100]
     sign: -1
   - name: L2
     channel: 3
-    gpio_pin: 6
+    gpio_pin: 6 # historical upstream S2 Mini pin, not the S3 wiring
     leg: back_left
     role: hip
-    limits_deg: [45, 180]
+    limits_deg: [80, 180]
     sign: 1
   - name: R4
     channel: 4
-    gpio_pin: 8
+    gpio_pin: 8 # historical upstream S2 Mini pin, not the S3 wiring
     leg: back_right
     role: foot
     limits_deg: [0, 180]
     sign: -1
   - name: R3
     channel: 5
-    gpio_pin: 10
+    gpio_pin: 10 # historical upstream S2 Mini pin, not the S3 wiring
     leg: front_right
     role: foot
     limits_deg: [0, 180]
     sign: 1
   - name: L3
     channel: 6
-    gpio_pin: 13
+    gpio_pin: 13 # historical upstream S2 Mini pin, not the S3 wiring
     leg: front_left
     role: foot
     limits_deg: [0, 180]
     sign: -1
   - name: L4
     channel: 7
-    gpio_pin: 14
+    gpio_pin: 14 # historical upstream S2 Mini pin, not the S3 wiring
     leg: back_left
     role: foot
     limits_deg: [0, 180]
@@ -146,7 +178,12 @@ hardware_profiles:
     oled_address: 0x3c
     intended_channels: {R1: 4, R2: 5, L1: 0, L2: 1, R4: 7, R3: 6, L3: 2, L4: 3}
     intended_channels_status: recommended-default-not-physically-verified
-    calibration_compatible_manifest_ids: [e669b916d178ac0a, bd7675604b98ae46] # same record layout/pulse semantics; preserve saved values
+    # Earlier identities of this manifest whose saved NVS records the firmware
+    # still reads: same record layout and pulse semantics. A saved record keeps
+    # its own values, including joint limits wider than limits_deg above (the
+    # hips were 45° toward the middle up to 8d75c0ea0b2c68e7); new `limits`
+    # edits stay inside limits_deg.
+    calibration_compatible_manifest_ids: [e669b916d178ac0a, bd7675604b98ae46, 8d75c0ea0b2c68e7]
     oscillator_hz: 25000000 # nominal only; measure each PCA9685
     pulse_profile:
       id: tim-pca9685-150-512-v1
@@ -155,7 +192,7 @@ hardware_profiles:
       reference_ticks: [150, 512]
       interpolation: floor-reference-ticks
       # Preserve Tim's integer-angle mapping, then compensate for measured clock.
-      # This S3 profile does not rewrite the historical S2 simulator pulse range.
+      # This S3 profile does not rewrite the historical upstream servo_bus.pulse_us.
     calibration_rate_deg_s: 15
     controller_rate_deg_s: 60 # conservative commissioning cap, <= SafeAction maximum
     trim_limit_deg: 15 # re-index horns rather than using large offsets
