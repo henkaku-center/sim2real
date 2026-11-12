@@ -22,6 +22,21 @@ def pulse_profile(hw):
     return profile, low, high, tick
 
 
+MANIFEST_FILES = ("manifest/robot.yaml", "manifest/safeaction.yaml", "manifest/motions.yaml")
+
+
+def manifest_id():
+    """The firmware calibration identity: the manifests' bytes without the read-only timing input."""
+    # Adding/changing the read-only timing input alone does not change identity.
+    # Explicit compatible IDs preserve earlier same-layout saved records
+    # when a defaults-policy change produces a new current manifest identity.
+    # All other original manifest bytes still participate in the legacy hash.
+    paths = [ROOT / name for name in MANIFEST_FILES]
+    robot_bytes, removed = re.subn(rb'^    clock_measure_gpio: [0-9]+[^\n]*\n', b'', paths[0].read_bytes(), flags=re.M)
+    assert removed == 1, 'Expected one read-only timing-input field'
+    return hashlib.sha256(robot_bytes + b"".join(p.read_bytes() for p in paths[1:])).hexdigest()[:16]
+
+
 def interface():
     robot = yaml.safe_load((ROOT / "manifest/robot.yaml").read_text())
     hw = robot["hardware_profiles"]["sesame_s3"]
@@ -86,6 +101,10 @@ def interface():
     return {
         "schema_version": 1,
         "generated_by": "tools/generate_s3_firmware.py",
+        # Lets a reader without a YAML parser (tools/joints.py) prove this file
+        # still follows from the manifests: any byte change makes it stale.
+        "manifest_id": manifest_id(),
+        "source_sha256": {name: hashlib.sha256((ROOT / name).read_bytes()).hexdigest() for name in MANIFEST_FILES},
         "status": "NEEDS-HARDWARE; offline validation is recorded separately in the diagnosis",
         "procedure": "reference/SESAME-S3-CALIBRATION.md",
         "diagnosis": "reference/SESAME-S3-DIAGNOSIS.md",
@@ -106,6 +125,7 @@ def interface():
             "source": "manifest/robot.yaml joints[].points_at_deg and fitted_travel_deg; confirmed by the instructor on a built robot, 2026-11-12 (DECISIONS.md D24)",
             "rest_firmware_deg": robot["conventions"]["firmware_neutral_deg"],
             "per_joint": "joint_map[].points_at_firmware_deg and joint_map[].fitted_travel_firmware_deg",
+            "ask": "python3 tools/joints.py query NAME explains one joint; python3 tools/joints.py check NAME DEG [DEG ...] says whether targets stay inside the fitted travel before anything is sent. Standard library only; reads this file and the course body's leg-clearance evidence.",
             "hip": "Turns in the horizontal plane about a vertical axis; it never swings up or down. Values: forward, back, out_left, out_right. Once its leg is fitted a hip turns one way only from rest, 90 degrees in all: front hips forward, rear hips backward.",
             "foot": "Swings in a vertical plane. Values: down, up, out (level). Fitted travel is the whole 0..180.",
             "mirroring": "The same firmware angle means opposite directions on mirrored joints; read each joint's own entry.",
@@ -208,15 +228,9 @@ def interface():
 
 
 def render():
-    paths = [ROOT / "manifest" / f for f in ("robot.yaml", "safeaction.yaml", "motions.yaml")]
+    paths = [ROOT / name for name in MANIFEST_FILES]
     robot, safe, motions = [yaml.safe_load(p.read_text()) for p in paths]
-    # Adding/changing the read-only timing input alone does not change identity.
-    # Explicit compatible IDs below preserve earlier same-layout saved records
-    # when a defaults-policy change produces a new current manifest identity.
-    # All other original manifest bytes still participate in the legacy hash.
-    robot_bytes, removed = re.subn(rb'^    clock_measure_gpio: [0-9]+[^\n]*\n', b'', paths[0].read_bytes(), flags=re.M)
-    assert removed == 1, 'Expected one read-only timing-input field'
-    fingerprint = hashlib.sha256(robot_bytes + b"".join(p.read_bytes() for p in paths[1:])).hexdigest()[:16]
+    fingerprint = manifest_id()
     joints = robot["joints"]
     hw = robot["hardware_profiles"]["sesame_s3"]
     profile, tick_low, tick_high, tick_us = pulse_profile(hw)

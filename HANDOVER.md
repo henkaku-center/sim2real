@@ -30,6 +30,13 @@ its owner changes them. The body-v1 validator was rerun and its provenance
 baseline renewed; the draft still fails acceptance. Nothing was flashed or
 measured.
 
+**Joint query** (`tools/joints.py`, D25): `python3 tools/joints.py query L2` says
+where a joint points at 0°, 90° and 180°, how far it travels once its leg is
+fitted and what stops it beyond that; `check L2 90 180 90` says whether targets
+stay inside that travel before anything is sent. Plain Python, no device access.
+It exists because bench mode accepts any angle: on November 12 an assistant
+turned a rear hip forward into the front leg and drove another hip to 180°.
+
 ## Current design queries — November 10, 2026
 
 Use `python3 tools/circuit.py query hub.OE` for current design evidence and
