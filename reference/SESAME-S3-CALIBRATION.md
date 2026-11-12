@@ -171,6 +171,23 @@ commands, **not a measured shaft endpoint or physical pass**.
 channel demonstration. It does not rewrite them or extend production travel.
 The older raw commands remain compatibility paths, not the classroom recipe.
 
+## Directions and travel once legs are fitted
+
+Every joint rests at 90°. What 0° and 180° mean differs from joint to joint, and
+the sequence above is for loose pointers without legs. A hip turns in the
+horizontal plane; it does not swing up or down. Once its leg is fitted it turns
+one way only from 90°, a quarter turn in all: the front hips forward, the rear
+hips backward. A positive `q` turns a hip toward its own end of the body and
+swings a foot down.
+
+`manifest/robot.yaml` states this joint by joint as `points_at_deg` and
+`fitted_travel_deg`, and the generated interface repeats it as
+`joint_map[].points_at_firmware_deg` and `fitted_travel_firmware_deg`. Read the
+joint's own entry before a direction or range check on a fitted leg, and keep a
+fitted hip on its fitted side of 90° rather than sweeping it both ways. The
+instructor confirmed these directions on a built robot on November 12, 2026.
+This describes the reference build; your robot is yours to run differently.
+
 ## 5. Correct the observed example, then retain calibration
 
 Use the recommended names to identify a swapped lead or a pointer whose

@@ -20,7 +20,13 @@
 schema_version: 1
 robot: sesame
 hardware_revision:
-  printed_parts: "legs v117, frame/covers v121" # frozen; verify with instructor
+  # Course robot: frame, bottom cover, head cover and lid are the
+  # Loftwork-V3-derived kit in assets/printing/internal-frame-s3 (see its
+  # README); the eight leg prints are the unchanged upstream v117 files.
+  printed_parts: "frame, covers and head: assets/printing/internal-frame-s3 (Loftwork V3-derived); legs: upstream v117"
+  # History: the upstream robot this manifest was first extracted from. The
+  # simulator baseline models/sesame.xml (upstream-v117) still uses that body.
+  upstream_printed_parts: "legs v117, frame/covers v121"
   upstream_ref: "dorianborian/sesame-robot@main (reviewed 2026-07-23)"
 
 conventions:
@@ -31,15 +37,22 @@ conventions:
   angles_firmware: degrees # 0..180 at the serial/PWM boundary
   # Internal joint angle q relates to firmware angle by:
   #   q = deg2rad(firmware_deg - 90) * sign
-  # so q = 0 is the rest pose (all servos at 90°) for every joint.
-  # Positive internal q = leg segment swings DOWN (toward the ground), for
-  # every joint. Per-joint `sign` encodes the servo mounting direction from
-  # the upstream angle guide: servos are mounted point-symmetrically, so
-  # sign = +1 for {R1, L2, R3, L4} and -1 for {R2, L1, R4, L3}. With these
-  # signs all four hips share the internal soft range [-10°, +90°] and all
-  # four feet share [-90°, +90°] (status: assumed until confirmed on the
-  # physical robot). For a hip, negative q swings the leg toward the middle of
-  # the body and positive q toward the nearer end (the Standing direction).
+  # so q = 0 is the rest pose (all servos at 90°) for every joint: legs straight
+  # out to the sides, feet level.
+  # What positive q means depends on the joint's role:
+  #   hip:  the leg TURNS IN THE HORIZONTAL PLANE, about a vertical axis, toward
+  #         its own end of the body: forward for the front hips, backward for
+  #         the rear hips (the Standing direction). Negative q turns it toward
+  #         the middle of the body. A hip never swings up or down.
+  #   foot: the foot swings DOWN, toward the ground.
+  # Per-joint `sign` encodes the servo mounting direction from the upstream
+  # angle guide: servos are mounted point-symmetrically, so sign = +1 for
+  # {R1, L2, R3, L4} and -1 for {R2, L1, R4, L3}. The same firmware angle
+  # therefore means opposite things on mirrored joints; `joints[].points_at_deg`
+  # states it joint by joint. With these signs all four hips share the internal
+  # soft range [-10°, +90°] and all four feet share [-90°, +90°]. The directions
+  # were confirmed by the instructor on a built robot on 2026-11-12
+  # (DECISIONS.md D24); the signs agree with them.
   firmware_neutral_deg: 90
 
 mcu:
@@ -88,7 +101,17 @@ servo_model:
 #   a physical measurement. These values replace the Sesame Studio input
 #   validation for the hips (45° toward the middle), which this body cannot reach.
 #   Feet: Sesame Studio input validation; contact-free in the same sweep.
-# sign: internal positive direction multiplier (status: assumed, see conventions).
+# sign: internal positive direction multiplier; see conventions.
+# points_at_deg: where the joint points at firmware 0, 90 and 180 on the built
+#   robot (instructor-confirmed 2026-11-12, DECISIONS.md D24). Every joint is at
+#   Rest at 90. A hip turns in the horizontal plane: forward | back | out_left |
+#   out_right. A foot swings in a vertical plane: down | up | out (level).
+# fitted_travel_deg: [low, high], the sweep the joint makes once its leg is
+#   fitted. A fitted hip turns one way only from Rest, 90° in all: the front
+#   hips forward, the rear hips backward. The feet use the whole 0..180.
+#   limits_deg reaches 10° past Rest on a hip's other side only because the
+#   upstream stock walk and point go there; a direction or range test of a
+#   fitted hip stays inside fitted_travel_deg.
 joints:
   - name: R1
     channel: 0
@@ -97,6 +120,8 @@ joints:
     role: hip
     limits_deg: [80, 180]
     sign: 1
+    points_at_deg: {0: back, 90: out_right, 180: forward}
+    fitted_travel_deg: [90, 180] # forward only
   - name: R2
     channel: 1
     gpio_pin: 2 # historical upstream S2 Mini pin, not the S3 wiring
@@ -104,6 +129,8 @@ joints:
     role: hip
     limits_deg: [0, 100]
     sign: -1
+    points_at_deg: {0: back, 90: out_right, 180: forward}
+    fitted_travel_deg: [0, 90] # backward only
   - name: L1
     channel: 2
     gpio_pin: 4 # historical upstream S2 Mini pin, not the S3 wiring
@@ -111,6 +138,8 @@ joints:
     role: hip
     limits_deg: [0, 100]
     sign: -1
+    points_at_deg: {0: forward, 90: out_left, 180: back}
+    fitted_travel_deg: [0, 90] # forward only
   - name: L2
     channel: 3
     gpio_pin: 6 # historical upstream S2 Mini pin, not the S3 wiring
@@ -118,6 +147,8 @@ joints:
     role: hip
     limits_deg: [80, 180]
     sign: 1
+    points_at_deg: {0: forward, 90: out_left, 180: back}
+    fitted_travel_deg: [90, 180] # backward only
   - name: R4
     channel: 4
     gpio_pin: 8 # historical upstream S2 Mini pin, not the S3 wiring
@@ -125,6 +156,8 @@ joints:
     role: foot
     limits_deg: [0, 180]
     sign: -1
+    points_at_deg: {0: down, 90: out, 180: up}
+    fitted_travel_deg: [0, 180]
   - name: R3
     channel: 5
     gpio_pin: 10 # historical upstream S2 Mini pin, not the S3 wiring
@@ -132,6 +165,8 @@ joints:
     role: foot
     limits_deg: [0, 180]
     sign: 1
+    points_at_deg: {0: up, 90: out, 180: down}
+    fitted_travel_deg: [0, 180]
   - name: L3
     channel: 6
     gpio_pin: 13 # historical upstream S2 Mini pin, not the S3 wiring
@@ -139,6 +174,8 @@ joints:
     role: foot
     limits_deg: [0, 180]
     sign: -1
+    points_at_deg: {0: down, 90: out, 180: up}
+    fitted_travel_deg: [0, 180]
   - name: L4
     channel: 7
     gpio_pin: 14 # historical upstream S2 Mini pin, not the S3 wiring
@@ -146,6 +183,8 @@ joints:
     role: foot
     limits_deg: [0, 180]
     sign: 1
+    points_at_deg: {0: up, 90: out, 180: down}
+    fitted_travel_deg: [0, 180]
 
 # Per-servo calibration offsets in firmware degrees (servoSubtrim).
 # All zero until measured on the physical robot (NEEDS-HARDWARE).

@@ -33,6 +33,15 @@
       "soft_internal_deg": [
         -10,
         90
+      ],
+      "points_at_firmware_deg": {
+        "0": "back",
+        "90": "out_right",
+        "180": "forward"
+      },
+      "fitted_travel_firmware_deg": [
+        90,
+        180
       ]
     },
     {
@@ -51,6 +60,15 @@
       ],
       "soft_internal_deg": [
         -10,
+        90
+      ],
+      "points_at_firmware_deg": {
+        "0": "back",
+        "90": "out_right",
+        "180": "forward"
+      },
+      "fitted_travel_firmware_deg": [
+        0,
         90
       ]
     },
@@ -71,6 +89,15 @@
       "soft_internal_deg": [
         -10,
         90
+      ],
+      "points_at_firmware_deg": {
+        "0": "forward",
+        "90": "out_left",
+        "180": "back"
+      },
+      "fitted_travel_firmware_deg": [
+        0,
+        90
       ]
     },
     {
@@ -90,6 +117,15 @@
       "soft_internal_deg": [
         -10,
         90
+      ],
+      "points_at_firmware_deg": {
+        "0": "forward",
+        "90": "out_left",
+        "180": "back"
+      },
+      "fitted_travel_firmware_deg": [
+        90,
+        180
       ]
     },
     {
@@ -109,6 +145,15 @@
       "soft_internal_deg": [
         -90,
         90
+      ],
+      "points_at_firmware_deg": {
+        "0": "down",
+        "90": "out",
+        "180": "up"
+      },
+      "fitted_travel_firmware_deg": [
+        0,
+        180
       ]
     },
     {
@@ -128,6 +173,15 @@
       "soft_internal_deg": [
         -90,
         90
+      ],
+      "points_at_firmware_deg": {
+        "0": "up",
+        "90": "out",
+        "180": "down"
+      },
+      "fitted_travel_firmware_deg": [
+        0,
+        180
       ]
     },
     {
@@ -147,6 +201,15 @@
       "soft_internal_deg": [
         -90,
         90
+      ],
+      "points_at_firmware_deg": {
+        "0": "down",
+        "90": "out",
+        "180": "up"
+      },
+      "fitted_travel_firmware_deg": [
+        0,
+        180
       ]
     },
     {
@@ -166,9 +229,28 @@
       "soft_internal_deg": [
         -90,
         90
+      ],
+      "points_at_firmware_deg": {
+        "0": "up",
+        "90": "out",
+        "180": "down"
+      },
+      "fitted_travel_firmware_deg": [
+        0,
+        180
       ]
     }
   ],
+  "joint_directions": {
+    "source": "manifest/robot.yaml joints[].points_at_deg and fitted_travel_deg; confirmed by the instructor on a built robot, 2026-11-12 (DECISIONS.md D24)",
+    "rest_firmware_deg": 90,
+    "per_joint": "joint_map[].points_at_firmware_deg and joint_map[].fitted_travel_firmware_deg",
+    "hip": "Turns in the horizontal plane about a vertical axis; it never swings up or down. Values: forward, back, out_left, out_right. Once its leg is fitted a hip turns one way only from rest, 90 degrees in all: front hips forward, rear hips backward.",
+    "foot": "Swings in a vertical plane. Values: down, up, out (level). Fitted travel is the whole 0..180.",
+    "mirroring": "The same firmware angle means opposite directions on mirrored joints; read each joint's own entry.",
+    "soft_limits": "soft_firmware_deg reaches 10 degrees past rest on a hip's other side only because the upstream stock walk and point go there. A direction or range test of a fitted hip stays inside fitted_travel_firmware_deg.",
+    "scope": "Describes the reference build. Owners may choose other travel on their own robots."
+  },
   "pulse": {
     "profile_id": "tim-pca9685-150-512-v1",
     "reference_ticks": [
@@ -333,6 +415,7 @@
     "setup": "Loosely fitted single-arm horn pointers; legs not attached; USB only, battery disconnected; one channel at a time",
     "advance": "Keep heartbeat active; wait for status current=target at each command before the next; off between channels",
     "legacy_alias": "arm hornless CH is accepted for compatibility but is not the recommended procedure",
+    "with_legs_fitted": "This full-range sequence is for loose pointers without legs. With a leg fitted, a joint's travel is joint_map[].fitted_travel_firmware_deg; a fitted hip turns one way only from 90",
     "meaning": "Commanded angles, not measured shaft limits or a physical pass from ACK"
   },
   "calibration_compatibility": {
@@ -448,7 +531,7 @@
     {
       "syntax": "q INTERNAL_DEG",
       "mode": "joint",
-      "meaning": "Internal signed joint angle; 0 is neutral"
+      "meaning": "Internal signed joint angle; 0 is neutral. Positive turns a hip toward its own end of the body in the horizontal plane and swings a foot down"
     },
     {
       "syntax": "jog DELTA_DEG",

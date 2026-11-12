@@ -12,13 +12,20 @@ below is documentation, not a mandatory slow-motion workflow.
 **November 12 hip limits:** the manifest's hip soft limits are now L1/R2 0–100°
 and R1/L2 80–180°: 10° toward the middle of the body on the course body, from
 CAD leg clearance, not from a physical measurement (DECISIONS.md D24). The
-manifest identity becomes `b3c3fc7ae0ac0856`. Saved records under
+manifest identity becomes `fe108150ee38fa10`. Saved records under
 `8d75c0ea0b2c68e7`, `e669b916d178ac0a` and `bd7675604b98ae46` load with every
 stored value as saved. A stored hip limit wider than the new soft limit is kept
 and bounds that joint as before; boot and `show` name such joints; nothing is
 clamped or written on load. A new `limits NAME LOW HIGH` stays inside the soft
 limits; one outside is refused and changes nothing. Your limits are yours:
 change `manifest/robot.yaml` and regenerate for a different range.
+
+**Joint directions:** every joint rests at 90°. A hip turns in the horizontal
+plane and, once its leg is fitted, one way only from 90°: the front hips
+forward, the rear hips backward. What 0° and 180° mean differs joint by joint;
+`manifest/robot.yaml` gives `points_at_deg` and `fitted_travel_deg` for each,
+and the generated interface repeats them. The full 0→90→180→90 bench sequence
+below is for loose pointers without legs.
 
 **October 25 OE correction:** canonical OE is exposed **GPIO7/I17 → hub OE/A7**,
 with pull-up toward logic **3V3 VCC/A4**, not servo V+. The student-reported

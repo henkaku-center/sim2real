@@ -1762,7 +1762,7 @@
     },
     {
       "path": "firmware/sesame-s3/manifest_generated.h",
-      "sha256": "b656cbad1865278939643d11b025a27ac542ba59cc1c539d6cb0acd1dff40388"
+      "sha256": "417e6c4c171b864ea8e6a8a0bd204af0987577539dac540f9c81f692bef880a4"
     },
     {
       "path": "manifest/circuit-annotations.json",
@@ -1770,12 +1770,12 @@
     },
     {
       "path": "reference/sesame-s3-interface.json",
-      "sha256": "1d3e6051adf9598d6de85726ff895e38e63e2379cb74bbd6f158e3f366028500"
+      "sha256": "931f3e7e074d2f06918cc32154cea94e21d20a7cb8764c90f952fdb38eba5f50"
     },
     {
       "path": "tools/circuit.py",
       "sha256": "9c7c8d70cec20e1815f3dba526bffa3606ed69a1d553734926583e5cb1a90a12"
     }
   ],
-  "fingerprint": "d4a3a5205971ecb3e645b8c0da0d793dfb895ace5b211e8ac6a9e5a896200fbf"
+  "fingerprint": "c600460132fb7940352c2cc72d088c7e9018c9933f4f46fa47ba61c11270d16c"
 }

@@ -86,3 +86,24 @@ def test_interface_states_what_happens_to_stored_limits():
     assert {name: joint["soft_firmware_deg"] for name, joint in hips.items()} == {
         "R1": [80, 180], "R2": [0, 100], "L1": [0, 100], "L2": [80, 180]}
     assert all(joint["soft_internal_deg"] == [-10, 90] for joint in hips.values())
+
+
+def test_interface_exports_the_manifest_joint_directions():
+    """The APS handoff can be checked against these after import; they come from the manifest."""
+    interface = json.loads((ROOT / "reference/sesame-s3-interface.json").read_text())
+    joints = yaml.safe_load((ROOT / "manifest/robot.yaml").read_text())["joints"]
+    exported = {joint["name"]: joint for joint in interface["joint_map"]}
+    assert list(exported) == [joint["name"] for joint in joints]
+    for joint in joints:
+        entry = exported[joint["name"]]
+        assert entry["points_at_firmware_deg"] == {str(deg): joint["points_at_deg"][deg] for deg in (0, 90, 180)}
+        assert entry["fitted_travel_firmware_deg"] == joint["fitted_travel_deg"]
+        assert entry["leg"] == joint["leg"] and entry["role"] == joint["role"]
+    # A fitted hip turns one way only; the front hips forward, the rear hips backward.
+    assert {name: entry["fitted_travel_firmware_deg"] for name, entry in exported.items() if entry["role"] == "hip"} == {
+        "R1": [90, 180], "R2": [0, 90], "L1": [0, 90], "L2": [90, 180]}
+    assert exported["L1"]["points_at_firmware_deg"] == {"0": "forward", "90": "out_left", "180": "back"}
+    assert exported["R1"]["points_at_firmware_deg"] == {"0": "back", "90": "out_right", "180": "forward"}
+    directions = interface["joint_directions"]
+    assert directions["rest_firmware_deg"] == 90 and "never swings up or down" in directions["hip"]
+    assert "one way only" in interface["bench"]["with_legs_fitted"]

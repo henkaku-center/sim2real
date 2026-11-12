@@ -2,7 +2,7 @@
 #pragma once
 #include <stdint.h>
 namespace sesame {
-constexpr char MANIFEST_ID[] = "b3c3fc7ae0ac0856";
+constexpr char MANIFEST_ID[] = "fe108150ee38fa10";
 constexpr char PULSE_PROFILE_ID[] = "tim-pca9685-150-512-v1";
 constexpr const char* COMPATIBLE_MANIFEST_IDS[] = {"e669b916d178ac0a", "bd7675604b98ae46", "8d75c0ea0b2c68e7"};
 constexpr uint32_t NEUTRAL = 90;

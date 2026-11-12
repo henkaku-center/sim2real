@@ -86,6 +86,7 @@ that student forks must keep the same stack, firmware or behaviour.
 - Prefer headless, scriptable verification: `python -m pytest`, CDP screenshot+assertion scripts, Wokwi CLI. Keep the edit → run → assert loop under ~10 seconds where possible.
 - Large binaries (`.blend`, `.ply` splats, datasets, video) go through Git LFS. Never commit them raw.
 - When physics results look wrong, check units, joint order, and angle conventions against the manifest before touching solver parameters.
+- Every joint rests at 90°. Each joint's direction and fitted travel are typed in `manifest/robot.yaml` (`points_at_deg`, `fitted_travel_deg`): 0° and 180° mean different things by side and end, and a fitted hip turns one way only, in the horizontal plane. Check each target against that before sending it to a robot (instructor-confirmed on a built robot, November 12, 2026).
 - Hardware ground truth lives in this repo (`HANDOVER.md`, `reference/PRIOR-ART-SIM.md`) and upstream (<https://github.com/dorianborian/sesame-robot>). The course repo (`../aps/` — `DECISIONS.md`, `HANDOVER.md`, inventory spreadsheets) is a secondary source and **may not be present** in your environment; never hard-depend on it.
 
 ## Capabilities and evidence

@@ -97,8 +97,10 @@ def test_limits_are_sane(joints):
 
 
 def test_signs_encode_point_symmetric_servo_mounting(joints):
-    # From the upstream angle guide: "down" is 90->180 for {R1,L2,R3,L4} but
-    # 90->0 for {R2,L1,R4,L3}. Positive internal q = down for every joint.
+    # From the upstream angle guide: the positive direction is 90->180 for
+    # {R1,L2,R3,L4} but 90->0 for {R2,L1,R4,L3}. Positive internal q turns a hip
+    # toward its own end of the body, in the horizontal plane, and swings a foot
+    # down. tests/test_joint_directions.py checks that against the typed table.
     for j in joints:
         assert j["sign"] in (-1, 1)
         expected = 1 if j["leg"] in ("front_right", "back_left") else -1
