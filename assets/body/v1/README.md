@@ -79,11 +79,8 @@ same status and distance. Twenty-six findings left with the poses that are no
 longer sampled (hips beyond −10° toward the middle, and the old coupled
 midpoint); six are at the new coupled midpoint, inside the upper-leg contact
 already recorded for hips at +20° to +60°. All static results are unchanged.
-The part exports were written again by the same FreeCAD build. The riser meshes
-keep their vertices, area and volume with a different triangle order. The frame,
-bottom and assembled STEP files keep their solid, face, edge and vertex counts
-and their bounds, and differ in the last printed digits (volumes agree within
-2e-9 mm³).
+The same FreeCAD build wrote the part exports again, and every STEP, STL and 3MF
+file here is byte-identical to its 2026-10-06 version.
 
 The validator intentionally exits nonzero for the overall draft. Do not read
 passing software regression tests or `new_body_geometry_pass` as whole-robot
