@@ -1,0 +1,121 @@
+{
+  "scope": "software-only: course hip soft limits, S3 board name, typed joint directions and saved-calibration compatibility; no flashing and no physical device operations",
+  "date": "2026-11-12",
+  "decision": "DECISIONS.md D24 (instructor decision of 2026-11-12)",
+  "base_revision": "9b6c317f7d258f77bc6ef8cc7f7cfa1fbe7e033c",
+  "platform": "macOS-15.7.9-x86_64-i386-64bit",
+  "toolchain": {
+    "arduino_cli": "1.5.1",
+    "host_python": "3.12",
+    "pyyaml": "6.0.3",
+    "pyserial": "3.5",
+    "core": "esp32:esp32@3.3.11",
+    "index_url": "https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json",
+    "fqbn": "esp32:esp32:esp32s3:CDCOnBoot=cdc,FlashSize=4M,PartitionScheme=default,PSRAM=disabled,EraseFlash=none",
+    "libraries": {
+      "Adafruit PWM Servo Driver Library": "3.0.3",
+      "Adafruit SSD1306": "2.5.17",
+      "Adafruit GFX Library": "1.12.6",
+      "Adafruit BusIO": "1.17.4"
+    }
+  },
+  "manifest_id": "fe108150ee38fa10",
+  "previous_manifest_id": "8d75c0ea0b2c68e7",
+  "accepted_prior_manifest_ids": [
+    "e669b916d178ac0a",
+    "bd7675604b98ae46",
+    "8d75c0ea0b2c68e7"
+  ],
+  "soft_limits_deg": {
+    "R1": [
+      80,
+      180
+    ],
+    "R2": [
+      0,
+      100
+    ],
+    "L1": [
+      0,
+      100
+    ],
+    "L2": [
+      80,
+      180
+    ],
+    "feet": [
+      0,
+      180
+    ]
+  },
+  "previous_hip_soft_limits_deg": {
+    "R1": [
+      45,
+      180
+    ],
+    "R2": [
+      0,
+      135
+    ],
+    "L1": [
+      0,
+      135
+    ],
+    "L2": [
+      45,
+      180
+    ]
+  },
+  "stored_limits": {
+    "before": "Calibration::valid() compared stored limits with SOFT_LOW/SOFT_HIGH. Under the narrower soft limits that rule would have refused any record holding the earlier hip limits on load, and the firmware would have started from defaults.",
+    "now": "A record is validated for structure only (limits within 0..180 containing 90). A stored limit wider than the manifest soft limit is loaded as saved, bounds that joint's commands as saved, and is named at boot and by show. Nothing is clamped or written to NVS on load. An explicit save stores the same values under the current identity. A new limits edit outside the soft range is refused and changes nothing."
+  },
+  "source_sha256": {
+    "firmware/sesame-s3/bench_display.h": "956dc6f11f8124c27c66cde8e44ef9f74fb4d3552b5096ac62cea1f8498d2401",
+    "firmware/sesame-s3/clock_measurement.h": "b7b2b76ed6763a0f9ba6ecf9198b3e8612b0d1d9f17e1bd0b470d9a6d2b0606b",
+    "firmware/sesame-s3/command_line.h": "2fae005c462eda30a42b0945ec0d551a6a3e1af5b4266aa38b026af835111ecc",
+    "firmware/sesame-s3/controller.cpp": "83d15e4fce2320f8a0a687be5d46fdbedd84e7d1b988f64461930500e87bb314",
+    "firmware/sesame-s3/manifest_generated.h": "417e6c4c171b864ea8e6a8a0bd204af0987577539dac540f9c81f692bef880a4",
+    "firmware/sesame-s3/safe_action.h": "3a907487068eb32dcc56d5c5a06f91a738651bf4bc969e5b64127b15ba8e7392",
+    "firmware/sesame-s3/sesame-s3.ino": "617bff8592b8f7521e943b52530b976d4aca596706f06f66c9813abd493e4919",
+    "firmware/sesame-s3/web_ui.h": "742850f6dd1930ee38a3639aca8c5580f91210e868454826206b2fb06ceba2d3"
+  },
+  "build": {
+    "command": "python3 tools/sesame_s3.py build",
+    "result": "compiled, no warnings from controller.cpp or safe_action.h; not uploaded",
+    "sketch_bytes": 1029189,
+    "binaries_sha256": {
+      "sesame-s3.ino.partitions.bin": "148b959cbff1c38aa8e1d5c0ba9d612c54997b945e56a63f41223eef650653a1",
+      "boot_app0.bin": "f94c5d786a7a8fab06ac5d10e33bf37711a6697636dc037559ea19cc410a17f0",
+      "sesame-s3.ino.bin": "2fa3e8948204446c00c56746a9edd505ed8274ae4dfac66895bd36a6f531eb23",
+      "sesame-s3.ino.bootloader.bin": "5f95cbc8b40b7a373f9cb85b534cb7a570cdad30ca27c7021775d830ca03276b",
+      "sesame-s3.ino.merged.bin": "4da68dc77fd4debe90e8581277688ed24aef107b0e028ea8089c0ab1c4fc3b02"
+    }
+  },
+  "validation": {
+    "host_firmware_tests": {
+      "paths": [
+        "tests/test_s3_firmware.py",
+        "tests/test_s3_clock.py"
+      ],
+      "result": "7 passed",
+      "native_sanitizers": [
+        "address",
+        "undefined"
+      ],
+      "saved_calibration": "tests/firmware/test_s3_saved_calibration.cpp: 5 records loaded as stored (identities e669b916d178ac0a, bd7675604b98ae46, 8d75c0ea0b2c68e7, fe108150ee38fa10 and one with nonzero padding), 5 refused (unknown identity, checksum, magic, limit below 0, limit excluding 90). Records are packed in Python, independently of the firmware header."
+    },
+    "full_suite": "uv run pytest -q: 407 passed, 2 skipped, 1 xfailed with the browser tests running (396 passed, 13 skipped without web/node_modules)",
+    "joint_directions": "tests/test_joint_directions.py: 9 passed; typed directions, signs, both generated twins, the upstream baseline model and leg-clearance evidence and placement agree"
+  },
+  "physical": "none: no robot, servo, NVS or radio was involved; behaviour on a device is not established by this record",
+  "intermediate_manifest_id": {
+    "id": "b3c3fc7ae0ac0856",
+    "note": "generated on this branch before the joint directions were added; never flashed; not a readable identity"
+  },
+  "joint_directions": {
+    "source": "manifest/robot.yaml joints[].points_at_deg and fitted_travel_deg, instructor-confirmed on a built robot 2026-11-12",
+    "exported_as": "reference/sesame-s3-interface.json joint_map[].points_at_firmware_deg, joint_map[].fitted_travel_firmware_deg and joint_directions",
+    "firmware_behaviour": "unchanged: the firmware does not read the directions; soft limits and motions are as before"
+  }
+}

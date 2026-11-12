@@ -210,6 +210,10 @@ paths/timestamps are not claimed. No hardware result is inferred from compilatio
    Repeat0–7; `map NAME CH` from observation. `arm joint NAME`, `angle 90`,
    `q 5`, `q 0`, `off`; adjust `sign`, small `trim` and staged `limits` while off.
    Eight careful endpoint checks may need a second session: do not rush to stand.
+   A positive `q` turns a hip toward its own end of the body, in the horizontal
+   plane, and swings a foot down; a fitted hip turns one way only from 90°. Each
+   joint's directions and fitted travel are in `manifest/robot.yaml`
+   (`points_at_deg`, `fitted_travel_deg`).
 5. **45–55min:** `off`, `verify NAME` for each actually checked joint, `save`,
    `show`, `export`. Retain JSON and measured frequency/robot identity. Power-cycle;
    `show` must retain values and outputs remain off. In a supported single-joint

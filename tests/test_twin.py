@@ -109,9 +109,14 @@ def test_default_hardware_is_the_course_s3_and_the_s2_board_is_historical(manife
     # Wiring and calibration are read from robot.yaml, never copied.
     assert current["robot_yaml"] == "hardware_profiles.sesame_s3"
     assert manifest.raw["hardware_profiles"]["sesame_s3"]["pca_address"] == 0x40
-    old = spec["hardware"]["profiles"]["lolin_s2_mini_baseline"]
+    # robot.yaml owns both board names; twin.yaml only points at them.
+    assert manifest.raw["mcu"]["board"] == "esp32_s3_supermini"
+    assert manifest.raw["mcu"]["servo_driver"] == "pca9685"
+    for profile in spec["hardware"]["profiles"].values():
+        assert not {"mcu_board", "servo_driver"} & set(profile)
+    old = twin.hardware_profile(spec, manifest, "lolin_s2_mini_baseline")
     assert old["status"] == "historical-upstream-baseline"
-    assert twin._lookup(manifest.raw, old["mcu_board_from"]) == "lolin_esp32_s2_mini"
+    assert (old["mcu_board"], old["servo_driver"]) == ("lolin_esp32_s2_mini", "direct-gpio-pwm")
     for design in DESIGNS:
         assert records[design]["hardware_profile"]["mcu_board"] == "esp32_s3_supermini"
 

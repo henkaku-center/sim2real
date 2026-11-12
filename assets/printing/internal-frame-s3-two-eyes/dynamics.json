@@ -7,7 +7,7 @@
   "engine": "MuJoCo (reference)",
   "mjcf": {
     "path": "models/internal-frame-s3-two-eyes.xml",
-    "sha256": "f35f6b6d4c18acbdce1f26f32a5a6cba31fa58ab735d5daa6d31a779c084d2c1"
+    "sha256": "e9842b88b89b4ded4891daa6cc6b9d27279b9440c89b8111457f2842762b8c6e"
   },
   "frame": {
     "torso": "design CAD frame: X front, Y left, Z up, origin at the CAD origin",
@@ -301,11 +301,11 @@
       ],
       "sign": 1,
       "limits_firmware_deg": [
-        45.0,
+        80.0,
         180.0
       ],
       "range_rad": [
-        -0.785398,
+        -0.174533,
         1.570796
       ]
     },
@@ -329,10 +329,10 @@
       "sign": -1,
       "limits_firmware_deg": [
         0.0,
-        135.0
+        100.0
       ],
       "range_rad": [
-        -0.785398,
+        -0.174533,
         1.570796
       ]
     },
@@ -356,10 +356,10 @@
       "sign": -1,
       "limits_firmware_deg": [
         0.0,
-        135.0
+        100.0
       ],
       "range_rad": [
-        -0.785398,
+        -0.174533,
         1.570796
       ]
     },
@@ -382,11 +382,11 @@
       ],
       "sign": 1,
       "limits_firmware_deg": [
-        45.0,
+        80.0,
         180.0
       ],
       "range_rad": [
-        -0.785398,
+        -0.174533,
         1.570796
       ]
     },
@@ -1165,9 +1165,9 @@
     "spawn_height_m": 0.0185019836
   },
   "source_hashes": {
-    "manifest/robot.yaml": "3eb4e19b57bd4d45f4ab85fd57e03d018628a07a8f09cc9dc26c223d9853156b",
-    "manifest/twin.yaml": "cf885b222add75f2e1d22db1ee3b46bac413a7bf6fe058e8ffd9890a4226e3d3",
-    "sim/twin.py": "84fe013eac44e7f3361ef9b0ed5270e567813ad5e3f81b11ec143a0991269d81",
+    "manifest/robot.yaml": "a9ae157f0485eaaa2f0e5fbf4748c61567922420a1d02e5689b80066d2ea13a5",
+    "manifest/twin.yaml": "e7b5876540db1bb577da1cebf1634ec9006312ced498cdbcd2d4b48fddb4e642",
+    "sim/twin.py": "24e13d1e08f4d6444f7be98cf59f550600bdff702381e7e467b6d5627e15ad76",
     "sim/manifest.py": "a747eb1e2fac3939e616cf07c5d4a4dd5ee6d826efbe12418a3dc2421d5b2f42",
     "sim/prepare_assets.py": "459d6b558e8a89355cf235b029b51ae8bd64f9b8c79fc3b79588c4d98fc446ac",
     "assets/printing/internal-frame-s3-two-eyes/assembly.json": "fb8d4f65700d90ef89a4276ac626ed5e2696b020fb9f80d99e100e23a939bdb6",

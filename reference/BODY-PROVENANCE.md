@@ -1,9 +1,110 @@
-# Held body-v1 provenance refresh
+# Held body-v1 provenance
+
+Updated November 12, 2026. The body-v1 report is held at `FAIL-DRAFT`. This page
+records how its inputs are pinned. It is not approval to print, release the body
+preview or move hardware.
+
+## Current baseline: validator rerun of November 12, 2026
+
+The instructor's decision of November 12 (DECISIONS.md D24) changed
+`manifest/robot.yaml`: hip `limits_deg` became L1/R2 0–100 and R1/L2 80–180,
+`mcu.board` became the course S3, and `8d75c0ea0b2c68e7` joined the readable
+calibration identities. Joint limits are an effective input of the body job:
+`tools/check_body.py::make_job` samples each joint across its manifest range.
+This was therefore not a metadata refresh. The validator was run again.
+
+The same day the manifest gained typed joint directions (`points_at_deg`,
+`fitted_travel_deg`), a corrected convention comment and the course body in
+`hardware_revision.printed_parts`. Those edits leave the body job numerically
+the same. They are still manifest differences outside the tool's exact-delta
+list, which is empty, so the validator ran a second time on the final manifest.
+The baseline is that second run.
+
+**Runs.** `uv run python tools/check_body.py`, the command in
+`reference/BODY-CAD.md`, on macOS x86-64 with `/Applications/FreeCAD.app`:
+FreeCAD 1.1.3 (build `145529fe`), OCCT 7.8.1, Python 3.11.14, motion checks with
+python-fcl 0.7.0.11. This is the build recorded in the October report. Each run
+exits with code 1, because the draft still fails acceptance.
+
+| Run | Commit | Manifest SHA-256 | Wall time |
+|---|---|---|---|
+| First rerun (hip limits, board) | `cf8241d` | `3b38a3fe…` | 9 min 48 s |
+| Second rerun (final manifest), the baseline | `828862d` | `a9ae157f…` | 9 min 4 s |
+
+**Result.** `FAIL-DRAFT`, `geometry_pass: false`, `release_ready: false`. The two
+reruns agree in every finding.
+
+- Static results are unchanged from October: 6,732 body/component pairs with
+  the same eight retained-interface findings, 36 body/body pairs without
+  intersection, fastener alignment 12/12, wall findings on the retained frame
+  and bottom cover.
+- Sampled motion: 9,648 pairs and 38 findings, against 10,656 and 58 in October.
+  Hips are sampled from −10° to +90° instead of −45° to +90°. All 8,784 rows
+  present in both reports have the same status and distance. Of the 58 October
+  findings, 26 belonged to poses that are no longer sampled (hips at −45° and
+  −40°, and the coupled midpoint at 22.5°) and 32 remain. Six rows are new: the
+  coupled midpoint is now 40°, inside the upper-leg contact with the retained
+  frame already recorded for hips at +20° to +60°. All 38 are against the
+  retained frame; none involves a new body part.
+- Exports: in the baseline run every STEP, STL and 3MF file, the scene and the
+  static findings are byte-identical to their October versions. Five generated
+  files differ, all of them motion results: `report.json`, `rom-animation.json`,
+  `index.html`, `rom-preview.gif` and `rom-sweep.png`. `v1/README.md` was edited
+  by hand to state the result.
+- The first rerun wrote eleven part files differently: the four riser STL/3MF
+  pairs with the same vertices, area and volume in another triangle order, and
+  the frame, bottom and assembled STEP files with the same solid, face, edge and
+  vertex counts and bounds, volumes equal within 2e-9 mm³. The second run
+  returned to the October bytes, so that was run-to-run variation of the
+  exporter with the same geometry, not an effect of the manifest.
+
+**How it is recorded.**
+
+- Commit `828862d1442db375b68e6594a39d6773eac281d4` holds the validator's
+  canonical report, without a revalidation record, next to the manifest it
+  executed. `tools/revalidate_body_provenance.py` names that commit, the report
+  digest, the digest of the preserved-file map and the eight consumer hashes,
+  which are unchanged since October. Commit `cf8241d` holds the first rerun and
+  stays in history as a superseded baseline.
+- `ALLOWED_MANIFEST_CHANGES` is empty and the method is
+  `executed-manifest-exact-v4`. The committed manifest is byte for byte the
+  executed one and no difference is excepted. The five firmware-only deltas that
+  method v3 excepted against the October run are part of the executed manifest
+  now. A later manifest edit, firmware metadata included, fails verification
+  until it is audited and listed as an exact delta, or the validator runs again.
+- The committed report carries the `input_revalidation` record written by the
+  tool's `--write`. Its `validator_executed: false` describes that write step,
+  which runs no geometry. Removing the record reconstructs the baseline report
+  byte for byte.
+- `tests/test_body_provenance.py` keeps every rejection case. Cases that relied
+  on the v3 delta list run against a fixture delta list, and the fields v3
+  excepted are tested as effective inputs.
+
+```sh
+python tools/revalidate_body_provenance.py  # read-only verification
+# With explicit provenance-repair authority, after an audited exact delta:
+python tools/revalidate_body_provenance.py --write --baseline 828862d1442db375b68e6594a39d6773eac281d4
+python -m pytest -q tests/test_body_provenance.py tests/test_body_cad.py
+```
+
+Verification needs no history. `--write` reads the baseline report from that
+commit, so the commit stays reachable when this change is merged with a merge
+commit, as earlier pull requests were.
+
+In CI the body-CAD job takes the full FreeCAD route for this change and ends at
+its fit-acceptance step, as every full run of the held draft has. That step
+reports the draft's `FAIL-DRAFT`; it is a result, not a waived failure. On the
+first rerun's commit both CI runners reproduced the committed numbers.
+
+## Earlier baseline: October 5 run and its metadata refreshes
+
+Kept as history. The method v3 exception list described here is no longer in
+the tool; the rerun above replaced that baseline.
 
 Updated October 25, 2026. This is **metadata revalidation, not a geometry-validator rerun**
 and not approval to print, release the body preview or move hardware.
 
-## Cause
+### Cause
 
 The body report was generated at `b38d4b3`. Commit `71af7e0`, owned by this
 APS/sim2real instruction/firmware session, subsequently added only
@@ -46,7 +147,7 @@ from that comparison. This is input/job equivalence, not a rerun of geometry
 acceptance. In particular, a physical clock-measurement jumper is not newly
 modeled or certified for body fit by this metadata repair.
 
-## Proof and reader semantics
+### Proof and reader semantics
 
 `tools/revalidate_body_provenance.py` now uses
 `unused-s3-firmware-metadata-v3`: three exact additions (the existing Tim pulse

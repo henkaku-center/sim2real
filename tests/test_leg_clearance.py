@@ -265,7 +265,7 @@ def test_sesame_studio_limits_exceed_the_free_range_toward_the_middle(fresh, man
     rows = {row['joint']: row for row in report['limits']}
     for name in HIPS:
         (end,) = [e for e in rows[name]['ends'].values() if e['direction'] == 'toward_middle']
-        assert end['kind'] == 'contact' and end['beyond_free_range_deg'] == pytest.approx(32.0, abs=0.3), name
+        assert end['kind'] == 'contact' and end['beyond_stop_deg'] == pytest.approx(32.0, abs=0.3), name
     for name in ('L3', 'R3', 'L4', 'R4'):
         assert rows[name]['exceeds'] is False and rows[name]['free_servo_deg'] == [0.0, 180.0]
 
@@ -276,10 +276,31 @@ def test_ten_degree_limit_stays_inside_but_within_a_millimetre(fresh, manifests)
     rows = {row['joint']: row for row in report['limits']}
     for name in HIPS:
         (end,) = [e for e in rows[name]['ends'].values() if e['direction'] == 'toward_middle']
-        assert end['kind'] == 'near' and end['partner'] == 'head-cover' and end['beyond_free_range_deg'] == 0
+        assert end['kind'] == 'near' and end['partner'] == 'head-cover' and end['beyond_stop_deg'] == 0
         assert end['gap_mm'] == pytest.approx(0.5, abs=0.05)
-    # Rear hips are then inside their free range; front hips still reach across the frame band.
-    assert set(report['limits_exceed_free_range']) == set(FRONT)
+        (other,) = [e for e in rows[name]['ends'].values() if e['direction'] == 'toward_end']
+        assert other['beyond_stop_deg'] == 0 and other['kind'] in ('near', 'clear')
+    # No limit lies past a stop. The front hips' limits still span the shallow
+    # frame band, which has free travel on both sides and is reported as such.
+    assert report['limits_exceed_free_range'] == []
+    assert set(report['limits_cross_transient_bands']) == set(FRONT)
+    for name in FRONT:
+        (band,) = rows[name]['transient_bands_within_limits']
+        assert band['partner'] == 'internal-frame' and band['max_overlap_mm'] < 0.5
+        assert rows[name]['between_stops_servo_deg'] == pytest.approx([0.0, 103.0] if name == 'L1' else [77.0, 180.0], abs=0.5)
+    for name in REAR:
+        assert rows[name]['transient_bands_within_limits'] == []
+
+
+def test_manifest_hip_limits_are_the_course_body_values(fresh, manifests):
+    robot, motions = manifests
+    assert {j['name']: j['limits_deg'] for j in robot['joints'] if j['role'] == 'hip'} == PROPOSED_LIMITS
+    report = lc.compare(fresh, robot, motions)
+    assert report['limits_exceed_free_range'] == []
+    # Three degrees and half a millimetre short of first contact with the head cover.
+    for name in HIPS:
+        middle = fresh['hips'][name]['toward_middle']
+        assert middle['first_contact_deg'] - 10 == pytest.approx(3.0, abs=0.1)
 
 
 def test_stock_motions_that_swing_ten_degrees_toward_the_middle_are_flagged_close(fresh, manifests):
@@ -306,7 +327,10 @@ def test_check_design_reports_cad_derived_legs_and_fails_when_stale(copy_repo):
     assert report['ok'] and set(report['designs']) == {BASE.name, EYES.name}
     for entry in report['designs'].values():
         assert entry['state'] == 'cad-derived' and entry['stale'] == []
-        assert entry['hips']['L1']['toward_middle']['partner'] == 'head-cover' and 'manifest' in entry
+        assert entry['hips']['L1']['toward_middle']['partner'] == 'head-cover'
+        # The manifest's hip limits no longer reach a stop on either design.
+        assert entry['manifest']['limits_exceed_free_range'] == []
+        assert entry['manifest']['limits_cross_transient_bands'] == ['R1', 'L1']
     assert check_design.leg_clearance_report(copy_repo)['ok']
     stl = copy_repo / lc.PRINTING / EYES.name / 'internal-frame.stl'
     stl.write_bytes(stl.read_bytes() + b'\0')

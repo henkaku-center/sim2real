@@ -135,22 +135,34 @@ def compile_xml(xml: str):
     return mujoco.MjModel.from_xml_string(xml.replace('meshdir="../assets"', f'meshdir="{meshdir}"'))
 
 
-def hardware_profile(spec: dict | None = None, manifest: Manifest | None = None) -> dict:
-    """The current default hardware profile, resolved against robot.yaml."""
-    spec = spec or load_spec()
-    manifest = manifest or load_manifest()
-    name = spec["hardware"]["default_profile"]
-    profile = spec["hardware"]["profiles"][name]
-    if name not in manifest.raw["hardware_profiles"]:
-        raise ValueError(f"default hardware profile {name!r} is not in robot.yaml")
-    return {"name": name, **profile}
-
-
 def _lookup(raw: dict, dotted: str):
     value = raw
     for key in dotted.split("."):
         value = value[key]
     return value
+
+
+def hardware_profile(spec: dict | None = None, manifest: Manifest | None = None,
+                     name: str | None = None) -> dict:
+    """A hardware profile (the current default unless named), resolved against robot.yaml.
+
+    twin.yaml names where each fact lives (`<key>_from: dotted.path`); the value
+    itself is read from robot.yaml, which owns the board and driver names.
+    """
+    spec = spec or load_spec()
+    manifest = manifest or load_manifest()
+    default = spec["hardware"]["default_profile"]
+    name = name or default
+    profile = spec["hardware"]["profiles"][name]
+    if name == default and name not in manifest.raw["hardware_profiles"]:
+        raise ValueError(f"default hardware profile {name!r} is not in robot.yaml")
+    resolved = {"name": name}
+    for key, value in profile.items():
+        if key.endswith("_from"):
+            resolved[key[:-len("_from")]] = _lookup(manifest.raw, value)
+        else:
+            resolved[key] = value
+    return resolved
 
 
 # ------------------------------------------------------------ exact numerics

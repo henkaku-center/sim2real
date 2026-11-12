@@ -13,8 +13,12 @@ MANIFEST_PATH = Path(__file__).parent.parent / "manifest" / "robot.yaml"
 
 # Ground truth from dorianborian/sesame-robot firmware (Apache-2.0):
 # movement-sequences.h enum order and sesame-firmware-main.ino S2 Mini pins.
+# The S2 Mini is the historical upstream baseline, not the course board.
 FIRMWARE_CHANNEL_ORDER = ["R1", "R2", "L1", "L2", "R4", "R3", "L3", "L4"]
 S2_MINI_PINS = [1, 2, 4, 6, 8, 10, 13, 14]
+# Hip soft limits for the course body: 10 degrees toward the middle, 90 toward
+# the ends (CAD-derived leg clearance, DECISIONS.md D21 and D24).
+COURSE_HIP_LIMITS = {"R1": [80, 180], "R2": [0, 100], "L1": [0, 100], "L2": [80, 180]}
 
 
 @pytest.fixture(scope="module")
@@ -51,6 +55,26 @@ def test_pin_map_matches_s2_mini_baseline(joints):
     assert [j["gpio_pin"] for j in joints] == S2_MINI_PINS
 
 
+def test_course_board_is_named_and_s2_facts_are_labelled_historical(manifest):
+    mcu = manifest["mcu"]
+    assert (mcu["board"], mcu["servo_driver"]) == ("esp32_s3_supermini", "pca9685")
+    assert "sesame_s3" in manifest["hardware_profiles"]
+    assert mcu["upstream_baseline"] == {"status": "historical-upstream-baseline",
+                                        "board": "lolin_esp32_s2_mini", "servo_driver": "direct-gpio-pwm"}
+    assert manifest["servo_bus"]["pulse_us_status"] == "historical-upstream-baseline"
+    # Each S2 pin carries its label on the same line, wherever a reader lands.
+    lines = [line for line in MANIFEST_PATH.read_text().splitlines() if line.strip().startswith("gpio_pin:")]
+    assert len(lines) == 8 and all("historical upstream S2 Mini pin" in line for line in lines)
+
+
+def test_hip_limits_are_the_course_body_values(manifest, joints):
+    assert {j["name"]: j["limits_deg"] for j in joints if j["role"] == "hip"} == COURSE_HIP_LIMITS
+    assert all(j["limits_deg"] == [0, 180] for j in joints if j["role"] == "foot")
+    # Calibration saved under the identity these limits replaced stays readable.
+    assert manifest["hardware_profiles"]["sesame_s3"]["calibration_compatible_manifest_ids"] == [
+        "e669b916d178ac0a", "bd7675604b98ae46", "8d75c0ea0b2c68e7"]
+
+
 def test_leg_and_role_cover_the_quadruped(joints):
     legs = {(j["leg"], j["role"]) for j in joints}
     expected = {
@@ -73,8 +97,10 @@ def test_limits_are_sane(joints):
 
 
 def test_signs_encode_point_symmetric_servo_mounting(joints):
-    # From the upstream angle guide: "down" is 90->180 for {R1,L2,R3,L4} but
-    # 90->0 for {R2,L1,R4,L3}. Positive internal q = down for every joint.
+    # From the upstream angle guide: the positive direction is 90->180 for
+    # {R1,L2,R3,L4} but 90->0 for {R2,L1,R4,L3}. Positive internal q turns a hip
+    # toward its own end of the body, in the horizontal plane, and swings a foot
+    # down. tests/test_joint_directions.py checks that against the typed table.
     for j in joints:
         assert j["sign"] in (-1, 1)
         expected = 1 if j["leg"] in ("front_right", "back_left") else -1
@@ -88,7 +114,7 @@ def test_internal_ranges_identical_per_role(joints):
         a, b = (lo - 90) * j["sign"], (hi - 90) * j["sign"]
         return (min(a, b), max(a, b))
 
-    for role, expected in (("hip", (-45, 90)), ("foot", (-90, 90))):
+    for role, expected in (("hip", (-10, 90)), ("foot", (-90, 90))):
         for j in joints:
             if j["role"] == role:
                 assert internal_range(j) == expected, (

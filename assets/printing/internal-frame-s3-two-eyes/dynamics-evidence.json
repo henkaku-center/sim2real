@@ -10,11 +10,11 @@
   },
   "generated_on": "Darwin x86_64, Python 3.12.13",
   "inputs": {
-    "models/internal-frame-s3.xml": "3664576b79c100667d643af2bac7cee762d41fdd78e5a90d5bc85b5e3bcf0464",
-    "assets/printing/internal-frame-s3/dynamics.json": "369c507353bed5b5352b334b9c33e82e633f34e1038730269fc3f310a6ab578e",
-    "models/internal-frame-s3-two-eyes.xml": "f35f6b6d4c18acbdce1f26f32a5a6cba31fa58ab735d5daa6d31a779c084d2c1",
-    "assets/printing/internal-frame-s3-two-eyes/dynamics.json": "1080a6c563710709d36998e97067e79cfab001de3388751fe318dd069298d238",
-    "manifest/robot.yaml": "3eb4e19b57bd4d45f4ab85fd57e03d018628a07a8f09cc9dc26c223d9853156b",
+    "models/internal-frame-s3.xml": "a48b36bb09298718f6bad7c44bef7211a00ba8e0dca67487b7c4bf2852ebc749",
+    "assets/printing/internal-frame-s3/dynamics.json": "e2d859e1233d45ae4c7d74a84c9c0e6c47e142a5b488752e69b4e690b1868d41",
+    "models/internal-frame-s3-two-eyes.xml": "e9842b88b89b4ded4891daa6cc6b9d27279b9440c89b8111457f2842762b8c6e",
+    "assets/printing/internal-frame-s3-two-eyes/dynamics.json": "8780b1619158eaca2cd19c146faab5199cc0e797e09b519f9896ea80e01417e4",
+    "manifest/robot.yaml": "a9ae157f0485eaaa2f0e5fbf4748c61567922420a1d02e5689b80066d2ea13a5",
     "manifest/motions.yaml": "ffffa42423cdbe05068eb627ea487ee6903f61faa8640e35ea6c441e2054bd9f",
     "sim/twin_evidence.py": "05b1ea45778553a3fbe0835c2c42586107687b21bb5d50a027c202bc91dc082f",
     "sim/telemetry.py": "9dfa59ef2daa5bae07d65096180128efe3ba6f97dffc025e24ae7aaf87ee20eb",
@@ -534,48 +534,48 @@
     },
     "point": {
       "internal-frame-s3": {
-        "disp_x": 0.005906,
-        "disp_y": -0.039263,
-        "yaw_deg": -12.960794,
+        "disp_x": 0.011803,
+        "disp_y": -0.047774,
+        "yaw_deg": -12.692743,
         "final_z": 0.048799,
         "min_z": 0.017427,
-        "max_z": 0.054569,
-        "pitch_min": -0.008978,
-        "pitch_max": 0.033413,
+        "max_z": 0.056024,
+        "pitch_min": -0.008294,
+        "pitch_max": 0.034479,
         "upright_final": 1.0,
         "paw_air_frac": {
-          "R4": 0.130667,
-          "R3": 0.102,
-          "L3": 0.737333,
-          "L4": 0.054667
+          "R4": 0.122667,
+          "R3": 0.108667,
+          "L3": 0.734,
+          "L4": 0.059333
         },
         "paw_max_z": {
           "R4": 0.017715,
-          "R3": 0.016532,
-          "L3": 0.123234,
+          "R3": 0.017853,
+          "L3": 0.125748,
           "L4": 0.016532
         }
       },
       "internal-frame-s3-two-eyes": {
-        "disp_x": 0.016557,
-        "disp_y": -0.019616,
-        "yaw_deg": -8.131443,
+        "disp_x": 0.016833,
+        "disp_y": -0.037808,
+        "yaw_deg": -8.40122,
         "final_z": 0.048786,
         "min_z": 0.017419,
-        "max_z": 0.054593,
-        "pitch_min": -0.012603,
-        "pitch_max": 0.030877,
+        "max_z": 0.056823,
+        "pitch_min": -0.010012,
+        "pitch_max": 0.031802,
         "upright_final": 1.0,
         "paw_air_frac": {
-          "R4": 0.105333,
-          "R3": 0.103333,
-          "L3": 0.732,
+          "R4": 0.110667,
+          "R3": 0.108667,
+          "L3": 0.736,
           "L4": 0.055333
         },
         "paw_max_z": {
           "R4": 0.018063,
-          "R3": 0.016532,
-          "L3": 0.120538,
+          "R3": 0.017677,
+          "L3": 0.122464,
           "L4": 0.016532
         }
       }
@@ -966,48 +966,48 @@
     },
     "walk": {
       "internal-frame-s3": {
-        "disp_x": 0.134705,
-        "disp_y": 0.348028,
-        "yaw_deg": 78.254098,
+        "disp_x": 0.16037,
+        "disp_y": 0.318853,
+        "yaw_deg": 52.605323,
         "final_z": 0.048799,
         "min_z": 0.017379,
-        "max_z": 0.052042,
-        "pitch_min": -0.006673,
-        "pitch_max": 0.028204,
+        "max_z": 0.05107,
+        "pitch_min": -0.006939,
+        "pitch_max": 0.027688,
         "upright_final": 1.0,
         "paw_air_frac": {
-          "R4": 0.346197,
-          "R3": 0.492113,
-          "L3": 0.490141,
-          "L4": 0.34
+          "R4": 0.33831,
+          "R3": 0.483944,
+          "L3": 0.48338,
+          "L4": 0.354648
         },
         "paw_max_z": {
-          "R4": 0.021483,
-          "R3": 0.038186,
-          "L3": 0.022915,
+          "R4": 0.021434,
+          "R3": 0.036689,
+          "L3": 0.023201,
           "L4": 0.018787
         }
       },
       "internal-frame-s3-two-eyes": {
-        "disp_x": 0.146973,
-        "disp_y": 0.383606,
-        "yaw_deg": 75.4613,
+        "disp_x": 0.194904,
+        "disp_y": 0.367929,
+        "yaw_deg": 64.106461,
         "final_z": 0.048786,
         "min_z": 0.017495,
-        "max_z": 0.051299,
-        "pitch_min": -0.006523,
+        "max_z": 0.050245,
+        "pitch_min": -0.006637,
         "pitch_max": 0.028147,
         "upright_final": 1.0,
         "paw_air_frac": {
-          "R4": 0.329014,
-          "R3": 0.482817,
-          "L3": 0.459155,
-          "L4": 0.322535
+          "R4": 0.330704,
+          "R3": 0.48338,
+          "L3": 0.470986,
+          "L4": 0.34
         },
         "paw_max_z": {
           "R4": 0.021315,
-          "R3": 0.038243,
-          "L3": 0.024349,
+          "R3": 0.036377,
+          "L3": 0.02618,
           "L4": 0.017947
         }
       }
@@ -1311,7 +1311,7 @@
     },
     "walk": {
       "internal-frame-s3": {
-        "end_shift_mm": 2e-06,
+        "end_shift_mm": 1e-06,
         "sensitive": false
       },
       "internal-frame-s3-two-eyes": {

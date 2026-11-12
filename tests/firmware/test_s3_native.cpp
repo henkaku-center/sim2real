@@ -37,11 +37,13 @@ int main() {
   for(int j=0;j<8;++j)assert(cal.channel[j]==recommended[j]);
   assert(cal.verified==0);
   char legacyId[17]="bd7675604b98ae46", currentId[17], invalidId[17]="0000000000000000";
-  char benchId[17]="e669b916d178ac0a";
+  char benchId[17]="e669b916d178ac0a", oeId[17]="8d75c0ea0b2c68e7";
   static_assert(OE==7 && CLOCK_MEASURE_GPIO==4 && OE!=SDA && OE!=SCL, "Course pin contract");
   strcpy(currentId,MANIFEST_ID);
   assert(compatibleCalibrationManifest(legacyId));assert(compatibleCalibrationManifest(currentId));
   assert(compatibleCalibrationManifest(benchId));
+  // The identity in force before the course hip limits stays readable.
+  assert(compatibleCalibrationManifest(oeId) && strcmp(MANIFEST_ID,oeId));
   assert(!compatibleCalibrationManifest(invalidId));legacyId[16]='x';assert(!compatibleCalibrationManifest(legacyId));
   Calibration savedLegacy=cal;
   savedLegacy.channel[0]=-1;savedLegacy.oscillator=27000000;savedLegacy.trim[1]=2;
@@ -61,7 +63,16 @@ int main() {
   cal.trim[0]=NAN; assert(!cal.valid()); cal.trim[0]=3;
   near(cal.bounded(0,180),177); near(cal.physical(0,cal.bounded(0,180)),180);
   cal.trim[1]=-3; near(cal.bounded(1,0),3);
-  cal.low[0]=44; assert(!cal.valid()); cal.low[0]=45;
+  // A record's limits are held to the servo range and to containing neutral.
+  // The manifest's soft range bounds a new `limits` edit, not what was stored.
+  const float softLow=SOFT_LOW[0];
+  cal.low[0]=-1; assert(!cal.valid()); cal.low[0]=91; assert(!cal.valid());
+  cal.low[0]=softLow-1; assert(cal.valid() && cal.complete() && cal.beyondSoft(0));
+  Calibration edit=cal;
+  assert(!edit.setLimits(0,softLow-1,SOFT_HIGH[0]) && edit.low[0]==softLow-1 && edit.verified==255);
+  assert(!edit.setLimits(0,NAN,SOFT_HIGH[0]) && !edit.setLimits(8,90,90) && !edit.setLimits(0,softLow,181));
+  assert(edit.setLimits(0,softLow,SOFT_HIGH[0]) && edit.valid() && !edit.beyondSoft(0) && edit.verified==254);
+  cal.low[0]=softLow; assert(!cal.beyondSoft(0));
   cal.oscillator=0; assert(!cal.valid()); cal.oscillator=25000000;
   cal.high[0]=INFINITY; assert(!cal.valid()); cal.high[0]=180;
   SafeAction g;

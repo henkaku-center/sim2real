@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 #pragma once
 #include <cmath>
+#include <cstddef>
 #include <cstdint>
 #include <cstring>
 #include "manifest_generated.h"
@@ -34,6 +35,9 @@ struct Calibration {
       high[j] = fminf(SOFT_HIGH[j], INITIAL_HIGH);
     }
   }
+  // Structure of a record, saved earlier or edited now. Joint limits are held
+  // to the servo's 0..180 and to containing neutral, never to SOFT_LOW/SOFT_HIGH:
+  // a record saved under an earlier manifest keeps the limits its owner stored.
   bool valid() const {
     if (version != 1 || oscillator < 20000000 || oscillator > 30000000) return false;
     unsigned used = 0;
@@ -45,9 +49,18 @@ struct Calibration {
       } else if (verified & (1u << j)) return false;
       if (!std::isfinite(trim[j]) || fabsf(trim[j]) > TRIM_LIMIT ||
           !std::isfinite(low[j]) || !std::isfinite(high[j]) ||
-          low[j] < SOFT_LOW[j] || high[j] > SOFT_HIGH[j] ||
+          low[j] < 0 || high[j] > 180 ||
           low[j] > NEUTRAL || high[j] < NEUTRAL || low[j] > high[j]) return false;
     }
+    return true;
+  }
+  // A stored limit of this joint lies outside the manifest's current soft range.
+  bool beyondSoft(int j) const { return low[j] < SOFT_LOW[j] || high[j] > SOFT_HIGH[j]; }
+  // `limits NAME LOW HIGH`: a newly entered envelope stays inside the manifest's
+  // soft range. A refused edit changes nothing, including a wider stored limit.
+  bool setLimits(int j, float lo, float hi) {
+    if (j < 0 || j > 7 || !(lo >= SOFT_LOW[j]) || !(hi <= SOFT_HIGH[j])) return false;
+    low[j] = lo; high[j] = hi; verified &= ~(1u << j);
     return true;
   }
   bool complete() const { return valid() && verified == 255; }
@@ -76,6 +89,30 @@ inline bool compatibleCalibrationManifest(const char (&recorded)[17]) {
   for (const char* id : COMPATIBLE_MANIFEST_IDS)
     if (!memcmp(recorded, id, sizeof(recorded))) return true;
   return false;
+}
+
+// One saved NVS record. Field order and sizes are the stored format.
+struct Record { uint32_t magic; char manifest[17]; Calibration cal; uint32_t checksum; };
+constexpr uint32_t RECORD_MAGIC = 0x53334331;
+inline uint32_t recordChecksum(const Record& record) {
+  const auto* bytes = reinterpret_cast<const uint8_t*>(&record);
+  uint32_t h = 2166136261u;
+  for (size_t i = 0; i < offsetof(Record, checksum); ++i) h = (h ^ bytes[i]) * 16777619u;
+  return h;
+}
+// Filled and checksummed in place: the bytes that are summed are the bytes
+// that get written, padding included.
+inline void fillRecord(Record& r, const Calibration& cal) {
+  memset(static_cast<void*>(&r), 0, sizeof(r));
+  r.magic = RECORD_MAGIC; strcpy(r.manifest, MANIFEST_ID); r.cal = cal;
+  r.checksum = recordChecksum(r);
+}
+// A stored record is taken exactly as saved when its identity is this manifest
+// or a listed earlier one, its checksum matches and its structure is sound.
+// Nothing is clamped or rewritten on the way in.
+inline bool acceptRecord(const Record& r) {
+  return r.magic == RECORD_MAGIC && compatibleCalibrationManifest(r.manifest) &&
+         r.checksum == recordChecksum(r) && r.cal.valid();
 }
 
 // All PWM authority passes through this gate, including raw bench commands.
