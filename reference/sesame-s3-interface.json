@@ -1,6 +1,12 @@
 {
   "schema_version": 1,
   "generated_by": "tools/generate_s3_firmware.py",
+  "manifest_id": "fe108150ee38fa10",
+  "source_sha256": {
+    "manifest/robot.yaml": "a9ae157f0485eaaa2f0e5fbf4748c61567922420a1d02e5689b80066d2ea13a5",
+    "manifest/safeaction.yaml": "7bf0adddc73821884fd8ce15a1dcf5f88c55c8cd3e37d964cf4646a5fc5279f2",
+    "manifest/motions.yaml": "ffffa42423cdbe05068eb627ea487ee6903f61faa8640e35ea6c441e2054bd9f"
+  },
   "status": "NEEDS-HARDWARE; offline validation is recorded separately in the diagnosis",
   "procedure": "reference/SESAME-S3-CALIBRATION.md",
   "diagnosis": "reference/SESAME-S3-DIAGNOSIS.md",
@@ -245,6 +251,7 @@
     "source": "manifest/robot.yaml joints[].points_at_deg and fitted_travel_deg; confirmed by the instructor on a built robot, 2026-11-12 (DECISIONS.md D24)",
     "rest_firmware_deg": 90,
     "per_joint": "joint_map[].points_at_firmware_deg and joint_map[].fitted_travel_firmware_deg",
+    "ask": "python3 tools/joints.py query NAME explains one joint; python3 tools/joints.py check NAME DEG [DEG ...] says whether targets stay inside the fitted travel before anything is sent. Standard library only; reads this file and the course body's leg-clearance evidence.",
     "hip": "Turns in the horizontal plane about a vertical axis; it never swings up or down. Values: forward, back, out_left, out_right. Once its leg is fitted a hip turns one way only from rest, 90 degrees in all: front hips forward, rear hips backward.",
     "foot": "Swings in a vertical plane. Values: down, up, out (level). Fitted travel is the whole 0..180.",
     "mirroring": "The same firmware angle means opposite directions on mirrored joints; read each joint's own entry.",

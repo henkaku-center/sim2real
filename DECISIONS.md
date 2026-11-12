@@ -596,3 +596,33 @@ so the manifest identity changes once.
 
 APS re-imports the firmware interface and circuit export after this lands; this
 repository does not edit APS.
+
+## D25. Joint directions are queryable (2026-11-12)
+
+Instructor request: "just like with the circuit diagrams that are now queryable
+and understandable easily by agents, the servo code and its constraints on
+directions, which angle points where, should also be easily readable." The
+same day an assistant, reading old bench notes, turned a rear hip forward into
+the front leg and drove another hip to 180° in bench mode, where the firmware
+accepts any angle.
+
+`tools/joints.py` is the one place to ask, a sibling of `tools/circuit.py`:
+`query NAME` returns where a joint points at 0°, 90° and 180°, its fitted
+travel, soft limits, sign, default hub channel and what the course body's CAD
+leg clearance finds beyond the travel; `check NAME DEG …` exits non-zero for a
+target outside the fitted travel and says which way it drives the leg.
+`--bare-horns` allows the full range for legs-off bench work.
+
+- **Data.** It reads `reference/sesame-s3-interface.json` and
+  `assets/printing/internal-frame-s3/leg-clearance.json`, standard library only,
+  so it runs with plain `python3`. The interface now records its manifest
+  identity and the manifest file hashes; the tool refuses to answer when those
+  hashes, the leg-clearance inputs or the two sources' agreement fail.
+  Leg-clearance hashing accepts a Git LFS pointer by the content hash it names,
+  so a checkout without the large files can still prove the evidence current.
+- **Honesty.** Directions are the instructor-confirmed table of D24; contact is
+  CAD for the course body; contact between two legs is not modelled, and the
+  output says so; nothing is measured on a student's robot. The tool opens no
+  device and sends nothing. It describes the reference build and is not a gate
+  on what owners do with their robots.
+- **Not changed.** Firmware, manifest and its identity `fe108150ee38fa10`.

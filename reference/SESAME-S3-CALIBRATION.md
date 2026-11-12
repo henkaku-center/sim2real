@@ -180,13 +180,23 @@ one way only from 90°, a quarter turn in all: the front hips forward, the rear
 hips backward. A positive `q` turns a hip toward its own end of the body and
 swings a foot down.
 
-`manifest/robot.yaml` states this joint by joint as `points_at_deg` and
-`fitted_travel_deg`, and the generated interface repeats it as
-`joint_map[].points_at_firmware_deg` and `fitted_travel_firmware_deg`. Read the
-joint's own entry before a direction or range check on a fitted leg, and keep a
-fitted hip on its fitted side of 90° rather than sweeping it both ways. The
-instructor confirmed these directions on a built robot on November 12, 2026.
-This describes the reference build; your robot is yours to run differently.
+Ask before commanding, and check before sending. Both need only Python:
+
+```sh
+python3 tools/joints.py query L2             # where it points, how far it travels, what stops it
+python3 tools/joints.py check L2 90 180 90   # exit 0 when every target is inside the fitted travel
+python3 tools/joints.py check --bare-horns L2 0 90 180 90   # legs off: the full range
+```
+
+`query all` lists every joint, and `check pose D0 … D7` takes a whole pose in the
+firmware's order. The answers come from `manifest/robot.yaml` (`points_at_deg`,
+`fitted_travel_deg`) through the generated interface, and from the course
+body's CAD leg clearance; the tool refuses to answer when either is stale. The
+instructor confirmed the directions on a built robot on November 12, 2026.
+Contact figures are CAD, contact between two legs is not modelled, and nothing
+was measured on your robot: if its wiring, signs or horn positions differ, one
+observed movement settles it. This describes the reference build; your robot is
+yours to run differently.
 
 ## 5. Correct the observed example, then retain calibration
 

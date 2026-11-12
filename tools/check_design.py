@@ -5,6 +5,7 @@ from pathlib import Path
 import subprocess
 import sys
 import circuit
+import joints
 import leg_clearance
 import real2sim_status
 import rule_drift
@@ -61,6 +62,13 @@ def main():
     checks.append({'name':'leg-clearance-evidence','ok':legs['ok'],
                    'result':{name:{'state':d['state'],'stale':d['stale']} for name,d in legs['designs'].items()},
                    **({'error':legs['error']} if 'error' in legs else {})})
+    # tools/joints.py answers only from current data; an assistant asks it before commanding a joint.
+    try:
+        interface,course=joints.load(ROOT)
+        checks.append({'name':'joint-query-data','ok':True,'result':{'ask':'python3 tools/joints.py query NAME | check NAME DEG ...',
+                       'manifest_id':interface['manifest_id'],'contact_design':course['design']}})
+    except joints.CannotAnswer as error:
+        checks.append({'name':'joint-query-data','ok':False,'error':str(error)})
     variant_path='assets/printing/internal-frame-s3-two-eyes/assembly.json'
     variant=json.loads((ROOT/variant_path).read_text())
     geometry=next(c['ok'] for c in checks if c['name']=='two-eye-artifact-constraints')

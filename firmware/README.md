@@ -22,10 +22,11 @@ change `manifest/robot.yaml` and regenerate for a different range.
 
 **Joint directions:** every joint rests at 90°. A hip turns in the horizontal
 plane and, once its leg is fitted, one way only from 90°: the front hips
-forward, the rear hips backward. What 0° and 180° mean differs joint by joint;
-`manifest/robot.yaml` gives `points_at_deg` and `fitted_travel_deg` for each,
-and the generated interface repeats them. The full 0→90→180→90 bench sequence
-below is for loose pointers without legs.
+forward, the rear hips backward. What 0° and 180° mean differs joint by joint.
+Ask `python3 tools/joints.py query NAME` before commanding a joint and run
+`python3 tools/joints.py check NAME DEG …` before sending targets; bench mode
+itself accepts any angle. The full 0→90→180→90 bench sequence below is for
+loose pointers without legs (`check --bare-horns`).
 
 **October 25 OE correction:** canonical OE is exposed **GPIO7/I17 → hub OE/A7**,
 with pull-up toward logic **3V3 VCC/A4**, not servo V+. The student-reported

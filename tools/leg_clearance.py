@@ -93,7 +93,14 @@ NOT_MODELLED = [
 
 
 def sha(path):
-    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+    """SHA-256 of a file's content. A Git LFS pointer yields the content hash it names,
+    so committed evidence can be checked in a checkout without the large files."""
+    raw = Path(path).read_bytes()
+    if raw.startswith(b'version https://git-lfs.github.com/spec/v1\n'):
+        match = re.search(rb'^oid sha256:([0-9a-f]{64})$', raw, re.M)
+        if match:
+            return match[1].decode()
+    return hashlib.sha256(raw).hexdigest()
 
 
 def canonical_sha(value):

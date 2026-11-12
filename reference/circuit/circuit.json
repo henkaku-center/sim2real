@@ -1770,12 +1770,12 @@
     },
     {
       "path": "reference/sesame-s3-interface.json",
-      "sha256": "931f3e7e074d2f06918cc32154cea94e21d20a7cb8764c90f952fdb38eba5f50"
+      "sha256": "6918b459236a6755b50b4b712a41254b33376eb0ddcb87bef16951a2691dcb48"
     },
     {
       "path": "tools/circuit.py",
       "sha256": "9c7c8d70cec20e1815f3dba526bffa3606ed69a1d553734926583e5cb1a90a12"
     }
   ],
-  "fingerprint": "c600460132fb7940352c2cc72d088c7e9018c9933f4f46fa47ba61c11270d16c"
+  "fingerprint": "f750b2ff822a2c916e7c78c236689448d7a6238aa63a6293a3ab0afb85e885b1"
 }
