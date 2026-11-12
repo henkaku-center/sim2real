@@ -2,48 +2,6 @@
   "frames": [
     {
       "leg": "front_right",
-      "hip_deg": -45.0,
-      "foot_deg": 0,
-      "mode": "hip"
-    },
-    {
-      "leg": "front_right",
-      "hip_deg": -40.0,
-      "foot_deg": 0,
-      "mode": "hip"
-    },
-    {
-      "leg": "front_right",
-      "hip_deg": -35.0,
-      "foot_deg": 0,
-      "mode": "hip"
-    },
-    {
-      "leg": "front_right",
-      "hip_deg": -30.0,
-      "foot_deg": 0,
-      "mode": "hip"
-    },
-    {
-      "leg": "front_right",
-      "hip_deg": -25.0,
-      "foot_deg": 0,
-      "mode": "hip"
-    },
-    {
-      "leg": "front_right",
-      "hip_deg": -20.0,
-      "foot_deg": 0,
-      "mode": "hip"
-    },
-    {
-      "leg": "front_right",
-      "hip_deg": -15.0,
-      "foot_deg": 0,
-      "mode": "hip"
-    },
-    {
-      "leg": "front_right",
       "hip_deg": -10.0,
       "foot_deg": 0,
       "mode": "hip"
@@ -392,37 +350,37 @@
     },
     {
       "leg": "front_right",
-      "hip_deg": -45.0,
+      "hip_deg": -10.0,
       "foot_deg": -90.0,
       "mode": "coupled-grid"
     },
     {
       "leg": "front_right",
-      "hip_deg": -45.0,
+      "hip_deg": -10.0,
       "foot_deg": 0.0,
       "mode": "coupled-grid"
     },
     {
       "leg": "front_right",
-      "hip_deg": -45.0,
+      "hip_deg": -10.0,
       "foot_deg": 90.0,
       "mode": "coupled-grid"
     },
     {
       "leg": "front_right",
-      "hip_deg": 22.5,
+      "hip_deg": 40.0,
       "foot_deg": -90.0,
       "mode": "coupled-grid"
     },
     {
       "leg": "front_right",
-      "hip_deg": 22.5,
+      "hip_deg": 40.0,
       "foot_deg": 0.0,
       "mode": "coupled-grid"
     },
     {
       "leg": "front_right",
-      "hip_deg": 22.5,
+      "hip_deg": 40.0,
       "foot_deg": 90.0,
       "mode": "coupled-grid"
     },
@@ -443,48 +401,6 @@
       "hip_deg": 90.0,
       "foot_deg": 90.0,
       "mode": "coupled-grid"
-    },
-    {
-      "leg": "back_right",
-      "hip_deg": -45.0,
-      "foot_deg": 0,
-      "mode": "hip"
-    },
-    {
-      "leg": "back_right",
-      "hip_deg": -40.0,
-      "foot_deg": 0,
-      "mode": "hip"
-    },
-    {
-      "leg": "back_right",
-      "hip_deg": -35.0,
-      "foot_deg": 0,
-      "mode": "hip"
-    },
-    {
-      "leg": "back_right",
-      "hip_deg": -30.0,
-      "foot_deg": 0,
-      "mode": "hip"
-    },
-    {
-      "leg": "back_right",
-      "hip_deg": -25.0,
-      "foot_deg": 0,
-      "mode": "hip"
-    },
-    {
-      "leg": "back_right",
-      "hip_deg": -20.0,
-      "foot_deg": 0,
-      "mode": "hip"
-    },
-    {
-      "leg": "back_right",
-      "hip_deg": -15.0,
-      "foot_deg": 0,
-      "mode": "hip"
     },
     {
       "leg": "back_right",
@@ -836,37 +752,37 @@
     },
     {
       "leg": "back_right",
-      "hip_deg": -45.0,
+      "hip_deg": -10.0,
       "foot_deg": -90.0,
       "mode": "coupled-grid"
     },
     {
       "leg": "back_right",
-      "hip_deg": -45.0,
+      "hip_deg": -10.0,
       "foot_deg": 0.0,
       "mode": "coupled-grid"
     },
     {
       "leg": "back_right",
-      "hip_deg": -45.0,
+      "hip_deg": -10.0,
       "foot_deg": 90.0,
       "mode": "coupled-grid"
     },
     {
       "leg": "back_right",
-      "hip_deg": 22.5,
+      "hip_deg": 40.0,
       "foot_deg": -90.0,
       "mode": "coupled-grid"
     },
     {
       "leg": "back_right",
-      "hip_deg": 22.5,
+      "hip_deg": 40.0,
       "foot_deg": 0.0,
       "mode": "coupled-grid"
     },
     {
       "leg": "back_right",
-      "hip_deg": 22.5,
+      "hip_deg": 40.0,
       "foot_deg": 90.0,
       "mode": "coupled-grid"
     },
@@ -887,48 +803,6 @@
       "hip_deg": 90.0,
       "foot_deg": 90.0,
       "mode": "coupled-grid"
-    },
-    {
-      "leg": "front_left",
-      "hip_deg": -45.0,
-      "foot_deg": 0,
-      "mode": "hip"
-    },
-    {
-      "leg": "front_left",
-      "hip_deg": -40.0,
-      "foot_deg": 0,
-      "mode": "hip"
-    },
-    {
-      "leg": "front_left",
-      "hip_deg": -35.0,
-      "foot_deg": 0,
-      "mode": "hip"
-    },
-    {
-      "leg": "front_left",
-      "hip_deg": -30.0,
-      "foot_deg": 0,
-      "mode": "hip"
-    },
-    {
-      "leg": "front_left",
-      "hip_deg": -25.0,
-      "foot_deg": 0,
-      "mode": "hip"
-    },
-    {
-      "leg": "front_left",
-      "hip_deg": -20.0,
-      "foot_deg": 0,
-      "mode": "hip"
-    },
-    {
-      "leg": "front_left",
-      "hip_deg": -15.0,
-      "foot_deg": 0,
-      "mode": "hip"
     },
     {
       "leg": "front_left",
@@ -1280,37 +1154,37 @@
     },
     {
       "leg": "front_left",
-      "hip_deg": -45.0,
+      "hip_deg": -10.0,
       "foot_deg": -90.0,
       "mode": "coupled-grid"
     },
     {
       "leg": "front_left",
-      "hip_deg": -45.0,
+      "hip_deg": -10.0,
       "foot_deg": 0.0,
       "mode": "coupled-grid"
     },
     {
       "leg": "front_left",
-      "hip_deg": -45.0,
+      "hip_deg": -10.0,
       "foot_deg": 90.0,
       "mode": "coupled-grid"
     },
     {
       "leg": "front_left",
-      "hip_deg": 22.5,
+      "hip_deg": 40.0,
       "foot_deg": -90.0,
       "mode": "coupled-grid"
     },
     {
       "leg": "front_left",
-      "hip_deg": 22.5,
+      "hip_deg": 40.0,
       "foot_deg": 0.0,
       "mode": "coupled-grid"
     },
     {
       "leg": "front_left",
-      "hip_deg": 22.5,
+      "hip_deg": 40.0,
       "foot_deg": 90.0,
       "mode": "coupled-grid"
     },
@@ -1331,48 +1205,6 @@
       "hip_deg": 90.0,
       "foot_deg": 90.0,
       "mode": "coupled-grid"
-    },
-    {
-      "leg": "back_left",
-      "hip_deg": -45.0,
-      "foot_deg": 0,
-      "mode": "hip"
-    },
-    {
-      "leg": "back_left",
-      "hip_deg": -40.0,
-      "foot_deg": 0,
-      "mode": "hip"
-    },
-    {
-      "leg": "back_left",
-      "hip_deg": -35.0,
-      "foot_deg": 0,
-      "mode": "hip"
-    },
-    {
-      "leg": "back_left",
-      "hip_deg": -30.0,
-      "foot_deg": 0,
-      "mode": "hip"
-    },
-    {
-      "leg": "back_left",
-      "hip_deg": -25.0,
-      "foot_deg": 0,
-      "mode": "hip"
-    },
-    {
-      "leg": "back_left",
-      "hip_deg": -20.0,
-      "foot_deg": 0,
-      "mode": "hip"
-    },
-    {
-      "leg": "back_left",
-      "hip_deg": -15.0,
-      "foot_deg": 0,
-      "mode": "hip"
     },
     {
       "leg": "back_left",
@@ -1724,37 +1556,37 @@
     },
     {
       "leg": "back_left",
-      "hip_deg": -45.0,
+      "hip_deg": -10.0,
       "foot_deg": -90.0,
       "mode": "coupled-grid"
     },
     {
       "leg": "back_left",
-      "hip_deg": -45.0,
+      "hip_deg": -10.0,
       "foot_deg": 0.0,
       "mode": "coupled-grid"
     },
     {
       "leg": "back_left",
-      "hip_deg": -45.0,
+      "hip_deg": -10.0,
       "foot_deg": 90.0,
       "mode": "coupled-grid"
     },
     {
       "leg": "back_left",
-      "hip_deg": 22.5,
+      "hip_deg": 40.0,
       "foot_deg": -90.0,
       "mode": "coupled-grid"
     },
     {
       "leg": "back_left",
-      "hip_deg": 22.5,
+      "hip_deg": 40.0,
       "foot_deg": 0.0,
       "mode": "coupled-grid"
     },
     {
       "leg": "back_left",
-      "hip_deg": 22.5,
+      "hip_deg": 40.0,
       "foot_deg": 90.0,
       "mode": "coupled-grid"
     },
@@ -1804,7 +1636,7 @@
       ],
       "soft_ranges_internal_deg": [
         [
-          -45.0,
+          -10.0,
           90.0
         ],
         [
@@ -1813,41 +1645,6 @@
         ]
       ],
       "poses": [
-        [
-          -45.0,
-          0,
-          "hip"
-        ],
-        [
-          -40.0,
-          0,
-          "hip"
-        ],
-        [
-          -35.0,
-          0,
-          "hip"
-        ],
-        [
-          -30.0,
-          0,
-          "hip"
-        ],
-        [
-          -25.0,
-          0,
-          "hip"
-        ],
-        [
-          -20.0,
-          0,
-          "hip"
-        ],
-        [
-          -15.0,
-          0,
-          "hip"
-        ],
         [
           -10.0,
           0,
@@ -2139,32 +1936,32 @@
           "foot"
         ],
         [
-          -45.0,
+          -10.0,
           -90.0,
           "coupled-grid"
         ],
         [
-          -45.0,
+          -10.0,
           0.0,
           "coupled-grid"
         ],
         [
-          -45.0,
+          -10.0,
           90.0,
           "coupled-grid"
         ],
         [
-          22.5,
+          40.0,
           -90.0,
           "coupled-grid"
         ],
         [
-          22.5,
+          40.0,
           0.0,
           "coupled-grid"
         ],
         [
-          22.5,
+          40.0,
           90.0,
           "coupled-grid"
         ],
@@ -2253,7 +2050,7 @@
       ],
       "soft_ranges_internal_deg": [
         [
-          -45.0,
+          -10.0,
           90.0
         ],
         [
@@ -2262,41 +2059,6 @@
         ]
       ],
       "poses": [
-        [
-          -45.0,
-          0,
-          "hip"
-        ],
-        [
-          -40.0,
-          0,
-          "hip"
-        ],
-        [
-          -35.0,
-          0,
-          "hip"
-        ],
-        [
-          -30.0,
-          0,
-          "hip"
-        ],
-        [
-          -25.0,
-          0,
-          "hip"
-        ],
-        [
-          -20.0,
-          0,
-          "hip"
-        ],
-        [
-          -15.0,
-          0,
-          "hip"
-        ],
         [
           -10.0,
           0,
@@ -2588,32 +2350,32 @@
           "foot"
         ],
         [
-          -45.0,
+          -10.0,
           -90.0,
           "coupled-grid"
         ],
         [
-          -45.0,
+          -10.0,
           0.0,
           "coupled-grid"
         ],
         [
-          -45.0,
+          -10.0,
           90.0,
           "coupled-grid"
         ],
         [
-          22.5,
+          40.0,
           -90.0,
           "coupled-grid"
         ],
         [
-          22.5,
+          40.0,
           0.0,
           "coupled-grid"
         ],
         [
-          22.5,
+          40.0,
           90.0,
           "coupled-grid"
         ],
@@ -2702,7 +2464,7 @@
       ],
       "soft_ranges_internal_deg": [
         [
-          -45.0,
+          -10.0,
           90.0
         ],
         [
@@ -2711,41 +2473,6 @@
         ]
       ],
       "poses": [
-        [
-          -45.0,
-          0,
-          "hip"
-        ],
-        [
-          -40.0,
-          0,
-          "hip"
-        ],
-        [
-          -35.0,
-          0,
-          "hip"
-        ],
-        [
-          -30.0,
-          0,
-          "hip"
-        ],
-        [
-          -25.0,
-          0,
-          "hip"
-        ],
-        [
-          -20.0,
-          0,
-          "hip"
-        ],
-        [
-          -15.0,
-          0,
-          "hip"
-        ],
         [
           -10.0,
           0,
@@ -3037,32 +2764,32 @@
           "foot"
         ],
         [
-          -45.0,
+          -10.0,
           -90.0,
           "coupled-grid"
         ],
         [
-          -45.0,
+          -10.0,
           0.0,
           "coupled-grid"
         ],
         [
-          -45.0,
+          -10.0,
           90.0,
           "coupled-grid"
         ],
         [
-          22.5,
+          40.0,
           -90.0,
           "coupled-grid"
         ],
         [
-          22.5,
+          40.0,
           0.0,
           "coupled-grid"
         ],
         [
-          22.5,
+          40.0,
           90.0,
           "coupled-grid"
         ],
@@ -3151,7 +2878,7 @@
       ],
       "soft_ranges_internal_deg": [
         [
-          -45.0,
+          -10.0,
           90.0
         ],
         [
@@ -3160,41 +2887,6 @@
         ]
       ],
       "poses": [
-        [
-          -45.0,
-          0,
-          "hip"
-        ],
-        [
-          -40.0,
-          0,
-          "hip"
-        ],
-        [
-          -35.0,
-          0,
-          "hip"
-        ],
-        [
-          -30.0,
-          0,
-          "hip"
-        ],
-        [
-          -25.0,
-          0,
-          "hip"
-        ],
-        [
-          -20.0,
-          0,
-          "hip"
-        ],
-        [
-          -15.0,
-          0,
-          "hip"
-        ],
         [
           -10.0,
           0,
@@ -3486,32 +3178,32 @@
           "foot"
         ],
         [
-          -45.0,
+          -10.0,
           -90.0,
           "coupled-grid"
         ],
         [
-          -45.0,
+          -10.0,
           0.0,
           "coupled-grid"
         ],
         [
-          -45.0,
+          -10.0,
           90.0,
           "coupled-grid"
         ],
         [
-          22.5,
+          40.0,
           -90.0,
           "coupled-grid"
         ],
         [
-          22.5,
+          40.0,
           0.0,
           "coupled-grid"
         ],
         [
-          22.5,
+          40.0,
           90.0,
           "coupled-grid"
         ],

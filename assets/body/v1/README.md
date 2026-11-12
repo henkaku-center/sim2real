@@ -58,19 +58,32 @@ real harness service slack. USB approaches the S3 through the +X access opening.
 
 ## Review before physical use
 
-### Recorded v1 check result (2026-10-06)
+### Recorded v1 check result (rerun 2026-11-12)
 
 | Check | Result |
 |---|---|
 | Static body/component pairs | **6,732 checked**; zero new-part failures; eight retained-interface/proxy fit findings |
 | Body/body intersections | **Zero** |
-| Sampled motion pairs | **10,656 checked**; zero new-part failures; 58 findings against the retained frame |
+| Sampled motion pairs | **9,648 checked**; zero new-part failures; 38 findings against the retained frame |
 | Carrier, frame and deck fastener alignment | **12/12 pass** |
 | Printable part topology | **9 valid single solids; all 9 exported meshes watertight** |
 | New-part wall screen | **All pass sampled 1.2 mm minimum**; smallest sampled new feature ≈1.203 mm |
 | Frozen frame/bottom wall screen | Thin-feature samples flagged; original geometry preserved |
 | Individual part build-volume fit | **9/9 fit 256 × 256 × 256 mm** |
 | Overall release gate | **`FAIL-DRAFT` / `release_ready: false`**; physical measurement and retained-interface reconciliation remain |
+
+The 2026-10-06 run sampled each hip from −45° to +90° (10,656 pairs, 58 findings).
+The manifest's hip range is now −10° to +90° (DECISIONS.md D24), so the
+2026-11-12 rerun samples that range. Every pose sampled in both runs has the
+same status and distance. Twenty-six findings left with the poses that are no
+longer sampled (hips beyond −10° toward the middle, and the old coupled
+midpoint); six are at the new coupled midpoint, inside the upper-leg contact
+already recorded for hips at +20° to +60°. All static results are unchanged.
+The part exports were written again by the same FreeCAD build. The riser meshes
+keep their vertices, area and volume with a different triangle order. The frame,
+bottom and assembled STEP files keep their solid, face, edge and vertex counts
+and their bounds, and differ in the last printed digits (volumes agree within
+2e-9 mm³).
 
 The validator intentionally exits nonzero for the overall draft. Do not read
 passing software regression tests or `new_body_geometry_pass` as whole-robot

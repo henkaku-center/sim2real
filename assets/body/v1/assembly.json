@@ -100,12 +100,12 @@
     79
   ],
   "export_hashes": {
-    "assembled-preview.step": "550c19fda23badfa910c50dc19acc3fca2e0e4f4356df0a20d759759c8842be2",
+    "assembled-preview.step": "ede829b168f27e06a0f7f4aebbcc7b61a3a245216107e49ec3cb2961204c0de8",
     "battery-drawer.3mf": "6730347f63ffdcfc6e62269a366fb7c93a1bf92125b4ddfff3cfc366f282ff42",
     "battery-drawer.step": "6ea5182ff104650910fae9f267b06cb9ec4abb61ae204afb98b038249489a0d2",
     "battery-drawer.stl": "ea222d223f5b06b777ab4c36929f540f4f32b8a390f0ea21f75245e7ccb96f02",
     "bottom-cover.3mf": "3971dd04330b08229cdc1fbcd747910316b3f3b1f628fc6bfff96bd3c2d5cdc7",
-    "bottom-cover.step": "e416e54c9ecff03a4911c4aa10f6fd1417873a364e270f84ee3f2d6076e75f11",
+    "bottom-cover.step": "0ab3565fe7c6599334ff36dae1564c9e2a7a1b5cf196a40e71bf7db78654c594",
     "bottom-cover.stl": "fdbe245b8aaa614772fa03a1da24fc87d69c012ec468582d480869461c8765ff",
     "carrier-tray.3mf": "ab19794d57365040b169b3029ec4edf7421d74765e6c3ebb8c07cad26f1fdf4c",
     "carrier-tray.step": "5727f0de35283f04551d73890e09997856ca1eb41deec8563cfedb11a0f3a7e6",
@@ -115,20 +115,20 @@
     "face-cover.step": "ba52753748bb59e29cd9485c178414ae6a414a7135e6a0f675208bd3229c7ee3",
     "face-cover.stl": "2d77280233fc62e2291927c5424d30ea86ae8ae07b2ad8043fac2fd74c88abb3",
     "interface-frame.3mf": "3b3c9da28f9108b812fffdb92ec775a146d6e39b605ab687f71729a14b87ade4",
-    "interface-frame.step": "2b02f0b17f1cf967ed559a6d82716e78f75cbf6ea6ce0bb4c4978d3b88787621",
+    "interface-frame.step": "94592455ead57b4cd8228d130ce82311c1714ed084d78724a457519f65861141",
     "interface-frame.stl": "80c2764dca1fbad46e7edb07aab596ae9d4969d087899d8b5a433638aa80e68d",
-    "riser-1.3mf": "22ce38d127df0dc5d30c76b44fbf2ca3411daf0127def0a7e592a94a295d6e65",
+    "riser-1.3mf": "6dedd0981a41cb0b8fb25a258be5f0da9a6d2146ebfa7d559da20c3c32b2e8f9",
     "riser-1.step": "8961df796b7826ade6e6eb2fa592f52851a3562ea50d9d873ca89cec94aa5257",
-    "riser-1.stl": "fd60536df6177074ded856c40badea6bc8edac93491c6d1bafec0e80f1d0b85b",
-    "riser-2.3mf": "ae3301f168cf9af7646a838bca3761714d36214c8b2cae6747127c3489fb7694",
+    "riser-1.stl": "ccf4244e67e1bc0db8ac19525d71f0a124aeacef197b1237e3d237dc0e215361",
+    "riser-2.3mf": "d59202dde10184ea3e69eedc0f37a069de66ca13d185e9368cf63422ff369df8",
     "riser-2.step": "9cf031ebe971b2fdcbc5f93056b0c808b94043512af748c47763980c7265ae91",
-    "riser-2.stl": "9db8fc3fc7380c41b76ce054edb13405bb6dad66fca0ed0907df47a225bffc7a",
-    "riser-3.3mf": "1286e9bc8527b6aefc1e1a2cd867053c5c029c6b4a533fe3a1574ff7f7d20d6d",
+    "riser-2.stl": "b72b5bbad868941bcc6d96ae08c71e7418a7199bdbcd784f212010460eef58d5",
+    "riser-3.3mf": "0484b6816ddf381e00331cc750c6c6beb25657a3bb3403ac2b08be091bde73bf",
     "riser-3.step": "8a720f6a905255e4487154d6823c0c5e1c195cbdb9b7abafbc70374fa1344614",
-    "riser-3.stl": "d09d7812c88f2221ac349a1da3bc50119efbc42262061a1e32fd35505487f1e1",
-    "riser-4.3mf": "8a6021032387a8ac3863fa9ccac109ff42c6fdf05c2a070630119fa3625572b6",
+    "riser-3.stl": "ed8d6460fb4ef5600972260d7d0f9a192f2c3230ca5405188e91bd064936d98d",
+    "riser-4.3mf": "f26d3f429d239b003f6bdb8d041426e12cfca8e7795e4604762984d57fd80524",
     "riser-4.step": "d55d03b830ad27e0ef55ebba3cc747d595795ec124e3140770ac12af0e69ef76",
-    "riser-4.stl": "fc7697bfdc749c0e636eea204cdedbdc8da575416cf2b64f9645555ad51c8a68"
+    "riser-4.stl": "b5c0b556976c7ac1013b9886a5a20a10dc21d27658967d23d3049d918594d0c5"
   },
   "frame": "mm; torso-local x-forward, y-left, z-up; same axes as MuJoCo, multiply by .001 for metres",
   "frame_anchors_mm": [
@@ -7968,13 +7968,13 @@
       "bounds_mm": [
         [
           -39.63255310058594,
-          -31.656772613525394,
-          -10.731983184814496
+          -31.65677261352539,
+          -10.731983184814453
         ],
         [
           39.59283447265625,
           36.4232292175293,
-          4.967756271362347
+          4.967756271362305
         ]
       ],
       "color": [
@@ -8000,20 +8000,20 @@
         36.4232292175293,
         4.967756271362305
       ],
-      "volume_mm3": 36287.424324355554
+      "volume_mm3": 36287.424324355576
     },
     {
       "assembly_transform": "identity",
       "bounds_mm": [
         [
-          -39.632553100585966,
-          -24.738348007202156,
-          -18.00198364257813
+          -39.63255310058594,
+          -24.73834800720215,
+          -18.001983642578125
         ],
         [
-          39.592834472656286,
+          39.59283447265625,
           29.504802703857422,
-          -10.731983184814448
+          -10.731983184814453
         ]
       ],
       "color": [
@@ -8039,7 +8039,7 @@
         24.73834800720215,
         18.001983642578125
       ],
-      "volume_mm3": 16976.531941457597
+      "volume_mm3": 16976.531941457582
     },
     {
       "assembly_transform": "identity",
@@ -8047,7 +8047,7 @@
         [
           20.831059999999997,
           -13.16272,
-          4.967756271362347
+          4.967756271362305
         ],
         [
           27.03106,
@@ -8078,7 +8078,7 @@
         13.1627197265625,
         -4.967756271362305
       ],
-      "volume_mm3": 1586.7042082765888
+      "volume_mm3": 1586.70420827659
     },
     {
       "assembly_transform": "identity",
@@ -8086,7 +8086,7 @@
         [
           20.89456,
           0.8999999999999999,
-          4.967756271362347
+          4.967756271362305
         ],
         [
           27.09456,
@@ -8117,7 +8117,7 @@
         -0.8999999761581421,
         -4.967756271362305
       ],
-      "volume_mm3": 1655.740861076589
+      "volume_mm3": 1655.7408610765904
     },
     {
       "assembly_transform": "identity",
@@ -8125,7 +8125,7 @@
         [
           -10.888499999999999,
           -10.279051771261658,
-          4.967756271362347
+          4.967756271362305
         ],
         [
           -4.6884999999999994,
@@ -8156,7 +8156,7 @@
         10.279051780700684,
         -4.967756271362305
       ],
-      "volume_mm3": 1383.192178196418
+      "volume_mm3": 1383.192178196419
     },
     {
       "assembly_transform": "identity",
@@ -8164,7 +8164,7 @@
         [
           -10.888499999999999,
           10.120948228738342,
-          4.967756271362347
+          4.967756271362305
         ],
         [
           -4.6884999999999994,
@@ -8195,7 +8195,7 @@
         -10.12094783782959,
         -4.967756271362305
       ],
-      "volume_mm3": 1383.1921781964181
+      "volume_mm3": 1383.1921781964195
     },
     {
       "assembly_transform": "identity",
