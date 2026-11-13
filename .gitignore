@@ -31,3 +31,6 @@ assets/cad/work/
 assets/cad/**/*.FCBak
 assets/cad/**/*.FCStd1
 assets/cad/**/*.FCStd.*
+
+# Experiment outputs (sim/sound_motion.py videos, metrics)
+out/
