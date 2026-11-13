@@ -1,0 +1,76 @@
+# Sesame motion space: eight named axes instead of eight servos.
+#
+# Derived in simulation (MuJoCo, models/sesame.xml collision boxes, unmeasured
+# servo gain/torque and masses) on 2026-11-13; see reference/MOTION-SPACE.md
+# and `uv run python -m sim.motion_space`, which recomputes every number here.
+# Joint limits and signs come from robot.yaml (status: assumed), so this
+# space inherits those assumptions. status: simulation-derived, NEEDS-HARDWARE.
+#
+# Axes (sim/motion_space.py has the exact definitions):
+#   surge  spread  yaw  stride   hip patterns, degrees of paw forward sweep
+#   height (mm)  pitch (deg, nose up)  roll (deg, right side up)  lift (mm)
+#   feet are solved by inverse kinematics so all paws stay on a flat floor;
+#   lift raises the FR/BL (+) or FL/BR (-) diagonal for trotting.
+
+schema_version: 1
+status: simulation-derived
+
+hip_center_deg: 45 # internal; the upstream `stand` X-stance
+center: {surge: 0, spread: 0, yaw: 0, stride: 0, height: 42, pitch: 0, roll: 0, lift: 0}
+
+# A pose is feasible when it reaches the floor, stays inside robot.yaml soft
+# limits and meets all of these (stance judged with every paw down).
+rules:
+  foot_min_deg: 30 # flatter paddles overload the foot servos and creep
+  support_margin_mm: 10 # centre of mass inside the paw polygon
+  clearance_mm: 5 # torso and femurs above the floor
+  hip_pair_sum_min_deg: -20 # same-side front+back hips; legs collide below about -25
+  lift_max_mm: 15
+
+# Each axis alone, others at the centre (rules above). Axes share joints, so
+# combinations are narrower: the four hip axes add on every hip servo
+# (|surge|+|spread|+|yaw|+|stride| <= 45 keeps every combination in limits),
+# and pitch/roll room shrinks away from height 42 (see tilt_by_height).
+ranges:
+  surge: [-45, 45]
+  spread: [-55, 45]
+  yaw: [-45, 45]
+  stride: [-45, 45]
+  height: [34, 49.5]
+  pitch: [-6.25, 6.25]
+  roll: [-6.25, 6.25]
+  lift: [-15, 15]
+
+tilt_by_height: # max |pitch| = max |roll| (deg) with other axes centred
+  34: 0.25
+  36: 1.75
+  38: 3.25
+  40: 4.75
+  42: 6.25
+  44: 6.75
+  46: 4.25
+  48: 2.0
+
+# Simple inner rule for designing motions: every pose inside it is feasible.
+#   |surge| + |spread| + |yaw| + |stride| <= hip_l1_deg
+#   height in height_mm and |pitch| + |roll| <= tilt_l1_fraction * tilt_by_height(height)
+#   |lift| <= lift_mm
+budget: {hip_l1_deg: 45, height_mm: [36, 48], tilt_l1_fraction: 0.75, lift_mm: 12}
+
+# Half-widths around the centre where every combination is feasible
+# (all 256 corners and random interior points checked).
+safe_box: {surge: 11, spread: 11, yaw: 11, stride: 11, height: 3, pitch: 2, roll: 2, lift: 12}
+
+# What the simulated robot must do for a feasible pose to count as held
+# (1.5 s hold from the commanded attitude, MuJoCo).
+sim_check: {attitude_deg: 4, height_mm: 6, load: 0.5, drift_mm: 2}
+
+# Diagonal trot (sim.motion_space.gait): stride and spread oscillate at hz,
+# lift leads them by a quarter cycle. Frames at 20 Hz, 300 deg/s slew like the
+# S3 firmware RUN_RATE. Simulated floor friction 0.9; real speeds will differ.
+gait:
+  forward_mm_s_per_deg_hz: 2.6 # forward ~ 2.6 * stride * hz until the slew limit
+  turn_deg_s_per_deg_hz: 2.4 # turn (left +) ~ 2.4 * steer * hz
+  slew_budget: "2*pi*hz*(|stride|+|steer|) <= 300 deg/s; beyond it speed drops"
+  lift_mm: [4, 15] # below ~4 mm the swing paws scuff and progress stalls
+  hz: [0.5, 3]

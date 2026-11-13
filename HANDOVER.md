@@ -1,5 +1,18 @@
 # HANDOVER
 
+## Motion space — November 13, 2026 (simulation only)
+
+`sim/motion_space.py` re-expresses the 8 joints as 8 body-level axes:
+
+- surge, spread, yaw and stride are hip patterns;
+- height, pitch and roll are solved by foot inverse kinematics;
+- lift raises a diagonal for trotting.
+
+The rules and budget that keep a pose standing are in
+`manifest/motion_space.yaml`. A quarter-cycle `stride`/`lift` trot walks, and
+a `spread`/`lift` trot turns. See `reference/MOTION-SPACE.md`. No hardware
+was moved; joint signs and limits remain the manifest's assumptions.
+
 ## Student-owned projects — October 29, 2026
 
 The instructor's classroom feedback supersedes earlier firmware locks, mandatory
