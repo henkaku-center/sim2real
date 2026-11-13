@@ -236,10 +236,7 @@ class CpgController(Controller):
             self.gait = "sway"
         target_r = min(1.0, self.rate / 1.5)
         self.r += dt / 0.6 * (target_r - self.r)
-        psi = GAITS[self.gait]
-        rel = self.phi - psi
-        dphi = self.omega + self.coupling * np.sin(rel[None, :] - rel[:, None]).mean(axis=1)
-        self.phi = self.phi + dt * dphi
+        rel = self.advance(dt)
         if onset > 0:  # a PLL: the phase error at the beat corrects phase and frequency
             lead = (rel[0] + math.pi) % (2 * math.pi) - math.pi  # front right: offset 0 in every gait
             self.phi -= self.kick * lead
@@ -247,6 +244,17 @@ class CpgController(Controller):
             self.omega = float(np.clip(self.omega, 2 * math.pi * 0.7, 2 * math.pi * 3.0))
         self.phi %= 2 * math.pi
         self.log.append((self.omega / (2 * math.pi), self.r, self.gait))
+        return self.pose()
+
+    def advance(self, dt: float) -> np.ndarray:
+        """Step the coupled phases toward the current gait; returns phases relative to it."""
+        rel = self.phi - GAITS[self.gait]
+        dphi = self.omega + self.coupling * np.sin(rel[None, :] - rel[:, None]).mean(axis=1)
+        self.phi = self.phi + dt * dphi
+        return rel
+
+    def pose(self) -> np.ndarray:
+        """Joint targets: hips sweep with cos(phase), paws lift while sin(phase) > 0."""
         out = self.base.copy()
         for i, (_, hip, foot, fwd) in enumerate(LEGS):
             out[self.idx[hip]] -= self.r * self.hip * fwd * math.cos(self.phi[i])
@@ -323,14 +331,14 @@ class Run:
 class Sim:
     """One MuJoCo world driven by one controller at FRAME_HZ."""
 
-    def __init__(self, mode: str, m: Manifest, seed: int = 0, model=None):
+    def __init__(self, mode: str, m: Manifest, seed: int = 0, model=None, ctl: Controller | None = None):
         import mujoco
 
         self.mj = mujoco
         self.mode = mode
         self.model = model or physics_model()
         self.data = mujoco.MjData(self.model)
-        self.ctl = CONTROLLERS[mode](m, seed)
+        self.ctl = ctl or CONTROLLERS[mode](m, seed)
         jnt = self.model.actuator_trnid[:, 0]
         self.qadr = self.model.jnt_qposadr[jnt]
         self.vadr = self.model.jnt_dofadr[jnt]
@@ -442,12 +450,13 @@ def simulate(audio: np.ndarray, sections: list[Section], modes=MODES, seed: int 
     feats = features(audio)
     model = physics_model()
     sims = [Sim(mode, m, seed, model) for mode in modes]
-    render = _Renderer(model, sims, sections, size, fps, video, audio) if video else None
+    caption = lambda t: next((s.label for s in sections if s.start <= t < s.end), "")  # noqa: E731
+    render = Renderer(model, sims, caption, feats.onset, video, audio, size, fps) if video else None
     for k in range(len(feats.env)):
         for sim in sims:
             sim.step(k, float(feats.env[k]), float(feats.onset[k]))
         if render and k % (FRAME_HZ // fps) == 0:
-            render.frame(k, feats)
+            render.frame(k)
     if render:
         render.close()
     runs = [sim.result() for sim in sims]
@@ -457,11 +466,21 @@ def simulate(audio: np.ndarray, sections: list[Section], modes=MODES, seed: int 
 # ---------------------------------------------------------------- video
 
 
-class _Renderer:
-    def __init__(self, model, sims, sections, size, fps, path: Path, audio):
+CAPTION_FONTS = (  # first that exists; Japanese captions need a CJK font
+    "/System/Library/Fonts/ヒラギノ角ゴシック W4.ttc",
+    "/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc",
+)
+
+
+class Renderer:
+    """Side-by-side panes (one per sim) piped to ffmpeg with the audio track."""
+
+    def __init__(self, model, sims, caption, onset: np.ndarray, path: Path, audio: np.ndarray,
+                 size=(360, 270), fps: int = 25, pane_text=None):
         import mujoco
 
-        self.mj, self.sims, self.sections, self.size = mujoco, sims, sections, size
+        self.mj, self.sims, self.caption, self.onset, self.size = mujoco, sims, caption, onset, size
+        self.pane_text = pane_text  # optional (sim, frame) -> str under each pane's label
         self.r = mujoco.Renderer(model, size[1], size[0])
         self.opt = mujoco.MjvOption()
         self.opt.geomgroup[3] = 1  # collision boxes stand in for the LFS meshes
@@ -470,7 +489,8 @@ class _Renderer:
         self.flash = 0
         from PIL import ImageFont
 
-        self.font = ImageFont.load_default(size=16)
+        font = next((f for f in CAPTION_FONTS if Path(f).exists()), None)
+        self.font = ImageFont.truetype(font, 16) if font else ImageFont.load_default(size=16)
         path.parent.mkdir(parents=True, exist_ok=True)
         wav = path.with_suffix(".wav")
         write_wav(wav, audio)
@@ -481,13 +501,13 @@ class _Renderer:
              "-c:v", "libx264", "-pix_fmt", "yuv420p", "-c:a", "aac", "-shortest", str(path)],
             stdin=subprocess.PIPE)
 
-    def frame(self, k: int, feats: Features) -> None:
+    def frame(self, k: int) -> None:
         from PIL import Image, ImageDraw
 
         t = k / FRAME_HZ
-        if feats.onset[max(0, k - 1): k + 1].any():
+        if self.onset[max(0, k - 1): k + 1].any():
             self.flash = 3
-        label = next((s.label for s in self.sections if s.start <= t < s.end), "")
+        label = self.caption(t)
         panes = []
         for sim in self.sims:
             self.cam.lookat[:] = sim.data.qpos[:3]
@@ -495,8 +515,10 @@ class _Renderer:
             self.r.update_scene(sim.data, self.cam, self.opt)
             img = Image.fromarray(self.r.render())
             draw = ImageDraw.Draw(img)
-            draw.rectangle((0, 0, 64, 26), fill=(250, 250, 250))
+            draw.rectangle((0, 0, 16 + 10 * len(sim.mode), 26), fill=(250, 250, 250))
             draw.text((8, 4), sim.mode, fill=(0, 0, 0), font=self.font)
+            if self.pane_text:
+                draw.text((8, self.size[1] - 24), self.pane_text(sim, k), fill=(20, 20, 20), font=self.font)
             panes.append(img)
         w, h = self.size
         canvas = Image.new("RGB", (w * len(panes), h + 28), (250, 250, 250))

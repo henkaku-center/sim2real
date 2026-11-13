@@ -74,3 +74,54 @@ entrainment and gait switch, and DEP being broadband where CPG is tonal.
   (`--wav`) has not been checked.
 - The parameters (coupling, PLL gains, thresholds) were tuned by hand on this
   signal.
+
+# Voice: prosody to the body, words to the parameters (2026-11-13)
+
+Turning text into a waveform would be an arbitrary code with no meaning for
+the body. Voice carries two kinds of meaning, so `sim/voice_motion.py` routes
+them separately into the same CPG body:
+
+- **prosody** (pitch above a 220 Hz reference, rising or falling pitch,
+  loudness, syllable onsets) drives arousal. Arousal sets amplitude, tempo
+  and gait, and each syllable kicks the amplitude. Animals respond to these
+  cues without words; for dogs, rising repeated notes excite and falling ones
+  calm (McConnell 1990, from memory).
+- **words** go through a keyword table that stands in for the LLM and maps
+  the transcript to CPG parameters: `settle`, `approach` (trot) and `play`
+  (faster trot). Words arrive 0.4 s after the utterance ends, as speech
+  recognition would deliver them, so the body hears the tone before it
+  understands the words.
+
+```sh
+uv run --group dev python -m sim.voice_motion --video   # macOS say -v Kyoko; out/voice_motion/compare.mp4
+uv run --group dev python -m sim.voice_motion --synth   # synthetic voice, any OS (used by the tests)
+```
+
+The script says each line three times: excited おいで！, calm 落ち着いて。,
+excited あそぼう！, excited 落ち着いて！, calm おいで。. The excited `say`
+voice sits at about 370-420 Hz, the calm one at about 165 Hz.
+
+| scene | metric | prosody | words | both |
+|---|---|---|---|---|
+| 落ち着いて。 (calm) | settle_s / rebounds | (barely moving) | 0.74 / 0 | **0.62 / 0** |
+| 落ち着いて！ (excited) | settle_s / rebounds | never | 1.02 / 0 | **2.10 / 2** |
+| おいで。 (calm) | amp_deg | 1.2 | 9.4 | **4.8** |
+| おいで！ (excited) | amp_deg | 11.9 | 9.6 | **12.2** |
+
+- In `both`, a shouted 落ち着いて！ is understood as `settle`, but the next
+  excited syllables push the amplitude up again (two rebounds). The body
+  stops about 1.5 s later than for the quiet version. Words alone settle
+  either way, and prosody alone never settles.
+- Words choose what to do and prosody scales how much: a quiet おいで。 walks
+  at half the amplitude of the words-only run, and prosody alone barely moves
+  for it.
+- The conflict is designed in, not emergent. It comes from the two channels
+  acting on different time scales: syllable kicks are immediate, while the
+  settle command lags speech recognition and then acts on the amplitude.
+
+`tests/test_voice_motion.py` pins these contrasts on the synthetic voice
+(F0 tracking within 2 %, rising vs falling, settle and rebound ordering,
+amplitude scaling).
+
+Not verified: real human voices or microphone noise, an actual LLM in place
+of the keyword table, and the real robot.
