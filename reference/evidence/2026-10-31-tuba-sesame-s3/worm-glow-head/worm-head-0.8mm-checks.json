@@ -1,0 +1,30 @@
+{
+ "wall_mm": 0.8,
+ "volume_mm3": 40109.9,
+ "mass_g_PLA_100pct": 49.7,
+ "bounds_mm": [
+  -65.0,
+  -44.8,
+  5.0,
+  63.0,
+  44.8,
+  73.8
+ ],
+ "watertight_genus": 13,
+ "band_unchanged_mm3": 0.0,
+ "v3_volume_outside_new_mm3": 12.62,
+ "oled_tunnel_blocked_mm3": 0.0,
+ "switch_bore_blocked_mm3": 0.0,
+ "usb_opening_blocked_mm3": 0.0,
+ "v3_interior_intrusion_mm3": 15.88,
+ "frame_overlap_mm3": -0.0,
+ "leg_zone_overlap_mm3": 0.0,
+ "max_abs_y_mm (raised feet at >= 49)": 44.8,
+ "floor_clearance_above_legs_mm": 1.9,
+ "v3_inside_space_lost_mm3": 57.9,
+ "max_overhang_deg_from_vertical": 90.0,
+ "overhang_area_over45_mm2": 4794.8,
+ "watertight": true,
+ "parts": 1,
+ "status": "Error.NoError"
+}
