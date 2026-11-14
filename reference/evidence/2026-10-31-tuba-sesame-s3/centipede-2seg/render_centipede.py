@@ -31,7 +31,7 @@ def robot(yaw=0, lift=0):
 fig = plt.figure(figsize=(15, 6.5), dpi=120)
 lim = [(-175, 60), (-80, 80), (-25, 135)]
 scene(fig.add_subplot(1, 2, 1, projection="3d"), 20, -60, robot(0, 50), lim,
-      "Sphere-style domes from Z 34; seg 2 cap lifted (2 screws)")
+      "Sphere-style domes from Z 27; seg 2 cap lifted (2 screws)")
 scene(fig.add_subplot(1, 2, 2, projection="3d"), 60, -90, robot(25), [(-175, 60), (-110, 110), (-25, 85)],
       "Top view, bent 25 deg on the pivot (lock screw out); legs at segment centres")
 plt.tight_layout(); plt.savefig(f"{OUT}/centipede-preview.png", bbox_inches="tight")

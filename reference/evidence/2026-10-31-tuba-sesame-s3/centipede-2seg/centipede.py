@@ -20,8 +20,8 @@ import numpy as np, trimesh, manifold3d as mf
 
 KIT, OUT = sys.argv[1], sys.argv[2]
 T = 1.2                 # cap wall
-Z_SPLIT = 34.0          # base keeps the V3 shell below this (10 mm higher than the sphere head's Z 24)
-SKIRT_Z = 30.0          # cap skirt bottom
+Z_SPLIT = 27.0          # base keeps the V3 shell below this (3 mm higher than the sphere head's Z 24)
+SKIRT_Z = Z_SPLIT - 4.0  # cap skirt bottom
 FIT = 0.25              # skirt / band clearance
 PIN = 12.5              # pivot distance from each frame end
 HR = 11.0               # hinge tongue/tab radius around the pivot
@@ -104,7 +104,7 @@ cover1, cover2 = centred_cover(True), centred_cover(False)
 
 # ---- bases: V3 band below Z_SPLIT + wire notch at the hinge end + cap screw bosses ----
 band = below(head, Z_SPLIT)
-SCREW_Y, SCREW_Z = 12.0, 31.9          # small pan-head cap screws, horizontal along X at both ends
+SCREW_Y, SCREW_Z = 12.0, SKIRT_Z + 1.9  # small pan-head cap screws, horizontal along X at both ends
 def end_x(m, z, sign):  # outer X of the band wall at height z, y = SCREW_Y
     s = (m ^ box(-60, 60, SCREW_Y - 0.5, SCREW_Y + 0.5, z - 0.5, z + 0.5)).bounding_box()
     return s[3] if sign > 0 else s[0]
@@ -125,10 +125,11 @@ SW_Z, SW_D = 10.0, 6.5
 sw_hole = xcyl(30, 60, 0, SW_Z, SW_D / 2)
 
 # The V3 OLED window starts at Z 29.6, so the taller base would keep its lower part: close it.
-top_cs = mf.CrossSection.batch_hull([head.slice(z) for z in np.linspace(28, Z_SPLIT - 0.05, 6)])   # base outline there
-top_slab = mf.Manifold.extrude(top_cs, Z_SPLIT - 28).translate([0, 0, 28])
-oled_fill = (top_slab - top_slab.translate([-2.4, 0, 0])) ^ box(30, 50, -14, 14, 28, Z_SPLIT)
-band = band + oled_fill
+top_cs = mf.CrossSection.batch_hull([head.slice(z) for z in np.linspace(28, max(Z_SPLIT, 28.1) - 0.05, 6)])   # base outline there
+top_slab = mf.Manifold.extrude(top_cs, max(Z_SPLIT, 28.1) - 28).translate([0, 0, 28])
+oled_fill = (top_slab - top_slab.translate([-2.4, 0, 0])) ^ box(30, 50, -14, 14, 28, max(Z_SPLIT, 28.1))
+if Z_SPLIT > 29.6:      # V3 OLED window starts at Z 29.6
+    band = band + oled_fill
 
 base1 = (band + boss(+1) + boss(-1)) - pilot(+1) - pilot(-1) - wire_notch(-1) - sw_hole
 base2 = (band + boss(+1) + boss(-1)) - pilot(+1) - pilot(-1) - wire_notch(+1)
@@ -137,7 +138,7 @@ base2 = (band + boss(+1) + boss(-1)) - pilot(+1) - pilot(-1) - wire_notch(+1)
 AX, AY, AZ = 52.5, 46.0, 46.0     # same dome as the sphere head (AX +0.5 so it covers the base corners)
 FLOOR = 1.6
 def slab(cs, z0, z1): return mf.Manifold.extrude(cs, z1 - z0).translate([0, 0, z0])
-O = mf.CrossSection.batch_hull([head.slice(z) for z in np.linspace(28, Z_SPLIT - 0.05, 8)])   # base outer envelope (from Z 28: covers the OLED fill)
+O = mf.CrossSection.batch_hull([head.slice(z) for z in np.linspace(min(28, SKIRT_Z), Z_SPLIT - 0.05, 8)])   # base outer envelope
 O = O.simplify(0.05).hull()
 O_in, O_out = O.offset(FIT, mf.JoinType.Round).simplify(0.02), O.offset(FIT + T, mf.JoinType.Round).simplify(0.02)
 b = O.bounds(); XC = (b[0] + b[2]) / 2
@@ -151,7 +152,8 @@ def cap_holes(sign):
     return xcyl(xo - 2 if sign > 0 else xo - 6, xo + 6 if sign > 0 else xo + 2, SCREW_Y, SCREW_Z, 1.15)
 cap = cap - cap_holes(+1) - cap_holes(-1)
 usb = box(-75, -30.9, -17.4, -5.4, 19.9, 26.9)             # exact V3 USB opening (seg 2 rear)
-cap1, cap2 = cap, cap   # the V3 USB opening (Z 19.9-26.9) is now inside the base
+cap = cap - usb             # USB opening through the skirt too (both caps: spare cable hole on seg 1)
+cap1, cap2 = cap, cap
 
 # ---- assembly + checks ---------------------------------------------------
 def yaw(m, deg):   # rotate seg 2 about the pivot (assembly coords)

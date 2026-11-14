@@ -24,15 +24,15 @@
   -0.0,
   -0.0
  ],
- "cap_ledge_rests_on_band_mm2": 374.8,
- "cap_inner_top_z": 78.8,
+ "cap_ledge_rests_on_band_mm2": 335.0,
+ "cap_inner_top_z": 71.8,
  "cap_size_mm": [
-  -53.5,
+  -53.3,
   -46.0,
-  30.0,
-  51.5,
+  23.0,
+  51.7,
   46.0,
-  80.0
+  73.0
  ],
  "pcb_space_blocked_mm3 (20 mm / 30 mm mid / board)": [
   0.0,
@@ -40,7 +40,7 @@
   0.0
  ],
  "battery_blocked_by_hinge_mm3": 0.0,
- "usb_opening_blocked_mm3": 0.0,
+ "usb_opening_blocked_mm3": -0.0,
  "switch_wall_mm": 2.0,
  "switch_body_space_blocked_mm3 (13 wide x 8 tall x 16 deep)": 0.0,
  "switch_nut_zone_blocked_mm3": 0.0,
@@ -66,7 +66,7 @@
  },
  "max_half_width_mm": 46.0,
  "overall_length_frames_mm": 199.4,
- "mass_g_est": 368,
+ "mass_g_est": 362,
  "com_x_mm": -54.7,
  "support_x_range_mm": [
   -112.2,
@@ -101,18 +101,18 @@
  ],
  "base1_parts_volume": [
   1,
-  15467.2
+  11585.6
  ],
  "base2_parts_volume": [
   1,
-  15533.5
+  11651.9
  ],
  "cap1_parts_volume": [
   1,
-  22914.2
+  22515.5
  ],
  "cap2_parts_volume": [
   1,
-  22914.2
+  22515.5
  ]
 }
