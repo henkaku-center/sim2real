@@ -1,15 +1,18 @@
 """Two-segment centipede body for the Sesame V3 kit (4 legs, 2 per segment).
 
 Segment 1 (front, "head"): V3 frame with only the FRONT servo bays (L1, R1),
+moved back so the hip shafts sit at the segment centre,
 battery in the native V3 battery bay, toggle switch in the front wall.
 Segment 2 (rear, "body"): V3 frame with only the REAR servo bays (L2, R2),
+moved forward so the hip shafts sit at the segment centre,
 PCB on the native V3 spacers, USB at the rear like V3.
 
-Each segment = frame + unchanged V3 bottom cover + base + detachable cap.
+Each segment = frame + V3 bottom cover (its bay tabs moved the same way) + base + cap.
   base: the V3 head-cover band below Z_SPLIT (same 4 head screws into the frame).
   cap:  a round dome with a skirt over the base, held by 2 M2x5 screws at the ends.
-Hinge: fork (seg 2) + tongue (seg 1), vertical M3x20 pivot bolt + nyloc nut.
-A second M3 "lock" bolt beside the pivot makes the body rigid for walking tests.
+Hinge: fork (seg 2) + tongue (seg 1). Pivot = a long countersunk self-tapping screw
+(clearance + countersink in the top tab and tongue, threads into the bottom tab; M3 bolt + nut also fits).
+A second screw ("lock") beside the pivot makes the body rigid for walking tests.
 Run: python centipede.py <kit> <out>
 """
 import json, math, sys
@@ -22,7 +25,8 @@ SKIRT_Z = 15.2          # cap skirt bottom (V3 ribbon notches end at Z 14.97)
 FIT = 0.25              # skirt / band clearance
 PIN = 12.5              # pivot distance from each frame end
 HR = 11.0               # hinge tongue/tab radius around the pivot
-BOLT = 3.3              # M3 clearance hole
+BOLT = 3.3              # clearance hole (2.9 mm self-tapper or M3)
+PILOT = 2.4             # self-tap pilot in the bottom fork tab
 LOCK_Y = 7.0            # lock bolt offset from the pivot
 Z_TOP, Z_BOT = 4.968, -10.732                       # V3 frame top / bottom
 TABS = [(Z_TOP - 4.0, Z_TOP), (Z_BOT, Z_BOT + 4.0)]  # fork tabs (seg 2)
@@ -46,24 +50,57 @@ def ycyl(x, y0, y1, z, r): return mf.Manifold.cylinder(y1 - y0, r, r).rotate([-9
 frame, cover, head = load("internal-frame.stl"), load("bottom-cover.stl"), load("head-cover.stl")
 dat = json.load(open(f"{KIT}/assembly.json"))
 
-# ---- frames: drop one pair of servo bays (outside |Y| 31.875), add hinge half ----
+# ---- frames: keep one pair of servo bays (outside |Y| 31.875), moved to the segment centre ----
 BAY_Y = 31.875
-def bays(front):
+hip = dat["hip_shaft_xy_mm"]
+SHIFT = {True: -hip["L1"][0], False: -hip["L2"][0]}     # front bays back / rear bays forward: hips at X 0
+def bays(front, by=BAY_Y):
     x0, x1 = (-1, 60) if front else (-60, -1)
-    return box(x0, x1, BAY_Y, 60, -20, 10) + box(x0, x1, -60, -BAY_Y, -20, 10)
+    return box(x0, x1, by, 60, -20, 10) + box(x0, x1, -60, -by, -20, 10)
+def centred(m, front, by=BAY_Y):  # m without any bays, plus one pair moved to the centre
+    core = m - bays(True) - bays(False)
+    # Take the bays a little deeper (by - 0.4) so they overlap the core (face-to-face contact
+    # gives non-manifold edges), but keep the overlap only where the core is solid at the new place.
+    ext = box(-60, 60, by - 0.4, 60, -20, 10) + box(-60, 60, -60, -by + 0.4, -20, 10)
+    side = box(-1, 60, -60, 60, -20, 10) if front else box(-60, -1, -60, 60, -20, 10)
+    strip = box(-60, 60, by - 0.4, BAY_Y, -20, 10) + box(-60, 60, -BAY_Y, -by + 0.4, -20, 10)
+    moved = (m ^ ext ^ side).translate([SHIFT[front], 0, 0])
+    return core + (moved - (strip - core))
 def hinge_plate(x_end, sign, z0, z1, into=6.0):
     """Neck from the frame end wall out to a disc around the pivot (sign: +1 = +X)."""
     px = x_end + sign * PIN
     neck = box(min(x_end - sign * into, px), max(x_end - sign * into, px), -HR, HR, z0, z1)
     return neck + zcyl(px, 0, HR, z0, z1), px
-def bolt_holes(px):
+def bolt_holes(px):  # tongue: clearance for both screws, it turns on the pivot shank
     return zcyl(px, 0, BOLT / 2, -30, 30) + zcyl(px, LOCK_Y, BOLT / 2, -30, 30)
+def fork_holes(px):
+    """Long countersunk self-tapping screws (~2.9 mm), no nut: clearance + countersink in the
+    top tab, pilot in the bottom tab so the screw threads into it. An M3 bolt + nut also fits."""
+    h = None
+    for y in (0, LOCK_Y):
+        c = zcyl(px, y, BOLT / 2, TABS[1][1] + 0.5, 30)                     # top tab + gap: clearance
+        cs = mf.Manifold.cylinder(1.8, BOLT / 2, 3.2).translate([px, y, Z_TOP - 1.8])   # 90 deg countersink, 6.4 mm
+        pilot = zcyl(px, y, PILOT / 2, -30, TABS[1][1] + 0.5)               # bottom tab: self-tap pilot
+        h = (c + cs + pilot) if h is None else h + c + cs + pilot
+    return h
 
 tongue, px1 = hinge_plate(X_REAR, -1, *TONGUE)
-frame1 = (frame - bays(front=False) + tongue) - bolt_holes(px1)      # front segment keeps L1/R1
+frame1 = (centred(frame, True) + tongue) - bolt_holes(px1)      # front segment: L1/R1 at its centre
 fork = mf.Manifold.batch_boolean([hinge_plate(X_FRONT, +1, *t)[0] for t in TABS], mf.OpType.Add)
 px2 = X_FRONT + PIN
-frame2 = (frame - bays(front=True) + fork) - bolt_holes(px2)         # rear segment keeps L2/R2
+frame2 = (centred(frame, False) + fork) - fork_holes(px2)       # rear segment: L2/R2 at its centre
+def centred_cover(front):
+    """Cover: its body edge is a chamfer right at |Y| 31.8, which the plain cut slices into
+    slivers. Move only the bay tabs (|Y| > 32.4) and join each to the body with a bridge block."""
+    core = cover - bays(True) - bays(False)
+    parts = []
+    for t in (cover ^ bays(front, 32.4)).decompose():
+        x0, y0, z0, x1, y1, z1 = t.bounding_box()
+        ys = (30.5, 32.6) if y0 > 0 else (-32.6, -30.5)
+        bridge = box(x0 + 0.3, x1 - 0.3, ys[0], ys[1], z0 + 0.2, z1 - 0.2) ^ cover.hull()   # inset: no shared faces
+        parts.append(t + bridge)
+    return core + mf.Manifold.batch_boolean(parts, mf.OpType.Add).translate([SHIFT[front], 0, 0])
+cover1, cover2 = centred_cover(True), centred_cover(False)
 
 # ---- bases: V3 band below Z_SPLIT + wire notch at the hinge end + cap screw bosses ----
 band = below(head, Z_SPLIT)
@@ -121,9 +158,10 @@ def yaw(m, deg):   # rotate seg 2 about the pivot (assembly coords)
     p = X_REAR - PIN
     return m.translate([-p, 0, 0]).rotate([0, 0, deg]).translate([p, 0, 0])
 def at2(m): return m.translate([DX2, 0, 0])
-seg1 = [frame1, cover, base1, cap1]
-seg2 = [at2(m) for m in (frame2, cover, base2, cap2)]
-legs_zone = lambda front: box(-1 if front else -60, 60 if front else -1, BAY_Y, 90, -60, 22.1) + box(-1 if front else -60, 60 if front else -1, -90, -BAY_Y, -60, 22.1)
+seg1 = [frame1, cover1, base1, cap1]
+seg2 = [at2(m) for m in (frame2, cover2, base2, cap2)]
+legs_zone = lambda front: box(-60, 60, BAY_Y, 90, -60, 22.1) + box(-60, 60, -90, -BAY_Y, -60, 22.1)
+def moved_bay(front): return ((frame ^ bays(front)).translate([SHIFT[front], 0, 0]))
 pcb = box(-35, 35, -25, 25, 7.97, 7.97 + 1.6)
 pcb_space = box(-35, 35, -25, 25, 7.97, 7.97 + 20)   # board + 20 mm of parts (ESP32 on headers, hub)
 pcb_mid = box(-30, 30, -21, 21, 7.97, 7.97 + 30)     # taller parts away from the board corners (V3-like)
@@ -133,8 +171,10 @@ def vol(m): return round(m.volume(), 3)
 checks = {"pivot_x_seg1": round(px1, 3), "pivot_x_seg2_local": round(px2, 3), "seg2_offset_x": round(DX2, 3)}
 checks["pivot_aligned"] = round(abs((px2 + DX2) - px1), 4)
 checks["frame_single_solid"] = [len(frame1.decompose()), len(frame2.decompose())]
-checks["kept_bays_unchanged_mm3"] = [vol((frame1 ^ legs_zone(True)) - (frame ^ legs_zone(True))) + vol((frame ^ legs_zone(True)) - (frame1 ^ legs_zone(True))),
-                                    vol((frame2 ^ legs_zone(False)) - (frame ^ legs_zone(False))) + vol((frame ^ legs_zone(False)) - (frame2 ^ legs_zone(False)))]
+checks["moved_bays_identical_to_v3_mm3"] = [vol((frame1 ^ legs_zone(True)) - moved_bay(True)) + vol(moved_bay(True) - frame1),
+                                            vol((frame2 ^ legs_zone(False)) - moved_bay(False)) + vol(moved_bay(False) - frame2)]
+checks["hip_x_in_segment_mm"] = [round(hip["L1"][0] + SHIFT[True], 3), round(hip["L2"][0] + SHIFT[False], 3)]
+checks["covers_single_solid"] = [len(cover1.decompose()), len(cover2.decompose())]
 bosses = boss(+1) + boss(-1)
 checks["band_unchanged_below_14_mm3"] = vol(below(base2, 14) - bosses - below(head, 14) - wire_notch(+1)) + vol(below(head, 14) - wire_notch(+1) - below(base2, 14))
 checks["cap_vs_base_overlap_mm3"] = [vol(cap1 ^ base1), vol(cap2 ^ base2)]
@@ -147,7 +187,7 @@ checks["battery_blocked_by_hinge_mm3"] = vol(battery ^ frame1) - vol(battery ^ f
 checks["usb_opening_blocked_mm3"] = vol(box(-75, -30.9, -17.4, -5.4, 19.9, 26.9) ^ (base2 + cap2))
 checks["switch_wall_mm"] = round((base1 ^ xcyl(30, 60, 0, SW_Z + SW_D / 2 + 1, 0.3)).volume() / (math.pi * 0.09), 2)
 checks["switch_body_space_blocked_mm3 (13 wide x 8 tall x 16 deep)"] = vol(box(43.7 - 2.0 - 16, 43.7 - 2.0, -6.5, 6.5, SW_Z - 4, SW_Z + 4) ^ (frame1 + base1 + cap1))
-checks["switch_nut_zone_blocked_mm3"] = vol(box(43.7, 52, -5, 5, SW_Z - 4.6, SW_Z + 4.6) ^ (frame1 + cover + cap1))
+checks["switch_nut_zone_blocked_mm3"] = vol(box(43.7, 52, -5, 5, SW_Z - 4.6, SW_Z + 4.6) ^ (frame1 + cover1 + cap1))
 checks["switch_nut_flat_face"] = [round(v, 2) for v in (base1 ^ box(40, 60, -6, 6, SW_Z - 5, SW_Z + 5)).bounding_box()]
 checks["hinge_parts_touch_mm3"] = vol(tongue.translate([0, 0, 0]) ^ at2(fork))
 sweep = {}
@@ -159,17 +199,15 @@ checks["yaw_collision_mm3_by_deg"] = sweep
 checks["max_half_width_mm"] = round(max(-cap.bounding_box()[1], cap.bounding_box()[4]), 1)
 checks["overall_length_frames_mm"] = round(X_FRONT - (X_REAR + DX2), 1)
 # Balance (estimated masses, g; X of each mass in assembly coords).
-hip = dat["hip_shaft_xy_mm"]
 FEET_Y = 50.0                                        # foot Y in stand (raised feet start at 49)
-feet = {"L1": (hip["L1"][0], FEET_Y), "R1": (hip["R1"][0], -FEET_Y),
-        "L2": (hip["L2"][0] + DX2, FEET_Y), "R2": (hip["R2"][0] + DX2, -FEET_Y)}
-servo_x1, servo_x2 = dat["servo_mounts"]["L1"]["caseCenter"][0], dat["servo_mounts"]["L2"]["caseCenter"][0] + DX2
+feet = {"L1": (0.0, FEET_Y), "R1": (0.0, -FEET_Y), "L2": (DX2, FEET_Y), "R2": (DX2, -FEET_Y)}   # hips at segment centres
+servo_x1, servo_x2 = dat["servo_mounts"]["L1"]["caseCenter"][0] + SHIFT[True], dat["servo_mounts"]["L2"]["caseCenter"][0] + SHIFT[False] + DX2
 PLA = 1.24e-3 * 0.55                                 # printed part ~55 % of solid (walls + 25 % infill)
 masses = [  # (name, g, x)
-    ("seg1 frame+base+cap+cover", (frame1.volume() + base1.volume() + cap1.volume() + cover.volume()) * PLA, 0.0),
+    ("seg1 frame+base+cap+cover", (frame1.volume() + base1.volume() + cap1.volume() + cover1.volume()) * PLA, 0.0),
     ("seg1 4 servos + 2 legs", 4 * 13.4 + 8, servo_x1),
     ("battery (V3 bay, 1S ~1000 mAh)", 30, 3.5), ("switch + OLED", 8, 30),
-    ("seg2 frame+base+cap+cover", (frame2.volume() + base2.volume() + cap2.volume() + cover.volume()) * PLA, DX2),
+    ("seg2 frame+base+cap+cover", (frame2.volume() + base2.volume() + cap2.volume() + cover2.volume()) * PLA, DX2),
     ("seg2 4 servos + 2 legs", 4 * 13.4 + 8, servo_x2),
     ("PCB + ESP32 + hub + wires", 35, DX2), ("hinge bolts", 4, X_REAR - PIN)]
 M = sum(m for _, m, _ in masses); cx = sum(m * x for _, m, x in masses) / M
@@ -183,7 +221,7 @@ checks["com_margin_4_feet_mm"] = round(min(cx - feet["L2"][0], feet["L1"][0] - c
 checks["com_off_diagonal_mm (trot pairs)"] = [round(line_dist((cx, 0), feet["L1"], feet["R2"]), 1), round(line_dist((cx, 0), feet["R1"], feet["L2"]), 1)]
 checks["com_margin_3_feet_mm (one foot lifted)"] = {k: round(min(line_dist((cx, 0), feet[a], feet[b]) for a, b in
     [(p, q) for i, p in enumerate(o) for q in o[i + 1:]]), 1) for k in feet for o in [[f for f in feet if f != k]]}
-for name, m in (("frame1", frame1), ("frame2", frame2), ("base1", base1), ("base2", base2), ("cap1", cap1), ("cap2", cap2)):
+for name, m in (("frame1", frame1), ("frame2", frame2), ("cover1", cover1), ("cover2", cover2), ("base1", base1), ("base2", base2), ("cap1", cap1), ("cap2", cap2)):
     checks[f"{name}_parts_volume"] = [len(m.decompose()), round(m.volume(), 1)]
 print(json.dumps(checks, indent=1))
 json.dump(checks, open(f"{OUT}/centipede-checks.json", "w"), indent=1)
@@ -195,5 +233,6 @@ def export(m, name, flip=False):
     if flip: p.apply_transform(trimesh.transformations.rotation_matrix(math.pi, [1, 0, 0]))
     p.apply_translation([0, 0, -p.bounds[0][2]]); p.export(f"{OUT}/{name}-print.stl")
 export(frame1, "seg1-frame", flip=True); export(frame2, "seg2-frame", flip=True)   # PCB-side face down, like V3
+export(cover1, "seg1-cover"); export(cover2, "seg2-cover")
 export(base1, "seg1-base"); export(base2, "seg2-base")
 export(cap1, "seg1-cap"); export(cap2, "seg2-cap")

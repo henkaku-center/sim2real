@@ -5,7 +5,7 @@ Each segment has a detachable round glow cap. Take the cap off to reach the head
 
 | | Segment 1 (front) | Segment 2 (rear) |
 |---|---|---|
-| Legs | L1, R1 (V3 front bays, unchanged) | L2, R2 (V3 rear bays, unchanged) |
+| Legs | L1, R1: V3 front bays, **moved to the segment centre** | L2, R2: V3 rear bays, **moved to the segment centre** |
 | Inside | battery (native V3 battery bay), switch, OLED | PCB on the 4 V3 spacers, USB at the rear |
 | Front/rear wall | switch hole Ø 6.5 mm in the front wall (2 mm flat) | V3 USB opening, cut through the cap too |
 | Hinge part | tongue (rear) | fork, 2 tabs (front) |
@@ -14,17 +14,20 @@ The same servo channels are used, so the firmware is unchanged.
 
 ## Parts
 
-- **Frame:** the V3 internal frame with one pair of servo bays removed and a hinge half added. The kept bays and the PCB/battery mounts are unchanged (0 mm³).
+- **Frame:** the V3 internal frame. One pair of servo bays is kept and moved so the hip shafts sit at the segment centre (X 0); the other pair is removed. A hinge half is added. The moved bays are identical to V3 (0 mm³ difference), and the PCB and battery mounts are unchanged.
 - **Base:** the V3 head-cover band below Z 19. It uses the same 4 head screws into the frame and has 2 M2 bosses for the cap. There is a 12 × 8 mm wire slot at the hinge end.
 - **Cap:** a round dome with a 1.2 mm wall that rests on the band top (a 194 mm² ledge). Its 3.8 mm skirt goes over the band, and it's held by 2 × M2×5 screws at the ends.
-- **Hinge:** an M3×20 pivot bolt with a nyloc nut. A second M3×20 **lock bolt** 7 mm beside it makes the body rigid. **Keep the lock bolt in for walking tests**; take it out to let the body bend (±35° with no collisions in CAD).
-- **Bottom cover:** the unchanged V3 `bottom-cover.stl`, one per segment.
+- **Hinge:** a fork (2 tabs, seg 2) and a tongue (seg 1).
+  - **Pivot:** your long countersunk self-tapping screw, with no nut. It goes through clearance holes (Ø 3.3) and a countersink in the top tab and tongue, then threads into a Ø 2.4 pilot in the bottom tab. An M3 bolt + nut also fits.
+  - **Lock screw:** a second long screw 7 mm beside the pivot makes the body rigid. **Keep it in for walking tests**; take it out to let the body bend (±35° with no collisions in CAD).
+- **Bottom cover:** `seg1-cover` / `seg2-cover`. This is the V3 cover with its bay tabs moved the same way. The old V3 cover no longer matches the moved bays.
 
 ## Checks (`centipede-checks.json`, CAD only, 3 passes)
 
 | Check | Result |
 |---|---|
-| Kept servo bays / band below Z 14 unchanged | 0 / 0 mm³ |
+| Moved servo bays vs V3 / band below Z 14 | 0 / 0 mm³ difference |
+| Hip shafts at the segment centre | X 0.0 / 0.0 |
 | Pivot holes aligned; hinge parts touching at rest | 0 mm offset / 0 mm³ |
 | Collisions while bending −35…+35° | 0 mm³ |
 | PCB space: board + 20 mm everywhere, + 30 mm in the middle (like V3) | 0 mm³ blocked |
@@ -36,29 +39,38 @@ The same servo channels are used, so the firmware is unchanged.
 
 ### Balance (estimated)
 
-- **Mass:** about 352 g in total, nearly the same in each segment. The battery is in segment 1 and the PCB in segment 2, so the balance point sits 1.3 mm from the middle of the 4 feet.
+- **Mass:** about 350 g in total, nearly the same in each segment. The battery is in segment 1 and the PCB in segment 2, so the balance point sits 1.5 mm from the middle of the 4 feet.
+- **Legs at the centres:** each segment's weight sits right over its own legs, so the hinge only keeps the segments level and doesn't carry them. The leg pairs are 112 mm apart (V3: 57 mm).
 - **Standing on 4 feet:** the balance point is at least 50 mm inside the support area, so it's very stable.
-- **One foot lifted:** the balance point sits almost exactly on the diagonal (0.8 mm). This is the same as the current Sesame and any 4-legged robot. The walk relies on quick steps, so keep the lock bolt in.
-- **3-segment, 6-leg version:** this fixes it, because 3 feet always stay down.
+- **One foot lifted:** the balance point sits on the diagonal (1.0 mm). This is the same as the current Sesame, so keep the lock screw in for walking. The 3-segment, 6-leg version fixes it.
 
 ## Print (Bambu P1S, PLA)
 
 | File | Count | Orientation | Supports |
 |---|---|---|---|
 | `seg1-frame-print.stl`, `seg2-frame-print.stl` | 1 each | as given (PCB face down, like V3) | tree, build plate only (under the hinge parts) |
+| `seg1-cover-print.stl`, `seg2-cover-print.stl` | 1 each | as given (like the V3 cover) | same as your V3 cover print |
 | `seg1-base-print.stl`, `seg2-base-print.stl` | 1 each | rim down | tree, build plate only (small) |
 | `seg1-cap-print.stl`, `seg2-cap-print.stl` | 1 each | skirt down | tree, build plate only (inside the dome; snap out) |
-| V3 `bottom-cover.stl` | 1 more (I have 1) | flat | none |
 
-- **Frames:** 0.2 mm layers, 4 walls, 25 % infill, like V3.
+- **Frames and covers:** 0.2 mm layers, 4 walls, 25 % infill, like V3.
 - **Caps:** 2 walls for the glow.
 
-**Hardware:**
-- 2 × M3×20 bolts + 2 × M3 nyloc nuts
-- 4 × M2×5 screws (caps)
-- the usual V3 screws × 2 (head, cover, PCB)
+## Screws (from the screws I have, photo `body/IMG_3359.jpg`)
 
-The front servo leads now run about 15 cm further to the PCB. If a lead is short, use a servo extension.
+The photo has nothing to show scale, so these sizes are estimates. Check them with calipers or a ruler.
+
+| Screw in the photo | Use | Count |
+|---|---|---|
+| Long silver countersunk self-tapper (~2.9 mm, longest) | hinge **pivot**, top down, threads into the bottom tab | 1 |
+| Long black countersunk self-tapper | hinge **lock** screw | 1 |
+| Small pan-head self-tappers (~M2, 5–8 mm) | caps (2 per cap, Ø 1.6 pilots) and PCB | 4 + the V3 count |
+| Tiny pointed self-tappers | servo horns (as in the guide) | as needed |
+| Silver countersunk machine screw (~M3 × 10) | spare; no nut on hand. Use it as the lock screw only with an M3 nut. | 0 |
+
+- **Hinge screw length:** the stack is 15.7 mm, so any screw of 16 mm or more works. A longer tip just sticks out below the hinge, where nothing is in the way.
+- **Pilot fit:** if a self-tapper spins loose in its pilot, add a drop of glue or use an M3 bolt and nut.
+- **Servo leads:** the front leads now run about 15 cm further to the PCB. If one is short, use a servo extension.
 
 Rebuild:
 - `python centipede.py <kit> <out>`
