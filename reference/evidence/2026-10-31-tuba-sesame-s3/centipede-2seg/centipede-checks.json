@@ -1,0 +1,102 @@
+{
+ "pivot_x_seg1": -55.975,
+ "pivot_x_seg2_local": 56.202,
+ "seg2_offset_x": -112.177,
+ "pivot_aligned": 0.0,
+ "frame_single_solid": [
+  1,
+  1
+ ],
+ "kept_bays_unchanged_mm3": [
+  -0.0,
+  0.0
+ ],
+ "band_unchanged_below_14_mm3": 0.0,
+ "cap_vs_base_overlap_mm3": [
+  0.0,
+  0.0
+ ],
+ "cap_ledge_rests_on_band_mm2": 194.1,
+ "cap_inner_top_z": 54.8,
+ "cap_size_mm": [
+  -44.9,
+  -30.7,
+  15.2,
+  45.1,
+  30.7,
+  55.9
+ ],
+ "pcb_space_blocked_mm3 (20 mm / 30 mm mid / board)": [
+  0.0,
+  0.0,
+  0.0
+ ],
+ "battery_blocked_by_hinge_mm3": 0.0,
+ "usb_opening_blocked_mm3": 0.0,
+ "switch_wall_mm": 2.0,
+ "switch_body_space_blocked_mm3 (13 wide x 8 tall x 16 deep)": 0.0,
+ "switch_nut_zone_blocked_mm3": 0.0,
+ "switch_nut_flat_face": [
+  41.7,
+  -6.0,
+  5.0,
+  43.7,
+  6.0,
+  15.0
+ ],
+ "hinge_parts_touch_mm3": 0.0,
+ "yaw_collision_mm3_by_deg": {
+  "-35": 0.0,
+  "-30": 0.0,
+  "-25": 0.0,
+  "-15": 0.0,
+  "0": 0.0,
+  "15": 0.0,
+  "25": 0.0,
+  "30": 0.0,
+  "35": 0.0
+ },
+ "max_half_width_mm": 30.7,
+ "overall_length_frames_mm": 199.4,
+ "mass_g_est": 352,
+ "com_x_mm": -54.7,
+ "support_x_range_mm": [
+  -140.8,
+  28.2
+ ],
+ "com_margin_4_feet_mm": 50.0,
+ "com_off_diagonal_mm (trot pairs)": [
+  0.8,
+  0.8
+ ],
+ "com_margin_3_feet_mm (one foot lifted)": {
+  "L1": 0.8,
+  "R1": 0.8,
+  "L2": 0.8,
+  "R2": 0.8
+ },
+ "frame1_parts_volume": [
+  1,
+  58307.8
+ ],
+ "frame2_parts_volume": [
+  1,
+  58313.1
+ ],
+ "base1_parts_volume": [
+  1,
+  7276.8
+ ],
+ "base2_parts_volume": [
+  1,
+  7343.1
+ ],
+ "cap1_parts_volume": [
+  1,
+  18402.0
+ ],
+ "cap2_parts_volume": [
+  1,
+  18248.9
+ ]
+}
