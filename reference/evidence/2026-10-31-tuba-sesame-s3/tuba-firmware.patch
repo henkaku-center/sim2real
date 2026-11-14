@@ -1,0 +1,1129 @@
+diff --git a/firmware/sesame-s3/controller.cpp b/firmware/sesame-s3/controller.cpp
+index 8880803..f36bb2f 100644
+--- a/firmware/sesame-s3/controller.cpp
++++ b/firmware/sesame-s3/controller.cpp
+@@ -14,8 +14,11 @@
+ #include "command_line.h"
+ #include "clock_measurement.h"
+ #include "bench_display.h"
++#include "living_face.h"
+ #include "vendor/face-bitmaps.h"
+ #include "web_ui.h"
++#include "pet_sensors.h"
++#include "usb_mic.h"
+ 
+ using namespace sesame;
+ namespace {
+@@ -51,9 +54,18 @@ bool apOK = false, fault = false;
+ uint8_t prescale = 0;
+ uint16_t lastTicks[16];
+ float lastCommanded[8] = {NAN,NAN,NAN,NAN,NAN,NAN,NAN,NAN};
+-bool benchDisplay = true;
++bool benchDisplay = false;
++bool living = true;
++LivingFace alive;
++pet::Touch touchPad;
++pet::Lift lift;
++bool micOK = false;
+ uint32_t lastPWM = 0, buttonStart = 0;
+-enum Owner { NONE, USB, WEB, BUTTON } owner = NONE;
++enum Owner { NONE, USB, WEB, BUTTON, DEMO, VOICE } owner = NONE;
++uint32_t voiceLast = 0;  // millis() of the last voice command, see voiceCommand()
++bool demoEnabled = true, demoRunning = false;  // auto demo, see demoService()
++unsigned demoStep = 0;
++uint32_t demoNext = 0;
+ String ssid, country = "JP";
+ int wifiChannel = 1;
+ float wifiPower = 8.5;
+@@ -80,6 +92,7 @@ int jointIndex(const char* name) {
+   return -1;
+ }
+ void setFace(const char* name) {
++  living = false;
+   for (const auto& f : faces) if (!strcmp(f.name, name) && f.frames[0]) {
+     face = &f; faceFrame = 0; lastFace = 0; return;
+   }
+@@ -94,6 +107,14 @@ bool clearPWM() {
+   for (auto& v : lastTicks) v = 4096;
+   return ok;
+ }
++// Event log kept in NVS so a battery run can be read back over USB later
++// (`log`, `log clear`): boot reset reasons, demo steps and every OFF reason.
++void logEvent(const String& event) {
++  if (!nvs) return;
++  String log = prefs.getString("log", "") + event + ";";
++  if (log.length() > 480) log = log.substring(log.length() - 480);
++  prefs.putString("log", log);
++}
+ void outputsOff(const char* reason, ClockOutcome outcome = ClockOutcome::Aborted) {
+   // Assert hardware disable before detaching/cancelling capture or doing I2C.
+   digitalWrite(OE, HIGH);
+@@ -109,7 +130,9 @@ void outputsOff(const char* reason, ClockOutcome outcome = ClockOutcome::Aborted
+     portEXIT_CRITICAL(&clockMux);
+   }
+   Serial.printf("OFF %s%s\n", reason, fault ? " I2C_FAULT: power off, reboot after repair" : "");
++  if (owner == NONE && demoRunning) logEvent(String("OFF ") + reason + (fault ? " FAULT" : ""));
+ }
++bool bootHubBegin = false;
+ bool readRegister(uint8_t reg, uint8_t& value) {
+   Wire.beginTransmission(PCA_ADDRESS); Wire.write(reg);
+   if (Wire.endTransmission(false) || Wire.requestFrom(uint8_t(PCA_ADDRESS), uint8_t(1)) != 1) return false;
+@@ -227,6 +250,11 @@ void startWifi() {
+ 
+ const char* HELP =
+   "help | show | export | status | wifi | face NAME | bench | off | stop | heartbeat\n"
++  "face alive | mood auto|neutral|happy|sad|angry|surprised|sleepy|love|confused\n"
++  "look X Y (-1..1) | say WORDS... | diag | rehub | demo on|off|status | log [clear]\n"
++  "touch | touch sens PCT (pad on GPIO6) | tof (pick-me-up sensor)\n"
++  "show WORDS (word on the face) | mic | mic on|off (USB audio stream, 3 s lease)\n"
++  "voice sit|stand|hello|wave|dance|walk|rest|stop (laptop: /voice?w=WORD over Wi-Fi)\n"
+   "arm bench CH (0..180 loose pointer, no legs) | arm joint NAME | arm assembly | arm run\n"
+   "angle DEG | us MICROSECONDS | q INTERNAL_DEG | jog DELTA_DEG | sweep LOW HIGH\n"
+   "centre (assembly, raw CH0..7=90; ignores trims)\n"
+@@ -240,6 +268,7 @@ const char* HELP =
+   "Every active serial/web session needs heartbeat <500ms; use class console.\n"
+   "BOOT release while OFF: 30s assembly centre; BOOT press while active: OFF.";
+ 
++String voiceCommand(const char* word);
+ String dispatchCommand(const char* text, Owner source) {
+   CommandLine c; float value = 0, second = 0; int number = 0;
+   if (!c.parse(text)) return "ERR malformed/too long";
+@@ -253,6 +282,57 @@ String dispatchCommand(const char* text, Owner source) {
+   if (c.is("show", 1) || c.is("subtrim", 1)) return showCalibration();
+   if (c.is("export", 1)) return exportCalibration();
+   if (c.is("wifi", 1)) return wifiStatus();
++  if (c.is("diag", 1)) {
++    // Read-only health report: what answers on I2C, hub registers, OE and power state.
++    String r = "DIAG";
++    r += " SDA=" + String(digitalRead(sesame::SDA)) + " SCL=" + String(digitalRead(sesame::SCL)) + " ack:";
++    for (uint8_t a = 1; a < 127; ++a) { Wire.beginTransmission(a); if (!Wire.endTransmission()) r += " 0x" + String(a, HEX); }
++    uint8_t mode1 = 0, mode2 = 0, pre = 0;
++    const bool m1 = readRegister(0x00, mode1), m2 = readRegister(0x01, mode2), p = readRegister(0xfe, pre);
++    r += "\nHUB mode1=" + (m1 ? "0x" + String(mode1, HEX) : String("ERR")) + (m1 && (mode1 & 0x10) ? "(SLEEP)" : "");
++    r += " mode2=" + (m2 ? "0x" + String(mode2, HEX) : String("ERR"));
++    r += " prescale_reg=" + (p ? String(pre) : String("ERR")) + " expected=" + String(prescale);
++    r += "\nSTATE ready=" + String(ready) + " fault=" + String(fault) + " boot_begin=" + String(bootHubBegin) + " mode=" + String(int(gate.mode));
++    r += " OE_pin=" + String(OE) + " OE_level=" + String(digitalRead(OE)) + " screen=" + String(screen);
++    return r;
++  }
++  if (c.is("i2cswap", 1)) {
++    // Wiring check: scan with SDA/SCL swapped (finds crossed wires), then restore.
++    if (gate.active()) return "ERR off first";
++    String r = "I2CSWAP SDA=" + String(sesame::SCL) + " SCL=" + String(sesame::SDA) + " ack:";
++    Wire.end(); Wire.begin(sesame::SCL, sesame::SDA); Wire.setClock(100000); Wire.setTimeOut(50);
++    for (uint8_t a = 1; a < 127; ++a) { Wire.beginTransmission(a); if (!Wire.endTransmission()) r += " 0x" + String(a, HEX); }
++    Wire.end(); Wire.begin(sesame::SDA, sesame::SCL); Wire.setClock(100000); Wire.setTimeOut(50);
++    return r;
++  }
++  if (c.is("rehub", 1)) {
++    // Same checks as boot; clears a fault only after a complete hub setup.
++    if (gate.active()) return "ERR off first";
++    ready = pwm.begin();
++    if (ready && configurePWM()) { fault = false; outputsOff("rehub"); return "OK HUB ready prescale=" + String(prescale); }
++    ready = false; fault = true; return "ERR hub not responding (try diag)";
++  }
++  if (c.is("demo", 2)) {
++    if (!strcmp(c.words[1], "off")) { demoEnabled = false; if (owner == DEMO) outputsOff("demo off"); return "OK DEMO off"; }
++    if (!strcmp(c.words[1], "on")) { demoEnabled = true; return "OK DEMO on (battery only, starts when no USB host)"; }
++    if (!strcmp(c.words[1], "status")) return "DEMO enabled=" + String(demoEnabled) + " running=" + String(demoRunning) + " usb_host=" + String(HWCDC::isPlugged()) + " saved=" + String(saved);
++    return "ERR demo on|off|status";
++  }
++  if (c.is("touch", 1)) return "TOUCH gpio=" + String(pet::TOUCH_GPIO) + " raw=" + String(touchPad.raw) +
++    " base=" + String(touchPad.base) + " sens_pct=" + String(touchPad.sensitivity * 100, 1) +
++    " touched=" + String(touchPad.touched) + " (raw rises when touched)";
++  if (c.is("touch", 3) && !strcmp(c.words[1], "sens") && c.number(2, value) && value >= 0.5 && value <= 50) {
++    touchPad.sensitivity = value / 100; return "OK TOUCH sens_pct=" + String(value, 1);
++  }
++  if (c.is("tof", 1) || (c.is("tof", 2) && !strcmp(c.words[1], "init"))) {
++    if (c.count == 2 && !gate.active()) lift.begin();   // by hand; petService also retries every 3 s
++    return "TOF ok=" + String(lift.ok) + " id=0x" + String(lift.tof.readReg(0xC0), HEX) + " (0xee) mm=" + String(lift.mm) +
++      " floor=" + String(lift.floor, 0) + " lifted=" + String(lift.lifted) + " restarts=" + String(lift.restarts) + " panic_face=" + String(alive.panicking());
++  }
++  if (c.is("log", 1) || c.is("log", 2)) {
++    if (c.count == 2 && !strcmp(c.words[1], "clear")) { prefs.remove("log"); return "OK LOG cleared"; }
++    return "LOG " + (nvs ? prefs.getString("log", "") : String("no NVS"));
++  }
+   if (c.is("bench", 1)) { benchDisplay = true; return "OK BENCH commanded angles, not feedback"; }
+   if (c.is("off", 1)) { outputsOff("command"); return "OK OFF"; }
+   if (c.is("stop", 1)) {
+@@ -279,6 +359,34 @@ String dispatchCommand(const char* text, Owner source) {
+     clockInterruptAttached = true;
+     return "OK CLOCK generation=" + String(generation) + " target_edges=101 deadline_ms=4000 heartbeat_ms<500; poll clock status";
+   }
++  if (c.is("face", 2) && !strcmp(c.words[1], "alive")) {
++    living = true; benchDisplay = false; return "OK FACE alive mood=" + String(alive.moodName());
++  }
++  if (c.is("mood", 2)) {
++    if (!alive.setMood(c.words[1])) return "ERR mood name";
++    living = true; benchDisplay = false; return "OK MOOD " + String(alive.moodName());
++  }
++  if (c.is("look", 3)) {
++    if (!c.number(1, value) || !c.number(2, second)) return "ERR look X Y";
++    alive.look(value, second); return "OK LOOK";
++  }
++  if (c.is("mic", 1)) return "MIC ok=" + String(micOK) + " gpio=" + String(usb_mic::GPIO) +
++    " level=" + String(usb_mic::level) + " streaming=" + String(usb_mic::streaming());
++  if (c.is("mic", 2) && !strcmp(c.words[1], "on")) {
++    if (source != USB) return "ERR mic stream is USB only";
++    usb_mic::lease(now); return "";     // silent: renewed every second while streaming
++  }
++  if (c.is("mic", 2) && !strcmp(c.words[1], "off")) { usb_mic::stop(); return "OK MIC off"; }
++  if (c.is("voice", 2)) return voiceCommand(c.words[1]);
++  if (c.count >= 2 && !strcmp(c.words[0], "show")) {
++    String words;
++    for (int i = 1; i < c.count; ++i) words += (i > 1 ? " " : "") + String(c.words[i]);
++    alive.showText(words.c_str(), 2500); living = true; benchDisplay = false;
++    return "OK SHOW";
++  }
++  if (c.count >= 2 && !strcmp(c.words[0], "say")) {
++    alive.talk(250 * (c.count - 1)); return "OK SAY";
++  }
+   if (c.is("face", 2)) {
+     setFace(c.words[1]);
+     if (!face || strcmp(face->name, c.words[1])) return "ERR face name";
+@@ -340,7 +448,8 @@ String dispatchCommand(const char* text, Owner source) {
+     if (!strcmp(name, "right")) name = "turn_right";
+     for (const auto& m : MOTIONS) if (!strcmp(name, m.name)) {
+       cancelQueue(); motion = &m; motionIndex = 0; gate.heartbeat(now);
+-      setFace(strstr(name, "walk") || strstr(name, "turn") ? "walk" : name);
++      if (living) alive.motionMood(name);
++      else setFace(strstr(name, "walk") || strstr(name, "turn") ? "walk" : name);
+       return "OK MOTION " + String(name);
+     }
+     return "ERR unknown motion";
+@@ -398,6 +507,9 @@ String command(const char* text, Owner source) {
+   return result;
+ }
+ 
++void reactTo(const char* line) {
++  if (strncmp(line, "say ", 4) && strncmp(line, "look ", 5) && strcmp(line, "heartbeat")) { alive.attend(); alive.talk(450); }
++}
+ void serialService() {
+   static char line[160]; static unsigned count = 0; static bool overflow = false;
+   static String replies;
+@@ -411,6 +523,7 @@ void serialService() {
+       else if (count) {
+         line[count] = 0; String out = command(line, USB);
+         if (out.length()) {
++          reactTo(line);
+           if (replies.length() + out.length() > 8192) {
+             if (gate.mode == Mode::ClockMeasure) outputsOff("clock output overflow", ClockOutcome::CommandError);
+             replies = "ERR output queue overflow; repeat show/export\n";
+@@ -472,9 +585,22 @@ void httpService() {
+   String body, type = "text/plain"; int code = 200;
+   if (!request.startsWith("GET ") || space < 0) { code = 400; body = "ERR HTTP"; }
+   else if (path == "/status") body = status() + wifiStatus();
++  else if (path == "/mic") {   // laptop on the robot's Wi-Fi: (re)start the 3 s UDP mic lease to it
++    usb_mic::udpLease(uint32_t(client.remoteIP()), millis());
++    if (demoEnabled) {        // the voice bridge connected: stop the demo loop and wait for words
++      demoEnabled = false;
++      if (owner == DEMO) { demoRunning = false; outputsOff("voice bridge connected"); }
++    }
++    body = "MIC udp=" + String(usb_mic::UDP_PORT) + " level=" + String(usb_mic::level);
++  } else if (path.startsWith("/voice?w=")) {
++    String word = urlDecode(path.substring(9));
++    body = voiceCommand(word.c_str());
++    if (body.startsWith("ERR")) code = 400;
++  }
+   else if (path.startsWith("/cmd?c=")) {
+     String text = urlDecode(path.substring(7));
+     body = command(text.c_str(), WEB);
++    if (body.length()) reactTo(text.c_str());
+     if (body.startsWith("ERR")) code = 400;
+   } else { type = "text/html"; body = WEB_UI; }
+   // Stream response with MSG_DONTWAIT on subsequent iterations. Arduino's
+@@ -508,6 +634,93 @@ void buttonService() {
+     else gate.heartbeat(millis()); // finite, local human-triggered action only
+   }
+ }
++// Auto demo (battery only): ~5 s after power-on, arm and loop
++// rest -> stand -> rest -> stand -> wave -> dance -> walk (10 cycles = 20
++// steps) with 5 s pauses.
++// Never runs while a USB host is connected; needs saved + all-verified
++// calibration (arm run); BOOT, `off`, a fault or the watchdog end it until
++// the next power-on (or `demo on`).
++int poseJoint = 0;          // demo pose: next joint to start
++uint32_t poseNext = 0;      // demo pose: when that joint may start
++const char* const DEMO_SEQUENCE[] = {"rest", "stand", "rest", "stand", "wave", "dance", "walk"};
++bool startMotion(const char* name) {
++  for (const auto& m : MOTIONS) if (!strcmp(name, m.name)) {
++    cancelQueue(); motion = &m; motionIndex = 0; poseJoint = 0; poseNext = 0;
++    if (living) alive.motionMood(name);
++    return true;
++  }
++  return false;
++}
++// Voice: the laptop (body/mic-test/listen.py --wifi) sends /voice?w=WORD.
++// Words: sit, stand, hello, wave, dance, walk, rest, stop. The first word arms
++// Run (saved, verified calibration) and takes over from the battery demo;
++// motions are finite and keep their own heartbeat. "stop", BOOT, a fault or
++// 2 min without a word turn outputs off. With a USB host plugged in the face
++// shows the word but the legs do not move (USB cannot power the servos).
++String voiceCommand(const char* word) {
++  struct Word { const char* word; const char* motion; const char* face; };
++  static const Word WORDS[] = {{"sit", "rest", "Sit!"}, {"rest", "rest", "Rest"}, {"stand", "stand", "Stand!"},
++    {"hello", "wave", "Hello!"}, {"wave", "wave", "Wave!"}, {"dance", "dance", "Dance!"},
++    {"walk", "walk", "Walk!"}, {"stop", nullptr, "Stop!"}};
++  const Word* w = nullptr;
++  for (const auto& x : WORDS) if (!strcmp(word, x.word)) w = &x;
++  if (!w) return "ERR VOICE unknown word: " + String(word);
++  alive.showText(w->face, 2000); living = true; benchDisplay = false;
++  if (!w->motion) {
++    if (owner == VOICE || owner == DEMO) { demoEnabled = demoRunning = false; outputsOff("voice stop"); }
++    return "OK VOICE stop";
++  }
++  if (HWCDC::isPlugged()) return "OK VOICE " + String(word) + " (USB plugged: face only, no motion)";
++  if (gate.active() && owner != VOICE && owner != DEMO) return "ERR VOICE robot owned by another transport; off first";
++  const uint32_t now = millis();
++  if (owner == DEMO) { demoEnabled = demoRunning = false; owner = VOICE; logEvent("voice takes over demo"); }
++  if (!gate.active()) {
++    if (!ready || fault || !saved) return "ERR VOICE hub or saved calibration not ready";
++    if (!gate.arm(Mode::Run, -1, now)) return "ERR VOICE arm run failed (verify all joints, save)";
++    owner = VOICE;
++  }
++  voiceLast = now; startMotion(w->motion); gate.heartbeat(now);
++  return "OK VOICE " + String(word) + " -> " + w->motion;
++}
++void voiceService() {
++  if (owner == VOICE && !motion && millis() - voiceLast > 120000) outputsOff("voice idle 2 min");
++}
++void demoService() {
++  // A USB cable to a host (even with no serial port open) means bench, not battery.
++  if (!demoEnabled || HWCDC::isPlugged()) return;
++  const uint32_t now = millis();
++  if (demoRunning && (owner != DEMO || !gate.active())) {
++    demoEnabled = demoRunning = false; Serial.println("DEMO stopped"); return;
++  }
++  if (!demoRunning) {
++    if (now < 5000 || !ready || fault || !saved || gate.active()) return;
++    if (!gate.arm(Mode::Run, -1, now)) { demoEnabled = false; return; }
++    owner = DEMO; demoRunning = true; demoStep = 0; demoNext = now; cancelQueue();
++    logEvent("demo armed"); gate.heartbeat(millis());
++  }
++  gate.heartbeat(now);
++  if (motion) { demoNext = now + 5000; return; }
++  if (now < demoNext) return;
++  startMotion(DEMO_SEQUENCE[demoStep]);
++  logEvent(DEMO_SEQUENCE[demoStep]);
++  gate.heartbeat(millis());  // an NVS write can stall the loop
++  demoStep = (demoStep + 1) % (sizeof(DEMO_SEQUENCE) / sizeof(DEMO_SEQUENCE[0]));
++}
++// Pet reactions (face only): tap = happy, triple tap = love, stroke = love,
++// stroke end = sleepy content, lifted = panic face (stars, X eyes, scream), put down = happy.
++void petService() {
++  if (gate.mode == Mode::ClockMeasure || !living) return;  // keep the bus quiet while timing edges
++  const uint32_t now = millis();
++  for (pet::Event e : {touchPad.poll(now), lift.poll(now)}) switch (e) {
++    case pet::Event::Tap: alive.react(Mood::Happy, 2500); break;
++    case pet::Event::TripleTap: alive.react(Mood::Love, 4000); alive.talk(600); break;
++    case pet::Event::Stroke: alive.react(Mood::Love, 600000); break;
++    case pet::Event::StrokeEnd: alive.react(Mood::Sleepy, 3000); break;
++    case pet::Event::Lifted: alive.panic(true); break;
++    case pet::Event::PutDown: alive.panic(false); alive.react(Mood::Happy, 3000); break;
++    case pet::Event::None: break;
++  }
++}
+ void motionService() {
+   if (sweeping && gate.settled()) {
+     if (sweepStage == 0) gate.set(gate.selected, sweepHigh, gate.lastHeartbeat);
+@@ -515,6 +728,16 @@ void motionService() {
+     else { sweeping = false; Serial.println("OK SWEEP complete"); }
+     ++sweepStage;
+   }
++  // Battery demo: a one-step pose (rest/stand) starts its joints 60 ms apart.
++  // It still looks like one move, but all 8 starting together browned out
++  // the battery (build 17: stand;boot r9).
++  if (motion && (owner == DEMO || owner == VOICE) && motion->count == 1 && motionIndex == 0) {
++    if (millis() < poseNext) return;
++    const MotionStep& pose = motion->steps[0];
++    while (poseJoint < 8 && pose.degrees[poseJoint] < 0) ++poseJoint;
++    if (poseJoint < 8) { gate.set(poseJoint, pose.degrees[poseJoint], gate.lastHeartbeat); ++poseJoint; poseNext = millis() + 60; return; }
++    motionIndex = 1;
++  }
+   if (!motion || !gate.settled()) return;
+   if (waiting) {
+     if (millis() - waitStarted < motion->steps[motionIndex-1].waitMs) return;
+@@ -532,6 +755,7 @@ void motionService() {
+ void outputService() {
+   uint32_t now = millis();
+   bool wasActive = gate.active();
++  if (owner == DEMO || owner == VOICE) gate.heartbeat(now);  // local finite routine, like BUTTON
+   if (!gate.step(now)) {
+     if (wasActive) outputsOff("watchdog >500ms", ClockOutcome::Watchdog);
+     return;
+@@ -546,8 +770,19 @@ void outputService() {
+   motionService();
+   if (now - lastPWM < 20) return;
+   lastPWM = now;
++  // Soft start: a joint's first pulse jumps from an unknown shaft position, so
++  // starting all eight at once sags the battery rail (ESP32 brown-out / hub
++  // drop). Admit newly enabled joints one at a time, 150 ms apart.
++  static uint8_t started = 0; static uint32_t lastStart = 0;
++  started &= gate.enabled;
++  const uint8_t pendingJoints = gate.enabled & ~started;
++  if (pendingJoints && now - lastStart >= 150) { started |= pendingJoints & -pendingJoints; lastStart = now; }
+   uint16_t wanted[16];
+-  if (!planOutputs(gate, prescale, wanted)) { outputsOff("invalid map"); return; }
++  const uint8_t requested = gate.enabled;
++  gate.enabled = started;
++  const bool planned = planOutputs(gate, prescale, wanted);
++  gate.enabled = requested;
++  if (!planned) { outputsOff("invalid map"); return; }
+   bool any = false;
+   for (int ch = 0; ch < 16; ++ch) {
+     if (wanted[ch] != 4096) any = true;
+@@ -557,16 +792,70 @@ void outputService() {
+     }
+   }
+   // Check hub even when holding a stationary target; lost I2C latches off.
++  // Tolerate an isolated noisy read while servos run; three consecutive
++  // failures (60 ms) still latch the fault and cut outputs.
++  static uint8_t badReads = 0;
+   uint8_t livePrescale;
+   if (!readRegister(0xfe, livePrescale) || livePrescale != prescale) {
+-    fault = true; outputsOff("I2C/prescale fault"); return;
+-  }
++    if (++badReads >= 3) { badReads = 0; fault = true; outputsOff("I2C/prescale fault"); return; }
++  } else badReads = 0;
+   digitalWrite(OE, any ? LOW : HIGH);
+-  for (int j = 0; j < 8; ++j) if (gate.enabled & (1u << j))
++  for (int j = 0; j < 8; ++j) if (started & (1u << j))
+     lastCommanded[gate.channel(j)] = gate.physical(j);
+ }
++uint32_t lastHash = 0;
++// A supply dip (e.g. a Wi-Fi TX burst) can reset the OLED controller, leaving
++// it blank while the firmware keeps drawing. Every 2 s re-assert the
++// non-blanking setup commands (no display-off, so no flicker) and resend.
++void displayKeepAlive() {
++  static uint32_t lastCheck = 0;
++  if (millis() - lastCheck < 2000) return;
++  lastCheck = millis();
++  Wire.beginTransmission(OLED_ADDRESS);
++  if (Wire.endTransmission()) { screen = false; return; }
++  if (!screen) { screen = display.begin(SSD1306_SWITCHCAPVCC, OLED_ADDRESS, false, false); lastHash = 0; return; }
++  static const uint8_t setup[] = {
++    0xD5, 0x80, 0xA8, 63, 0xD3, 0x00, 0x40, 0x8D, 0x14, 0x20, 0x00, 0xA1, 0xC8,
++    0xDA, 0x12, 0x81, 0xCF, 0xD9, 0xF1, 0xDB, 0x40, 0xA4, 0xA6, 0x2E, 0xAF};
++  for (uint8_t c : setup) display.ssd1306_command(c);
++  lastHash = 0;
++}
++// Living face: ~8 fps idle, 4 fps while outputs or measurements are active
++// (each 100 kHz frame blocks the loop for roughly 90 ms).
++void livingFaceService() {
++  const bool busy = gate.active() || owner == BUTTON;
++  if (millis() - lastFace < (busy ? 250u : 125u)) return;
++  lastFace = millis();
++  display.clearDisplay();
++  alive.render(display, lastFace);
++  if (busy) {
++    display.fillRect(0, 0, 128, 9, SSD1306_BLACK);
++    display.setCursor(0,0); display.setTextSize(1); display.setTextColor(SSD1306_WHITE);
++    if (owner == BUTTON) display.printf("Centre %lus", (unsigned long)((30000 - (millis() - buttonStart))/1000));
++    else display.print("ACTIVE / BOOT: OFF");
++  }
++  uint32_t hash = 2166136261u;
++  const uint8_t* buffer = display.getBuffer();
++  for (int i = 0; i < 128 * 64 / 8; ++i) hash = (hash ^ buffer[i]) * 16777619u;
++  if (hash != lastHash) { display.display(); lastHash = hash; }
++}
++// A hub missing at boot is retried every second while outputs are OFF; after
++// five failed setups it latches a fault (use diag / rehub).
++void hubService() {
++  static uint32_t last = 0; static int failures = 0;
++  if (ready || fault || gate.active() || millis() - last < 1000) return;
++  last = millis();
++  if (!pwm.begin()) { if (++failures >= 5) { fault = true; Serial.println("HUB not found after 5 retries; diag"); } return; }
++  ready = true;
++  if (!configurePWM()) { ready = false; if (++failures >= 5) { fault = true; Serial.println("HUB setup failed 5x; diag"); } return; }
++  failures = 0; outputsOff("hub found");
++}
+ void faceService() {
++  if (gate.mode == Mode::ClockMeasure) return;  // keep the bus quiet while timing edges
++  displayKeepAlive();
++  if (screen && living && !benchDisplay) { livingFaceService(); return; }
+   if (!screen || millis() - lastFace < 250) return;
++  lastHash = 0;
+   lastFace = millis();
+   display.clearDisplay();
+   if (benchDisplay) {
+@@ -597,25 +886,44 @@ void faceService() {
+ 
+ void setup() {
+   digitalWrite(OE, HIGH); pinMode(OE, OUTPUT); pinMode(0, INPUT_PULLUP);
++  Serial.setTxBufferSize(8192);  // room for 514 B mic frames next to text replies
+   Serial.begin(115200);
+   Serial.setTxTimeoutMs(0); // an absent USB host must not block the watchdog
+-  Wire.begin(sesame::SDA, sesame::SCL); Wire.setClock(100000); Wire.setTimeOut(5);
++  // A warm reset (flash, BOOT) can leave the OLED mid-byte holding SDA, so it
++  // ignores its address until power-cycled. Clock it out once and send STOP.
++  pinMode(sesame::SDA, INPUT_PULLUP); pinMode(sesame::SCL, INPUT_PULLUP);
++  for (int i = 0; i < 9; ++i) {
++    digitalWrite(sesame::SCL, LOW); pinMode(sesame::SCL, OUTPUT); delayMicroseconds(5);
++    pinMode(sesame::SCL, INPUT_PULLUP); delayMicroseconds(5);
++  }
++  digitalWrite(sesame::SDA, LOW); pinMode(sesame::SDA, OUTPUT); delayMicroseconds(5);
++  pinMode(sesame::SDA, INPUT_PULLUP); delayMicroseconds(5);
++  Wire.begin(sesame::SDA, sesame::SCL); Wire.setClock(100000); Wire.setTimeOut(50);
+   loadCalibration();
++  logEvent("boot r" + String(int(esp_reset_reason())));
+   ready = pwm.begin();
+-  if (ready && !configurePWM()) { ready = false; fault = true; }
++  // Servo inrush at power-on can disturb this first setup: leave it to
++  // hubService() to retry instead of latching (runtime faults still latch).
++  bootHubBegin = ready;
++  if (ready && !configurePWM()) ready = false;
++  Serial.printf("HUB boot begin=%d ready=%d\n", bootHubBegin, ready);
+   outputsOff("boot");
+   Wire.beginTransmission(OLED_ADDRESS);
+   if (!Wire.endTransmission()) screen = display.begin(SSD1306_SWITCHCAPVCC, OLED_ADDRESS, false, false);
+-  setFace("rest");
++  setFace("rest"); living = true;
++  randomSeed(esp_random());
+   uint64_t mac = ESP.getEfuseMac();
+   char name[32]; snprintf(name, sizeof(name), "Sesame-S3-%02X%02X", unsigned((mac >> 32)&255), unsigned((mac >> 40)&255)); ssid = name;
+   startWifi();
++  micOK = usb_mic::begin();
++  Serial.printf("MIC begin=%d (AE-MICAMP on GPIO5; mic on = USB stream)\n", micOK);
++  Serial.printf("TOF begin=%d (M5Stack Unit ToF on SDA2/SCL3, 0x29)\n", lift.begin());
+   Serial.println("READY Sesame S3 calibration+controller; outputs OFF; help");
+   Serial.printf("PROFILE %s neutral_us=%.2f manifest=%s\n", PULSE_PROFILE_ID, angleUs(NEUTRAL), MANIFEST_ID);
+ }
+ void loop() {
+   outputService(); buttonService(); serialService(); outputService();
+   httpService(); outputService();
+-  dns.processNextRequest(); faceService(); outputService();
++  dns.processNextRequest(); faceService(); petService(); hubService(); demoService(); voiceService(); outputService();
+   delay(1);
+ }
+diff --git a/firmware/sesame-s3/living_face.h b/firmware/sesame-s3/living_face.h
+new file mode 100644
+index 0000000..60bb9af
+--- /dev/null
++++ b/firmware/sesame-s3/living_face.h
+@@ -0,0 +1,296 @@
++// SPDX-License-Identifier: Apache-2.0
++// Procedural "living" OLED face: natural blinks, glances, smoothly blended
++// moods and a talking mouth. Drawn with GFX primitives, not bitmaps, so every
++// parameter can ease between states instead of jumping frame to frame.
++#pragma once
++#include <Arduino.h>
++#include <Adafruit_GFX.h>
++#include <cmath>
++#include <cstring>
++
++namespace sesame {
++
++enum class Mood : uint8_t { Neutral, Happy, Sad, Angry, Surprised, Sleepy, Love, Confused, Count };
++constexpr const char* MOOD_NAMES[] = {"neutral", "happy", "sad", "angry", "surprised", "sleepy", "love", "confused"};
++
++// Every field eases independently, so mood changes morph rather than cut.
++struct FaceShape {
++  float w, h, r;          // eye size and corner radius (px)
++  float lidTop;           // fraction of eye hidden by a flat upper lid
++  float slant;            // +inner lid down (angry), -outer lid down (sad)
++  float lidBottom;        // fraction pushed up from below (happy squint)
++  float leftScale, rightScale;
++  float mouthCurve;       // +smile, -frown
++  float mouthWidth;       // half-width (px)
++  float mouthO;           // 0..1 surprised "o"
++  float heart;            // 0..1, >0.5 draws hearts instead of eyes
++};
++
++constexpr FaceShape SHAPES[] = {
++  /* neutral   */ {30, 30,  8, 0.00f,  0.00f, 0.00f, 1.00f, 1.00f,  0.15f, 9, 0, 0},
++  /* happy     */ {32, 30,  9, 0.00f,  0.00f, 0.50f, 1.00f, 1.00f,  1.00f, 13, 0, 0},
++  /* sad       */ {28, 26,  8, 0.12f, -0.40f, 0.00f, 1.00f, 1.00f, -0.80f, 9, 0, 0},
++  /* angry     */ {30, 26,  6, 0.10f,  0.50f, 0.00f, 1.00f, 1.00f, -0.35f, 11, 0, 0},
++  /* surprised */ {34, 36, 13, 0.00f,  0.00f, 0.00f, 1.00f, 1.00f,  0.00f, 5, 1, 0},
++  /* sleepy    */ {30, 30,  8, 0.50f, -0.10f, 0.00f, 1.00f, 1.00f,  0.00f, 7, 0, 0},
++  /* love      */ {30, 30,  8, 0.00f,  0.00f, 0.00f, 1.00f, 1.00f,  1.00f, 11, 0, 1},
++  /* confused  */ {30, 30,  8, 0.05f,  0.00f, 0.00f, 1.00f, 0.65f, -0.25f, 8, 0, 0},
++};
++
++inline float frand(float lo, float hi) { return lo + (hi - lo) * (random(0, 10001) / 10000.0f); }
++inline bool chance(float p) { return frand(0, 1) < p; }
++
++class LivingFace {
++public:
++  bool setMood(const char* name) {
++    if (!strcmp(name, "auto")) { autoMood = true; nextAuto = now + 4000; return true; }
++    for (int m = 0; m < int(Mood::Count); ++m) if (!strcmp(name, MOOD_NAMES[m])) {
++      autoMood = false; target = Mood(m); return true;
++    }
++    return false;
++  }
++  const char* moodName() const { return autoMood ? "auto" : MOOD_NAMES[int(target)]; }
++  // Hold a gaze for a few seconds, then resume glancing.
++  void look(float x, float y) {
++    gazeTarget[0] = constrain(x, -1.f, 1.f); gazeTarget[1] = constrain(y, -1.f, 1.f);
++    nextGlance = now + 3000;
++  }
++  void talk(uint32_t ms) { talkUntil = max(talkUntil, now + ms); }
++  // Something just happened: glance at the user, sometimes blink.
++  void attend() {
++    gazeTarget[0] = frand(-.15f, .15f); gazeTarget[1] = frand(0, .2f);
++    nextGlance = now + uint32_t(frand(1500, 3000));
++    if (chance(.3f)) blinkStart = now;
++  }
++  // Show a word instead of the eyes (eyes close, the word pops up, eyes reopen).
++  void showText(const char* t, uint32_t ms) {
++    strncpy(text, t, sizeof(text) - 1); text[sizeof(text) - 1] = 0;
++    textStart = now ? now : 1; textUntil = textStart + ms;
++  }
++  // Picked up: a big panic face until put down (see drawPanic).
++  void panic(bool on) { panicStart = on ? (now ? now : 1) : 0; }
++  bool panicking() const { return panicStart; }
++  // A pet sensor event: show a mood for a while and look at the user.
++  void react(Mood m, uint32_t ms) { burst(m, ms); attend(); }
++  // Map a stock motion to a mood while it runs.
++  void motionMood(const char* motion) {
++    static const char* const happy[] = {"dance", "wave", "cute", "bow", "point", "pushup", "crab", "swim"};
++    Mood m = Mood::Neutral;
++    for (auto n : happy) if (strstr(motion, n)) m = Mood::Happy;
++    if (strstr(motion, "freaky") || strstr(motion, "shake")) m = Mood::Surprised;
++    if (strstr(motion, "dead")) m = Mood::Sleepy;
++    if (strstr(motion, "shrug")) m = Mood::Confused;
++    burst(m, 4000);
++  }
++
++  // Advance time and draw into the GFX buffer (caller clears and flushes).
++  void render(Adafruit_GFX& g, uint32_t ms) {
++    const float dt = last ? min(200.f, float(ms - last)) : 33.f;
++    last = now = ms;
++    behave();
++    if (panicStart) { drawPanic(g); return; }
++    if (textUntil && now < textUntil) { drawText(g); return; }
++    if (textUntil) { textUntil = 0; blinkStart = now; }   // eyes come back with a blink
++    const Mood m = autoMood && now < burstUntil ? burstMood : autoMood ? autoBase : target;
++    ease(SHAPES[int(m)], 1 - expf(-dt / 110.f));
++    const float k = 1 - expf(-dt / (m == Mood::Sleepy ? 140.f : 45.f));  // saccades are fast
++    gaze[0] += (gazeTarget[0] - gaze[0]) * k;
++    gaze[1] += (gazeTarget[1] - gaze[1]) * k;
++
++    const float breath = sinf(now * (2 * PI / 4200.f));
++    const float open = blinkOpenness(m == Mood::Sleepy ? 2.2f : 1.f);
++    const float gx = gaze[0] * 16, gy = gaze[1] * 9 + breath * .8f;
++    const float cy = 27 + gy;
++    for (int side = -1; side <= 1; side += 2) {
++      const float cx = 64 + side * 25 + gx;
++      // Perspective: the eye nearer the gaze direction looks a little larger.
++      const float persp = 1 + .08f * gaze[0] * side;
++      const float scale = (side < 0 ? s.leftScale : s.rightScale) * persp;
++      if (s.heart > .5f) drawHeart(g, cx, cy, 13 * (1 + .07f * sinf(now * .012f)) * max(open, .3f));
++      else drawEye(g, cx, cy, side, scale, open, breath);
++    }
++    drawMouth(g, 64 + gx * .35f, 55 + gy * .5f);
++  }
++
++private:
++  FaceShape s = SHAPES[0];
++  Mood target = Mood::Neutral, autoBase = Mood::Neutral, burstMood = Mood::Neutral;
++  bool autoMood = true;
++  uint32_t now = 0, last = 0, nextAuto = 6000, burstUntil = 0;
++  uint32_t blinkStart = 0, nextBlink = 2500, secondBlink = 0;
++  uint32_t nextGlance = 1500, talkUntil = 0, nextSyllable = 0;
++  float gaze[2] = {0, 0}, gazeTarget[2] = {0, 0};
++  float mouthOpen = 0, mouthTarget = 0;
++  uint32_t panicStart = 0, textStart = 0, textUntil = 0;
++  char text[16] = "";
++
++  // The word bounces in, with a small sparkle each side and a smiling mouth.
++  void drawText(Adafruit_GFX& g) {
++    const float t = now - textStart;
++    const int len = strlen(text), size = len <= 6 ? 3 : len <= 10 ? 2 : 1;
++    const int w = len * 6 * size, h = 8 * size;
++    const int bounce = lroundf(-10 * expf(-t / 180) * cosf(t / 45));
++    g.setTextSize(size); g.setTextColor(SSD1306_WHITE); g.setTextWrap(false);
++    g.setCursor(64 - w / 2, 22 - h / 2 + bounce); g.print(text);
++    for (int side = -1; side <= 1; side += 2) {   // twinkling sparkles
++      const int x = 64 + side * (w / 2 + 8), y = 14 + bounce / 2, r = 2 + int(now / 120) % 3;
++      g.drawFastHLine(x - r, y, 2 * r + 1, SSD1306_WHITE); g.drawFastVLine(x, y - r, 2 * r + 1, SSD1306_WHITE);
++    }
++    for (int dx = -10; dx <= 10; ++dx) {          // smile
++      const float u = dx / 10.f; const int dy = lroundf(4 * (1 - u * u));
++      g.drawPixel(64 + dx, 50 + dy, SSD1306_WHITE); g.drawPixel(64 + dx, 51 + dy, SSD1306_WHITE);
++    }
++  }
++
++  // Panic: shaking head, shocked wide eyes (first 1.2 s), then spinning stars
++  // with "dying" X eyes flashing every 3 s, a screaming zig-zag mouth and sweat
++  // drops. It grows stronger for the first 3 s of being held.
++  void drawPanic(Adafruit_GFX& g) {
++    const float t = (now - panicStart) / 1000.f, level = min(1.f, .4f + t / 3);
++    const int sx = lroundf(sinf(now * .09f) * 3 * level), sy = lroundf(cosf(now * .13f) * 1.5f * level);
++    for (int side = -1; side <= 1; side += 2) {
++      const int cx = 64 + side * 26 + sx, cy = 25 + sy;
++      if (t < 1.2f) {                   // shock: huge round eyes, tiny jittering pupils
++        g.fillCircle(cx, cy, 14, SSD1306_WHITE);
++        g.fillCircle(cx + lroundf(frand(-3, 3)), cy + lroundf(frand(-3, 3)), 3, SSD1306_BLACK);
++      } else if (fmodf(t, 3.f) > 2.4f) { // dying: X eyes
++        for (int d = -1; d <= 1; ++d) {
++          g.drawLine(cx - 10, cy - 10 + d, cx + 10, cy + 10 + d, SSD1306_WHITE);
++          g.drawLine(cx - 10, cy + 10 + d, cx + 10, cy - 10 + d, SSD1306_WHITE);
++        }
++      } else drawStar(g, cx, cy, 14 + 2 * sinf(now * .02f), now * .006f * side);
++    }
++    // Screaming mouth: open oval whose height wobbles, with a zig-zag of teeth.
++    const int mx = 64 + sx, my = 53 + sy, w = 30, h = lroundf(10 + 3 * level + 2 * sinf(now * .05f));
++    g.fillRoundRect(mx - w / 2, my - h / 2, w, h, h / 2, SSD1306_WHITE);
++    for (int x = -w / 2 + 3; x < w / 2 - 3; x += 4) {
++      g.drawLine(mx + x, my - 1, mx + x + 2, my + 2, SSD1306_BLACK);
++      g.drawLine(mx + x + 2, my + 2, mx + x + 4, my - 1, SSD1306_BLACK);
++    }
++    // Sweat drops sliding down beside the eyes.
++    for (int side = -1; side <= 1; side += 2) {
++      const int dx = 64 + side * 50 + sx, dy = 6 + int(now / 18 + (side > 0 ? 20 : 0)) % 40;
++      g.fillCircle(dx, dy + 3, 3, SSD1306_WHITE);
++      g.fillTriangle(dx - 3, dy + 2, dx + 3, dy + 2, dx, dy - 4, SSD1306_WHITE);
++    }
++  }
++  void drawStar(Adafruit_GFX& g, int cx, int cy, float r, float spin) {
++    float px[10], py[10];
++    for (int i = 0; i < 10; ++i) {
++      const float a = spin + i * PI / 5, rr = i % 2 ? r * .45f : r;
++      px[i] = cx + rr * sinf(a); py[i] = cy - rr * cosf(a);
++    }
++    for (int i = 0; i < 10; ++i) {
++      const int j = (i + 1) % 10;
++      g.fillTriangle(cx, cy, lroundf(px[i]), lroundf(py[i]), lroundf(px[j]), lroundf(py[j]), SSD1306_WHITE);
++    }
++  }
++
++  void burst(Mood m, uint32_t ms) { burstMood = m; burstUntil = now + ms; if (!autoMood) target = m; }
++
++  void ease(const FaceShape& t, float k) {
++    float* a = &s.w; const float* b = &t.w;
++    for (size_t i = 0; i < sizeof(FaceShape) / sizeof(float); ++i) a[i] += (b[i] - a[i]) * k;
++  }
++
++  void behave() {
++    const bool sleepy = !autoMood && target == Mood::Sleepy;
++    // Blinks: random 2-6 s apart, sometimes a double blink.
++    if (now >= nextBlink) {
++      blinkStart = now;
++      nextBlink = now + uint32_t(sleepy ? frand(3000, 7000) : frand(2000, 6000));
++      if (chance(.2f)) secondBlink = now + 260;
++    }
++    if (secondBlink && now >= secondBlink) { blinkStart = now; secondBlink = 0; }
++    // Glances: hold a point, then jump; often return to the middle.
++    if (now >= nextGlance) {
++      const float ox = gazeTarget[0], oy = gazeTarget[1];
++      if (chance(.35f)) { gazeTarget[0] = frand(-.08f, .08f); gazeTarget[1] = frand(-.05f, .05f); }
++      else { gazeTarget[0] = frand(-1, 1); gazeTarget[1] = frand(-.7f, .7f); }
++      if (sleepy) gazeTarget[1] = frand(.3f, .8f);
++      // People tend to blink with a big gaze shift.
++      if (fabsf(gazeTarget[0] - ox) + fabsf(gazeTarget[1] - oy) > .9f && chance(.35f)) blinkStart = now;
++      nextGlance = now + uint32_t(sleepy ? frand(3000, 6000) : frand(1200, 4000));
++    }
++    // Auto mood: mostly calm, with short flashes of feeling.
++    if (autoMood && now >= nextAuto) {
++      const float p = frand(0, 1);
++      if (p < .40f) burst(Mood::Happy, uint32_t(frand(2500, 5000)));
++      else if (p < .55f) burst(Mood::Confused, 1800);
++      else if (p < .65f) burst(Mood::Surprised, 900);
++      nextAuto = now + uint32_t(frand(7000, 16000));
++    }
++    // Talking: new syllable every 80-170 ms.
++    if (now < talkUntil) {
++      if (now >= nextSyllable) {
++        mouthTarget = chance(.15f) ? .1f : frand(.35f, 1);
++        nextSyllable = now + uint32_t(frand(80, 170));
++      }
++    } else mouthTarget = 0;
++    mouthOpen += (mouthTarget - mouthOpen) * .45f;
++  }
++
++  float blinkOpenness(float slow) const {
++    const float t = (now - blinkStart) / slow;
++    if (!blinkStart || t >= 230) return 1;
++    if (t < 70) return 1 - t / 70;
++    if (t < 100) return 0;
++    return (t - 100) / 130;
++  }
++
++  void drawEye(Adafruit_GFX& g, float cx, float cy, int side, float scale, float open, float breath) {
++    const int w = lroundf(s.w), h = max(2L, lroundf(s.h * scale * open + breath * .5f));
++    const int x0 = lroundf(cx - w / 2.f), y0 = lroundf(cy - h / 2.f);
++    g.fillRoundRect(x0, y0, w, h, min(int(lroundf(s.r)), min(w, h) / 2), SSD1306_WHITE);
++    if (h <= 3) return;
++    // Upper lid: a quad whose inner/outer heights give anger or sadness.
++    const float base = s.lidTop * h, tilt = s.slant * h * .5f;
++    const float inner = base + max(0.f, tilt), outer = base + max(0.f, -tilt);
++    const float leftDrop = side < 0 ? outer : inner, rightDrop = side < 0 ? inner : outer;
++    if (leftDrop > .5f || rightDrop > .5f) {
++      const int x1 = x0 + w, top = y0 - 1;
++      const int yl = y0 + lroundf(leftDrop), yr = y0 + lroundf(rightDrop);
++      g.fillTriangle(x0 - 1, top, x1, top, x1, yr, SSD1306_BLACK);
++      g.fillTriangle(x0 - 1, top, x1, yr, x0 - 1, yl, SSD1306_BLACK);
++    }
++    // Lower lid: a large circle rising from below leaves a happy crescent.
++    if (s.lidBottom > .02f) {
++      const float R = w * .85f;
++      g.fillCircle(lroundf(cx), lroundf(y0 + h + R - s.lidBottom * h), lroundf(R), SSD1306_BLACK);
++    }
++    // Catchlight makes the eye read as wet and alive.
++    if (open > .7f && s.lidBottom < .2f && s.lidTop < .2f && h > 16)
++      g.fillCircle(x0 + w / 4 + 1, y0 + h / 4 + 1, 2, SSD1306_BLACK);
++  }
++
++  void drawHeart(Adafruit_GFX& g, float cx, float cy, float size) {
++    const int r = max(2, int(lroundf(size / 2))), x = lroundf(cx), y = lroundf(cy - size / 4);
++    g.fillCircle(x - r + 1, y, r, SSD1306_WHITE);
++    g.fillCircle(x + r - 1, y, r, SSD1306_WHITE);
++    g.fillTriangle(x - 2 * r + 1, y + 1, x + 2 * r - 1, y + 1, x, lroundf(cy + size), SSD1306_WHITE);
++  }
++
++  void drawMouth(Adafruit_GFX& g, float mx, float my) {
++    const int x = lroundf(mx), y = lroundf(my);
++    if (mouthOpen > .08f) {           // talking: an opening and closing oval
++      const int w = lroundf(8 + 6 * mouthOpen), h = lroundf(2 + 7 * mouthOpen);
++      g.fillRoundRect(x - w / 2, y - h / 2, w, h, min(w, h) / 2, SSD1306_WHITE);
++      return;
++    }
++    if (s.mouthO > .5f) {             // surprised "o"
++      g.drawCircle(x, y, 4, SSD1306_WHITE); g.drawCircle(x, y, 3, SSD1306_WHITE);
++      return;
++    }
++    const int half = lroundf(s.mouthWidth);
++    int prev = 0;
++    for (int dx = -half; dx <= half; ++dx) {
++      const float u = float(dx) / half;
++      const int dy = lroundf(s.mouthCurve * 3.5f * (1 - u * u));
++      if (dx > -half) g.drawLine(x + dx - 1, y + prev, x + dx, y + dy, SSD1306_WHITE);
++      g.drawPixel(x + dx, y + dy + 1, SSD1306_WHITE);  // 2 px thick
++      prev = dy;
++    }
++  }
++};
++
++} // namespace sesame
+diff --git a/firmware/sesame-s3/manifest_generated.h b/firmware/sesame-s3/manifest_generated.h
+index ec00d83..7dd1dd8 100644
+--- a/firmware/sesame-s3/manifest_generated.h
++++ b/firmware/sesame-s3/manifest_generated.h
+@@ -2,7 +2,7 @@
+ #pragma once
+ #include <stdint.h>
+ namespace sesame {
+-constexpr char MANIFEST_ID[] = "8d75c0ea0b2c68e7";
++constexpr char MANIFEST_ID[] = "8b94f9bf0f8deca0";
+ constexpr char PULSE_PROFILE_ID[] = "tim-pca9685-150-512-v1";
+ constexpr const char* COMPATIBLE_MANIFEST_IDS[] = {"e669b916d178ac0a", "bd7675604b98ae46"};
+ constexpr uint32_t NEUTRAL = 90;
+@@ -14,8 +14,8 @@ constexpr uint32_t REFERENCE_TICK_MAX = 512;
+ constexpr uint32_t PWM_HZ = 50;
+ constexpr uint32_t WATCHDOG_MS = 500;
+ constexpr uint32_t MAX_JUMP = 180;
+-constexpr uint32_t CAL_RATE = 15;
+-constexpr uint32_t RUN_RATE = 60;
++constexpr uint32_t CAL_RATE = 60;
++constexpr uint32_t RUN_RATE = 240;
+ constexpr uint32_t TRIM_LIMIT = 15;
+ constexpr uint32_t INITIAL_LOW = 85;
+ constexpr uint32_t INITIAL_HIGH = 95;
+diff --git a/firmware/sesame-s3/pet_sensors.h b/firmware/sesame-s3/pet_sensors.h
+new file mode 100644
+index 0000000..b199abc
+--- /dev/null
++++ b/firmware/sesame-s3/pet_sensors.h
+@@ -0,0 +1,91 @@
++// SPDX-License-Identifier: Apache-2.0
++// Pet sensors, face reactions only (no servo motion):
++//  - touch pad (metal disc / copper tape inside the dome) wired to GPIO6, the
++//    ESP32-S3's built-in capacitive touch input: tap, triple tap, stroke;
++//  - M5Stack Unit ToF (VL53L0X, I2C 0x29, shares SDA2/SCL3 with hub and OLED)
++//    looking down at the floor: lifted / put down.
++// Both are optional: a missing pad or sensor just never reports events.
++#pragma once
++#include <Arduino.h>
++#include <VL53L0X.h>
++
++namespace pet {
++constexpr int TOUCH_GPIO = 6;
++enum class Event : uint8_t { None, Tap, TripleTap, Stroke, StrokeEnd, Lifted, PutDown };
++
++// Touch: S3 touch values rise when a finger is near. Track an untouched
++// baseline and call it touched above baseline * (1 + sensitivity).
++struct Touch {
++  uint32_t raw = 0, base = 0;
++  float sensitivity = 0.08f;            // 8 %: metal disc in the dome reads +20..136 % when touched, < 1 % noise
++  bool touched = false, stroking = false;
++  uint32_t since = 0, lastTap = 0, last = 0;
++  uint8_t taps = 0;
++  Event poll(uint32_t now) {
++    if (now - last < 40) return Event::None;
++    last = now;
++    raw = touchRead(TOUCH_GPIO);
++    if (!base) { base = raw; return Event::None; }
++    const bool on = raw > base * (1 + sensitivity);
++    if (!on) base = (base * 31 + raw) / 32;   // follow slow drift only while untouched
++    if (on && !touched) { touched = true; since = now; return Event::None; }
++    if (on && !stroking && now - since > 1200) { stroking = true; return Event::Stroke; }
++    if (!on && touched) {
++      touched = false;
++      if (stroking) { stroking = false; return Event::StrokeEnd; }
++      if (now - since < 600) {          // a tap; three within 2 s is a triple tap
++        taps = now - lastTap < 2000 ? taps + 1 : 1; lastTap = now;
++        if (taps >= 3) { taps = 0; return Event::TripleTap; }
++        return Event::Tap;
++      }
++    }
++    return Event::None;
++  }
++};
++
++// Pick-me-up: learn the floor distance while resting; much farther (or out of
++// range) for 300 ms = lifted, back near the floor for 500 ms = put down.
++struct Lift {
++  VL53L0X tof;
++  bool ok = false, lifted = false;
++  uint16_t mm = 0; float floor = 0;
++  uint32_t changed = 0, last = 0, lastGood = 0, lastInit = 0;
++  uint16_t restarts = 0;
++  bool begin() {
++    tof.setTimeout(30);
++    lastInit = lastGood = millis();
++    ok = tof.init();
++    if (ok) tof.startContinuous(50);
++    return ok;
++  }
++  Event poll(uint32_t now) {
++    if (now - last < 25) return Event::None;   // light I2C load on the shared bus
++    last = now;
++    if (!ok) {                                  // absent or failed init: keep retrying every 3 s
++      if (now - lastInit > 3000) { ++restarts; begin(); }
++      return Event::None;
++    }
++    // A supply blip (or a loose plug) resets the sensor: reads then fail
++    // (0xFF / 0xFFFF) or stop. That is not "lifted": re-initialise instead.
++    const uint8_t status = tof.readReg(VL53L0X::RESULT_INTERRUPT_STATUS);
++    if (status == 0xFF || !(status & 0x07)) {
++      if (now - lastGood > 3000 && now - lastInit > 3000) { ++restarts; begin(); }
++      return Event::None;
++    }
++    mm = tof.readReg16Bit(VL53L0X::RESULT_RANGE_STATUS + 10);
++    tof.writeReg(VL53L0X::SYSTEM_INTERRUPT_CLEAR, 0x01);
++    if (mm == 0xFFFF) return Event::None;   // failed read, not a distance
++    lastGood = now;
++    const bool valid = mm > 20 && mm < 2000;  // 8190 = nothing in range; < 20 = too close to trust
++    // Floor: learned only below 15 cm (rest/stand heights), so a slow lift
++    // cannot drag it up; lifted = 10 cm above it (or nothing in range).
++    if (!floor && valid && mm < 150) floor = mm;
++    const bool far = mm >= 2000 || (floor && valid && mm > floor + 100);
++    if (!lifted && !far && valid && mm < 150) floor = floor * 0.8f + mm * 0.2f;
++    if (far == lifted) { changed = now; return Event::None; }
++    if (now - changed < (far ? 300u : 500u)) return Event::None;
++    lifted = far; changed = now;
++    return lifted ? Event::Lifted : Event::PutDown;
++  }
++};
++} // namespace pet
+diff --git a/firmware/sesame-s3/usb_mic.h b/firmware/sesame-s3/usb_mic.h
+new file mode 100644
+index 0000000..51e0d76
+--- /dev/null
++++ b/firmware/sesame-s3/usb_mic.h
+@@ -0,0 +1,68 @@
++// SPDX-License-Identifier: Apache-2.0
++// Akizuki AE-MICAMP (OPA344 x100, output centred at VCC/2) on GPIO5 / ADC1_CH4,
++// powered from 3V3. While a USB host holds a `mic on` lease (renewed every
++// second or so), a core-0 task streams 16 kHz 16-bit mono to it over the USB
++// serial port in frames 0xA5 0x5A + 256 little-endian samples, interleaved with
++// normal text replies. On battery the laptop joins the robot's Wi-Fi instead:
++// GET /mic holds a UDP lease and the same frames go to it on port 5005.
++// The laptop (body/mic-test/listen.py) recognises speech.
++#pragma once
++#include <Arduino.h>
++#include <WiFiUdp.h>
++#include <esp_adc/adc_continuous.h>
++
++namespace usb_mic {
++constexpr int GPIO = 5;
++constexpr uint32_t RATE = 16000, LEASE_MS = 3000;
++constexpr size_t SAMPLES = 256;
++adc_continuous_handle_t adc = nullptr;
++constexpr uint16_t UDP_PORT = 5005;
++volatile uint32_t leaseUntil = 0, udpUntil = 0, udpIp = 0;
++volatile uint16_t level = 0;            // recent peak |sample|, for `mic`
++
++void lease(uint32_t now) { leaseUntil = now + LEASE_MS; }
++void stop() { leaseUntil = 0; }
++bool streaming() { return int32_t(leaseUntil - millis()) > 0; }
++void udpLease(uint32_t ip, uint32_t now) { udpIp = ip; udpUntil = now + LEASE_MS; }
++bool udpStreaming() { return udpIp && int32_t(udpUntil - millis()) > 0; }
++
++void task(void*) {
++  static uint8_t raw[SAMPLES * SOC_ADC_DIGI_RESULT_BYTES];
++  static uint8_t frame[2 + SAMPLES * 2] = {0xA5, 0x5A};
++  float dc = 2048; uint16_t peak = 0; uint32_t peakAt = 0;
++  WiFiUDP udp;
++  for (;;) {
++    uint32_t got = 0;
++    if (adc_continuous_read(adc, raw, sizeof(raw), &got, 100) != ESP_OK) continue;
++    size_t n = 0;
++    for (uint32_t i = 0; i + SOC_ADC_DIGI_RESULT_BYTES <= got && n < SAMPLES; i += SOC_ADC_DIGI_RESULT_BYTES) {
++      const float v = reinterpret_cast<const adc_digi_output_data_t*>(raw + i)->type2.data;
++      dc += (v - dc) * (1.0f / 2048);   // remove the VCC/2 bias
++      const int16_t s = int16_t(constrain((v - dc) * 16, -32767.0f, 32767.0f));
++      frame[2 + 2 * n] = s & 0xFF; frame[3 + 2 * n] = uint16_t(s) >> 8; ++n;
++      if (uint16_t(abs(s)) > peak) peak = abs(s);
++    }
++    if (millis() - peakAt > 250) { level = peak; peak = 0; peakAt = millis(); }
++    if (n == SAMPLES && streaming() && Serial && Serial.availableForWrite() >= int(sizeof(frame)))
++      Serial.write(frame, sizeof(frame));
++    if (n == SAMPLES && udpStreaming()) {
++      udp.beginPacket(IPAddress(udpIp), UDP_PORT); udp.write(frame, sizeof(frame)); udp.endPacket();
++    }
++  }
++}
++
++bool begin() {
++  adc_continuous_handle_cfg_t handle = {};
++  handle.max_store_buf_size = 8 * SAMPLES * SOC_ADC_DIGI_RESULT_BYTES;
++  handle.conv_frame_size = SAMPLES * SOC_ADC_DIGI_RESULT_BYTES;
++  if (adc_continuous_new_handle(&handle, &adc) != ESP_OK) return false;
++  adc_digi_pattern_config_t pattern = {};
++  pattern.atten = ADC_ATTEN_DB_12; pattern.channel = ADC_CHANNEL_4;
++  pattern.unit = ADC_UNIT_1; pattern.bit_width = SOC_ADC_DIGI_MAX_BITWIDTH;
++  adc_continuous_config_t config = {};
++  config.pattern_num = 1; config.adc_pattern = &pattern; config.sample_freq_hz = RATE;
++  config.conv_mode = ADC_CONV_SINGLE_UNIT_1; config.format = ADC_DIGI_OUTPUT_FORMAT_TYPE2;
++  if (adc_continuous_config(adc, &config) != ESP_OK || adc_continuous_start(adc) != ESP_OK) return false;
++  return xTaskCreatePinnedToCore(task, "mic", 4096, nullptr, 2, nullptr, 0) == pdPASS;
++}
++} // namespace usb_mic
+diff --git a/firmware/toolchain.json b/firmware/toolchain.json
+index 0fa143d..f6d1b9d 100644
+--- a/firmware/toolchain.json
++++ b/firmware/toolchain.json
+@@ -10,6 +10,7 @@
+     "Adafruit PWM Servo Driver Library": "3.0.3",
+     "Adafruit SSD1306": "2.5.17",
+     "Adafruit GFX Library": "1.12.6",
+-    "Adafruit BusIO": "1.17.4"
++    "Adafruit BusIO": "1.17.4",
++    "VL53L0X": "1.3.1"
+   }
+ }
+diff --git a/manifest/robot.yaml b/manifest/robot.yaml
+index 3e3e806..d2a5564 100644
+--- a/manifest/robot.yaml
++++ b/manifest/robot.yaml
+@@ -156,8 +156,8 @@ hardware_profiles:
+       interpolation: floor-reference-ticks
+       # Preserve Tim's integer-angle mapping, then compensate for measured clock.
+       # This S3 profile does not rewrite the historical S2 simulator pulse range.
+-    calibration_rate_deg_s: 15
+-    controller_rate_deg_s: 60 # conservative commissioning cap, <= SafeAction maximum
++    calibration_rate_deg_s: 60 # local (Tuba): faster single-joint checks; = controller cap
++    controller_rate_deg_s: 240 # local (Tuba): 4x faster motions, <= SafeAction maximum 300
+     trim_limit_deg: 15 # re-index horns rather than using large offsets
+     initial_limits_deg: [85, 95] # logical-joint overlay only; raw bench mode independently allows 0..180
+     watchdog_failsafe: outputs_off # an unknown map cannot safely execute rest
+diff --git a/reference/pet/draw_pet_wiring.py b/reference/pet/draw_pet_wiring.py
+new file mode 100644
+index 0000000..891d0c6
+--- /dev/null
++++ b/reference/pet/draw_pet_wiring.py
+@@ -0,0 +1,48 @@
++"""Where the touch pad and the M5Stack ToF unit connect (run: python draw_pet_wiring.py)."""
++import matplotlib; matplotlib.use("Agg")
++import matplotlib.pyplot as plt
++from matplotlib.patches import FancyBboxPatch, Circle
++fig, axes = plt.subplots(1, 2, figsize=(16, 7), dpi=120)
++for ax in axes: ax.set_xlim(0, 20); ax.set_ylim(0, 14); ax.set_aspect("equal"); ax.axis("off")
++def board(ax, x, y, w, h, c, t):
++    ax.add_patch(FancyBboxPatch((x, y), w, h, boxstyle="round,pad=0.02,rounding_size=0.3", fc=c, ec="black", lw=1.5))
++    ax.text(x + w / 2, y + h + 0.4, t, ha="center", fontsize=11, weight="bold")
++
++# 1: touch pad -> GPIO6 on the SuperMini pin row
++ax = axes[0]
++ax.set_title("1. TOUCH PAD -> pin 6 of the ESP32-S3 SuperMini\nfind the pin row that already has the SDA, SCL and OE wires", fontsize=11)
++board(ax, 2, 3, 16, 3.2, "#1565c0", "SuperMini: pin row  TX  RX  1  2  3  4  5  6  7")
++row = ["TX", "RX", "1", "2", "3", "4", "5", "6", "7"]
++used = {"2": "SDA wire", "3": "SCL wire", "4": "clock", "7": "OE wire"}
++for i, n in enumerate(row):
++    x = 3 + i * 1.75
++    c = "#e53935" if n == "6" else ("#9e9e9e" if n in used else "gold")
++    ax.add_patch(Circle((x, 4.6), 0.45, fc=c, ec="black"))
++    ax.text(x, 3.6, n, ha="center", color="white", fontsize=11, weight="bold")
++    if n in used: ax.text(x, 6.9, used[n], ha="center", fontsize=8, rotation=45)
++ax.add_patch(Circle((15.25, 11), 1.6, fc="#cfd8dc", ec="#607d8b", lw=2)); ax.text(15.25, 11, "metal\ndisc", ha="center", va="center", fontsize=9)
++ax.plot([15.25, 15.25, 15.25], [9.4, 6.0, 5.05], color="#e53935", lw=4)
++ax.text(10, 12.6, "pin 6 = the free pin right next to the OE wire (pin 7)", ha="center", fontsize=10, weight="bold", color="#c62828")
++ax.text(10, 1.2, "1 wire: metal disc (or copper tape) -> pin 6. Solder, or twist + tape very firmly.\nStick the disc inside the top of the dome. Nothing else to connect.", ha="center", fontsize=10)
++
++# 2: ToF unit -> free end of the hub's 6-pin header
++ax = axes[1]
++ax.set_title("2. M5STACK ToF -> free 6-pin header at the other end of the servo hub (PCA9685)\nuse your Grove-to-Dupont cable; follow the LABELS, not the wire colours", fontsize=11)
++board(ax, 1, 3, 7, 7.5, "#1e88e5", "servo hub (PCA9685)\nfree end header")
++hub = ["GND", "OE", "SCL", "SDA", "VCC", "V+"]
++for i, n in enumerate(hub):
++    y = 9.5 - i * 1.2
++    c = "#9e9e9e" if n in ("OE", "V+") else "gold"
++    ax.add_patch(Circle((7.3, y), 0.38, fc=c, ec="black")); ax.text(6.6, y, n, ha="right", va="center", color="white", fontsize=10, weight="bold")
++board(ax, 13, 4.5, 5, 5, "#eeeeee", "M5Stack Unit ToF")
++tof = {"GND": 9.0, "5V": 7.8, "SDA": 6.6, "SCL": 5.4}
++for n, y in tof.items():
++    ax.add_patch(Circle((13.3, y), 0.38, fc="gold", ec="black")); ax.text(14.0, y, n, va="center", fontsize=10, weight="bold")
++links = [("GND", "GND", "black"), ("VCC", "5V", "red"), ("SDA", "SDA", "#fbc02d"), ("SCL", "SCL", "#90a4ae")]
++for h, t, c in links:
++    y1 = 9.5 - hub.index(h) * 1.2; y2 = tof[t]
++    ax.plot([7.7, 10.5, 10.5, 12.9], [y1, y1, y2, y2], color=c, lw=4)
++ax.text(10, 1.0, "hub GND -> ToF GND,  hub VCC (3.3 V) -> ToF 5V pin,  hub SDA -> SDA,  hub SCL -> SCL\n"
++        "(VCC, not V+: keeps the I2C lines at 3.3 V). Mount the ToF lens facing the floor, >= 3 cm above it.",
++        ha="center", fontsize=9.5)
++plt.tight_layout(); plt.savefig("pet-wiring.png", bbox_inches="tight")
+diff --git a/reference/pet/pet-wiring.png b/reference/pet/pet-wiring.png
+new file mode 100644
+index 0000000..e063ae7
+Binary files /dev/null and b/reference/pet/pet-wiring.png differ
+diff --git a/reference/sesame-s3-interface.json b/reference/sesame-s3-interface.json
+index cecc7e6..8b73e40 100644
+--- a/reference/sesame-s3-interface.json
++++ b/reference/sesame-s3-interface.json
+@@ -299,8 +299,8 @@
+   "safeaction": {
+     "watchdog_ms": 500,
+     "failsafe": "outputs_off",
+-    "calibration_rate_deg_s": 15,
+-    "controller_rate_deg_s": 60,
++    "calibration_rate_deg_s": 60,
++    "controller_rate_deg_s": 240,
+     "start": "outputs-off, arm does not emit PWM",
+     "first_enable": "unknown physical position; starts neutral, no feedback"
+   },
+diff --git a/tests/firmware/test_s3_native.cpp b/tests/firmware/test_s3_native.cpp
+index ac936ae..952cbab 100644
+--- a/tests/firmware/test_s3_native.cpp
++++ b/tests/firmware/test_s3_native.cpp
+@@ -73,12 +73,13 @@ int main() {
+   assert(g.arm(Mode::Channel,3,0) && g.enabled==0);
+   assert(!g.set(2,95,0)); assert(!g.set(3,NAN,0));
+   assert(g.set(3,180,0)); near(g.target[3],95); assert(g.enabled==(1<<3));
+-  g.step(20); near(g.current[3],90.3);
+-  g.stop(20); g.step(40); near(g.current[3],90.3); near(g.target[3],90.3);
++  const float calStep = CAL_RATE*.02f;  // one 20 ms step; rates are manifest choices
++  g.step(20); near(g.current[3],90+calStep);
++  g.stop(20); g.step(40); near(g.current[3],90+calStep); near(g.target[3],90+calStep);
+   assert(g.step(520)); assert(!g.step(521)); assert(!g.active() && !g.enabled && g.timedOut);
+   g.heartbeat(600); assert(!g.active()); // stale host cannot revive watchdog
+   assert(g.arm(Mode::Hornless,0,1000)); assert(!g.arm(Mode::Hornless,1,1000));
+-  assert(g.set(0,0,1000)); g.step(1020); near(g.current[0],89.7);
++  assert(g.set(0,0,1000)); g.step(1020); near(g.current[0],90-calStep);
+   // A queued internal motion cannot keep itself alive by consuming waypoints.
+   g.set(0,180,g.lastHeartbeat);
+   assert(!g.step(1501));
+@@ -88,10 +89,10 @@ int main() {
+   assert(g.enabled==255); g.off();
+   // Wrap-safe monotonic watchdog and no catch-up leap after a scheduler stall.
+   assert(g.arm(Mode::Hornless,0,0xffffff00)); g.set(0,180,0xffffff00);
+-  assert(g.step(0x00000010)); near(g.current[0],90.3);
++  assert(g.step(0x00000010)); near(g.current[0],90+calStep);
+   assert(!g.step(0x00000100));
+   g.cal=cal; assert(g.arm(Mode::Run,-1,0));
+-  g.set(0,180,0); near(g.target[0],177); g.step(20); near(g.current[0],91.2);
++  g.set(0,180,0); near(g.target[0],177); g.step(20); near(g.current[0],90+RUN_RATE*.02f);  // run rate is a manifest choice (240 deg/s since build 16)
+   assert(!g.set(8,90,20)); g.off();
+   // All stock motion targets must stay within the manifest's soft envelope.
+   unsigned count=0;
