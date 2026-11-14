@@ -29,9 +29,9 @@ def robot(yaw=0, lift=0):
           (place(p["seg2-base"], DX2, yaw=yaw), white), (place(p["seg2-cap"], DX2, lift, yaw=yaw), pink)]
     return [(m, c) for m, c in s1] + s2
 fig = plt.figure(figsize=(15, 6.5), dpi=120)
-lim = [(-175, 60), (-80, 80), (-25, 115)]
-scene(fig.add_subplot(1, 2, 1, projection="3d"), 20, -60, robot(0, 45), lim,
-      "Straight; seg 2 cap lifted (2 screws); legs at each segment centre")
-scene(fig.add_subplot(1, 2, 2, projection="3d"), 60, -90, robot(25), [(-175, 60), (-110, 110), (-25, 60)],
+lim = [(-175, 60), (-80, 80), (-25, 135)]
+scene(fig.add_subplot(1, 2, 1, projection="3d"), 20, -60, robot(0, 50), lim,
+      "Sphere-style domes from Z 34; seg 2 cap lifted (2 screws)")
+scene(fig.add_subplot(1, 2, 2, projection="3d"), 60, -90, robot(25), [(-175, 60), (-110, 110), (-25, 85)],
       "Top view, bent 25 deg on the pivot (lock screw out); legs at segment centres")
 plt.tight_layout(); plt.savefig(f"{OUT}/centipede-preview.png", bbox_inches="tight")
