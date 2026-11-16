@@ -23,15 +23,21 @@ METHOD = 'executed-manifest-exact-v4'
 # Baseline: the second validator rerun of 2026-11-12 (commit below), executed
 # with the manifest as committed there: course hip limits, S3 board name, three
 # readable calibration identities, typed joint directions and the course body
-# in hardware_revision (DECISIONS.md D24). No difference from that manifest is
-# excepted. The list is empty, so any later manifest edit, firmware
+# in hardware_revision (DECISIONS.md D24). One difference from that manifest is
+# excepted: a fourth readable calibration identity, added when the wave motion
+# changed the firmware identity (DECISIONS.md D28). The firmware alone reads
+# that list; no body consumer does. Any other manifest edit, firmware
 # metadata included, is an effective input change until it is audited and
 # listed here as an exact delta under hardware_profiles.sesame_s3: `add` with
 # its value, or `replace` with the original and the new value. Typed canonical
 # JSON comparisons reject bool/int/float substitutions and additional fields.
 # The five firmware-only deltas excepted against the October baseline (b38d4b3,
 # method v3) are part of the executed manifest now.
-ALLOWED_MANIFEST_CHANGES = []
+ALLOWED_MANIFEST_CHANGES = [
+    {'operation': 'replace', 'path': ['hardware_profiles', 'sesame_s3', 'calibration_compatible_manifest_ids'],
+     'original_value': ['e669b916d178ac0a', 'bd7675604b98ae46', '8d75c0ea0b2c68e7'],
+     'value': ['e669b916d178ac0a', 'bd7675604b98ae46', '8d75c0ea0b2c68e7', 'fe108150ee38fa10']},
+]
 AUDITED_REPORT_COMMIT = '828862d1442db375b68e6594a39d6773eac281d4'
 AUDITED_REPORT_SHA256 = '6140419622fce237df203555dd1bc2daf00d22e77e857a43dd419310358e60b7'
 AUDITED_PRESERVED_SHA256 = 'f7b11526aaa98c2831f6328bbc32213f6d1dcfb526edb703d64af9b205495591'

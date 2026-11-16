@@ -11,7 +11,7 @@ import yaml
 ROOT = Path(__file__).resolve().parents[1]
 # Identities whose saved records stay readable, oldest first. The last one was
 # in force until the course hip limits replaced the Sesame Studio values.
-READABLE_IDS = ["e669b916d178ac0a", "bd7675604b98ae46", "8d75c0ea0b2c68e7"]
+READABLE_IDS = ["e669b916d178ac0a", "bd7675604b98ae46", "8d75c0ea0b2c68e7", "fe108150ee38fa10"]
 
 
 def compile_native(tmp_path, source, name):
@@ -74,7 +74,7 @@ def test_saved_calibration_loads_unchanged_when_stored_limits_exceed_soft_limits
         paths.append(str(tmp_path / name))
     binary = compile_native(tmp_path, "test_s3_saved_calibration.cpp", "s3-saved-calibration-test")
     result = subprocess.run([str(binary), *paths], check=True, capture_output=True, text=True)
-    assert result.stdout.strip() == "S3 saved-calibration tests passed: 5 loaded as stored, 5 refused"
+    assert result.stdout.strip() == "S3 saved-calibration tests passed: 6 loaded as stored, 5 refused"
 
 
 def test_interface_states_what_happens_to_stored_limits():

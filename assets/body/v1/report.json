@@ -61395,7 +61395,7 @@
   ],
   "geometry_pass": false,
   "input_hashes": {
-    "manifest/robot.yaml": "a9ae157f0485eaaa2f0e5fbf4748c61567922420a1d02e5689b80066d2ea13a5",
+    "manifest/robot.yaml": "ebc5f147591d774be05113fa7700e1698ab3ad812afda1e1de7ed0910725c0f2",
     "sim/build_mjcf.py": "c3d5cb2a6519dd7e0111e48fd98a7856eab099677435a23b2e226377aea98343",
     "sim/prepare_assets.py": "459d6b558e8a89355cf235b029b51ae8bd64f9b8c79fc3b79588c4d98fc446ac",
     "tools/body_cad.py": "c0b5869f482100bd324b01ee9ba3d03ae707044d83335dcb4dc736565b13bab1",
@@ -61405,7 +61405,27 @@
     "tools/render_body.py": "6e6f839edb21e8e3089d28411cc17ceb97fd0ef684d5aa2f175f68048fc68834"
   },
   "input_revalidation": {
-    "allowed_manifest_changes": [],
+    "allowed_manifest_changes": [
+      {
+        "operation": "replace",
+        "original_value": [
+          "e669b916d178ac0a",
+          "bd7675604b98ae46",
+          "8d75c0ea0b2c68e7"
+        ],
+        "path": [
+          "hardware_profiles",
+          "sesame_s3",
+          "calibration_compatible_manifest_ids"
+        ],
+        "value": [
+          "e669b916d178ac0a",
+          "bd7675604b98ae46",
+          "8d75c0ea0b2c68e7",
+          "fe108150ee38fa10"
+        ]
+      }
+    ],
     "body_files": [
       "assets/body/README.md",
       "assets/body/frozen-inputs.json",
@@ -61539,7 +61559,7 @@
       "tools/render_body.py": "6e6f839edb21e8e3089d28411cc17ceb97fd0ef684d5aa2f175f68048fc68834"
     },
     "validator_executed": false,
-    "verifier_sha256": "6dd22ddf987e35ec151c1c0da71b0e333ddd9d0b6250016021009d719662eec2"
+    "verifier_sha256": "b1e97bccd83621b3fbbc924595177d1e92419e8db548c3c117689c529bd3e10f"
   },
   "limitations": [
     "Static eight MG90S/horn proxies are nominal, not measured purchased-variant geometry.",

@@ -70,7 +70,7 @@ def test_query_l2_says_where_it_points_how_far_it_travels_and_what_stops_it():
     assert "2026-11-12" in evidence["directions"]["source"] and "instructor" in evidence["directions"]["kind"]
     assert evidence["contact"]["kind"] == "CAD-derived, not physical" and evidence["contact"]["design"] == DESIGN
     assert evidence["measured_on_your_robot"] == "nothing"
-    assert evidence["limits_sign_channel"]["manifest_id"] == "fe108150ee38fa10"
+    assert evidence["limits_sign_channel"]["manifest_id"] == "eb2915398f599160"
     for phrase in ("one observed movement", "wiring, signs or horn positions", "never opens", "Bench mode accepts any angle"):
         assert phrase in answer["scope"], phrase
 
@@ -298,6 +298,6 @@ def test_check_design_fails_when_the_joint_query_cannot_answer(monkeypatch, caps
     assert (code, output["ok"], check["ok"]) == ((0, True, True) if current else (1, False, False))
     if current:
         assert check["result"] == {"ask": "python3 tools/joints.py query NAME | check NAME DEG ...",
-                                   "manifest_id": "fe108150ee38fa10", "contact_design": DESIGN}
+                                   "manifest_id": "eb2915398f599160", "contact_design": DESIGN}
     else:
         assert "Stale firmware interface" in check["error"]

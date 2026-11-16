@@ -2,9 +2,9 @@
 #pragma once
 #include <stdint.h>
 namespace sesame {
-constexpr char MANIFEST_ID[] = "fe108150ee38fa10";
+constexpr char MANIFEST_ID[] = "eb2915398f599160";
 constexpr char PULSE_PROFILE_ID[] = "tim-pca9685-150-512-v1";
-constexpr const char* COMPATIBLE_MANIFEST_IDS[] = {"e669b916d178ac0a", "bd7675604b98ae46", "8d75c0ea0b2c68e7"};
+constexpr const char* COMPATIBLE_MANIFEST_IDS[] = {"e669b916d178ac0a", "bd7675604b98ae46", "8d75c0ea0b2c68e7", "fe108150ee38fa10"};
 constexpr uint32_t NEUTRAL = 90;
 constexpr float PULSE_MIN = 732.0;
 constexpr float PULSE_MAX = 2498.56;
@@ -43,8 +43,8 @@ constexpr MotionStep STEPS_stand[] = {
 constexpr MotionStep STEPS_wave[] = {
   {{135, 45, 45, 135, 0, 180, 0, 180}, 0},
   {{-1, -1, -1, -1, -1, -1, -1, -1}, 200},
-  {{100, -1, -1, 90, 80, -1, 180, -1}, 0},
-  {{-1, -1, -1, -1, -1, -1, -1, -1}, 200},
+  {{180, -1, -1, 90, 80, -1, -1, -1}, 0},
+  {{-1, -1, -1, -1, -1, -1, -1, -1}, 300},
   {{-1, -1, -1, -1, -1, -1, 180, -1}, 0},
   {{-1, -1, -1, -1, -1, -1, -1, -1}, 300},
   {{-1, -1, -1, -1, -1, -1, 180, -1}, 0},
