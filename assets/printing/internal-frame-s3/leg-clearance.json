@@ -21,7 +21,7 @@
   "units": "mm, servo degrees",
   "checker_sha256": "53cb89e35ad7d872aab4d0fc76a1196b2431557265dea7ffe6e9db8396cd65dc",
   "inputs": {
-    "head-cover.stl": "49fbea2021290127dc2a492de3dcf18baac44b5a86c5b2a5c6d68865439848f2",
+    "head-cover.stl": "9017f441d2115509f11da8fac505b1328dba12e04c064a845400f417e68f21e5",
     "head-lid.stl": "053b743b5a6c6ced75f8bad519ac1db402bdfd1610c97e3bde9d53ad27657cca",
     "internal-frame.stl": "67b7cf5774ef33d843c04c3fb85bb742ef7cba397048f422bdf34c9327de1c43",
     "bottom-cover.stl": "bfd333ac2c86e5110b5e349df0b9f2452bf05bdcfc17a20a341410e92d76b1be",

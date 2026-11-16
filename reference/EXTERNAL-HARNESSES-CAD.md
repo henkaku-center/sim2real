@@ -55,7 +55,7 @@ exists.
 | Component | Exact purchase | Evidence and CAD result |
 |---|---|---|
 | OLED | [B08CTZVVLS](https://www.amazon.co.jp/dp/B08CTZVVLS) | Listing confirms 0.96-inch, four-pin I2C SSD1306, white display. Earlier inspected dimension image gives 25.4 × 26.1 mm PCB and 22 mm horizontal mounting span. Two downloaded generic SSD1306 STEP candidates are not exact matches. |
-| Switch | [B0G9M71BBS](https://www.amazon.co.jp/dp/B0G9M71BBS) | Listing confirms two-terminal ON/OFF toggle. Previously inspected image gives approximately 13 × 8 mm body and 33 mm overall. No exact model established. Do not substitute MTS-102/SPDT or a slide switch. |
+| Switch | [B0G9M71BBS](https://www.amazon.co.jp/dp/B0G9M71BBS) | Listing confirms two-terminal ON/OFF toggle. Previously inspected image gives approximately 13 × 8 mm body and 33 mm overall. Thread size is not published; the head cover's 6.5 mm bore rests on a photo-scaled estimate of about 5.6 mm (±0.3), not a caliper measurement (`DECISIONS.md` D26). No exact model established. Do not substitute MTS-102/SPDT or a slide switch. |
 | Battery | [B0F3JB59B6](https://www.amazon.co.jp/dp/B0F3JB59B6) | Exact listing confirms 7.4 V, 1000 mAh, 2S Li-ion, 51 × 28 × 14 mm and 47 g; connector called only “JST”. No exact CAD found. Prefer an original editable external-envelope model over an unrelated same-capacity pack. |
 
 ## Downloaded and checked candidates

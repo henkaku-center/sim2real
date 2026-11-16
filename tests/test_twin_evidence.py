@@ -88,7 +88,7 @@ def test_mass_and_centre_of_mass_change(evidence):
     assert change["mass_kg"] == pytest.approx(eyes["mass_kg"] - base["mass_kg"], abs=1e-9)
     assert change["mass_kg"] == pytest.approx(0.036682, abs=1e-6)  # +36.7 g
     assert change["mass_percent"] == pytest.approx(10.86, abs=0.01)
-    assert change["com_mm"] == pytest.approx([0.5211, 0.0347, 0.8199], abs=1e-4)  # forward and up
+    assert change["com_mm"] == pytest.approx([0.5208, 0.0347, 0.8202], abs=1e-4)  # forward and up
     assert change["parts_only_in_variant"] == ["oled-display.2"]
     assert evidence["mass"][BASE]["mass_kg"] == base["mass_kg"]
     assert evidence["mass"][EYES]["com_mm"] == pytest.approx(np.array(eyes["com_torso_m"]) * 1000, abs=1e-4)
@@ -259,8 +259,11 @@ def test_freaky_raises_the_right_side_paws(design):
 
 
 # Simulated difference, recorded as found: over four push-ups the wider variant
-# creeps about 65 mm backward where the base creeps about 16 mm.
-@pytest.mark.parametrize("design,creep", [(BASE, -0.016), (EYES, -0.065)])
+# creeps about 65 mm backward where the base creeps about 37 mm. The base figure
+# was about 16 mm until the 6.5 mm switch bore took 20 mg off its head cover
+# (DECISIONS.md D26): it depends on foot slip, so read it as a recorded
+# simulation result, not as a property of the design.
+@pytest.mark.parametrize("design,creep", [(BASE, -0.037), (EYES, -0.065)])
 def test_pushup_dips_the_chest(design, creep):
     s = sig(design, "pushup")
     assert s["pitch_min"] < -0.015 and s["upright_final"] > 0.99

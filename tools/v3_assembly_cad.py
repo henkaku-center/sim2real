@@ -13,6 +13,18 @@ from tools.cad_validation_cache import CheckCache,shape_digest,check_electronics
 ROOT=Path(__file__).resolve().parents[1]
 REF=ROOT/'assets/printing/internal-frame-s3/reference-v3'
 V=App.Vector
+# Tail-switch panel bore, the one place this diameter is set. The purchased
+# toggle (Amazon.co.jp B0G9M71BBS, ALAMSCN AL15099) lists a 13 x 8 mm body and no
+# thread size; scaling the listing's side view by that body gives a thread of
+# about 5.6 mm (+/-0.3), the 6 mm bushing class whose usual panel cut-out is
+# 6.2-6.5 mm. Printed holes come out undersized, so the modelled bore is 6.5 mm.
+SWITCH_BORE_DIAMETER_MM=6.5
+SWITCH_BORE_BASIS='listing dimensions + photo-scaled estimate, not a caliper measurement'
+# Envelopes that must sit flat on the panel: a 12 mm washer outside and the
+# 13 x 8 mm switch body (which also covers an 8 mm across-flats nut) inside.
+# Class-typical hardware and listing dimensions, not measured parts.
+SWITCH_SEAT_DIAMETERS_MM={'outside':12.0,'inside':math.hypot(13.0,8.0)}
+NATIVE_SWITCH_BORE_RADIUS_MM=2.5  # Loftwork V3's off-centre bore, closed below.
 
 
 def sha(path):return hashlib.sha256(Path(path).read_bytes()).hexdigest()
@@ -180,7 +192,7 @@ def fit_head(ref,settings,mid,usb,variant=None):
     lid=translated(ref['lid'],[0,0,raise_mm]);roof=lid.BoundBox.ZMax
     # Remove the old bore faces and heal the tapered wall, then put the toggle at the
     # rear panel's horizontal centre. Retain the original height above the hub.
-    bore_faces=[f for f in head.Faces if isinstance(f.Surface,Part.Cylinder) and abs(f.Surface.Radius-2.5)<1e-6 and f.Surface.Axis.x<-.9]
+    bore_faces=[f for f in head.Faces if isinstance(f.Surface,Part.Cylinder) and abs(f.Surface.Radius-NATIVE_SWITCH_BORE_RADIUS_MM)<1e-6 and f.Surface.Axis.x<-.9]
     old_bores=[f.Surface for f in bore_faces]
     assert old_bores and all((b.Center-old_bores[0].Center).Length<1e-6 for b in old_bores)
     old=old_bores[0];cy=(head.BoundBox.YMin+head.BoundBox.YMax)/2
@@ -192,7 +204,8 @@ def fit_head(ref,settings,mid,usb,variant=None):
     cz=old.Center.z
     cx=old.Center.x-old.Axis.z/old.Axis.x*(cz-old.Center.z)
     switch_centre=V(cx,cy,cz)
-    head=head.cut(Part.makeCylinder(2.5,20,switch_centre-old.Axis*10,old.Axis))
+    bore_radius=SWITCH_BORE_DIAMETER_MM/2
+    head=head.cut(Part.makeCylinder(bore_radius,20,switch_centre-old.Axis*10,old.Axis))
     assert head.isValid() and len(head.Solids)==1
     ear_source=json.loads((REF.parent/'reference-ears/source.json').read_text());ears=[]
     for name,record in ear_source['files'].items():
@@ -262,7 +275,7 @@ def fit_head(ref,settings,mid,usb,variant=None):
         overlap=head.common(translated(lid,[offset,0,0]));assert overlap.isNull() or overlap.isValid()
         assert abs(overlap.Volume)<1e-3,(offset,overlap.Volume)
         slide.append({'rear_offset_mm':offset,'z_offset_mm':0,'intersection_mm3':overlap.Volume})
-    switch_holes=[f.Surface for f in head.Faces if isinstance(f.Surface,Part.Cylinder) and abs(f.Surface.Radius-2.5)<1e-6 and f.Surface.Axis.x<-.9]
+    switch_holes=[f.Surface for f in head.Faces if isinstance(f.Surface,Part.Cylinder) and abs(f.Surface.Radius-bore_radius)<1e-6 and f.Surface.Axis.x<-.9]
     assert len(switch_holes)==1
     switch_hole=switch_holes[0]
     assert (switch_hole.Center-switch_centre).cross(switch_hole.Axis).Length<1e-6
@@ -270,8 +283,9 @@ def fit_head(ref,settings,mid,usb,variant=None):
     old_fill_mm=sum(e.Length for e in old_fill.Edges);assert 1.99<old_fill_mm<2.01
     new_open=head.common(Part.makeLine(switch_centre-old.Axis*5,switch_centre+old.Axis*5))
     assert sum(e.Length for e in new_open.Edges)<1e-6
+    switch_seat=switch_seat_check(head,switch_centre,switch_hole.Axis,bore_radius)
     details={'display_windows':fitted_eyes,'cable_notches':entries,'battery_entry':battery_entry,'closed_upper_side_ports':2,'ear_source':ear_source,
-              'switch_opening':{'centre_mm':list(switch_centre),'normal':list(switch_hole.Axis),'diameter_mm':5.,'source':'rear-panel horizontally centred tail switch; original height retained above servo hub; former bore closed',
+              'switch_opening':{'centre_mm':list(switch_centre),'normal':list(switch_hole.Axis),'diameter_mm':SWITCH_BORE_DIAMETER_MM,'diameter_basis':SWITCH_BORE_BASIS,'seat':switch_seat,'source':'rear-panel horizontally centred tail switch; original height retained above servo hub; former bore closed',
                                 'old_centre_mm':list(old.Center),'panel_centre_y_mm':cy,'height_retained':True,'old_bore_filled_mm':old_fill_mm,'old_recess_removed':True},
              'sealed_internal_voids':{'count':void_count,'volume_mm3':void_volume},'unified_external_faces':unified,
              'ear_bounds_mm':[bounds(e) for e in ears],'ear_height_above_roof_mm':max(e.BoundBox.ZMax for e in ears)-roof,
@@ -279,6 +293,33 @@ def fit_head(ref,settings,mid,usb,variant=None):
                           'mating_profile':'unchanged native V3 captive underhang','assembly_direction':'rear-to-front at fixed Z',
                          'tongue_half_width_mm':tongue-gap,'shoulder_start_x_mm':split_x,'clearance_mm':gap}}
     return head,lid,fitted_window,head_lid_overlap,usb_cut,details
+
+
+def switch_seat_check(head,centre,axis,bore_radius):
+    """Flat, unobstructed panel around the switch bore, inside and outside."""
+    side=V(0,1,0);up=axis.cross(side)
+    walls=[]
+    for k in range(8):
+        a=math.pi*k/4;start=centre+(side*math.cos(a)+up*math.sin(a))*(bore_radius+.25)
+        edges=head.common(Part.makeLine(start-axis*6,start+axis*6)).Edges;assert len(edges)==1,(k,len(edges))
+        walls.append(sorted((v.Point-centre).dot(axis) for v in edges[0].Vertexes))
+    inner=sum(w[0] for w in walls)/8;outer=sum(w[1] for w in walls)/8
+    # A rear panel square to the bore: every sampled wall starts and ends in the same two planes.
+    assert max(abs(w[0]-inner) for w in walls)<1e-4 and max(abs(w[1]-outer) for w in walls)<1e-4,walls
+    def ring(radius,start,length):
+        return Part.makeCylinder(radius,length,centre+axis*start,axis).cut(Part.makeCylinder(bore_radius,length,centre+axis*start,axis))
+    result={'wall_thickness_mm':outer-inner,'bore_square_to_panel':True,'clear_depth_checked_mm':3.0,
+            'scope':'CAD flatness and clearance around the bore for class-typical hardware envelopes; not measured parts or a physical fit.'}
+    for name,surface,direction in [('outside',outer,1),('inside',inner,-1)]:
+        radius=SWITCH_SEAT_DIAMETERS_MM[name]/2;assert radius>bore_radius
+        # Solid panel under the whole seat, and nothing standing proud of it.
+        under=ring(radius,surface-.5 if direction>0 else surface,.5)
+        proud=ring(radius,surface+.01 if direction>0 else surface-3.01,3.0)
+        backed=head.common(under).Volume;blocked=head.common(proud).Volume
+        assert abs(backed-under.Volume)<1e-3*under.Volume,(name,backed,under.Volume)
+        assert blocked<1e-6,(name,blocked)
+        result[name]={'seat_diameter_mm':2*radius,'flat_land_beyond_bore_mm':radius-bore_radius,'panel_backing_fraction':backed/under.Volume,'obstruction_mm3':blocked}
+    return result
 
 
 def lower_entries(head,z):

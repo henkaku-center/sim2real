@@ -659,7 +659,7 @@
     "scope": "Final model fit and authored route samples; Rest/Standing leg bounds. No physical print or full-range motion test.",
     "sealed_internal_voids": {
       "count": 6,
-      "volume_mm3": 45.20054158257699
+      "volume_mm3": 45.200541789108684
     },
     "source_object": "Loftwork V3 shell and removable lid",
     "spacer_clearances_mm": [
@@ -674,7 +674,8 @@
         0.005083606858548251,
         37.600941996849
       ],
-      "diameter_mm": 5.0,
+      "diameter_basis": "listing dimensions + photo-scaled estimate, not a caliper measurement",
+      "diameter_mm": 6.5,
       "height_retained": true,
       "normal": [
         -0.9792599571520855,
@@ -689,6 +690,24 @@
       ],
       "old_recess_removed": true,
       "panel_centre_y_mm": 0.005083606858548251,
+      "seat": {
+        "bore_square_to_panel": true,
+        "clear_depth_checked_mm": 3.0,
+        "inside": {
+          "flat_land_beyond_bore_mm": 4.382168761236874,
+          "obstruction_mm3": 0.0,
+          "panel_backing_fraction": 0.9999916590847526,
+          "seat_diameter_mm": 15.264337522473747
+        },
+        "outside": {
+          "flat_land_beyond_bore_mm": 2.75,
+          "obstruction_mm3": 0.0,
+          "panel_backing_fraction": 0.9999930706252922,
+          "seat_diameter_mm": 12.0
+        },
+        "scope": "CAD flatness and clearance around the bore for class-typical hardware envelopes; not measured parts or a physical fit.",
+        "wall_thickness_mm": 2.000000000007897
+      },
       "source": "rear-panel horizontally centred tail switch; original height retained above servo hub; former bore closed"
     },
     "unified_external_faces": false,
@@ -878,12 +897,12 @@
         0
       ],
       "print_stl": "head-cover-print.stl",
-      "print_stl_sha256": "8b623d65651a8283c72f12f646c74fde7537c3d39e15583cacedaf2f18a12b5c",
-      "step_sha256": "06594f6f4e8f05b40a30667d3dec469e4ff5a830c18d4844774dae482f5e216e",
-      "stl_sha256": "dfb2167e076b30d0d8fdea00646be3929da5faec42ad4e9753cf2e2bb6a8730c",
-      "triangles": 6296,
+      "print_stl_sha256": "9e9022b25697ed698b93518132db0f3c5d7ff77f5c449648fecbf07bb96904d0",
+      "step_sha256": "805bd272624e4572bbb8b79557deba9a564e8cf2acbabd4f0e2a43bc78427547",
+      "stl_sha256": "6a2a444fbadb57bf4683701db49e9555048d6c666defcbe734996a082a921dc8",
+      "triangles": 6336,
       "valid_solid": true,
-      "volume_mm3": 30156.867299933594
+      "volume_mm3": 30129.771065094632
     },
     "head-lid": {
       "bounds_mm": [
@@ -1323,7 +1342,7 @@
       4.967756901865376
     ]
   ],
-  "source_script_sha256": "83d7dbc576957efed2baacb43fd9016e0309f88f8eb0608a7e63fc4ccbce106d",
+  "source_script_sha256": "eda6e5195c59f7f50612214bcb0cdd02e44b2d030bffdfc137889dffb21941db",
   "support_width_mm": 93.55037999999999,
   "unchanged_legs": {
     "L1": "081896568cc9776393c038d05ecc8caf01090c6971efebe799d064def4c92558",
@@ -1365,7 +1384,7 @@
     {
       "cache_hit": false,
       "group": "electronics/head",
-      "key": "26736b2284d8e7d172c3abc5f3ff25ecb4343259f4b91713853809bbe2898c2d"
+      "key": "1650856e0bed88bcad337b37542e85d0d5c8280798e2807c4a9a5d04d4b247fd"
     },
     {
       "cache_hit": false,

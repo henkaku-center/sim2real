@@ -626,3 +626,36 @@ target outside the fitted travel and says which way it drives the leg.
   device and sends nothing. It describes the reference build and is not a gate
   on what owners do with their robots.
 - **Not changed.** Firmware, manifest and its identity `fe108150ee38fa10`.
+
+## D26. Tail-switch bore enlarged to 6.5 mm (2026-11-16)
+
+Instructor request: enlarge the rear power-switch hole in the head cover from
+5.0 mm to 6.5 mm for the purchased toggle switch. The bore is now 6.5 mm in the
+base kit and in the two-eye and six-leg variants. Its centre, axis and height are
+unchanged, and no other geometry changes.
+
+- **Evidence level: listing dimensions + photo-scaled estimate, not a caliper
+  measurement.** The switch is Amazon.co.jp B0G9M71BBS (ALAMSCN AL15099, a
+  20-pack of two-pin ON/OFF mini toggles, 6 A 125 V, blue MTS-101-class body).
+  The listing states a 13 × 8 mm body, 33 mm overall and a 10 mm lever, and
+  does not state the thread. Scaling the listing's side view by the stated
+  13 mm body gives a thread major diameter of about 5.6 mm (±0.3). That is
+  consistent with the 6 mm bushing of this switch class, whose usual panel
+  cut-out is 6.2–6.5 mm. Printed holes come out undersized, so the modelled
+  bore is 6.5 mm. No switch has been fitted to a printed 6.5 mm bore.
+- **Where it is set.** `SWITCH_BORE_DIAMETER_MM` in `tools/v3_assembly_cad.py`,
+  the one value used for the cut, the generator's own check and the record in
+  `assembly.json` (`head_fit.switch_opening`). It is not in `params.json`
+  because that file is copied whole into the frame datums that
+  `head-cable-clearance.json` pins; a new key there would make the ribbon and
+  leg samples stale, although the bore affects neither.
+- **Checks.** The generator now asserts that the rear panel around the bore is
+  2 mm thick, square to the bore, solid and unobstructed under a 12 mm washer
+  outside and under the 13 × 8 mm body's corner circle (15.3 mm) inside, 3 mm
+  deep on both sides. These envelopes are class-typical hardware and listing
+  dimensions, not measured parts. `tools/check_tail_switch.py` was rerun: its
+  stand-in switch model still clears the carrier electronics.
+- **Not done.** The shell has not been re-sliced; `head-slice-check.json`
+  remains the November 2 slicing of an earlier shell. Nothing was printed.
+
+APS re-imports the head cover after this lands; this repository does not edit APS.

@@ -7,7 +7,7 @@
   "engine": "MuJoCo (reference)",
   "mjcf": {
     "path": "models/internal-frame-s3-two-eyes.xml",
-    "sha256": "e9842b88b89b4ded4891daa6cc6b9d27279b9440c89b8111457f2842762b8c6e"
+    "sha256": "fc34ea90d3a1afd63bfc9553682bb056354e6c68b20e1225a93c64fdfb47639f"
   },
   "frame": {
     "torso": "design CAD frame: X front, Y left, Z up, origin at the CAD origin",
@@ -30,19 +30,19 @@
         0.0,
         0.0
       ],
-      "mass_kg": 0.28886404,
+      "mass_kg": 0.288843727,
       "com_m": [
-        0.0017133727,
-        0.000130054,
-        0.0075271233
+        0.00171626732,
+        0.000130062806,
+        0.00752501549
       ],
       "inertia_kg_m2": {
-        "xx": 0.000387623093,
-        "yy": 0.000278015407,
-        "zz": 0.000475124567,
-        "xy": -4.66259192e-07,
-        "xz": -4.48762195e-06,
-        "yz": 1.33713118e-07
+        "xx": 0.000387604676,
+        "yy": 0.000277962649,
+        "zz": 0.000475090055,
+        "xy": -4.66154493e-07,
+        "xz": -4.51266791e-06,
+        "yz": 1.33636885e-07
       },
       "parts": [
         "internal-frame",
@@ -534,13 +534,13 @@
       "body": "torso",
       "kind": "printed",
       "status": "estimated",
-      "mass_kg": 0.0226235104,
+      "mass_kg": 0.0226031975,
       "com_torso_m": [
-        0.00165206199,
-        0.000414233481,
-        0.0290609082
+        0.00168899688,
+        0.000414601397,
+        0.0290533245
       ],
-      "basis": "30.157 cm3 mesh x 1240 kg/m3 x 0.605 fill (body-kit)"
+      "basis": "30.130 cm3 mesh x 1240 kg/m3 x 0.605 fill (body-kit)"
     },
     {
       "id": "head-lid",
@@ -999,14 +999,14 @@
     }
   },
   "totals": {
-    "mass_kg": 0.37445878,
+    "mass_kg": 0.374438467,
     "com_torso_m": [
-      0.00128019235,
-      0.000102009342,
-      0.0059455771
+      0.00128240177,
+      0.000102014613,
+      0.00594386533
     ],
     "mass_by_status_kg": {
-      "estimated": 0.15625878,
+      "estimated": 0.156238467,
       "unmeasured-nominal": 0.2182,
       "measured": 0.0
     }
@@ -1170,10 +1170,10 @@
     "sim/twin.py": "24e13d1e08f4d6444f7be98cf59f550600bdff702381e7e467b6d5627e15ad76",
     "sim/manifest.py": "a747eb1e2fac3939e616cf07c5d4a4dd5ee6d826efbe12418a3dc2421d5b2f42",
     "sim/prepare_assets.py": "459d6b558e8a89355cf235b029b51ae8bd64f9b8c79fc3b79588c4d98fc446ac",
-    "assets/printing/internal-frame-s3-two-eyes/assembly.json": "fb8d4f65700d90ef89a4276ac626ed5e2696b020fb9f80d99e100e23a939bdb6",
+    "assets/printing/internal-frame-s3-two-eyes/assembly.json": "76664eab373294a9032b5464f31dea30614a7fc5cff723905733d87a946984d5",
     "assets/printing/internal-frame-s3-two-eyes/internal-frame.stl": "dd75503fb10753a683a174dcdfc95510566c0b39307e7bce1f265ec51f46bd03",
     "assets/printing/internal-frame-s3-two-eyes/bottom-cover.stl": "cac0bb68f923405ab00221d97bea80f2a6c0abdad4467e04ef733296257b1d44",
-    "assets/printing/internal-frame-s3-two-eyes/head-cover.stl": "dfb2167e076b30d0d8fdea00646be3929da5faec42ad4e9753cf2e2bb6a8730c",
+    "assets/printing/internal-frame-s3-two-eyes/head-cover.stl": "6a2a444fbadb57bf4683701db49e9555048d6c666defcbe734996a082a921dc8",
     "assets/printing/internal-frame-s3-two-eyes/head-lid.stl": "14429e33f84e667f6b9c60eb78fcf7b7b68b3282c94b57371f66b91a20cb1113",
     "assets/printing/internal-frame-s3-two-eyes/pcb-spacer.stl": "8b5c8dcfbe057933dd664d75ab8c7c47dc08ff43652d31724ca03cca2fff1e80",
     "assets/stl/upstream/R1-v117.stl": "443f956016ad416699d8d5e56ab2fb0e36b10d42f02ff47ea02ae5986180e871",

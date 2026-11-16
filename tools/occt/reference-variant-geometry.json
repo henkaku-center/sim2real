@@ -288,6 +288,6 @@
       }
     }
   },
-  "script_sha256": "83d7dbc576957efed2baacb43fd9016e0309f88f8eb0608a7e63fc4ccbce106d",
+  "script_sha256": "eda6e5195c59f7f50612214bcb0cdd02e44b2d030bffdfc137889dffb21941db",
   "source": "FreeCAD, tools/v3_assembly_cad.py variant stage"
 }

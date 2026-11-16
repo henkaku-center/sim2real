@@ -719,7 +719,7 @@
     "scope": "Final model fit and authored route samples; Rest/Standing leg bounds. No physical print or full-range motion test.",
     "sealed_internal_voids": {
       "count": 6,
-      "volume_mm3": 45.20364245861856
+      "volume_mm3": 45.20364278724446
     },
     "source_object": "Loftwork V3 shell and removable lid",
     "spacer_clearances_mm": [
@@ -734,7 +734,8 @@
         0.005083606858546474,
         37.600941996849
       ],
-      "diameter_mm": 5.0,
+      "diameter_basis": "listing dimensions + photo-scaled estimate, not a caliper measurement",
+      "diameter_mm": 6.5,
       "height_retained": true,
       "normal": [
         -0.9792599571520855,
@@ -749,6 +750,24 @@
       ],
       "old_recess_removed": true,
       "panel_centre_y_mm": 0.005083606858546474,
+      "seat": {
+        "bore_square_to_panel": true,
+        "clear_depth_checked_mm": 3.0,
+        "inside": {
+          "flat_land_beyond_bore_mm": 4.382168761236874,
+          "obstruction_mm3": 0.0,
+          "panel_backing_fraction": 0.9999916591048077,
+          "seat_diameter_mm": 15.264337522473747
+        },
+        "outside": {
+          "flat_land_beyond_bore_mm": 2.75,
+          "obstruction_mm3": 0.0,
+          "panel_backing_fraction": 0.9999930706323779,
+          "seat_diameter_mm": 12.0
+        },
+        "scope": "CAD flatness and clearance around the bore for class-typical hardware envelopes; not measured parts or a physical fit.",
+        "wall_thickness_mm": 2.000000000001016
+      },
       "source": "rear-panel horizontally centred tail switch; original height retained above servo hub; former bore closed"
     },
     "unified_external_faces": true,
@@ -921,12 +940,12 @@
         0
       ],
       "print_stl": "head-cover-print.stl",
-      "print_stl_sha256": "ca9c0240287bbcab4d147d40e93874ef6679ca91bbe9fd7d7ad1882e244b6c5a",
-      "step_sha256": "e6ab612ef38aca6401fe0c8e5fdd3c9c15c3f7abc9623a751bca71779ccba32d",
-      "stl_sha256": "49fbea2021290127dc2a492de3dcf18baac44b5a86c5b2a5c6d68865439848f2",
-      "triangles": 5652,
+      "print_stl_sha256": "c0190392e90cc9eff81470360672e98e3e06b5a0be7dfbaf2a4fd4150aaf7142",
+      "step_sha256": "98c4e05c3a34cfc3069c8bfec122a98d769d9682c3d2c610433a54a323441b44",
+      "stl_sha256": "9017f441d2115509f11da8fac505b1328dba12e04c064a845400f417e68f21e5",
+      "triangles": 5692,
       "valid_solid": true,
-      "volume_mm3": 25333.853517089683
+      "volume_mm3": 25306.757282866496
     },
     "head-lid": {
       "bounds_mm": [
@@ -1366,7 +1385,7 @@
       4.967756901865376
     ]
   ],
-  "source_script_sha256": "83d7dbc576957efed2baacb43fd9016e0309f88f8eb0608a7e63fc4ccbce106d",
+  "source_script_sha256": "eda6e5195c59f7f50612214bcb0cdd02e44b2d030bffdfc137889dffb21941db",
   "support_width_mm": 63.55037999999999,
   "unchanged_legs": {
     "L1": "081896568cc9776393c038d05ecc8caf01090c6971efebe799d064def4c92558",
@@ -1386,29 +1405,29 @@
       "key": "92cd0c4fd6557abe13aa36c45aed73e5bffa77b8e017472b951b40a475d83cd5"
     },
     {
-      "cache_hit": true,
+      "cache_hit": false,
       "group": "electronics/spacer-0",
       "key": "2c8343c1aa8051300cc5c508fdcbc3974f8fb9557b4f5d657c3e64aa514a023d"
     },
     {
-      "cache_hit": true,
+      "cache_hit": false,
       "group": "electronics/spacer-1",
       "key": "4f942f9586d035dfa67ecafc98e0512b79181fd30da954cea402c2a7c1303ee1"
     },
     {
-      "cache_hit": true,
+      "cache_hit": false,
       "group": "electronics/spacer-2",
       "key": "9b98ce38695b6356f1665cf9e9d6f00e3fe6bcccc910bade368d7c508b380d9d"
     },
     {
-      "cache_hit": true,
+      "cache_hit": false,
       "group": "electronics/spacer-3",
       "key": "fefc58b46978817b680109f27b125d1e37c658d4daeec7bb17a3f4f48d5013dd"
     },
     {
       "cache_hit": false,
       "group": "electronics/head",
-      "key": "77aabd19ebb0b8f4ca557270e58ce31d2da3453f9be2525c54d05dd97e33c06a"
+      "key": "7aa7c52e996493e51e55e606844b917bf5e83950072377d85f35d3e1a7ef54cd"
     },
     {
       "cache_hit": false,
@@ -1423,7 +1442,7 @@
     {
       "cache_hit": false,
       "group": "ribbons",
-      "key": "7dad8103035ca93f45ad263556580b7cc29a786db8646cca542f8f245860e886"
+      "key": "c6fdb5b1804af68b6a975add5fb70bbe68b506a4d68504adb8f511ea09e2e154"
     }
   ],
   "validation_checker_sha256": "e3a7a196227ee8c46f048f249447b3d802529fe46167a259857e99c042336ea4",

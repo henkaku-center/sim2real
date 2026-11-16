@@ -144,7 +144,7 @@ Exact Amazon Japan ASIN pages and their product images were inspected on
 | B08CTZVVLS OLED | 25.4 × 26.1 mm PCB; dimension image also marks 22 mm horizontal mounting span and 11 mm display height | Hole diameters/vertical spacing, glass offset, thickness and actual visible aperture need confirmation |
 | B0F3JB59B6 battery | 51 × 28 × 14 mm; 47 g per pack; 7.4 V, 1000 mAh, 2S; listing calls connector JST | Connector series/pitch, cable length and installed envelope unknown |
 | B07NVSVW1N converter | Product images conflict: 42 × 21 mm versus 45 × 20 mm | Measure the delivered PCB; do not silently select a generic LM2596 model |
-| B0G9M71BBS toggle | Image labels 13 × 8 mm body footprint, 33 mm overall, 10 mm lever | Thread diameter, panel-hole size, nut envelope, usable panel thickness and lever sweep unknown |
+| B0G9M71BBS toggle | Image labels 13 × 8 mm body footprint, 33 mm overall, 10 mm lever | Thread size is not published. Scaling the listing's side view by the 13 mm body gives a thread of about 5.6 mm (±0.3): an estimate, not a caliper measurement (2026-11-16, `DECISIONS.md` D26). Nut and washer envelope, usable panel thickness and lever sweep unknown |
 
 Dimension-image identifiers: converter `61FCIdD5tlL` and `519Lg2LkglL`;
 switch `61rIy15oUuL`; OLED `61KIviiTKFL` (Amazon image CDN).

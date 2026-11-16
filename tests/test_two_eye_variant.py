@@ -48,6 +48,11 @@ def test_one_aperture_becomes_two_equal_symmetric_eyes():
     assert eyes[1]['centre_mm'][1]-eyes[0]['centre_mm'][1]>27.3
     assert v['head_fit']['electronics_intersections']==[] and min(v['head_fit']['spacer_clearances_mm'])>=.6
     assert v['head_fit']['switch_opening']['old_recess_removed']
+    # The tail-switch bore keeps the base kit's diameter, axis, height and seat.
+    switch,base=v['head_fit']['switch_opening'],b['head_fit']['switch_opening']
+    assert switch['diameter_mm']==base['diameter_mm']==6.5 and switch['diameter_basis']==base['diameter_basis']
+    assert max(abs(p-q) for key in ['centre_mm','normal'] for p,q in zip(switch[key],base[key]))<1e-9
+    assert abs(switch['seat']['wall_thickness_mm']-base['seat']['wall_thickness_mm'])<1e-6
 
 
 def test_variant_records_what_was_and_was_not_checked():
