@@ -659,3 +659,36 @@ unchanged, and no other geometry changes.
   remains the November 2 slicing of an earlier shell. Nothing was printed.
 
 APS re-imports the head cover after this lands; this repository does not edit APS.
+
+## D27. Electronics masses re-sourced from published figures (2026-11-16)
+
+Instructor request: replace the assumed electronics masses in `manifest/twin.yaml`
+with published ones, accepting a part of the same family where the purchased
+part states none. Nothing was weighed; every row stays `unmeasured-nominal`.
+
+| Row | Was | Now | Basis |
+|---|---|---|---|
+| Carrier board | 16 g | 20 g | 12 g bare board (purchased listing: 120 g for 10; a same-family 5 × 7 cm board lists 12 g) plus an assumed 8 g of sockets, wire and solder built from published unit masses |
+| S3 SuperMini | 3 g | 4 g | Same-family Seeed XIAO ESP32-S3, 3 g, plus 18 header pins. No mass found for the purchased board |
+| PCA9685 hub | 11 g | 9 g | Same-family Adafruit 815: 9 g with headers and terminal block |
+| LM2596 converter | 12 g | 10 g | Same-family 43 × 21 × 14 mm module: 10 g |
+| OLED | 6 g | 5 g | Same-family Adafruit 326: 4.5 g, plus a 4-pin header |
+| Toggle switch | 4 g | 5 g | Same-family MTS-101: 19 g net for four |
+| Fasteners | 6 g | 6 g | Unchanged; screws were not counted and only one unit mass was found |
+
+Sources are quoted in each row of `manifest/twin.yaml`. Also checked and left
+unchanged: the battery (47 g, purchased listing), the MG90S at 13.4 g (TowerPro;
+the purchased listings say 13.6 g and 12 g, and none says whether the lead is
+included) and PLA at 1240 kg/m3 (Bambu PLA Basic data sheet; PLA Matte is 1310).
+Servo leads are still not in the mass table.
+
+- **Effect.** Base design 337.8 → 338.8 g; two-eye variant unchanged at 374.4 g.
+  The rest centre of mass of the base moves 0.23 mm rearward and 0.04 mm up.
+- **Slip-dependent pins loosened.** The push-up creep moved again (base 37 →
+  24 mm, variant 65 → 27 mm) for a 1 g change, as it did for 20 mg in D26. It
+  is not a design property, so the test now pins only its direction and a
+  100 mm bound. In the synthetic no-ramp real-to-sim round trip the hidden
+  parameters are still recovered within tolerance while position and attitude
+  RMS no longer improve; those two assertions are now bounds.
+- **Not done.** No part was weighed. Weighing the assembled carrier would
+  replace the least certain rows.

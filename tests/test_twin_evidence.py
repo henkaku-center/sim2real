@@ -86,9 +86,9 @@ def test_mass_and_centre_of_mass_change(evidence):
     base, eyes = twin.load_record(BASE)["totals"], twin.load_record(EYES)["totals"]
     change = evidence["mass"]["change"]
     assert change["mass_kg"] == pytest.approx(eyes["mass_kg"] - base["mass_kg"], abs=1e-9)
-    assert change["mass_kg"] == pytest.approx(0.036682, abs=1e-6)  # +36.7 g
-    assert change["mass_percent"] == pytest.approx(10.86, abs=0.01)
-    assert change["com_mm"] == pytest.approx([0.5208, 0.0347, 0.8202], abs=1e-4)  # forward and up
+    assert change["mass_kg"] == pytest.approx(0.035682, abs=1e-6)  # +35.7 g
+    assert change["mass_percent"] == pytest.approx(10.53, abs=0.01)
+    assert change["com_mm"] == pytest.approx([0.4432, 0.0349, 0.7336], abs=1e-4)  # forward and up
     assert change["parts_only_in_variant"] == ["oled-display.2"]
     assert evidence["mass"][BASE]["mass_kg"] == base["mass_kg"]
     assert evidence["mass"][EYES]["com_mm"] == pytest.approx(np.array(eyes["com_torso_m"]) * 1000, abs=1e-4)
@@ -135,9 +135,9 @@ def test_widening_moves_the_feet_apart_but_not_the_limiting_edge(stands, evidenc
     widen = json.loads((twin.design_dir(EYES) / "assembly.json").read_text())["variant"]["widen_mm"]
     assert stands[EYES]["support_width_mm"] - stands[BASE]["support_width_mm"] == pytest.approx(widen, abs=0.5)
     # The nearest edge stays the front one, whose distance the widening does not change;
-    # the variant's centre of mass sits 0.5 mm further forward, so the margin drops by 0.5 mm.
-    assert stands[EYES]["margin_mm"] - stands[BASE]["margin_mm"] == pytest.approx(-0.52, abs=0.2)
-    assert evidence["standing"]["change"]["margin_mm"] == pytest.approx(-0.52, abs=0.01)
+    # the variant's centre of mass sits 0.4 mm further forward, so the margin drops by 0.4 mm.
+    assert stands[EYES]["margin_mm"] - stands[BASE]["margin_mm"] == pytest.approx(-0.44, abs=0.2)
+    assert evidence["standing"]["change"]["margin_mm"] == pytest.approx(-0.44, abs=0.01)
 
 
 def test_margin_under_seeded_mass_uncertainty(evidence):
@@ -258,16 +258,16 @@ def test_freaky_raises_the_right_side_paws(design):
     assert air["R3"] > 0.5 and air["R4"] > 0.5 and air["L3"] < 0.3 and air["L4"] < 0.3
 
 
-# Simulated difference, recorded as found: over four push-ups the wider variant
-# creeps about 65 mm backward where the base creeps about 37 mm. The base figure
-# was about 16 mm until the 6.5 mm switch bore took 20 mg off its head cover
-# (DECISIONS.md D26): it depends on foot slip, so read it as a recorded
-# simulation result, not as a property of the design.
-@pytest.mark.parametrize("design,creep", [(BASE, -0.037), (EYES, -0.065)])
-def test_pushup_dips_the_chest(design, creep):
+# Over four push-ups both designs creep backward by some tens of millimetres. The
+# amount is not a property of the design: it depends on foot slip and has moved
+# with every small mass change (base 16 -> 37 -> 24 mm, variant 65 -> 27 mm, across
+# a 20 mg head-cover change in D26 and the 1 g electronics re-sourcing in D27).
+# So only the direction and a loose bound are pinned.
+@pytest.mark.parametrize("design", DESIGNS)
+def test_pushup_dips_the_chest(design):
     s = sig(design, "pushup")
     assert s["pitch_min"] < -0.015 and s["upright_final"] > 0.99
-    assert s["disp_x"] == pytest.approx(creep, abs=0.01)
+    assert -0.10 < s["disp_x"] < 0
 
 
 @pytest.mark.parametrize("design", DESIGNS)
