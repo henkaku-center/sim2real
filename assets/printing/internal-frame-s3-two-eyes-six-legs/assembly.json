@@ -639,7 +639,7 @@
     "scope": "Final model fit and authored route samples; Rest/Standing leg bounds. No physical print or full-range motion test.",
     "sealed_internal_voids": {
       "count": 6,
-      "volume_mm3": 45.20167416873301
+      "volume_mm3": 45.20167440737714
     },
     "source_object": "Loftwork V3 shell and removable lid",
     "spacer_clearances_mm": [
@@ -654,7 +654,8 @@
         0.005083606858548251,
         37.600941996849
       ],
-      "diameter_mm": 5.0,
+      "diameter_basis": "listing dimensions + photo-scaled estimate, not a caliper measurement",
+      "diameter_mm": 6.5,
       "height_retained": true,
       "normal": [
         -0.9792599571520855,
@@ -669,6 +670,24 @@
       ],
       "old_recess_removed": true,
       "panel_centre_y_mm": 0.005083606858548251,
+      "seat": {
+        "bore_square_to_panel": true,
+        "clear_depth_checked_mm": 3.0,
+        "inside": {
+          "flat_land_beyond_bore_mm": 4.382168761236874,
+          "obstruction_mm3": 0.0,
+          "panel_backing_fraction": 0.9999916590847526,
+          "seat_diameter_mm": 15.264337522473747
+        },
+        "outside": {
+          "flat_land_beyond_bore_mm": 2.75,
+          "obstruction_mm3": 0.0,
+          "panel_backing_fraction": 0.9999930706252922,
+          "seat_diameter_mm": 12.0
+        },
+        "scope": "CAD flatness and clearance around the bore for class-typical hardware envelopes; not measured parts or a physical fit.",
+        "wall_thickness_mm": 2.000000000007897
+      },
       "source": "rear-panel horizontally centred tail switch; original height retained above servo hub; former bore closed"
     },
     "unified_external_faces": true,
@@ -890,12 +909,12 @@
         0
       ],
       "print_stl": "head-cover-print.stl",
-      "print_stl_sha256": "cf082823405798dbdc122a38d6b4247ee01ebf9b517dd4fb196c60fd7335ddcf",
-      "step_sha256": "2bdc524f3051fe26c9f3672fa6091c4bf0d5cd2422cd99eb8ae6b9006a0ae368",
-      "stl_sha256": "61ec8ff27c851fb3e3e0221db495fddf07ad4187463fdbb2603275cb8c20da37",
-      "triangles": 5908,
+      "print_stl_sha256": "d9b8a58bb8dd7bfcd9fb6f0221532f219bfc69441e90dd31e48e46c4bcf515cb",
+      "step_sha256": "52c2b02f54eded5134a96cecc1799eb847d716c980fa18ef7b01fc92e89a8b39",
+      "stl_sha256": "ee7e46e236f3e3fad8498d20ea718f79ca207975cbb26c19d673adc2d8500a7a",
+      "triangles": 5948,
       "valid_solid": true,
-      "volume_mm3": 39546.33386425344
+      "volume_mm3": 39519.23762970408
     },
     "head-lid": {
       "bounds_mm": [
@@ -1367,7 +1386,7 @@
       4.967756901865376
     ]
   ],
-  "source_script_sha256": "83d7dbc576957efed2baacb43fd9016e0309f88f8eb0608a7e63fc4ccbce106d",
+  "source_script_sha256": "eda6e5195c59f7f50612214bcb0cdd02e44b2d030bffdfc137889dffb21941db",
   "support_width_mm": 93.55037999999998,
   "unchanged_legs": {
     "L1": "081896568cc9776393c038d05ecc8caf01090c6971efebe799d064def4c92558",
@@ -1387,29 +1406,29 @@
       "key": "810d53ca0941c7494f87ca53698be25e66976b11829f6e7a25d711398d8ae5ef"
     },
     {
-      "cache_hit": true,
+      "cache_hit": false,
       "group": "electronics/spacer-0",
       "key": "2c8343c1aa8051300cc5c508fdcbc3974f8fb9557b4f5d657c3e64aa514a023d"
     },
     {
-      "cache_hit": true,
+      "cache_hit": false,
       "group": "electronics/spacer-1",
       "key": "4f942f9586d035dfa67ecafc98e0512b79181fd30da954cea402c2a7c1303ee1"
     },
     {
-      "cache_hit": true,
+      "cache_hit": false,
       "group": "electronics/spacer-2",
       "key": "9b98ce38695b6356f1665cf9e9d6f00e3fe6bcccc910bade368d7c508b380d9d"
     },
     {
-      "cache_hit": true,
+      "cache_hit": false,
       "group": "electronics/spacer-3",
       "key": "fefc58b46978817b680109f27b125d1e37c658d4daeec7bb17a3f4f48d5013dd"
     },
     {
       "cache_hit": false,
       "group": "electronics/head",
-      "key": "1710210377eb7fbaf7982e17d1d7b6e605abdcf7e643e9de34847c43a08a389c"
+      "key": "6f035505aa805d29bb7af9c5bbee5ec524014ee8e061d2346d2d1a8904da0fba"
     },
     {
       "cache_hit": false,

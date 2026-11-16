@@ -32,6 +32,11 @@ def test_body_lengthens_by_the_requested_length_and_keeps_the_pcb_datums():
     assert v['pcb_mount_holes_mm']==e['pcb_mount_holes_mm'] and v['pcb_size_mm']==e['pcb_size_mm']
     assert v['electronics_intersections']==[] and min(v['head_fit']['spacer_clearances_mm'])>=.6
     assert len(v['head_fit']['display_windows'])==2
+    # Lengthening happens ahead of the rear panel: the tail-switch bore is the two-eye one.
+    switch,eyes=v['head_fit']['switch_opening'],e['head_fit']['switch_opening']
+    assert switch['diameter_mm']==eyes['diameter_mm']==6.5 and switch['diameter_basis']==eyes['diameter_basis']
+    assert max(abs(p-q) for key in ['centre_mm','normal'] for p,q in zip(switch[key],eyes[key]))<1e-9
+    assert abs(switch['seat']['wall_thickness_mm']-eyes['seat']['wall_thickness_mm'])<1e-6
 
 
 def test_three_evenly_spaced_leg_stations_with_identical_bays():

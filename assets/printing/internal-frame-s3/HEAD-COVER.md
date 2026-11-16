@@ -33,13 +33,26 @@ The native OLED aperture and lower mounting features remain unchanged. The
 purchased OLED is not fitted in this head model; retention and pin clearance
 still need an actual assembly check. Rear USB access remains available.
 
-The November 3 update moves the 5 mm toggle-switch bore to the horizontal centre
+The November 3 update moves the toggle-switch bore to the horizontal centre
 of the rear panel, making the outward toggle a small tail. Its original height
 is retained: lowering to the panel's vertical midpoint intersects the servo hub
 and nearby headers and blocks the cable approach. The former bore is filled over its
 measured wall thickness. `assembly.json` records the new centre and verifies
 that the old bore is closed and the new one is open. The guide places its existing
 switch model and terminal wires from this same bore datum.
+
+The November 16 update enlarges that bore from 5.0 mm to **6.5 mm**; its centre,
+axis and height are unchanged, at the instructor's request, for the purchased
+toggle (Amazon.co.jp B0G9M71BBS). Its listing gives a 13 × 8 mm body but no
+thread size; scaling the listing's side view by that body gives a thread of
+about 5.6 mm (±0.3), the 6 mm bushing class whose usual panel cut-out is
+6.2–6.5 mm, and printed holes come out undersized. Evidence level: listing
+dimensions + photo-scaled estimate, not a caliper measurement. The diameter is
+`SWITCH_BORE_DIAMETER_MM` in `tools/v3_assembly_cad.py`. The generator also
+checks that the 2 mm rear panel is flat, square to the bore and unobstructed
+under a 12 mm washer outside and the switch body inside; `assembly.json`
+records this under `head_fit.switch_opening.seat`. No switch has been fitted to
+a printed 6.5 mm bore.
 
 The old switch's rectangular internal recess is also removed; the healed rear
 wall is 2 mm thick at the former bore. A separate 6 mm wide, 8 mm high bottom-open
@@ -65,8 +78,9 @@ display retention or clearance throughout every possible motion.
 
 Print `head-cover-print.stl` and `head-lid-print.stl` separately. Use the matching
 STEP files for editing. `head-slice-check.json` retains the November 2 slicing
-of the earlier shell, identified by exact hashes; the centred-tail revision has
-native solid/mesh checks but has not been re-sliced or physically printed.
+of the earlier shell, identified by exact hashes; the centred-tail revision and
+its 6.5 mm bore have native solid/mesh checks but have not been re-sliced or
+physically printed.
 
 Credit: Jom Jetsada, Paul and Loftwork V3 contributors; original Sesame by Dorian Todd
 and contributors (Apache-2.0). Students may freely modify or replace this example.

@@ -100,7 +100,14 @@ def test_head_lid_electronics_and_cable_entries_are_checked():
     for name,entry in h['ear_source']['files'].items():assert sha(CANONICAL/'reference-ears'/f'{name}.step')==entry['sha256']
     assert h['display_window_unchanged'] and h['display_window']['width_mm']>20 and h['display_window']['height_mm']>11
     switch=h['switch_opening']
-    assert switch['diameter_mm']==5 and switch['old_bore_filled_mm']>.9
+    assert switch['diameter_mm']==6.5 and switch['old_bore_filled_mm']>.9
+    # The diameter is a listing-derived estimate; the record must never read as a measurement.
+    assert switch['diameter_basis']=='listing dimensions + photo-scaled estimate, not a caliper measurement'
+    seat=switch['seat'];assert 1.99<seat['wall_thickness_mm']<2.01 and seat['bore_square_to_panel']
+    assert seat['outside']['seat_diameter_mm']==12 and seat['inside']['seat_diameter_mm']>15
+    for side in ['outside','inside']:
+        assert seat[side]['obstruction_mm3']<1e-6 and seat[side]['panel_backing_fraction']>.999
+        assert seat[side]['flat_land_beyond_bore_mm']>2.7
     assert abs(switch['centre_mm'][1]-switch['panel_centre_y_mm'])<1e-6
     assert switch['height_retained'] and switch['centre_mm'][2]==switch['old_centre_mm'][2]
     assert abs(switch['centre_mm'][1])<.01

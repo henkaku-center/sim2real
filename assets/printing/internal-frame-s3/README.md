@@ -39,9 +39,10 @@ patch closes that boundary without filling its screw openings.
 Slicing receipts identify the exact checked meshes. With the Bambu Studio P1S
 0.4 mm / Generic PLA profile, 0.2 mm layers, four walls and 25% infill, the frame
 plus four spacers sliced without supports (about 1 h 34 min / 45.25 g). The shell
-and lid are checked with supports; `head-slice-check.json` gives the current
-hash-pinned settings and estimates. These are slicer estimates, not physical
-print results. See `HEAD-COVER.md` for head-specific checks.
+and lid were sliced with supports on November 2; `head-slice-check.json` gives
+those hash-pinned settings and estimates for that earlier shell. The current
+shell, with the centred 6.5 mm switch bore, has not been re-sliced. These are
+slicer estimates, not physical print results. See `HEAD-COVER.md` for head-specific checks.
 
 ## Rebuild
 

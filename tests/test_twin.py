@@ -296,13 +296,13 @@ def test_actuator_and_contact_values_are_read_not_repeated(records, manifest):
 
 def test_mass_and_centre_of_mass_numbers(records):
     base, eyes = records[BASE]["totals"], records[EYES]["totals"]
-    assert base["mass_kg"] == pytest.approx(0.337776752, abs=1e-8)
-    assert np.array(base["com_torso_m"]) * 1000 == pytest.approx([0.7591, 0.0673, 5.1257], abs=1e-4)
-    assert base["mass_by_status_kg"] == pytest.approx({"estimated": 0.125576752, "unmeasured-nominal": 0.2122,
+    assert base["mass_kg"] == pytest.approx(0.337756439, abs=1e-8)
+    assert np.array(base["com_torso_m"]) * 1000 == pytest.approx([0.7616, 0.0673, 5.1237], abs=1e-4)
+    assert base["mass_by_status_kg"] == pytest.approx({"estimated": 0.125556439, "unmeasured-nominal": 0.2122,
                                                        "measured": 0.0}, abs=1e-8)
-    assert eyes["mass_kg"] == pytest.approx(0.37445878, abs=1e-8)
-    assert np.array(eyes["com_torso_m"]) * 1000 == pytest.approx([1.2802, 0.1020, 5.9456], abs=1e-4)
-    assert eyes["mass_by_status_kg"] == pytest.approx({"estimated": 0.15625878, "unmeasured-nominal": 0.2182,
+    assert eyes["mass_kg"] == pytest.approx(0.374438467, abs=1e-8)
+    assert np.array(eyes["com_torso_m"]) * 1000 == pytest.approx([1.2824, 0.1020, 5.9439], abs=1e-4)
+    assert eyes["mass_by_status_kg"] == pytest.approx({"estimated": 0.156238467, "unmeasured-nominal": 0.2182,
                                                        "measured": 0.0}, abs=1e-8)
     for record in records.values():
         assert sum(p["mass_kg"] for p in record["mass_table"]) == pytest.approx(record["totals"]["mass_kg"], abs=1e-8)
@@ -380,7 +380,7 @@ def test_mass_scaling_is_for_what_if_studies_only():
     heavier = twin.build(BASE, mass_scale={"battery": 1.1}).record
     assert part(heavier, "battery")["mass_kg"] == pytest.approx(0.0517)
     assert twin.compile_xml(twin.build(BASE, mass_scale={"battery": 1.1}).xml).body_mass.sum() == pytest.approx(
-        0.337776752 + 0.0047, abs=1e-8)
+        0.337756439 + 0.0047, abs=1e-8)
 
 
 # ------------------------------------------------------------------ variants
