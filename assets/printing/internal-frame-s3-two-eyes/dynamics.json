@@ -7,7 +7,7 @@
   "engine": "MuJoCo (reference)",
   "mjcf": {
     "path": "models/internal-frame-s3-two-eyes.xml",
-    "sha256": "fc34ea90d3a1afd63bfc9553682bb056354e6c68b20e1225a93c64fdfb47639f"
+    "sha256": "f55c31dc1bd7f5834d29c93e2f98d809cc8046e55dd816a3a9d952a138e74794"
   },
   "frame": {
     "torso": "design CAD frame: X front, Y left, Z up, origin at the CAD origin",
@@ -32,17 +32,17 @@
       ],
       "mass_kg": 0.288843727,
       "com_m": [
-        0.00171626732,
-        0.000130062806,
-        0.00752501549
+        0.00131389161,
+        0.000130045206,
+        0.00746801436
       ],
       "inertia_kg_m2": {
-        "xx": 0.000387604676,
-        "yy": 0.000277962649,
-        "zz": 0.000475090055,
-        "xy": -4.66154493e-07,
-        "xz": -4.51266791e-06,
-        "yz": 1.33636885e-07
+        "xx": 0.000386777926,
+        "yy": 0.000276830742,
+        "zz": 0.000474286456,
+        "xy": -4.80686718e-07,
+        "xz": -1.15963259e-06,
+        "yz": 1.31632552e-07
       },
       "parts": [
         "internal-frame",
@@ -688,13 +688,13 @@
       "body": "torso",
       "kind": "purchased",
       "status": "unmeasured-nominal",
-      "mass_kg": 0.016,
+      "mass_kg": 0.02,
       "com_torso_m": [
         0.0,
         -1.77635684e-18,
         0.0179677569
       ],
-      "basis": "Assumed: 50 x 70 mm carrier with headers, sockets, wiring and solder. No listing mass or scale reading."
+      "basis": "12 g bare board (B071JYD6QP listing: 120 g for 10; same-family 5x7 cm board, roboman.in: 12 g) plus an assumed 8 g for about 30 sockets at 0.09 g each (GTK FHSS40G10: 3.60 g per 40), about 0.5 m of 22 AWG solid wire (Belden 9979: 4.0 g/m) and solder. Not weighed."
     },
     {
       "id": "mcu-esp32-s3-supermini",
@@ -702,13 +702,13 @@
       "body": "torso",
       "kind": "purchased",
       "status": "unmeasured-nominal",
-      "mass_kg": 0.003,
+      "mass_kg": 0.004,
       "com_torso_m": [
         0.0,
         -1.77635684e-18,
         0.0179677569
       ],
-      "basis": "Assumed module mass. No listing mass or scale reading."
+      "basis": "Same-family Seeed XIAO ESP32-S3: 3 g (tinytronics.nl spec), plus 18 header pins at 0.05 g (Soldered 101181: 2 g per 40). No mass found for the purchased SuperMini. Not weighed."
     },
     {
       "id": "servo-driver-pca9685",
@@ -716,13 +716,13 @@
       "body": "torso",
       "kind": "purchased",
       "status": "unmeasured-nominal",
-      "mass_kg": 0.011,
+      "mass_kg": 0.009,
       "com_torso_m": [
         0.0,
         -1.77635684e-18,
         0.0179677569
       ],
-      "basis": "Assumed module mass with headers. No listing mass or scale reading."
+      "basis": "Same-family Adafruit 815: 9 g with headers and terminal block, 5.5 g without (adafruit.com/product/815). The purchased B078YRJ8D7 clone lists only a 20 g package weight. Not weighed."
     },
     {
       "id": "converter",
@@ -730,13 +730,13 @@
       "body": "torso",
       "kind": "purchased",
       "status": "unmeasured-nominal",
-      "mass_kg": 0.012,
+      "mass_kg": 0.01,
       "com_torso_m": [
         0.0,
         -1.77635684e-18,
         0.0179677569
       ],
-      "basis": "Assumed mass of the B07NVSVW1N buck module. No listing mass or scale reading."
+      "basis": "Same-family LM2596 adjustable module, 43 x 21 x 14 mm: 10 g (plexishop.it module weight). The B07NVSVW1N listing states no mass. Not weighed."
     },
     {
       "id": "oled-display.1",
@@ -744,13 +744,13 @@
       "body": "torso",
       "kind": "purchased",
       "status": "unmeasured-nominal",
-      "mass_kg": 0.006,
+      "mass_kg": 0.005,
       "com_torso_m": [
         0.0381434206,
         -0.015120309,
         0.0360165577
       ],
-      "basis": "Assumed SSD1306 module mass with header. No listing mass or scale reading."
+      "basis": "Same-family Adafruit 326 0.96 inch OLED: 4.5 g (adafruit.com/product/326), plus a 4-pin header. The B08CTZVVLS listing gives 20 g for a packaged set of three. Not weighed."
     },
     {
       "id": "oled-display.2",
@@ -758,13 +758,13 @@
       "body": "torso",
       "kind": "purchased",
       "status": "unmeasured-nominal",
-      "mass_kg": 0.006,
+      "mass_kg": 0.005,
       "com_torso_m": [
         0.0381434206,
         0.0151304762,
         0.0360165577
       ],
-      "basis": "Assumed SSD1306 module mass with header. No listing mass or scale reading."
+      "basis": "Same-family Adafruit 326 0.96 inch OLED: 4.5 g (adafruit.com/product/326), plus a 4-pin header. The B08CTZVVLS listing gives 20 g for a packaged set of three. Not weighed."
     },
     {
       "id": "power-switch",
@@ -772,13 +772,13 @@
       "body": "torso",
       "kind": "purchased",
       "status": "unmeasured-nominal",
-      "mass_kg": 0.004,
+      "mass_kg": 0.005,
       "com_torso_m": [
         -0.0399368586,
         5.08360686e-06,
         0.037600942
       ],
-      "basis": "Assumed toggle switch mass. No listing mass or scale reading."
+      "basis": "Same-family MTS-101 two-lug toggle: 19 g net for four, 4.75 g each (robotics.org.za MTS-101-2P); nuts and washers not itemised. The B0G9M71BBS listing states no mass. Not weighed."
     },
     {
       "id": "fasteners",
@@ -792,7 +792,7 @@
         0.000429304217,
         -0.000865236795
       ],
-      "basis": "Assumed total for servo, cover and PCB screws, lumped at the frame centroid."
+      "basis": "Assumed total for servo, cover and PCB screws, lumped at the frame centroid. Only one unit mass was found: M2.5 x 5 stainless pan head 0.41 g (superneer.com MPCM2505S); none for the M2 x 5 self-tapper, and the screws were not counted."
     },
     {
       "id": "upper-leg.R1",
@@ -1001,9 +1001,9 @@
   "totals": {
     "mass_kg": 0.374438467,
     "com_torso_m": [
-      0.00128240177,
-      0.000102014613,
-      0.00594386533
+      0.000972007117,
+      0.000102001037,
+      0.00589989437
     ],
     "mass_by_status_kg": {
       "estimated": 0.156238467,
@@ -1166,7 +1166,7 @@
   },
   "source_hashes": {
     "manifest/robot.yaml": "a9ae157f0485eaaa2f0e5fbf4748c61567922420a1d02e5689b80066d2ea13a5",
-    "manifest/twin.yaml": "e7b5876540db1bb577da1cebf1634ec9006312ced498cdbcd2d4b48fddb4e642",
+    "manifest/twin.yaml": "891b4a7f2267ae59db4f9b7a4c4dd52d4c9df887f6b00824ba3abdd1f5331423",
     "sim/twin.py": "24e13d1e08f4d6444f7be98cf59f550600bdff702381e7e467b6d5627e15ad76",
     "sim/manifest.py": "a747eb1e2fac3939e616cf07c5d4a4dd5ee6d826efbe12418a3dc2421d5b2f42",
     "sim/prepare_assets.py": "459d6b558e8a89355cf235b029b51ae8bd64f9b8c79fc3b79588c4d98fc446ac",

@@ -296,12 +296,12 @@ def test_actuator_and_contact_values_are_read_not_repeated(records, manifest):
 
 def test_mass_and_centre_of_mass_numbers(records):
     base, eyes = records[BASE]["totals"], records[EYES]["totals"]
-    assert base["mass_kg"] == pytest.approx(0.337756439, abs=1e-8)
-    assert np.array(base["com_torso_m"]) * 1000 == pytest.approx([0.7616, 0.0673, 5.1237], abs=1e-4)
-    assert base["mass_by_status_kg"] == pytest.approx({"estimated": 0.125556439, "unmeasured-nominal": 0.2122,
+    assert base["mass_kg"] == pytest.approx(0.338756439, abs=1e-8)
+    assert np.array(base["com_torso_m"]) * 1000 == pytest.approx([0.5288, 0.0671, 5.1663], abs=1e-4)
+    assert base["mass_by_status_kg"] == pytest.approx({"estimated": 0.125556439, "unmeasured-nominal": 0.2132,
                                                        "measured": 0.0}, abs=1e-8)
     assert eyes["mass_kg"] == pytest.approx(0.374438467, abs=1e-8)
-    assert np.array(eyes["com_torso_m"]) * 1000 == pytest.approx([1.2824, 0.1020, 5.9439], abs=1e-4)
+    assert np.array(eyes["com_torso_m"]) * 1000 == pytest.approx([0.9720, 0.1020, 5.8999], abs=1e-4)
     assert eyes["mass_by_status_kg"] == pytest.approx({"estimated": 0.156238467, "unmeasured-nominal": 0.2182,
                                                        "measured": 0.0}, abs=1e-8)
     for record in records.values():
@@ -380,7 +380,7 @@ def test_mass_scaling_is_for_what_if_studies_only():
     heavier = twin.build(BASE, mass_scale={"battery": 1.1}).record
     assert part(heavier, "battery")["mass_kg"] == pytest.approx(0.0517)
     assert twin.compile_xml(twin.build(BASE, mass_scale={"battery": 1.1}).xml).body_mass.sum() == pytest.approx(
-        0.337756439 + 0.0047, abs=1e-8)
+        0.338756439 + 0.0047, abs=1e-8)
 
 
 # ------------------------------------------------------------------ variants
@@ -400,7 +400,7 @@ def test_two_eye_variant_changes_only_what_the_design_changed(records):
             assert (b["mass_kg"], b["com_m"], b["inertia_kg_m2"]) == (e["mass_kg"], e["com_m"], e["inertia_kg_m2"])
     extra = {p["id"] for p in eyes["mass_table"]} - {p["id"] for p in base["mass_table"]}
     assert extra == {"oled-display.2"}  # one display module per display window
-    assert body(eyes, "torso")["mass_kg"] - body(base, "torso")["mass_kg"] == pytest.approx(0.036682, abs=1e-6)
+    assert body(eyes, "torso")["mass_kg"] - body(base, "torso")["mass_kg"] == pytest.approx(0.035682, abs=1e-6)
     wider = eyes["contact"]["collision_boxes_m"]["torso_geom"]["half_size"][1]
     assert (wider - base["contact"]["collision_boxes_m"]["torso_geom"]["half_size"][1]) * 1000 == pytest.approx(15, abs=1e-3)
 

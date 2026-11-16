@@ -138,50 +138,50 @@ mass_table:
     kind: purchased
     at: pcb_stack
     status: unmeasured-nominal
-    mass_kg: 0.016
-    source: "Assumed: 50 x 70 mm carrier with headers, sockets, wiring and solder. No listing mass or scale reading."
+    mass_kg: 0.020
+    source: "12 g bare board (B071JYD6QP listing: 120 g for 10; same-family 5x7 cm board, roboman.in: 12 g) plus an assumed 8 g for about 30 sockets at 0.09 g each (GTK FHSS40G10: 3.60 g per 40), about 0.5 m of 22 AWG solid wire (Belden 9979: 4.0 g/m) and solder. Not weighed."
   - id: mcu-esp32-s3-supermini
     body: torso
     kind: purchased
     at: pcb_stack
     status: unmeasured-nominal
-    mass_kg: 0.003
-    source: "Assumed module mass. No listing mass or scale reading."
+    mass_kg: 0.004
+    source: "Same-family Seeed XIAO ESP32-S3: 3 g (tinytronics.nl spec), plus 18 header pins at 0.05 g (Soldered 101181: 2 g per 40). No mass found for the purchased SuperMini. Not weighed."
   - id: servo-driver-pca9685
     body: torso
     kind: purchased
     at: pcb_stack
     status: unmeasured-nominal
-    mass_kg: 0.011
-    source: "Assumed module mass with headers. No listing mass or scale reading."
+    mass_kg: 0.009
+    source: "Same-family Adafruit 815: 9 g with headers and terminal block, 5.5 g without (adafruit.com/product/815). The purchased B078YRJ8D7 clone lists only a 20 g package weight. Not weighed."
   - id: converter
     body: torso
     kind: purchased
     at: pcb_stack
     status: unmeasured-nominal
-    mass_kg: 0.012
-    source: "Assumed mass of the B07NVSVW1N buck module. No listing mass or scale reading."
+    mass_kg: 0.010
+    source: "Same-family LM2596 adjustable module, 43 x 21 x 14 mm: 10 g (plexishop.it module weight). The B07NVSVW1N listing states no mass. Not weighed."
   - id: oled-display
     body: torso
     kind: purchased
     at: display_windows # one module per display window of the design
     status: unmeasured-nominal
-    mass_kg: 0.006
-    source: "Assumed SSD1306 module mass with header. No listing mass or scale reading."
+    mass_kg: 0.005
+    source: "Same-family Adafruit 326 0.96 inch OLED: 4.5 g (adafruit.com/product/326), plus a 4-pin header. The B08CTZVVLS listing gives 20 g for a packaged set of three. Not weighed."
   - id: power-switch
     body: torso
     kind: purchased
     at: switch_opening
     status: unmeasured-nominal
-    mass_kg: 0.004
-    source: "Assumed toggle switch mass. No listing mass or scale reading."
+    mass_kg: 0.005
+    source: "Same-family MTS-101 two-lug toggle: 19 g net for four, 4.75 g each (robotics.org.za MTS-101-2P); nuts and washers not itemised. The B0G9M71BBS listing states no mass. Not weighed."
   - id: fasteners
     body: torso
     kind: purchased
     at: frame_centroid
     status: unmeasured-nominal
     mass_kg: 0.006
-    source: "Assumed total for servo, cover and PCB screws, lumped at the frame centroid."
+    source: "Assumed total for servo, cover and PCB screws, lumped at the frame centroid. Only one unit mass was found: M2.5 x 5 stainless pan head 0.41 g (superneer.com MPCM2505S); none for the M2 x 5 self-tapper, and the screws were not counted."
 
 actuator:
   # Position servo placeholder until system identification replaces it. Joint
