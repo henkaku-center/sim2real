@@ -23,16 +23,16 @@
       <label class="preset-label" for="preset">Starting point</label><select id="preset"><option value="">Custom dimensions</option></select><p id="preset-note" class="muted">Nominal original battery: 51 × 28 × 14 mm. Measure your own pack.</p>
       <form id="parameters" novalidate>
         <fieldset><legend>Battery envelope</legend><div class="fields three">
-          <label>Length <span>X</span><input name="length" type="number" step="any" inputmode="decimal" value="51" required></label>
-          <label>Width <span>Y</span><input name="width" type="number" step="any" inputmode="decimal" value="28" required></label>
-          <label>Height <span>Z</span><input name="height" type="number" step="any" inputmode="decimal" value="14" required></label>
+          <label>Length <span>X</span><input name="length" type="number" step="any" inputmode="decimal" required></label>
+          <label>Width <span>Y</span><input name="width" type="number" step="any" inputmode="decimal" required></label>
+          <label>Height <span>Z</span><input name="height" type="number" step="any" inputmode="decimal" required></label>
         </div></fieldset>
         <fieldset><legend>Cradle geometry</legend><div class="fields">
-          <label>Clearance<input name="clearance" type="number" step="any" inputmode="decimal" value="0.5" required></label>
-          <label>Wall thickness<input name="wall" type="number" step="any" inputmode="decimal" value="2" required></label>
-          <label>Base thickness<input name="base" type="number" step="any" inputmode="decimal" value="2.4" required></label>
-          <label>Rail height<input name="railHeight" type="number" step="any" inputmode="decimal" value="6" required></label>
-          <label>Strap width<input name="strapWidth" type="number" step="any" inputmode="decimal" value="10" required></label>
+          <label>Clearance<input name="clearance" type="number" step="any" inputmode="decimal" required></label>
+          <label>Wall thickness<input name="wall" type="number" step="any" inputmode="decimal" required></label>
+          <label>Base thickness<input name="base" type="number" step="any" inputmode="decimal" required></label>
+          <label>Rail height<input name="railHeight" type="number" step="any" inputmode="decimal" required></label>
+          <label>Strap width<input name="strapWidth" type="number" step="any" inputmode="decimal" required></label>
         </div></fieldset>
         <button id="build" class="primary" type="submit">Build cradle <span aria-hidden="true">↗</span></button>
       </form>

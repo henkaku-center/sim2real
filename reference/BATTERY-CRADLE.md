@@ -58,13 +58,12 @@ cooling and load strength remain unverified. Battery ports, leads, plugs, button
 and terminals are not represented by the amber box. Do not infer charging or
 electrical compatibility from a geometric envelope.
 
-Presets are editable nominal starting points, not battery recommendations:
-
-| Preset | Body envelope | Source |
-|---|---|---|
-| Existing battery | 51 × 28 × 14 mm | Amazon Japan B0F3JB59B6; also recorded in ELECTRONICS-CAD-SOURCES.md |
-| Anker A1638 | 82 × 51 × 36 mm | https://www.ankerjapan.com/products/a1638 |
-| G-FORCE GFG019 | 96 × 47 × 19 mm | https://www.gforce-hobby.jp/products/GFG019.html |
+`tools/occt/cradle-parameters.mjs` owns defaults, validation limits and the nominal
+existing-pack, Anker A1638 and G-FORCE GFG019 presets with their source URLs and
+limitations. The browser, API and builder share it; the workbench shows the
+dimensions and attribution. These are editable starting points, not battery
+recommendations or measured fit. Changing an input still requires a successful
+build before downloads are enabled; request tokens reject superseded responses.
 
 ## Export without the browser
 

@@ -58,8 +58,29 @@ def main():
                     page.locator('#build').click()
                     expect(page.locator('#download-step')).to_be_enabled(timeout=45000)
                     assert 'length=82' in page.url
+                    # Ignore AbortSignal deliberately: a late success must still
+                    # be discarded by the request token after the inputs change.
+                    # Reuse a real CAD response so this exercises the UI guard,
+                    # not merely its malformed-result/error path.
+                    data = page.request.post(args.url.rstrip('/') + '/api/build',
+                                             data={'length': 82, 'width': 51, 'height': 36}).json()
+                    page.evaluate('''data => {
+                        const original = window.fetch;
+                        window.fetch = (url, options) => String(url) === 'api/build'
+                          ? new Promise(resolve => { window.releaseOldBuild = () => {
+                              window.fetch = original;
+                              resolve({ok: true, json: async () => data});
+                            }; }) : original(url, options);
+                    }''', data)
+                    page.locator('#build').click()
+                    page.locator('[name="width"]').fill('52')
+                    page.locator('[name="width"]').fill('51')
+                    page.evaluate('async () => { window.releaseOldBuild(); await new Promise(requestAnimationFrame); }')
+                    assert page.locator('#download-step').is_disabled()
+                    assert page.locator('#download-stl').is_disabled()
+                    assert 'Previous build' in page.locator('#model-state').inner_text()
                     assert not errors, errors
-                    print(f'PASS {width}px: real geometry, preset edit, STEP/STL, stale/invalid state, no overflow/errors')
+                    print(f'PASS {width}px: real geometry, preset edit, STEP/STL, stale/invalid and late-response guards, no overflow/errors')
                 finally:
                     context.close()
         finally:
