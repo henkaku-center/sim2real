@@ -6,13 +6,14 @@ import {readFile} from 'node:fs/promises';
 import {fileURLToPath} from 'node:url';
 import {join,dirname} from 'node:path';
 import {spawn} from 'node:child_process';
-import {parameters,PRESETS} from './occt/cradle.mjs';
+import {parameters,PRESETS} from './occt/cradle-parameters.mjs';
 
 const root=dirname(fileURLToPath(import.meta.url));
 const routes=new Map([
   ['', ['cradle_web/index.html','text/html; charset=utf-8']],
   ['index.html',['cradle_web/index.html','text/html; charset=utf-8']],
   ['app.js',['cradle_web/app.js','text/javascript']],
+  ['parameters.mjs',['occt/cradle-parameters.mjs','text/javascript']],
   ['style.css',['cradle_web/style.css','text/css']],
   ...['three.module.js','three.core.js','OrbitControls.js'].map(n=>['vendor/'+n,['cad_workbench_web/vendor/'+n,'text/javascript']]),
   ['vendor/LICENSE',['cad_workbench_web/vendor/LICENSE','text/plain']],

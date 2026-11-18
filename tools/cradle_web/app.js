@@ -1,11 +1,11 @@
 import * as THREE from 'three';
 import { OrbitControls } from './vendor/OrbitControls.js';
+import { DEFAULTS as defaults } from './parameters.mjs';
 
 const $ = (id) => document.getElementById(id);
 const form = $('parameters');
-const keys = ['length', 'width', 'height', 'clearance', 'wall', 'base', 'railHeight', 'strapWidth'];
-const defaults = { length: 51, width: 28, height: 14, clearance: .5, wall: 2, base: 2.4, railHeight: 6, strapWidth: 10 };
-let revision = 0, requestToken = 0, dirty = true, built = null, controller = null;
+const keys = Object.keys(defaults);
+let requestToken = 0, dirty = true, built = null, controller = null;
 let viewer = null;
 const rawInputs = () => JSON.stringify(keys.map((key) => form.elements.namedItem(key).value));
 function paramsFromInputs() {
@@ -23,7 +23,6 @@ function downloadsEnabled(enabled) {
   $('download-stl').disabled = !enabled;
 }
 function invalidate() {
-  revision++;
   requestToken++;
   controller?.abort();
   dirty = true;
@@ -147,7 +146,7 @@ form.addEventListener('submit', async (event) => {
   event.preventDefault();
   invalidate();
   error('');
-  const token = ++requestToken, inputRevision = revision, snapshot = rawInputs();
+  const token = ++requestToken, snapshot = rawInputs();
   let geometry = null;
   try {
     const params = paramsFromInputs();
@@ -159,7 +158,7 @@ form.addEventListener('submit', async (event) => {
     $('model-state').textContent = built ? 'Building · previous model shown' : 'Building…';
     const response = await fetch('api/build', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(params), signal: controller.signal });
     const data = await response.json();
-    if (token !== requestToken || revision !== inputRevision || snapshot !== rawInputs()) return;
+    if (token !== requestToken || snapshot !== rawInputs()) return;
     if (!response.ok || data.error) throw new Error(data.error || `Build failed (${response.status}).`);
     if (!data.params || keys.some((key) => !Number.isFinite(data.params[key]) || data.params[key] !== params[key])) throw new Error('The server returned different parameters. Build again.');
     if (!data.report || !data.report.valid || data.report.status !== 'cad-only-unprinted' || typeof data.step !== 'string' || !data.step.length) throw new Error('The server did not return a valid CAD prototype.');

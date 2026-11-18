@@ -2,6 +2,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {once} from 'node:events';
 import {createServer} from './cradle_server.mjs';
+import {readFile} from 'node:fs/promises';
+import {DEFAULTS} from './occt/cradle-parameters.mjs';
 
 test('bounded local API: presets, validation, export and path isolation',async()=>{
   const server=createServer();server.listen(0,'127.0.0.1');await once(server,'listening');
@@ -9,6 +11,12 @@ test('bounded local API: presets, validation, export and path isolation',async()
   const post=(data,headers={})=>fetch(base+'api/build',{method:'POST',headers:{'Content-Type':'application/json',...headers},body:JSON.stringify(data)});
   try {
     const presets=await(await fetch(base+'api/presets')).json();assert.equal(presets.length,3);
+    assert.deepEqual(presets[0].params,DEFAULTS);
+    const shared=await fetch(base+'parameters.mjs');assert.equal(shared.status,200);
+    assert.equal(await shared.text(),await readFile(new URL('./occt/cradle-parameters.mjs',import.meta.url),'utf8'));
+    const html=await(await fetch(base)).text();
+    assert.deepEqual([...html.matchAll(/<input name="([^"]+)"/g)].map(m=>m[1]),Object.keys(DEFAULTS));
+    assert.ok(!/<input name="[^"]+"[^>]+\bvalue=/.test(html),'HTML must not carry another set of defaults');
     assert.equal((await fetch(base+'AGENTS.md')).status,404);
     assert.equal((await fetch(base+'api/build',{method:'POST',body:'{}'})).status,415);
     assert.equal((await post({}, {'Sec-Fetch-Site':'cross-site'})).status,403);
