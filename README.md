@@ -26,6 +26,13 @@ cd web && npm ci && npm run dev   # browser sim at http://localhost:5173
 
 ## Documents
 
+### FreeCAD-free battery cradle
+
+The [battery-cradle workbench](reference/BATTERY-CRADLE.md) builds an adjustable
+strap tray in Node/OCCT WASM and serves a phone-friendly viewer with STEP/STL
+downloads. It is a standalone CAD prototype: not printed, load-tested or fitted
+to the robot. It does not change the existing kit or held physics work.
+
 ### Electronics CAD
 
 Open **[`assets/cad/Sesame-S3-Assembly.FCStd`](assets/cad/Sesame-S3-Assembly.FCStd)**

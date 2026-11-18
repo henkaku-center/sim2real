@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#eeece6">
+  <title>Battery cradle · CAD workbench</title>
+  <link rel="stylesheet" href="./style.css">
+  <script type="importmap">{"imports":{"three":"./vendor/three.module.js"}}</script>
+  <script type="module" src="./app.js"></script>
+</head>
+<body>
+  <header><span class="eyebrow">DESIGN / FABRICATE</span><h1>Battery cradle<span class="edition">01</span></h1><p>CAD prototype • not printed or fitted to your robot</p></header>
+  <main>
+    <section class="preview" aria-label="3D cradle preview">
+      <div id="viewport" role="img" aria-label="Interactive cradle model. Drag to orbit, pinch to zoom."></div>
+      <div class="viewer-top"><span id="model-state" role="status">Ready to build</span><label class="toggle"><input id="battery-visible" type="checkbox" checked> Battery envelope</label></div>
+      <div class="viewer-bottom"><span>Drag to orbit · pinch to zoom</span><div><button id="fit" type="button">Fit</button><button id="top" type="button">Top</button></div></div>
+    </section>
+    <section class="workbench" aria-label="Cradle configuration">
+      <div id="error" role="alert" hidden></div>
+      <div class="section-title"><h2>Make it yours</h2><span>All dimensions in mm</span></div>
+      <label class="preset-label" for="preset">Starting point</label><select id="preset"><option value="">Custom dimensions</option></select><p id="preset-note" class="muted">Nominal original battery: 51 × 28 × 14 mm. Measure your own pack.</p>
+      <form id="parameters" novalidate>
+        <fieldset><legend>Battery envelope</legend><div class="fields three">
+          <label>Length <span>X</span><input name="length" type="number" step="any" inputmode="decimal" value="51" required></label>
+          <label>Width <span>Y</span><input name="width" type="number" step="any" inputmode="decimal" value="28" required></label>
+          <label>Height <span>Z</span><input name="height" type="number" step="any" inputmode="decimal" value="14" required></label>
+        </div></fieldset>
+        <fieldset><legend>Cradle geometry</legend><div class="fields">
+          <label>Clearance<input name="clearance" type="number" step="any" inputmode="decimal" value="0.5" required></label>
+          <label>Wall thickness<input name="wall" type="number" step="any" inputmode="decimal" value="2" required></label>
+          <label>Base thickness<input name="base" type="number" step="any" inputmode="decimal" value="2.4" required></label>
+          <label>Rail height<input name="railHeight" type="number" step="any" inputmode="decimal" value="6" required></label>
+          <label>Strap width<input name="strapWidth" type="number" step="any" inputmode="decimal" value="10" required></label>
+        </div></fieldset>
+        <button id="build" class="primary" type="submit">Build cradle <span aria-hidden="true">↗</span></button>
+      </form>
+      <p id="build-state" role="status">Build to preview and download your geometry.</p>
+      <dl id="measurements" hidden><div><dt>Outer size</dt><dd id="outer"></dd></div><div><dt>Solid volume</dt><dd id="volume"></dd></div><div><dt>Build time</dt><dd id="duration"></dd></div></dl>
+      <div class="downloads"><button id="download-step" type="button" disabled>↓ STEP</button><button id="download-stl" type="button" disabled>↓ STL</button><button id="share" type="button">Share inputs</button></div>
+      <p id="share-state" class="muted" role="status"></p>
+      <details><summary>What this model does — and doesn’t</summary><div class="details-body">
+        <p>An open-ended tray with two low longitudinal rails, four external M3 mounting ears, and four through-base slots for two retaining straps. Straps are not modelled.</p>
+        <p>Sizing is nominal, not measured fit. The amber box is the battery envelope, not a detailed battery. Allow for pack variation, connectors, leads and your printing process.</p>
+        <p id="mount-pattern">M3 holes: 3.4 mm diameter. Mounting pitch follows the cradle dimensions; it is not a verified robot mounting pattern.</p>
+        <p>No electronics or charging system is included. Changing a battery changes balance. No battery purchase is assumed.</p>
+      </div></details>
+    </section>
+  </main>
+  <footer>PARAMETRIC CAD / millimetres / Z-up</footer>
+</body>
+</html>

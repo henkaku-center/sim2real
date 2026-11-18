@@ -10,6 +10,11 @@ cd tools/occt && npm ci && npm test   # parity with FreeCAD on base, two-eye and
 
 ## Status: phase 1 of the port
 
+The [battery cradle](../../reference/BATTERY-CRADLE.md) is a separate, complete
+FreeCAD-free path for a new part: validated solid → STEP/STL → browser preview.
+It does not complete the existing kit migration described below. `npm test` also
+checks its geometry, export roundtrips and bounded local API.
+
 - **Ported:** the variant stage of `tools/v3_assembly_cad.py` (`stretch_y`, `extend_x`,
   `transplant_bays`) with the same prismatic-cut and volume-conservation checks, in `variants.mjs`.
 - **Parity:** `parity.test.mjs` compares each part's volume (1e-5 relative), bounds (1 µm), validity and solid count
