@@ -1,6 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {mkdtempSync,writeFileSync,rmSync} from 'node:fs';
+import {mkdtempSync,writeFileSync,readFileSync,rmSync} from 'node:fs';
+import {spawnSync} from 'node:child_process';
+import {fileURLToPath} from 'node:url';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import * as k from './kernel.mjs';
@@ -59,4 +61,29 @@ test('boundary dimensions retain one valid solid and zero battery intersection',
     {length:130,width:80,height:50,clearance:1.5,wall:4,base:5,railHeight:12,strapWidth:6}]) {
     const b=await buildCradle(params);assert.equal(b.report.solid_count,1);assert.equal(b.report.battery_overlap_mm3,0);
   }
+});
+
+test('agent receipt omits duplicate payloads without changing file exports or the default protocol',()=>{
+  const directory=mkdtempSync(join(tmpdir(),'cradle-cli-'));
+  const cli=fileURLToPath(new URL('./cradle-build.mjs',import.meta.url));
+  const run=(args,input='{}')=>spawnSync(process.execPath,[cli,...args],{input,encoding:'utf8',maxBuffer:4_000_000});
+  try {
+    const full=run([join(directory,'full')]);assert.equal(full.status,0,full.stderr);
+    const data=JSON.parse(full.stdout);
+    assert.equal(data.step,readFileSync(join(directory,'full/cradle.step'),'utf8'));
+    assert.deepEqual(Buffer.from(data.stl_base64,'base64'),readFileSync(join(directory,'full/cradle.stl')));
+    const compact=run([join(directory,'compact'),'--receipt']);assert.equal(compact.status,0,compact.stderr);
+    const receipt=JSON.parse(compact.stdout);
+    assert.ok(!('step' in receipt) && !('stl_base64' in receipt));
+    assert.deepEqual(receipt.params,data.params);
+    const {build_ms:a,...reportA}=data.report,{build_ms:b,...reportB}=receipt.report;
+    assert.deepEqual(reportA,reportB);
+    assert.deepEqual(readFileSync(receipt.files.stl),readFileSync(join(directory,'full/cradle.stl')));
+    assert.match(readFileSync(receipt.files.step,'utf8'),/ISO-10303-21/);
+    assert.deepEqual(JSON.parse(readFileSync(receipt.files.report,'utf8')),{params:receipt.params,report:receipt.report});
+    assert.ok(compact.stdout.length < full.stdout.length/10);
+    const bad=run(['--receipt']);assert.notEqual(bad.status,0);assert.equal(bad.stdout,'');assert.match(bad.stderr,/Usage:/);
+    const invalid=run([join(directory,'invalid'),'--receipt'],'{"base":1}');
+    assert.notEqual(invalid.status,0);assert.equal(invalid.stdout,'');
+  } finally {rmSync(directory,{recursive:true,force:true});}
 });

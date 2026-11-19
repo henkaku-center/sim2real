@@ -26,12 +26,13 @@ cd web && npm ci && npm run dev   # browser sim at http://localhost:5173
 
 ## Documents
 
-### FreeCAD-free battery cradle
+### Agent-driven, FreeCAD-free battery cradle
 
-The [battery-cradle workbench](reference/BATTERY-CRADLE.md) builds an adjustable
-strap tray in Node/OCCT WASM and serves a phone-friendly viewer with STEP/STL
-downloads. It is a standalone CAD prototype: not printed, load-tested or fitted
-to the robot. It does not change the existing kit or held physics work.
+The [battery-cradle generator](reference/BATTERY-CRADLE.md) takes dimensions on
+stdin and exports STEP/STL with a compact agent receipt. Agents build, inspect
+and revise; no student-operated UI is required. The existing viewer is optional.
+This standalone prototype is not printed, load-tested or fitted to the robot;
+it does not change the existing kit or held physics work.
 
 ### Electronics CAD
 
