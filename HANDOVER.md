@@ -10,7 +10,11 @@
 
 The rules and budget that keep a pose standing are in
 `manifest/motion_space.yaml`. A quarter-cycle `stride`/`lift` trot walks, and
-a `spread`/`lift` trot turns. See `reference/MOTION-SPACE.md`. No hardware
+a `spread`/`lift` trot turns. See `reference/MOTION-SPACE.md`.
+Sesame Mind designs `axes`/`axes_keys` specs in this space. The spine
+projects each frame into it. The designer's prompt includes `describe()`;
+the same text is printed by `python -m sim.motion_space --text` and served
+at `GET /space`. No hardware
 was moved; joint signs and limits remain the manifest's assumptions.
 
 ## Student-owned projects — October 29, 2026

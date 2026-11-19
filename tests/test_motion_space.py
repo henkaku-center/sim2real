@@ -13,6 +13,7 @@ from sim.motion_space import (
     Settler,
     axis_range,
     decode,
+    describe,
     feasible,
     firmware_pose,
     gait,
@@ -157,3 +158,10 @@ def test_gait_slope_matches_recorded_rate(settler):
     got = settler.drive(lambda t: gait(t, 1, stride=10, lift=10))["forward_mm_s"]
     assert got == pytest.approx(k * 10 * 1, rel=0.15)
     assert math.isfinite(got)
+
+
+def test_description_for_llms_names_every_axis_and_the_budget():
+    text, b = describe(), load_space()["budget"]
+    assert all(f"- {a} [" in text for a in AXES)
+    assert f"≤ {b['hip_l1_deg']:g}" in text and f"|lift| ≤ {b['lift_mm']:g}" in text
+    assert "phase を +0.25" in text

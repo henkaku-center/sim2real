@@ -22,15 +22,24 @@ Settings (backends, models, API keys, which robot to drive) live in
 .sesame-mind/config.json and can be changed while running: GET/POST /config,
 used by the Mind panel on the robot's own page. Keys are never sent back.
 
-Specs are angles in internal degrees relative to a manifest pose (`base`):
+Specs move the eight motion-space axes (sim/motion_space.py: surge, spread,
+yaw, stride, height, pitch, roll, lift) as offsets from its centre, or joints
+in internal degrees relative to a manifest pose (`base`):
 
+    {"kind": "axes", "hz": 2, "seconds": 4,
+     "axes": [{"axis": "stride", "amp": 15, "offset": 0, "phase": 0},
+              {"axis": "lift", "amp": 10, "offset": 0, "phase": 0.25}]}       # trot forward
+    {"kind": "axes_keys", "keys": [{"ms": 600, "axes": [{"axis": "height", "value": -6}]}]}
     {"kind": "osc", "base": "stand", "hz": 1.5, "seconds": 4,
      "joints": [{"joint": "R1", "amp": 20, "offset": 0, "phase": 0.25}, ...]}
     {"kind": "keys", "base": "stand", "keys": [{"ms": 400, "angles": [{"joint": "L1", "deg": 30}]}]}
     {"kind": "firmware", "name": "wave"}
 
-Frames are clamped to the manifest soft limits; the firmware applies its own
-clamps and rate limit on top. Without --host nothing moves (dry run).
+Axis frames are projected into the motion space (shrunk towards its centre
+until Sesame can stand in them); joint frames are clamped to the manifest soft
+limits. The firmware applies its own clamps and rate limit on top. Without
+--host nothing moves (dry run). `uv run python -m sim.motion_space --text`
+prints the motion space as the text the designer reads.
 
     uv run --group radio python tools/sesame_mind.py --text
     uv run --group radio python tools/sesame_mind.py --serve 8765    # then configure from the robot page
@@ -61,10 +70,12 @@ sys.path.insert(0, str(ROOT / "tools"))
 from radio_paranoia import RATE, offer, rms, source_command, transcribe  # noqa: E402
 from sesame_remote import Robot, run_lines, start_heartbeat  # noqa: E402
 from sim.manifest import load_manifest  # noqa: E402
+from sim.motion_space import AXES, describe, firmware_pose, load_space, project  # noqa: E402
 
 FRAME_HZ = 20  # pose frames per second over Wi-Fi
 INTENSITY = ("still", "gentle", "lively", "wild")
 NEW, NONE = "new", "none"
+PERIODIC, KEYED = ("osc", "axes"), ("keys", "axes_keys")
 
 
 # ---------------------------------------------------------------- moments
@@ -92,15 +103,18 @@ class Decision:
 
 
 def angles(manifest, spec, t, scale=1.0):
-    """Internal degrees per joint at time t (s) relative to the spec's base pose."""
-    if spec["kind"] == "osc":
-        return {j["joint"]: scale * (j.get("offset", 0.0)
-                                     + j["amp"] * math.sin(2 * math.pi * (spec["hz"] * t + j.get("phase", 0.0))))
-                for j in spec["joints"]}
+    """Offsets at time t (s): joint degrees from the base pose, or axis values from
+    the motion-space centre for the `axes` kinds."""
+    if spec["kind"] in PERIODIC:
+        name, items = ("joint", spec["joints"]) if spec["kind"] == "osc" else ("axis", spec["axes"])
+        return {j[name]: scale * (j.get("offset", 0.0)
+                                  + j["amp"] * math.sin(2 * math.pi * (spec["hz"] * t + j.get("phase", 0.0))))
+                for j in items}
     keys, start = spec["keys"], 0.0
     prev = {}
     for key in keys:
-        target = {a["joint"]: a["deg"] for a in key["angles"]}
+        target = ({a["joint"]: a["deg"] for a in key["angles"]} if spec["kind"] == "keys"
+                  else {a["axis"]: a["value"] for a in key["axes"]})
         end = start + key["ms"] / 1000
         if t < end:
             u = (t - start) / (end - start) if end > start else 1.0
@@ -111,7 +125,7 @@ def angles(manifest, spec, t, scale=1.0):
 
 
 def duration(spec):
-    if spec["kind"] == "osc":
+    if spec["kind"] in PERIODIC:
         return float(spec["seconds"])
     return sum(k["ms"] for k in spec["keys"]) / 1000
 
@@ -119,14 +133,17 @@ def duration(spec):
 def frames(manifest, spec, hz=FRAME_HZ, intensity=0.5):
     """`pose` angles (firmware degrees, canonical order, soft-limit clamped) per frame."""
     base = manifest.pose_internal(spec.get("base", "stand"))
+    center = load_space()["center"]
     scale = 0.3 + 0.7 * intensity
     for i in range(int(duration(spec) * hz) + 1):
         delta = angles(manifest, spec, i / hz, scale)
-        out = []
-        for j in manifest.joints:
-            deg = manifest.to_firmware(j, base[j.name] + math.radians(delta.get(j.name, 0.0)))
-            out.append(round(min(max(deg, j.limits_deg[0]), j.limits_deg[1]), 1))
-        yield out
+        if spec["kind"] in ("axes", "axes_keys"):
+            z = project({a: center[a] + delta.get(a, 0.0) for a in AXES}, manifest)
+            degs = firmware_pose(z, manifest)
+        else:
+            degs = [manifest.to_firmware(j, base[j.name] + math.radians(delta.get(j.name, 0.0)))
+                    for j in manifest.joints]
+        yield [round(min(max(d, j.limits_deg[0]), j.limits_deg[1]), 1) for d, j in zip(degs, manifest.joints)]
 
 
 def validate(manifest, spec):
@@ -138,11 +155,13 @@ def validate(manifest, spec):
     if spec.get("base", "stand") not in manifest.raw["poses"]:
         raise ValueError(f"unknown base pose {spec.get('base')}")
     used = ([j["joint"] for j in spec["joints"]] if kind == "osc" else
-            [a["joint"] for k in spec["keys"] for a in k["angles"]] if kind == "keys" else None)
+            [a["joint"] for k in spec["keys"] for a in k["angles"]] if kind == "keys" else
+            [a["axis"] for a in spec["axes"]] if kind == "axes" else
+            [a["axis"] for k in spec["keys"] for a in k["axes"]] if kind == "axes_keys" else None)
     if used is None:
         raise ValueError(f"unknown spec kind {kind}")
-    if unknown := set(used) - names:
-        raise ValueError(f"unknown joints {sorted(unknown)}")
+    if unknown := set(used) - (names if kind in ("osc", "keys") else set(AXES)):
+        raise ValueError(f"unknown {'joints' if kind in ('osc', 'keys') else 'axes'} {sorted(unknown)}")
     if not 0 < duration(spec) <= 30:
         raise ValueError("duration must be in (0, 30] s")
 
@@ -288,12 +307,16 @@ class JevReflex:
 DESIGN_SYSTEM = """\
 あなたは四足歩行ロボット「セサミ」（8軸サーボ、各脚に hip と foot）の振付師です。
 聞こえた言葉や指示から、新しい動きを一つ小さな設計図として作ってください。
+なるべく下の動作空間の8軸で書いてください（転ばない範囲に自動で収まります）。
+- axes: 軸の周期運動。hz は 0.2〜3、seconds は 1〜10、各軸の amp（振幅）、offset（中心からのずれ）、phase（0〜1周期）
+- axes_keys: 軸のキーポーズの列。各キーの ms は 100〜2000、合計10秒以内、value は中心からの差分
+関節を直接動かす必要があるとき（片足を上げて振るなど）だけ osc / keys を使います。
 角度は基準姿勢（base）からの差分で、内部座標の度数です（0 = 基準のまま）。
-- osc: 周期運動。hz は 0.2〜3、seconds は 1〜10、各関節の amp（振幅）、offset、phase（0〜1周期）
-- keys: キーポーズの列。各キーの ms は 100〜2000、合計10秒以内
-可動範囲を超えた分はコード側で切り詰められます。脚の左右・前後の対称性を意識してください。
+- osc: 関節の周期運動（joints）。keys: 関節のキーポーズの列（angles）
+実際の動きは指定の 0.3〜1 倍（声の勢いで変わる）です。使わない種類の欄は空配列か0にしてください。
 name は英小文字とアンダースコア、about は日本語で20字以内。
-"""
+
+""" + describe()
 
 RUMINATE_SYSTEM = """\
 あなたはロボット「セサミ」の記憶です。最近の出来事と以前のメモを読み返し、
@@ -304,6 +327,7 @@ RUMINATE_SYSTEM = """\
 
 def design_schema(manifest):
     joint = {"type": "string", "enum": [j.name for j in manifest.joints]}
+    axis = {"type": "string", "enum": list(AXES)}
     num = {"type": "number"}
 
     def obj(props):
@@ -312,21 +336,30 @@ def design_schema(manifest):
     return obj({
         "name": {"type": "string"},
         "about": {"type": "string"},
-        "kind": {"type": "string", "enum": ["osc", "keys"]},
+        "kind": {"type": "string", "enum": ["axes", "axes_keys", "osc", "keys"]},
         "base": {"type": "string", "enum": list(manifest.raw["poses"])},
         "hz": num, "seconds": num,
+        "axes": {"type": "array", "items": obj({"axis": axis, "amp": num, "offset": num, "phase": num})},
         "joints": {"type": "array", "items": obj({"joint": joint, "amp": num, "offset": num, "phase": num})},
-        "keys": {"type": "array", "items": obj({"ms": num, "angles": {"type": "array",
-                                                                     "items": obj({"joint": joint, "deg": num})}})},
+        "keys": {"type": "array", "items": obj({
+            "ms": num,
+            "axes": {"type": "array", "items": obj({"axis": axis, "value": num})},
+            "angles": {"type": "array", "items": obj({"joint": joint, "deg": num})},
+        })},
     })
 
 
 def spec_of(design):
     """Designer output -> (name, about, spec); the unused kind's fields are dropped."""
-    if design["kind"] == "osc":
-        spec = {k: design[k] for k in ("kind", "base", "hz", "seconds", "joints")}
+    kind = design["kind"]
+    if kind in PERIODIC:
+        spec = {k: design[k] for k in ("kind", "base", "hz", "seconds", "joints" if kind == "osc" else "axes")}
     else:
-        spec = {k: design[k] for k in ("kind", "base", "keys")}
+        field = "angles" if kind == "keys" else "axes"
+        spec = {"kind": kind, "base": design["base"],
+                "keys": [{"ms": k["ms"], field: k.get(field, [])} for k in design["keys"]]}
+    if kind.startswith("axes"):
+        del spec["base"]
     return design["name"], design["about"], spec
 
 
@@ -720,6 +753,8 @@ def serve(port, mind, moments):
                 return self.reply(200, json.dumps(mind.memory.recent(40), ensure_ascii=False))
             if self.path == "/config":
                 return self.reply(200, json.dumps(config_view(mind), ensure_ascii=False))
+            if self.path == "/space":  # the motion space as text, for any LLM
+                return self.reply(200, describe(), "text/plain")
             self.reply(404, "{}")
 
         def do_OPTIONS(self):

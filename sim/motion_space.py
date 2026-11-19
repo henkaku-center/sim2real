@@ -27,6 +27,7 @@ rules; `project` scales a pose towards the centre until it is feasible, so a
 too-wild motion keeps its shape and just gets smaller.
 
     uv run python -m sim.motion_space            # check the YAML's numbers in MuJoCo
+    uv run python -m sim.motion_space --text     # the space as text for an LLM prompt
 """
 
 from __future__ import annotations
@@ -453,6 +454,66 @@ class Settler:
         return ok, got
 
 
+# ---------------------------------------------------------------- text for LLMs
+
+MEANING = {
+    "surge": ("deg", "4本の足先をそろって前へ（胴体は後ろへ下がる）"),
+    "spread": ("deg", "前脚は前へ・後脚は後ろへ開く（負で前後の脚を胴の下に寄せる）"),
+    "yaw": ("deg", "右の足先は前・左は後ろ（足を着いたまま胴をひねる）"),
+    "stride": ("deg", "対角ペア 右前+左後 を前・左前+右後 を後ろ（トロットの一歩）"),
+    "height": ("mm", "胴体の高さ（しゃがむ／伸びる）"),
+    "pitch": ("deg", "鼻先を上げる（負で下げる）"),
+    "roll": ("deg", "右側を上げる（負で左側を上げる）"),
+    "lift": ("mm", "対角ペア 右前+左後(+) または 左前+右後(-) の足を床から上げる。歩行専用"),
+}
+
+
+def describe() -> str:
+    """The motion space as plain Japanese text for an LLM prompt, from motion_space.yaml."""
+    space = load_space()
+    c, r, b, g = space["center"], space["ranges"], space["budget"], space["gait"]
+    off = lambda a, v: v - c[a]  # noqa: E731
+    lines = [
+        "# セサミの動作空間（8軸）",
+        "四足ロボット「セサミ」の8個のサーボを、胴体を基準にした8本の軸で表す。"
+        "値はすべて中心姿勢からの差分（中心 = 全部0。高さ0は胴体中心が床から"
+        f"{c['height']:g} mm、脚は斜め45°のX字）。足の角度はコードが逆運動学で解き、4本の足先を床に着ける。",
+        "",
+        "## 軸（単位、意味、単独で動かせる範囲）",
+    ]
+    for a in AXES:
+        unit, text = MEANING[a]
+        lines.append(f"- {a} [{unit}]: {text}。{off(a, r[a][0]):+g}〜{off(a, r[a][1]):+g}")
+    tilt = ", ".join(f"{off('height', h):+g}→±{t:g}" for h, t in space["tilt_by_height"].items())
+    lines += [
+        "",
+        "## 組み合わせの予算（この内側ならどんな組み合わせでも立っていられる）",
+        f"- |surge|+|spread|+|yaw|+|stride| ≤ {b['hip_l1_deg']:g}（どのhipサーボにも4軸の合計がかかる）",
+        f"- height は {off('height', b['height_mm'][0]):+g}〜{off('height', b['height_mm'][1]):+g}、"
+        f"|pitch|+|roll| ≤ {b['tilt_l1_fraction']:g} × その高さの傾き上限",
+        f"- 高さごとの傾き上限（height差分→±度）: {tilt}。脚が短いので傾きは数度しか取れない",
+        f"- |lift| ≤ {b['lift_mm']:g}。止まったまま lift すると2本足になって揺れるので、振動の中でだけ使う",
+        "- 範囲を超えた姿勢は、中心に向かって縮めて再生される（形は保たれ、小さくなる）",
+        "",
+        "## 歩く・曲がる（対角トロット）",
+        "lift を stride または spread より 1/4 周期先に振る（同じ hz、lift の phase を +0.25）。",
+        f"- 前進: stride 振幅A・phase 0、lift 振幅8〜12・phase +0.25。速さ ≈ {g['forward_mm_s_per_deg_hz']:g}×A×hz mm/s",
+        "- 後退: lift の phase を -0.25（= 0.75）にする",
+        f"- 左旋回: spread 振幅A・phase 0、lift phase +0.25。≈ {g['turn_deg_s_per_deg_hz']:g}×A×hz °/s。"
+        "右旋回は lift phase -0.25。yaw を振っても曲がらない",
+        "- stride と spread を同時に振ると弧を描いて歩く",
+        f"- hz は {g['hz'][0]:g}〜{g['hz'][1]:g}。サーボの速さの上限から 2π×hz×(stride振幅+spread振幅) ≤ 300 °/s"
+        "（例: 2 Hz なら合計24°まで）。超えると遅くなる",
+        "- lift が 4 mm 未満だと足が擦れて進まない",
+        "",
+        "## 表現のヒント",
+        "- うなずき: pitch を振る。首かしげ・ゆらゆら: roll。のび／しゃがみ: height。",
+        "- 足踏み: lift だけを振る。くねくね: yaw。胴を前後に揺らす: surge。",
+        "- 片足を高く上げる手振りはこの空間では表せない（関節を直接動かす）",
+    ]
+    return "\n".join(lines)
+
+
 # ---------------------------------------------------------------- report
 
 
@@ -486,4 +547,6 @@ def report(samples: int = 800, seed: int = 0) -> None:
 
 
 if __name__ == "__main__":
-    report()
+    import sys
+
+    print(describe()) if "--text" in sys.argv[1:] else report()

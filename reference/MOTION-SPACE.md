@@ -99,6 +99,20 @@ like the host spine: 20 Hz `pose` frames, 300°/s slew as in the S3 firmware
 Simulated floor friction is 0.9 and the servos are idealised. Treat the
 speeds as relative, not as predictions for a real table.
 
+## Text for LLMs
+
+`describe()` renders this space as a short Japanese prompt section, using the
+numbers in `motion_space.yaml`. It covers the axes, ranges, budget and the
+gait recipes. Get it in any of three ways:
+
+- `uv run python -m sim.motion_space --text`;
+- `GET /space` on a running `tools/sesame_mind.py --serve`;
+- import `describe` in Python.
+
+The Sesame Mind designer appends it to its system prompt. It writes `axes`
+(periodic) and `axes_keys` (keyframes) specs, whose values are offsets from
+the centre, and the spine runs every frame through `project()`.
+
 ## Next hardware checks
 
 Record the results in `DECISIONS.md` when measured:

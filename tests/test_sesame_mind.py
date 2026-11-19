@@ -116,6 +116,43 @@ def test_design_schema_and_spec_of():
     assert sm.spec_of({"name": "n", "about": "a", **KEYS, "hz": 0, "seconds": 0, "joints": []})[2] == KEYS
 
 
+TROT = {"kind": "axes", "hz": 2, "seconds": 1,
+        "axes": [{"axis": "stride", "amp": 15, "offset": 0, "phase": 0},
+                 {"axis": "lift", "amp": 10, "offset": 0, "phase": 0.25}]}
+
+
+def test_axes_frames_are_the_motion_space_trot():
+    from sim.motion_space import firmware_pose, gait
+    for i, p in enumerate(sm.frames(M, TROT, hz=10, intensity=1.0)):
+        want = firmware_pose(gait(i / 10, 2, stride=15, lift=10), M)
+        assert p == pytest.approx(want, abs=0.051)
+
+
+def test_axes_frames_shrink_wild_poses_into_the_motion_space():
+    from sim.motion_space import feasible, firmware_pose, load_space, project
+    crouch = {"kind": "axes_keys", "keys": [{"ms": 500, "axes": [{"axis": "height", "value": -30},
+                                                                  {"axis": "pitch", "value": 20}]}]}
+    last = list(sm.frames(M, crouch, hz=10, intensity=1.0))[-1]
+    z = project({"height": load_space()["center"]["height"] - 30, "pitch": 20})
+    assert feasible(z) and -8 < z["height"] - 42 < 0 and 0 < z["pitch"] < 20
+    assert last == pytest.approx(firmware_pose(z, M), abs=0.051)
+
+
+def test_axes_specs_validate_and_round_trip_the_schema():
+    sm.validate(M, TROT)
+    with pytest.raises(ValueError, match="axes"):
+        sm.validate(M, {**TROT, "axes": [{"axis": "R1", "amp": 1}]})
+    schema = sm.design_schema(M)
+    assert schema["properties"]["axes"]["items"]["properties"]["axis"]["enum"] == list(sm.AXES)
+    design = {"name": "trot", "about": "とことこ", **TROT, "base": "stand", "joints": [],
+              "keys": [{"ms": 100, "axes": [], "angles": []}]}
+    assert sm.spec_of(design) == ("trot", "とことこ", TROT)
+    keyed = {"name": "bow", "about": "おじぎ", "kind": "axes_keys", "base": "stand", "hz": 0, "seconds": 0,
+             "axes": [], "joints": [], "keys": [{"ms": 400, "axes": [{"axis": "pitch", "value": -4}], "angles": []}]}
+    assert sm.spec_of(keyed)[2] == {"kind": "axes_keys", "keys": [{"ms": 400, "axes": [{"axis": "pitch", "value": -4}]}]}
+    assert "stride" in sm.DESIGN_SYSTEM and "axes_keys" in sm.DESIGN_SYSTEM
+
+
 class FakeSpine:
     manifest = M
 
@@ -280,5 +317,7 @@ def test_config_endpoint_round_trip(tmp_path, monkeypatch):
         with pytest.raises(urllib.error.HTTPError) as e:
             urllib.request.urlopen(bad)
         assert e.value.code == 400
+        with urllib.request.urlopen(base + "/space") as r:
+            assert r.headers["Content-Type"].startswith("text/plain") and "stride" in r.read().decode()
     finally:
         server.shutdown()
