@@ -4,18 +4,43 @@ This is a new, standalone CAD prototype, **not a verified attachment to Sesame**
 It does not change the existing robot, power wiring, motion or physics model.
 Nothing has been purchased, printed, loaded or fitted for this prototype.
 
-## Use the workbench
+## Agent entry — no UI required
+
+Work in the builder's own checkout. Translate their prompt or annotated image
+into explicit dimensions; label any assumptions. Use the existing CLI rather
+than asking the builder to operate a configurator:
 
 ```sh
-cd tools/occt && npm ci && cd ../..
+(cd tools/occt && npm ci)
+printf '{"length":82,"width":51,"height":36}' | \
+  node tools/occt/cradle-build.mjs ./out/cradle --receipt > ./cradle-receipt.json
+```
+
+Node 24 and the existing locked OCCT WASM dependency are sufficient; no FreeCAD,
+browser, private server, model account or inference call is required. The output
+directory receives `cradle.step`, `cradle.stl`, and `cradle.json` (parameters,
+measured CAD dimensions, checks and timing). `--receipt` returns that metadata
+and absolute file paths, not another copy of the STEP and base64 STL in the
+agent's context. Omit it to retain the existing inline JSON/API response.
+
+Inspect the receipt, render the exported geometry with an available renderer,
+and revise from the builder's feedback. Show the final result and relevant issue
+views rather than asking them to use sliders. This generator does not itself
+render screenshots; state when that capability is unavailable. A new output
+directory per iteration preserves earlier files. Checks are feedback, not student
+approval gates or claims of printed fit. The existing robot/firmware is untouched.
+
+## Optional existing viewer
+
+The previously delivered viewer remains available for inspecting results; it is
+not required by the agent workflow and is not being expanded:
+
+```sh
 node tools/cradle_server.mjs
 ```
 
-Node 24; the existing locked `replicad-opencascadejs` dependency. No FreeCAD,
-new CAD runtime, model account or inference call is required. The browser sends
-dimensions to a local Node process, which constructs the real solid using OCCT
-WASM. The preview displays an STL of that solid; STEP and STL downloads come
-from the same validated build. This is not a drawing scaled to resemble CAD.
+The preview displays an STL of the same validated solid that the CLI exports.
+It is not a drawing scaled to resemble CAD.
 
 Server defaults to loopback port 8862 (`PORT` overrides it). For phone access,
 mount `/battery-cradle/` through Tailscale Serve, preserving existing routes:
@@ -64,18 +89,6 @@ limitations. The browser, API and builder share it; the workbench shows the
 dimensions and attribution. These are editable starting points, not battery
 recommendations or measured fit. Changing an input still requires a successful
 build before downloads are enabled; request tokens reject superseded responses.
-
-## Export without the browser
-
-```sh
-printf '{"length":82,"width":51,"height":36}' | \
-  node tools/occt/cradle-build.mjs /path/to/output > /path/to/build-response.json
-```
-
-The output directory receives `cradle.step`, `cradle.stl`, and `cradle.json`
-(parameters, measured CAD dimensions, checks and timing). stdout also supplies
-the browser API response. File creation occurs only when an output directory is
-passed; browser exports stay in the browser until downloaded.
 
 ## Verification and limits
 
