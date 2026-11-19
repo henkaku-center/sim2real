@@ -60,6 +60,28 @@ installed but there are no models on disk yet, e.g.
 `llama-server -hf ggml-org/gemma-3-4b-it-GGUF` (port 8080, default local URL;
 first run downloads a few GB). Ollama: `http://localhost:11434/v1`.
 
+### Voice body (2026-11-19)
+
+`sim/voice_motion.py` running live: the PC microphone's prosody (pitch
+relative to the speaker, rising or falling pitch, loudness, syllables) drives
+the CPG body, and words set its intent (`settle` / `approach` / `play`, from
+the same keyword table as the simulator; an intent lasts 8 s). Pick
+"声で動く" (both, prosody only, words only) in the robot page's Mind panel.
+That also sets "drive this robot", so the PC arms `run` and streams `pose` at
+20 Hz. The status line shows pitch, arousal, amplitude, gait, intent and the
+number of frames sent. While the body is on, chat and whisper text go to the
+body instead of the library motions.
+
+```sh
+uv run --group radio python tools/sesame_mind.py --mic --serve 8765    # prosody only; type words in the panel
+uv run --group radio python tools/sesame_mind.py --mic --whisper-model ggml-small.bin --serve 8765
+```
+
+The phone cannot be the microphone: the robot page is plain HTTP, and
+browsers only allow `getUserMedia` on secure origins. `GET /body` returns
+the body's state as JSON. Without `--whisper-model`, speech is not
+transcribed; no whisper model is on disk yet.
+
 ## Design choices
 
 - The LLM never emits per-tick angles. Specs are `osc` (per-joint sine around a

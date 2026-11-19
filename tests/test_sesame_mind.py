@@ -155,6 +155,7 @@ def test_axes_specs_validate_and_round_trip_the_schema():
 
 class FakeSpine:
     manifest = M
+    robot = None
 
     def __init__(self):
         self.played = []
@@ -311,7 +312,7 @@ def test_config_endpoint_round_trip(tmp_path, monkeypatch):
         with urllib.request.urlopen(urllib.request.Request(base + "/config", body.encode(), method="POST")) as r:
             view = json.loads(r.read())
         assert view["typesafe_key_set"] and "ts-secret" not in json.dumps(view)
-        assert view["status"] == {"reflex": "rules", "designer": "none", "robot": "", "error": ""}
+        assert view["status"] == {"reflex": "rules", "designer": "none", "robot": "", "body": "off", "error": ""}
         assert view["local_models"] == []
         bad = urllib.request.Request(base + "/config", b'{"reflex": "psychic"}', method="POST")
         with pytest.raises(urllib.error.HTTPError) as e:
@@ -319,5 +320,80 @@ def test_config_endpoint_round_trip(tmp_path, monkeypatch):
         assert e.value.code == 400
         with urllib.request.urlopen(base + "/space") as r:
             assert r.headers["Content-Type"].startswith("text/plain") and "stride" in r.read().decode()
+    finally:
+        server.shutdown()
+
+
+# ---------------------------------------------------------------- voice body
+
+
+def excited_pcm(seconds=1.5):
+    """Rising 330 -> 430 Hz syllables as int16 bytes, like the simulator's excited voice."""
+    from sim.voice_motion import synth_utterance
+    audio = synth_utterance("excited")
+    reps = int(seconds * sm.RATE / len(audio)) + 1
+    pcm = [int(max(-1, min(1, x)) * 32767) for x in list(audio) * reps]
+    return array.array("h", pcm).tobytes()
+
+
+def quiet_body():
+    body = sm.VoiceBody(M, FakeSpine())
+    body.started = True  # no loop/sender threads: the test steps frames itself
+    return body
+
+
+def test_voice_body_hears_prosody_and_poses_inside_limits():
+    body = quiet_body()
+    body.set_mode("both")
+    pcm = excited_pcm()
+    for i in range(0, len(pcm), 3200):  # 100 ms chunks, as the ears read them
+        body.feed(pcm[i:i + 3200])
+        while not body.frames.empty():
+            target = body.step(body.frames.get())
+    state = body.state()
+    assert state["arousal"] > 0.5 and state["amp"] > 0.3 and state["f0"] > 300
+    for deg, j in zip(body.pose(target), M.joints):
+        assert j.limits_deg[0] <= deg <= j.limits_deg[1]
+    assert body.pose(body.cpg.base) == [float(x) for x in stand_fw()]
+
+
+def test_voice_body_off_ignores_audio_and_words():
+    body = quiet_body()
+    body.feed(excited_pcm(0.3))
+    assert body.frames.empty() and body.hear_words("落ち着いて") == "-"
+
+
+def test_mind_routes_words_to_the_body_and_skips_the_spine(tmp_path):
+    spine = FakeSpine()
+    mind = sm.Mind(sm.RuleReflex(), sm.Library(), sm.Memory(tmp_path), spine)
+    mind.body.started = True
+    settings = sm.Settings(tmp_path)
+    settings.update({"body": "words"})
+    mind.configure(settings)
+    assert mind.handle(sm.Moment("chat", "おいで")) ["did"] == "body:approach"
+    assert mind.handle(sm.Moment("chat", "こんにちは"))["did"] == "body:-"
+    assert mind.handle(sm.Moment("sound", loudness=5000, onset=True)) is None
+    assert spine.played == [] and mind.body.state()["intent"] == "-"  # no step yet
+    mind.body.step(sm.VoiceBody.SILENCE)
+    assert mind.body.state()["intent"] == "approach"
+    with pytest.raises(ValueError):
+        settings.update({"body": "dance"})
+    settings.update({"body": "off"})
+    mind.configure(settings)
+    mind.handle(sm.Moment("chat", "wave"))
+    assert spine.played  # back to the reflex and library
+
+
+def test_body_endpoint(tmp_path):
+    import queue
+    import urllib.request
+    mind = sm.Mind(sm.RuleReflex(), sm.Library(), sm.Memory(tmp_path), sm.Spine(M))
+    mind.configure(sm.Settings(tmp_path))
+    server = sm.serve(0, mind, queue.Queue())
+    try:
+        with urllib.request.urlopen(f"http://127.0.0.1:{server.server_address[1]}/body") as r:
+            assert r.headers["Access-Control-Allow-Origin"] == "*"
+            state = json.loads(r.read())
+        assert state["mode"] == "off" and state["mic"] is False and state["f0"] is None
     finally:
         server.shutdown()

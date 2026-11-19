@@ -47,7 +47,6 @@ from sim.sound_motion import (
     CpgController,
     Renderer,
     Sim,
-    features,
     load_wav,
     physics_model,
 )
@@ -55,6 +54,7 @@ from sim.sound_motion import (
 OUT_DIR = Path(__file__).parent.parent / "out" / "voice_motion"
 MODES = ("prosody", "words", "both")
 WORD_LATENCY_S = 0.4
+INTENT_S = 8.0  # an understood command fades after this long
 F0_RANGE = (75.0, 500.0)
 
 
@@ -98,43 +98,104 @@ class Prosody:
     slope: np.ndarray  # semitones per second over the last 0.2 s, 0 when unknown
 
 
-def f0_track(audio: np.ndarray, hop: int = SR // FRAME_HZ, win: int = 640) -> np.ndarray:
-    """Autocorrelation pitch per frame; nan when quiet or aperiodic."""
-    lo, hi = int(SR / F0_RANGE[1]), int(SR / F0_RANGE[0])
-    n = len(audio) // hop
-    out = np.full(n, np.nan)
-    window = np.hanning(win)
-    for i in range(n):
-        seg = audio[i * hop: i * hop + win]
-        if len(seg) < win or np.sqrt((seg**2).mean()) < 0.01:
-            continue
-        w = (seg - seg.mean()) * window
-        ac = np.correlate(w, w, "full")[win - 1:]
+class ProsodyStream:
+    """Prosody frames (FRAME_HZ) from audio fed in chunks of any size.
+
+    The same code serves the simulator (one chunk) and the live microphone.
+    Each frame is emitted one frame late: onsets and the 3-frame pitch median
+    look one frame ahead. Loudness is relative to a slowly decaying running
+    peak. With f0_ref=None the pitch reference follows the speaker (a slow
+    average of voiced pitch), so "high" means high for this voice.
+    """
+
+    HOP, WIN = SR // FRAME_HZ, 640
+    FLOOR = 0.03  # running-peak floor (RMS) so room noise does not read as loud
+
+    def __init__(self, f0_ref: float | None = 220.0, refractory_s: float = 0.12):
+        self.fixed_ref = f0_ref
+        self.ref_st = 12 * math.log2(f0_ref or 200.0)  # reference pitch in semitones re 1 Hz
+        self.refractory = refractory_s * FRAME_HZ
+        self.buf = np.zeros(0, dtype=np.float32)
+        self.j = 0  # next frame to compute
+        self.peak = self.FLOOR
+        self.prev_loud = None
+        self.last_onset = -1e9
+        self.raw: list = []  # (rms, flux, raw f0) of the last frames computed
+        self.st_hist: list[float] = []
+        self.window = np.hanning(self.WIN)
+        self.lags = (int(SR / F0_RANGE[1]), int(SR / F0_RANGE[0]))
+
+    @property
+    def f0_ref(self) -> float:
+        return 2 ** (self.ref_st / 12)
+
+    def _raw_f0(self, seg: np.ndarray) -> float:
+        if len(seg) < self.WIN or np.sqrt((seg**2).mean()) < 0.005:
+            return math.nan
+        w = (seg - seg.mean()) * self.window
+        ac = np.correlate(w, w, "full")[self.WIN - 1:]
         ac = ac / (ac[0] + 1e-12)
+        lo, hi = self.lags
         lag = lo + int(ac[lo:hi].argmax())
-        if ac[lag] > 0.45:
-            out[i] = SR / lag
-    # 3-frame median removes isolated octave jumps
-    padded = np.concatenate([[np.nan], out, [np.nan]])
-    stack = np.stack([padded[:-2], padded[1:-1], padded[2:]])
-    filled = np.where(np.isfinite(stack), stack, np.nan_to_num(out))
-    return np.where(np.isfinite(out), np.median(filled, axis=0), np.nan)
+        return SR / lag if ac[lag] > 0.45 else math.nan
 
+    def feed(self, audio: np.ndarray, final: bool = False) -> list[tuple[float, float, float, float, float]]:
+        """Append samples; returns finished frames (env, onset, f0, pitch_st, slope)."""
+        self.buf = np.concatenate([self.buf, np.asarray(audio, dtype=np.float32)])
+        out = []
+        while len(self.buf) >= self.WIN or (final and len(self.buf) >= self.HOP):
+            hop = self.buf[: self.HOP].astype(np.float64)
+            rms = float(np.sqrt((hop**2).mean()))
+            loud = math.log(rms + 1e-4)
+            flux = 0.0 if self.prev_loud is None else max(loud - self.prev_loud, 0.0)
+            self.prev_loud = loud
+            self.raw.append((rms, flux, self._raw_f0(self.buf[: self.WIN])))
+            self.buf = self.buf[self.HOP:]
+            self.j += 1
+            if len(self.raw) >= 2:
+                out.append(self._emit(len(self.raw) - 2))
+            self.raw = self.raw[-3:]
+        if final and self.raw:
+            self.raw.append((0.0, 0.0, math.nan))
+            out.append(self._emit(len(self.raw) - 2))
+            self.raw = []
+        return out
 
-def prosody(audio: np.ndarray, f0_ref: float = 220.0) -> Prosody:
-    feats = features(audio, refractory_s=0.12)
-    f0 = f0_track(audio)[: len(feats.env)]
-    f0 = np.concatenate([f0, np.full(len(feats.env) - len(f0), np.nan)])
-    st = 12 * np.log2(f0 / f0_ref)
-    slope = np.zeros(len(st))
-    span = int(0.2 * FRAME_HZ)
-    for i in range(span, len(st)):
-        y = st[i - span: i + 1]
+    def _emit(self, i: int):
+        rms, flux, f0 = self.raw[i]
+        nxt = self.raw[i + 1]
+        prv = self.raw[i - 1] if i > 0 else (0.0, 0.0, math.nan)
+        k = self.j - (len(self.raw) - i)  # frame index being emitted
+        self.peak = max(self.FLOOR, self.peak * math.exp(-1 / (30 * FRAME_HZ)), rms)
+        env = min(1.0, rms / self.peak)
+        onset = 0.0
+        if flux > 1.0 and env > 0.1 and flux >= nxt[1] and k - self.last_onset >= self.refractory:
+            onset, self.last_onset = env, k
+        if math.isfinite(f0):  # 3-frame median removes isolated octave jumps
+            f0 = float(np.median([x if math.isfinite(x) else f0 for x in (prv[2], f0, nxt[2])]))
+            st_abs = 12 * math.log2(f0)
+            if self.fixed_ref is None:  # ~20 s of voiced speech to follow a new speaker
+                self.ref_st += (st_abs - self.ref_st) / (20 * FRAME_HZ)
+            st = st_abs - self.ref_st
+        else:
+            st = math.nan
+        self.st_hist = (self.st_hist + [st])[-int(0.2 * FRAME_HZ) - 1:]
+        y = np.array(self.st_hist)
         ok = np.isfinite(y)
-        if ok.sum() >= 5:
-            t = np.flatnonzero(ok) / FRAME_HZ
-            slope[i] = np.polyfit(t, y[ok], 1)[0]
-    return Prosody(feats.env, feats.onset, f0, st, slope)
+        slope = float(np.polyfit(np.flatnonzero(ok) / FRAME_HZ, y[ok], 1)[0]) if ok.sum() >= 5 else 0.0
+        return env, onset, f0, st, slope
+
+
+def prosody(audio: np.ndarray, f0_ref: float | None = 220.0) -> Prosody:
+    """Batch prosody: the live ProsodyStream run over a whole recording."""
+    frames = ProsodyStream(f0_ref).feed(audio, final=True)
+    env, onset, f0, st, slope = (np.array(c) for c in zip(*frames))
+    return Prosody(env, onset, f0, st, slope)
+
+
+def f0_track(audio: np.ndarray) -> np.ndarray:
+    """Pitch per frame (Hz, nan when quiet or aperiodic)."""
+    return prosody(audio).f0
 
 
 # ---------------------------------------------------------------- scenes
@@ -215,30 +276,53 @@ def build_scene(synth: bool = False, seed: int = 0) -> tuple[np.ndarray, list[Ut
 
 
 class VoiceCpg(CpgController):
-    """The CPG body with a prosody channel, a words channel, or both."""
+    """The CPG body with a prosody channel, a words channel, or both.
 
-    def __init__(self, m: Manifest, mode: str, pros: Prosody, utts: list[Utterance], seed: int = 0):
+    Live use calls hear_words() when speech is transcribed and step() once per
+    prosody frame. The simulator calls the controller with precomputed prosody
+    and utterance timing (pros, utts).
+    """
+
+    def __init__(self, m: Manifest, mode: str = "both", seed: int = 0,
+                 pros: Prosody | None = None, utts: list[Utterance] = (), intent_s: float = INTENT_S):
         super().__init__(m, seed)
-        self.mode, self.p = mode, pros
+        self.mode, self.p, self.intent_s = mode, pros, intent_s
         self.hear = mode in ("prosody", "both")
         self.read = mode in ("words", "both")
         self.events = {round((u.end + WORD_LATENCY_S) * FRAME_HZ): u.text for u in utts}
         self.intent: Intent | None = None
+        self.intent_left = 0  # frames until the intent expires
         self.arousal = 0.0
-        self.log = []  # (arousal, r, gait, intent)
+        self.hz = 1.2
+        self.log = []  # (arousal, r, gait, intent) per frame
+        self.keep_log = None  # frames to keep; live runs set a bound
+
+    def hear_words(self, text: str) -> Intent | None:
+        """Words understood: a known intent replaces the current one for intent_s."""
+        it = understand(text) if self.read else None
+        if it:
+            self.intent, self.intent_left = it, int(self.intent_s * FRAME_HZ)
+        return it
 
     def __call__(self, k, env, onset, q):
+        if k in self.events:
+            self.hear_words(self.events[k])
+        return self.step(env, onset, self.p.pitch_st[k], self.p.slope[k])
+
+    def step(self, env: float, onset: float, pitch_st: float, slope: float) -> np.ndarray:
+        """One prosody frame in, joint targets (internal radians, manifest order) out."""
         dt = 1 / FRAME_HZ
-        if self.read and k in self.events:
-            self.intent = understand(self.events[k]) or self.intent
+        if self.intent_left > 0:
+            self.intent_left -= 1
+            if self.intent_left == 0:
+                self.intent = None
         if self.hear:
-            st, slope = self.p.pitch_st[k], self.p.slope[k]
             drive = -1.0 / 2.0 * self.arousal  # decays with a 2 s time constant
-            if np.isfinite(st):
-                drive += 0.9 * (st / 6 + float(np.clip(slope / 30, -1, 1)) + env)
+            if np.isfinite(pitch_st):
+                drive += 0.9 * (pitch_st / 6 + float(np.clip(slope / 30, -1, 1)) + env)
             self.arousal = float(np.clip(self.arousal + dt * drive, 0.0, 1.5))
         a = min(self.arousal, 1.0)
-        it = self.intent if self.read else None
+        it = self.intent
         if it is None:
             target = a
         elif self.hear:
@@ -250,14 +334,16 @@ class VoiceCpg(CpgController):
             self.r = min(1.0, self.r + 0.3 * a)
         if it is not None:
             self.gait = it.gait
-            hz = it.hz * (0.85 + 0.3 * a) if self.hear else it.hz
+            self.hz = it.hz * (0.85 + 0.3 * a) if self.hear else it.hz
         else:
             self.gait = "trot" if a > 0.6 else "sway" if a < 0.45 else self.gait
-            hz = 1.2 + 0.8 * a
-        self.omega += dt / 0.5 * (2 * math.pi * hz - self.omega)
+            self.hz = 1.2 + 0.8 * a
+        self.omega += dt / 0.5 * (2 * math.pi * self.hz - self.omega)
         self.advance(dt)
         self.phi %= 2 * math.pi
         self.log.append((self.arousal, self.r, self.gait, it.name if it else "-"))
+        if self.keep_log and len(self.log) > 2 * self.keep_log:
+            del self.log[:-self.keep_log]
         return self.pose()
 
 
@@ -296,7 +382,7 @@ def simulate(audio, utts, scenes, modes=MODES, seed: int = 0, video: Path | None
     m = load_manifest()
     pros = prosody(audio)
     model = physics_model()
-    sims = [Sim(mode, m, seed, model, VoiceCpg(m, mode, pros, utts, seed)) for mode in modes]
+    sims = [Sim(mode, m, seed, model, VoiceCpg(m, mode, seed, pros, utts)) for mode in modes]
     render = None
     if video:
         def caption(t):

@@ -62,6 +62,7 @@ from dataclasses import asdict, dataclass
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
+import numpy as np
 import yaml
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -70,11 +71,13 @@ sys.path.insert(0, str(ROOT / "tools"))
 from radio_paranoia import RATE, offer, rms, source_command, transcribe  # noqa: E402
 from sesame_remote import Robot, run_lines, start_heartbeat  # noqa: E402
 from sim.manifest import load_manifest  # noqa: E402
+from sim.voice_motion import FRAME_HZ as BODY_HZ, ProsodyStream, VoiceCpg  # noqa: E402
 from sim.motion_space import AXES, describe, firmware_pose, load_space, project  # noqa: E402
 
 FRAME_HZ = 20  # pose frames per second over Wi-Fi
 INTENSITY = ("still", "gentle", "lively", "wild")
 NEW, NONE = "new", "none"
+BODY_MODES = ("off", "both", "prosody", "words")  # voice body (sim/voice_motion.py)
 PERIODIC, KEYED = ("osc", "axes"), ("keys", "axes_keys")
 
 
@@ -480,11 +483,12 @@ DEFAULTS = {
     "local_model": "",
     "host": "",  # robot address; empty = dry run
     "live": False,
+    "body": "off",  # voice body: off | both | prosody | words
 }
 SECRETS = ("anthropic_key", "typesafe_key")
 CHOICES = {"reflex": ("rules", "jev", "llm"), "reflex_brain": ("claude", "local"),
            "designer": ("claude", "local", "none"), "claude_model": CLAUDE_MODELS,
-           "claude_reflex_model": CLAUDE_MODELS}
+           "claude_reflex_model": CLAUDE_MODELS, "body": BODY_MODES}
 
 
 class Settings:
@@ -594,6 +598,144 @@ class Spine:
         return 0
 
 
+# ---------------------------------------------------------------- voice body
+
+
+class VoiceBody:
+    """sim/voice_motion live: how it is said moves the body, what is said sets its parameters.
+
+    Microphone chunks become prosody frames; a BODY_HZ loop steps the CPG with
+    them (or with silence when no microphone feeds it) and a sender streams the
+    newest targets as `pose` at FRAME_HZ. While the body is on, words from chat
+    or whisper go to the body instead of the reflex and library motions.
+    """
+
+    SILENCE = (0.0, 0.0, math.nan, math.nan, 0.0)
+
+    def __init__(self, manifest, spine, hz=FRAME_HZ):
+        self.manifest, self.spine, self.hz = manifest, spine, hz
+        self.mode, self.cpg = "off", None
+        self.lock = threading.Lock()
+        self.frames = queue.Queue(maxsize=BODY_HZ // 2)  # newest 0.5 s of prosody
+        self.stream = ProsodyStream(f0_ref=None)  # pitch reference follows the speaker
+        self.mic_at = -1e9  # monotonic time of the last microphone chunk
+        self.last, self.f0 = self.SILENCE, math.nan  # newest frame, last voiced pitch
+        self.heard, self.error, self.sent = "", "", 0
+        self.target, self.fresh = None, threading.Event()
+        self.started = False
+
+    @property
+    def robot(self):
+        return getattr(self.spine, "robot", None)
+
+    def set_mode(self, mode):
+        if mode == self.mode:
+            return
+        with self.lock:
+            self.mode = mode
+            self.cpg = None if mode == "off" else VoiceCpg(self.manifest, mode)
+            if self.cpg:
+                self.cpg.keep_log = BODY_HZ * 10
+        if mode == "off":
+            if self.robot:
+                threading.Thread(target=self._command, args=("motion stand",), daemon=True).start()
+        elif not self.started:
+            self.started = True
+            threading.Thread(target=self._loop, daemon=True).start()
+            threading.Thread(target=self._send, daemon=True).start()
+
+    def feed(self, pcm):
+        """int16 microphone bytes from the ears."""
+        if self.mode == "off":
+            return
+        self.mic_at = time.monotonic()
+        audio = np.frombuffer(pcm, dtype="<i2").astype(np.float32) / 32768
+        for frame in self.stream.feed(audio):
+            offer(self.frames, frame)
+
+    def hear_words(self, text):
+        self.heard = text
+        with self.lock:
+            it = self.cpg.hear_words(text) if self.cpg else None
+        return it.name if it else "-"
+
+    def step(self, frame):
+        with self.lock:
+            if self.cpg is None:
+                return None
+            self.last = frame
+            if math.isfinite(frame[2]):
+                self.f0 = frame[2]
+            self.target = self.cpg.step(*frame[:2], *frame[3:])
+        self.fresh.set()
+        return self.target
+
+    def _loop(self):
+        period, next_t = 1 / BODY_HZ, time.monotonic()
+        while True:
+            if self.mode == "off":
+                time.sleep(0.1)
+                next_t = time.monotonic()
+                continue
+            if time.monotonic() - self.mic_at < 0.5:  # the microphone is the clock
+                try:
+                    self.step(self.frames.get(timeout=0.2))
+                except queue.Empty:
+                    pass
+                next_t = time.monotonic()
+                continue
+            self.step(self.SILENCE)
+            next_t += period
+            time.sleep(max(0.0, next_t - time.monotonic()))
+
+    def pose(self, target):
+        return [round(min(max(self.manifest.to_firmware(j, q), j.limits_deg[0]), j.limits_deg[1]), 1)
+                for q, j in zip(target, self.manifest.joints)]
+
+    def _command(self, text):
+        try:
+            ok, reply = self.robot.command(text)
+        except (OSError, AttributeError) as e:
+            self.error = f"robot not reachable: {e}"
+            return False
+        if not ok:
+            self.error = reply.strip()
+        return ok
+
+    def _send(self):
+        last, t_last = None, 0.0
+        while True:
+            self.fresh.wait()
+            self.fresh.clear()
+            if self.mode == "off" or self.robot is None or self.target is None:
+                continue
+            time.sleep(max(0.0, t_last + 1 / self.hz - time.monotonic()))
+            degs = self.pose(self.target)
+            if last and max(abs(a - b) for a, b in zip(degs, last)) < 0.5:
+                continue  # standing still: nothing new to say
+            t_last = time.monotonic()
+            if self._command("pose " + " ".join(f"{d:g}" for d in degs)):
+                last, self.error = degs, ""
+                self.sent += 1
+            elif "arm run" in self.error:
+                self._command("arm run")
+            else:
+                time.sleep(1.0)
+
+    def state(self):
+        env = self.last[0]
+        with self.lock:
+            cpg = self.cpg
+            arousal, amp, gait, intent = cpg.log[-1] if cpg and cpg.log else (0.0, 0.0, "-", "-")
+            hz = cpg.hz if cpg else 0.0
+        robot = self.robot
+        return {"mode": self.mode, "arousal": round(arousal, 2), "amp": round(amp, 2), "gait": gait,
+                "intent": intent, "hz": round(hz, 2), "f0": None if math.isnan(self.f0) else round(self.f0),
+                "f0_ref": round(self.stream.f0_ref), "loud": round(env, 2), "heard": self.heard,
+                "mic": time.monotonic() - self.mic_at < 1.0, "robot": robot.base if robot else "",
+                "sent": self.sent, "error": self.error}
+
+
 # ---------------------------------------------------------------- mind
 
 
@@ -602,8 +744,11 @@ class Mind:
         self.reflex, self.library, self.memory, self.spine = reflex, library, memory, spine
         self.designer, self.clock = designer, clock
         self.settings, self.link, self.error = None, None, ""
+        self.body = VoiceBody(spine.manifest, spine)
 
     def handle(self, moment):
+        if self.body.mode != "off":
+            return self.handle_body(moment)
         t0 = time.monotonic()
         try:
             decision = self.reflex.decide(moment, self.library, self.memory.notes)
@@ -621,6 +766,17 @@ class Mind:
               flush=True)
         if action != NONE:
             self.spine.start(self.library.items[action], decision.intensity)
+        return entry
+
+    def handle_body(self, moment):
+        """Body mode: words set the CPG's intent; sounds are already in the prosody."""
+        if not moment.text:
+            return None
+        did = "body:" + self.body.hear_words(moment.text)
+        entry = {"t": self.clock(), **asdict(moment), "action": did, "intensity": 0.0, "addressed": 1.0,
+                 "by": f"body:{self.body.mode}", "did": did, "reflex_ms": 0, "note": ""}
+        self.memory.add(entry)
+        print(f"🫀 {moment.source}「{moment.text}」→ {did}", flush=True)
         return entry
 
     def invent(self, moment):
@@ -642,6 +798,7 @@ class Mind:
         except ValueError as e:
             self.reflex, self.designer, self.error = RuleReflex(), None, str(e)
         v = settings.values
+        self.body.set_mode(v.get("body", "off"))
         host = v["host"] if v["live"] and v["host"] else None
         if host != getattr(self.spine.robot, "host", None):
             if self.link:
@@ -663,7 +820,7 @@ class Mind:
     def status(self):
         robot = self.spine.robot
         return {"reflex": self.reflex.by, "designer": self.designer.by if self.designer else "none",
-                "robot": robot.base if robot else "", "error": self.error}
+                "robot": robot.base if robot else "", "body": self.body.mode, "error": self.error}
 
     def ruminate(self):
         if self.designer and self.memory.recent():
@@ -698,15 +855,31 @@ def utterances(stream, frame_ms=100, silence_rms=300.0, loud_rms=3000.0, end_ms=
             buf, quiet = bytearray(), 0
 
 
-def hear(args, moments):
-    """Audio ears -> moments; the newest win (offer drops the oldest)."""
+class Tap:
+    """A stream that hands every chunk it reads to a listener (the voice body)."""
+
+    def __init__(self, stream, listener):
+        self.stream, self.listener = stream, listener
+
+    def read(self, n):
+        data = self.stream.read(n)
+        if data:
+            self.listener(data)
+        return data
+
+
+def hear(args, moments, body=None):
+    """Audio ears -> moments; the newest win (offer drops the oldest). Without a
+    whisper model only the body hears (prosody), nothing is transcribed."""
     proc = subprocess.Popen(source_command(args), stdout=subprocess.PIPE)
     source = "radio" if args.sdr is not None else "voice"
+    stream = Tap(proc.stdout, body.feed) if body else proc.stdout
     try:
-        for kind, value in utterances(proc.stdout, silence_rms=args.silence_rms):
+        for kind, value in utterances(stream, silence_rms=args.silence_rms):
             if kind == "sound":
                 offer(moments, Moment("sound", loudness=value, onset=True))
-            elif text := transcribe(value, args.whisper_cmd, args.whisper_model, args.language):
+            elif args.whisper_model and (text := transcribe(value, args.whisper_cmd, args.whisper_model,
+                                                              args.language)):
                 offer(moments, Moment(source, text, loudness=rms(value)))
     finally:
         proc.terminate()
@@ -755,6 +928,8 @@ def serve(port, mind, moments):
                 return self.reply(200, json.dumps(config_view(mind), ensure_ascii=False))
             if self.path == "/space":  # the motion space as text, for any LLM
                 return self.reply(200, describe(), "text/plain")
+            if self.path == "/body":
+                return self.reply(200, json.dumps(mind.body.state(), ensure_ascii=False))
             self.reply(404, "{}")
 
         def do_OPTIONS(self):
@@ -829,7 +1004,7 @@ def main(argv=None):
     if not (audio or args.text or args.serve):
         p.error("give an ear (--sdr/--mic/--file/--text) and/or --serve")
     if audio and not args.whisper_model:
-        p.error("audio ears need --whisper-model")
+        print("no --whisper-model: speech is not transcribed; the voice body still hears prosody", flush=True)
 
     settings = Settings(args.state)
     flags = {"reflex": args.reflex, "designer": args.designer, "jev_url": args.jev_url,
@@ -845,7 +1020,7 @@ def main(argv=None):
         if args.serve:
             serve(args.serve, mind, moments)
         if audio:
-            threading.Thread(target=hear, args=(args, moments), daemon=True).start()
+            threading.Thread(target=hear, args=(args, moments, mind.body), daemon=True).start()
         if args.text:
             def typed():
                 for line in sys.stdin:
