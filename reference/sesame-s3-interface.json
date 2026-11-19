@@ -1,11 +1,11 @@
 {
   "schema_version": 1,
   "generated_by": "tools/generate_s3_firmware.py",
-  "manifest_id": "fe108150ee38fa10",
+  "manifest_id": "eb2915398f599160",
   "source_sha256": {
-    "manifest/robot.yaml": "a9ae157f0485eaaa2f0e5fbf4748c61567922420a1d02e5689b80066d2ea13a5",
+    "manifest/robot.yaml": "ebc5f147591d774be05113fa7700e1698ab3ad812afda1e1de7ed0910725c0f2",
     "manifest/safeaction.yaml": "7bf0adddc73821884fd8ce15a1dcf5f88c55c8cd3e37d964cf4646a5fc5279f2",
-    "manifest/motions.yaml": "ffffa42423cdbe05068eb627ea487ee6903f61faa8640e35ea6c441e2054bd9f"
+    "manifest/motions.yaml": "d683ebab22369570b30663ed3a20da5aeb106f93bd03c8f6c36f25ea4b455cfb"
   },
   "status": "NEEDS-HARDWARE; offline validation is recorded separately in the diagnosis",
   "procedure": "reference/SESAME-S3-CALIBRATION.md",
@@ -429,7 +429,8 @@
     "read_manifest_ids": [
       "e669b916d178ac0a",
       "bd7675604b98ae46",
-      "8d75c0ea0b2c68e7"
+      "8d75c0ea0b2c68e7",
+      "fe108150ee38fa10"
     ],
     "behavior": "Read valid checksum/layout-compatible saved records without changing channel/sign/trim/limits/oscillator/verified values; do not rewrite NVS until explicit save",
     "stored_limits": "A loaded record keeps its stored joint limits, including limits wider than the manifest soft range that were saved under an earlier listed identity. They bound that joint's commands exactly as saved and are neither clamped nor rewritten; boot and show name the joints concerned with the current soft range. An explicit save stores the same values under the current identity. A new limits edit stays inside the manifest soft range.",

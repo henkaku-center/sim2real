@@ -27,11 +27,16 @@ motions:
   stand:
     - pose: stand
 
+  # Changed from upstream on 2026-11-16 (DECISIONS.md D28): upstream sets
+  # {R4: 80, L3: 180, L2: 90, R1: 100} at once. The instructor observed real
+  # forward tipping; exact contact and command telemetry are unavailable.
+  # Candidate: fold the rear-right foot first and move the front-right hip to
+  # 180 instead of 100. Numerical validation is still failing: NOT DEPLOYED.
   wave:
     - pose: stand
     - wait: 200
-    - set: {R4: 80, L3: 180, L2: 90, R1: 100}
-    - wait: 200
+    - set: {R4: 80, L2: 90, R1: 180}
+    - wait: 300
     - set: {L3: 180}
     - wait: 300
     - repeat:
