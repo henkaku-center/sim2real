@@ -73,9 +73,13 @@ number of frames sent. While the body is on, chat and whisper text go to the
 body instead of the library motions.
 
 ```sh
-uv run --group radio python tools/sesame_mind.py --mic --serve 8765    # prosody only; type words in the panel
-uv run --group radio python tools/sesame_mind.py --mic --whisper-model ggml-small.bin --serve 8765
+uv run --group radio python tools/sesame_mind.py --mic --mic-device :1 --serve 8765    # prosody only; type words in the panel
+uv run --group radio python tools/sesame_mind.py --mic --mic-device :1 --whisper-model ggml-small.bin --serve 8765
 ```
+
+On the user's MacBook Air, avfoundation audio device `:0` is BlackHole (a
+virtual device that records silence) and `:1` is the built-in microphone.
+List devices with `ffmpeg -f avfoundation -list_devices true -i ""`.
 
 The phone cannot be the microphone: the robot page is plain HTTP, and
 browsers only allow `getUserMedia` on secure origins. `GET /body` returns
