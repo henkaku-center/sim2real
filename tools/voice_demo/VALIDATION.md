@@ -5,6 +5,12 @@
 - `uv run --project tools/voice_demo --locked --extra google --python 3.11 python -m pytest tests/test_voice_demo.py tests/test_voice_providers.py -q`:
   **66 passed, 1 skipped**, 13.16 seconds, macOS Intel / Python 3.11.16. The skip
   is Linux-only GPIO. The Google SDK installed successfully on this Mac.
+- `uv run --locked pytest -q`: **502 passed, 19 skipped, 1 expected failure**,
+  124.49 seconds, Python 3.12.13. The root environment has no Google extra, so
+  five Google-specific cases skip there and pass in the dedicated voice run
+  above. This full run began before the final three defensive provider cases
+  were added; the 66-pass focused run includes those cases. Remaining skips
+  reflect existing environment/hardware/browser coverage limits.
 - Fake HTTP → relay → native C++ firmware PTY demo: completed the custom snake
   sequence, asserted `mode=0 outputs=0`, and closed all owned resources.
 - Mocked Claude HTTP covers exact Worker/Anthropic request fields and headers,
