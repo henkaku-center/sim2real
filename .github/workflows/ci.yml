@@ -6,6 +6,22 @@ on:
   pull_request:
 
 jobs:
+  voice-demo:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, ubuntu-24.04-arm, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+      - name: Install minimal voice environment (Bookworm Python version)
+        run: uv sync --project tools/voice_demo --locked --python 3.11 --all-extras
+      - name: Voice contract, HTTP, input and native firmware PTY tests
+        run: uv run --project tools/voice_demo --locked --all-extras python -m pytest tests/test_voice_demo.py -v
+      - name: Complete fake-provider local demo
+        run: uv run --project tools/voice_demo --locked python -m tools.voice_demo.demo
+
   occt-parity:
     # FreeCAD-free CAD kernel (OpenCascade WebAssembly) must match the FreeCAD
     # pipeline on the base, two-eye and six-leg designs.

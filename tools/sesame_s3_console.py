@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Interactive USB console. No reconnect, no auto-arm, explicit heartbeat switch."""
 import argparse
+import errno
 import queue
 import sys
 import threading
@@ -8,12 +9,22 @@ import time
 
 import serial
 
+HEARTBEAT_INTERVAL_SECONDS = .1
+
 
 def open_device(port):
     """Open the USB port as the console does (this may reset the board). Shared with tools/real2sim.py."""
     device = serial.Serial(port=None, baudrate=115200, timeout=0, write_timeout=.2)
     device.dtr = False; device.rts = False; device.port = port
-    device.open(); device.dtr = True
+    device.open()
+    try:
+        device.dtr = True
+    except OSError as exc:
+        # POSIX pseudo-terminals have no modem-control pins. Real serial errors
+        # still propagate, and the normal board-open/reset sequence is unchanged.
+        if exc.errno != errno.ENOTTY:
+            device.close()
+            raise
     return device
 
 
@@ -46,7 +57,7 @@ def main():
                     if len(command.encode()) >= 160: print("Rejected: command exceeds firmware line length")
                     else: device.write((command + "\n").encode())
             now = time.monotonic()
-            if live and now - last >= .1:
+            if live and now - last >= HEARTBEAT_INTERVAL_SECONDS:
                 device.write(b"heartbeat\n"); last = now
             buffer += device.read(4096)
             while b"\n" in buffer:

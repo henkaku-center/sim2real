@@ -1,0 +1,23 @@
+[Unit]
+Description=Sesame voice plan server
+After=network.target
+
+[Service]
+Type=simple
+User=sesame-voice
+WorkingDirectory=/opt/sim2real
+EnvironmentFile=/etc/sesame-voice/server.env
+Environment=PYTHONUNBUFFERED=1
+Environment=PYTHONDONTWRITEBYTECODE=1
+ExecStart=/opt/sim2real/tools/voice_demo/.venv/bin/python -m tools.voice_demo.server --host 127.0.0.1 --port 8765
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=5
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+UMask=0077
+
+[Install]
+WantedBy=multi-user.target
