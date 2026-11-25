@@ -119,6 +119,12 @@ relay displays refusal notes. Each provider call has a 30-second timeout; the
 relay allows 100 seconds for transcription plus up to two planning attempts.
 Offline keys continue to preempt a pending request.
 
+Provider requests identify this application as `sesame-voice-demo/0.1.0` (Claude
+HTTP User-Agent; Google SDK ClientInfo). HTTP errors preserve status and exact
+short numeric edge diagnostics such as `error code: 1010`, while suppressing
+arbitrary provider text/JSON/HTML and credentials. Cloudflare can reject the
+default Python urllib User-Agent before a request reaches the Worker.
+
 Generate the JSON Schema directly from the current manifests/firmware:
 
 ```sh
@@ -175,8 +181,10 @@ plan is downloaded, playback needs no server connection. Escape cancels locally.
 
 ## Deploy the server on a Google Cloud VM
 
-The VM has **not been provisioned**. The test Worker rejected the first live
-Claude request with HTTP 403; no Google audio request was made. On an authorized Debian VM, install git, Python/uv and
+The VM has **not been provisioned**. Live text checks through the test Worker
+passed after fixing the application's User-Agent; no Google audio request was
+made. See [VALIDATION.md](VALIDATION.md) for the semantic failure and targeted
+retest, latency and simulation evidence. On an authorized Debian VM, install git, Python/uv and
 Tailscale, enroll it in the installation's tailnet, and restrict access to the
 Pi/operator devices. Check out this tested revision at `/opt/sim2real`:
 
@@ -308,8 +316,10 @@ transcripts; set the venue's local retention policy appropriately.
   USB-connected full-robot installation arrangement. USB-only bench capacity is
   unmeasured. See `reference/SESAME-S3-CALIBRATION.md` and the generated interface's
   `power` section; do not infer an electrical design from this serial architecture.
-- VM/Tailscale deployment, real-provider credentials/model access, latency/cost,
-  and unattended two-month endurance/restart behaviour.
+- VM/Tailscale deployment, live Google audio/ADC, direct Anthropic Console-key
+  access, load-dependent latency/cost, arbitrary-prompt semantic correctness,
+  and unattended two-month endurance/restart behaviour. The test Worker text
+  path and native PTY were exercised; see VALIDATION.md.
 
 Give the guide [GUIDE.md](GUIDE.md). Test results and review scope are recorded in
 [VALIDATION.md](VALIDATION.md).

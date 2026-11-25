@@ -78,8 +78,12 @@ explicitly. A missing key is an error, not a silent switch to fake mode.
 
 Claude gets one correction attempt if its proposed plan is invalid or it omits
 the tool call. After that the console shows refusal notes and no motion starts.
-The current live gateway check stopped on HTTP 403; recognition and live plan
-quality remain unverified. See [VALIDATION.md](VALIDATION.md).
+Live gateway text checks now work, with typical stock plans returned in about
+2.5 seconds. A custom snake request took about 7.4 seconds including correction.
+One incorrect face substitution was found and the prompt clarified; the
+unsupported eye request then correctly refused in English and Japanese.
+Live audio recognition and physical motion remain unverified. See
+[VALIDATION.md](VALIDATION.md).
 
 Setup is **1 December 2026**; party **3 December 2026**. Real microphone, button,
 motion, power and network commissioning remain necessary. The reference wiring

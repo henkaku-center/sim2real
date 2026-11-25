@@ -24,8 +24,11 @@ independent of provider latency and revalidates every returned plan.
 The Worker accepts `x-api-key` containing its **own access token**. Anthropic
 accepts the same header containing a Console API key, with
 `anthropic-version: 2023-06-01`. Credentials are only environment settings, never
-prompt content. HTTPS only, no redirects or environment proxies; error messages
-include HTTP status but omit provider bodies, headers and exception detail.
+prompt content. HTTPS only, no redirects or environment proxies. Claude requests
+send `User-Agent: sesame-voice-demo/0.1.0`; Google gets the same application
+identifier through its SDK `ClientInfo`. Error messages include HTTP status and,
+for an exact short plain-text `error code: <digits>` envelope, that numeric edge
+code. Arbitrary provider bodies, headers and exception detail remain hidden.
 
 Sources inspected/fetched on 25 November 2026:
 
@@ -102,10 +105,14 @@ discovery. The deterministic fake remains opt-in (`VOICE_PROVIDER=fake`), with a
 clearly labelled fixed WAV transcript. Missing Claude configuration fails loudly
 rather than silently pretending to recognize speech or plan with AI.
 
-The live text check stopped at the first Worker HTTP 403; see
-[VALIDATION.md](VALIDATION.md). Tool calling and plan quality are therefore
-offline-verified only. Live Google recognition and the direct Console-key path
-are unverified. Audio goes to Google; transcripts and plan requests go to Claude
+The initial HTTP 403 was diagnosed as edge filtering of Python urllib's default
+User-Agent. With an explicit application User-Agent, the ten-prompt live matrix
+completed; a wrong face substitution was exposed, the capability prompt was
+clarified, and English/Japanese refusals plus a supported face were rechecked.
+Stock planning took 2.46 seconds median; see [VALIDATION.md](VALIDATION.md) for
+the initial failure, limited snake interpretation, correction and evidence scope.
+Live Google recognition and the direct Console-key path remain unverified.
+Audio goes to Google; transcripts and plan requests go to Claude
 through the configured backend. No provider retention claim is implied. The
 server stores neither audio nor transcripts; the relay console/journal includes
 transcripts and should use the installation's intended retention policy.
