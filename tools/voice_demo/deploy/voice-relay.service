@@ -1,0 +1,25 @@
+[Unit]
+Description=Sesame local voice relay and offline controls
+After=local-fs.target
+
+[Service]
+Type=simple
+User=sesame-voice
+SupplementaryGroups=dialout audio input
+WorkingDirectory=/opt/sim2real
+EnvironmentFile=/etc/sesame-voice/relay.env
+Environment=PYTHONUNBUFFERED=1
+Environment=PYTHONDONTWRITEBYTECODE=1
+ExecStart=/opt/sim2real/tools/voice_demo/.venv/bin/python -m tools.voice_demo.relay
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=5
+KillMode=control-group
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+UMask=0077
+
+[Install]
+WantedBy=multi-user.target
