@@ -5,6 +5,7 @@ requires-python = ">=3.11"
 dependencies = ["pyserial==3.5", "pyyaml==6.0.3"]
 
 [project.optional-dependencies]
+google = ["google-cloud-speech==2.41.0"]
 gpio = ["gpiod==2.3.0; sys_platform == 'linux'"]
 
 [dependency-groups]

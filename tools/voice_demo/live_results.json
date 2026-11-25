@@ -1,0 +1,14 @@
+{
+  "date_utc": "2026-11-25T06:36:49.789150+00:00",
+  "revision": "b1d4067a8447a4ba184f51b9e49b0d234d2a12a0",
+  "model": "claude-haiku-4-5",
+  "results": [
+    {
+      "prompt": "do a bow",
+      "latency_seconds": 0.088,
+      "error": "server HTTP 502: Claude HTTP 403; check endpoint, credentials and model access: ",
+      "simulation": "no plan; no playback",
+      "attempts": []
+    }
+  ]
+}
