@@ -21,7 +21,7 @@ from tools.voice_demo.client import Controller, ServerUnavailable, request_plan
 from tools.voice_demo.inputs import PushToTalk, Recorder
 from tools.voice_demo.plan import Catalog, InvalidPlan
 from tools.voice_demo.playback import Player, PlaybackError, SerialLink
-from tools.voice_demo.providers import FakeProvider, OpenAIProvider, ProviderError, check_wav, provider_from_env
+from tools.voice_demo.providers import FakeProvider, check_wav, provider_from_env
 from tools.voice_demo.server import Server
 from tools.voice_demo.simulator import SimulatedRobot
 from tools.voice_demo import inputs
@@ -132,8 +132,7 @@ def test_plan_bounds_contract_and_entire_sequence(catalog):
 
 
 def test_fake_provider_known_creative_and_unknown(catalog, monkeypatch):
-    monkeypatch.delenv("OPENAI_API_KEY", raising=False)
-    monkeypatch.delenv("VOICE_PROVIDER", raising=False)
+    monkeypatch.setenv("VOICE_PROVIDER", "fake")
     fake = provider_from_env(catalog)
     assert isinstance(fake, FakeProvider)
     for text in ("do a bow", "say hello to the audience", "move like a snake", "お辞儀", "蛇"):
@@ -188,32 +187,6 @@ def test_server_text_audio_auth_and_failures(catalog):
         finally:
             server.slot.release()
             server.slot.release()
-
-
-def test_real_provider_wire_contract_without_keys_or_network(catalog, monkeypatch):
-    monkeypatch.setenv("OPENAI_API_KEY", "unit-test-not-a-key")
-    provider = OpenAIProvider(catalog)
-    calls = []
-
-    def request(endpoint, body, content_type="application/json"):
-        calls.append((endpoint, body, content_type))
-        if endpoint == "audio/transcriptions":
-            return {"text": "bow"}
-        return {"status": "completed", "output": [{"type": "message", "content": [
-            {"type": "output_text", "text": json.dumps({"plan": catalog.plan([{"type": "rest"}]), "notes": []})}]}]}
-    monkeypatch.setattr(provider, "request", request)
-    assert provider.transcribe(wav()) == "bow"
-    assert b"gpt-transcribe" in calls[0][1] and b'filename="prompt.wav"' in calls[0][1]
-    provider.generate("bow")
-    body = json.loads(calls[1][1])
-    assert body["store"] is False and body["text"]["format"]["strict"] is True
-    assert body["text"]["format"]["schema"]["properties"]["plan"] == catalog.schema()
-    for response in ({"status": "incomplete"}, {"status": "completed", "output": [
-        {"type": "message", "content": [{"type": "refusal", "refusal": "declined"}]}]},
-        {"status": "completed", "output": [{"type": "message", "content": [{"type": "output_text", "text": "{}"}]}]}):
-        monkeypatch.setattr(provider, "request", lambda *a, **k: response)
-        with pytest.raises(ProviderError):
-            provider.generate("bow")
 
 
 def test_serial_grammar_modes_rate_clamp_and_stop(link, catalog):

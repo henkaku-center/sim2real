@@ -7,19 +7,21 @@ import os
 import threading
 
 from .plan import Catalog, InvalidPlan
-from .providers import MAX_AUDIO_BYTES, ProviderError, check_text, check_wav, provider_from_env
+from .providers import MAX_AUDIO_BYTES, FakeProvider, PlanRefusal, ProviderError, check_text, check_wav, provider_from_env
+from .stt import speech_from_env
 
 
 class Server(ThreadingHTTPServer):
     daemon_threads = True
     request_queue_size = 4
 
-    def __init__(self, address, token, catalog=None, provider=None):
+    def __init__(self, address, token, catalog=None, provider=None, transcriber=None):
         if not token or len(token) < 16 or not token.isascii():
             raise ValueError("VOICE_DEVICE_TOKEN must contain at least 16 ASCII characters")
         self.token = token
         self.catalog = catalog or Catalog()
         self.provider = provider or provider_from_env(self.catalog)
+        self.transcriber = transcriber or (self.provider if isinstance(self.provider, FakeProvider) else speech_from_env())
         self.slot = threading.BoundedSemaphore(2)
         self.connections = threading.BoundedSemaphore(8)
         super().__init__(address, Handler)
@@ -68,6 +70,7 @@ class Handler(BaseHTTPRequestHandler):
             return self.reply(401, {"error": "device token required"})
         if self.path == "/health":
             return self.reply(200, {"ok": True, "provider": self.server.provider.name,
+                                    "stt_provider": self.server.transcriber.name,
                                     "contract": self.server.catalog.contract})
         self.reply(404, {"error": "not found"})
 
@@ -94,7 +97,7 @@ class Handler(BaseHTTPRequestHandler):
             content_type = self.headers.get_content_type()
             if content_type == "audio/wav":
                 check_wav(data)
-                transcript = self.server.provider.transcribe(data)
+                transcript = self.server.transcriber.transcribe(data)
             elif content_type == "application/json":
                 body = json.loads(data)
                 if not isinstance(body, dict) or set(body) != {"text"}:
@@ -110,6 +113,8 @@ class Handler(BaseHTTPRequestHandler):
             self.reply(422, {"error": "JSON is too deeply nested"})
         except (InvalidPlan, ValueError, UnicodeError) as exc:
             self.reply(422, {"error": str(exc)[:1000]})
+        except PlanRefusal as exc:
+            self.reply(422, {"error": str(exc), "notes": exc.notes})
         except ProviderError as exc:
             self.reply(502, {"error": str(exc)})
         except (TimeoutError, OSError):

@@ -56,8 +56,34 @@ accept a sequence of joint positions. It is not magic or unrestricted control.�
 
 If running **fake provider** mode, say so: text examples are deterministic, and
 every WAV uses the fixed “do a bow” transcript. That mode tests the software loop;
-it is not speech recognition. Real-provider mode sends the recording to OpenAI
-through the server. Console logs include transcripts.
+it is not speech recognition. Real-provider mode sends the recording to **Google
+Cloud Speech-to-Text**, then the transcript to **Claude** for a plan. Console
+logs include transcripts. English/Japanese are detected automatically from the
+configured language pair; Claude itself does not transcribe the recording.
+
+## Operator configuration
+
+The server defaults to `VOICE_PROVIDER=claude` and `VOICE_STT_PROVIDER=google`.
+Set `VOICE_CLAUDE_BASE_URL`, `VOICE_CLAUDE_TOKEN`, and `VOICE_PLAN_MODEL` in the
+server's private environment. For the test Worker, use its origin and access
+token. To move to an Anthropic Console key, change the URL to
+`https://api.anthropic.com`, replace the token with the Console key, select an
+available model, and restart the server. Nothing changes on the Pi.
+
+Google defaults are project `sesame-robots`, model `chirp_3`, location `us`, and
+languages `en-US,ja-JP`. The VM uses its attached service account through ADC,
+without a key file. Full install/configuration instructions are in
+[README.md](README.md#configure-claude-and-google). Fake mode must be selected
+explicitly. A missing key is an error, not a silent switch to fake mode.
+
+Claude gets one correction attempt if its proposed plan is invalid or it omits
+the tool call. After that the console shows refusal notes and no motion starts.
+Live gateway text checks now work, with typical stock plans returned in about
+2.5 seconds. A custom snake request took about 7.4 seconds including correction.
+One incorrect face substitution was found and the prompt clarified; the
+unsupported eye request then correctly refused in English and Japanese.
+Live audio recognition and physical motion remain unverified. See
+[VALIDATION.md](VALIDATION.md).
 
 Setup is **1 December 2026**; party **3 December 2026**. Real microphone, button,
 motion, power and network commissioning remain necessary. The reference wiring

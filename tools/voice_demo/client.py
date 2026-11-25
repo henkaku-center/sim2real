@@ -19,7 +19,7 @@ class NoRedirect(urllib.request.HTTPRedirectHandler):
         raise ServerUnavailable("server redirect refused")
 
 
-def request_plan(url, token, *, text=None, audio=None, timeout=45):
+def request_plan(url, token, *, text=None, audio=None, timeout=100):
     parsed = urllib.parse.urlsplit(url)
     if parsed.scheme not in ("http", "https") or not parsed.hostname or parsed.username or parsed.password:
         raise ServerUnavailable("server must be an http(s) URL without credentials")
@@ -48,7 +48,11 @@ def request_plan(url, token, *, text=None, audio=None, timeout=45):
         return result
     except urllib.error.HTTPError as exc:
         try:
-            reason = json.loads(exc.read(4096)).get("error", "request refused")
+            failure = json.loads(exc.read(20000))
+            reason = failure.get("error", "request refused")
+            notes = failure.get("notes", [])
+            if notes and isinstance(notes, list) and all(isinstance(note, str) for note in notes):
+                reason += ": " + "; ".join(notes)
         except (ValueError, OSError):
             reason = "request refused"
         raise ServerUnavailable(f"server HTTP {exc.code}: {str(reason)[:1000]}") from exc

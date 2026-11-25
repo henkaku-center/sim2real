@@ -22,13 +22,14 @@ Try `--text 'do a bow'` or `--text 'say hello to the audience'` too.
 
 Python 3.11+ works, including Raspberry Pi OS Bookworm's Python 3.11 on arm64.
 The small independent environment avoids installing MuJoCo/CAD dependencies on
-the Pi or VM. Runtime dependencies are **PySerial 3.5 and PyYAML 6.0.3**; GPIO
+the Pi or VM. Base dependencies are **PySerial 3.5 and PyYAML 6.0.3**; the server's
+`google` extra adds **google-cloud-speech 2.41.0** for transcription. GPIO
 optionally adds **gpiod 2.3.0 on Linux only**. Versions/hashes are in `uv.lock`.
 Development uses pytest 9.0.2. Native simulation needs `c++`; actual relay/server
 deployment does not. The root repository pytest runner also discovers the tests.
 
 ```sh
-uv run --project tools/voice_demo --locked python -m pytest tests/test_voice_demo.py -v
+uv run --project tools/voice_demo --locked --extra google python -m pytest tests/test_voice_demo.py tests/test_voice_providers.py -v
 ```
 
 CI runs this minimal environment and the complete demo on Linux x86_64,
@@ -109,6 +110,21 @@ Bodies are limited to 1,000,000 bytes, text to 2,000 characters. HTTP errors are
 not retain audio/transcripts or log headers. The Pi console shows transcript,
 notes, step data and outcome, with terminal control characters escaped.
 
+The default is **Claude planning + Google Speech-to-Text**, not an implicit fake
+fallback. Claude submits one `submit_plan` tool call using the plan schema below.
+The server locally validates it; missing/invalid tool output gets one correction
+attempt with the validator's reason. Two failures produce HTTP 422
+`{error, notes}` and no plan. HTTP/provider errors get no automatic retry. The
+relay displays refusal notes. Each provider call has a 30-second timeout; the
+relay allows 100 seconds for transcription plus up to two planning attempts.
+Offline keys continue to preempt a pending request.
+
+Provider requests identify this application as `sesame-voice-demo/0.1.0` (Claude
+HTTP User-Agent; Google SDK ClientInfo). HTTP errors preserve status and exact
+short numeric edge diagnostics such as `error code: 1010`, while suppressing
+arbitrary provider text/JSON/HTML and credentials. Cloudflare can reject the
+default Python urllib User-Agent before a request reaches the Worker.
+
 Generate the JSON Schema directly from the current manifests/firmware:
 
 ```sh
@@ -165,14 +181,16 @@ plan is downloaded, playback needs no server connection. Escape cancels locally.
 
 ## Deploy the server on a Google Cloud VM
 
-The VM has **not been provisioned**. No cloud resources or paid API requests were
-created by these tests. On an authorized Debian VM, install git, Python/uv and
+The VM has **not been provisioned**. Live text checks through the test Worker
+passed after fixing the application's User-Agent; no Google audio request was
+made. See [VALIDATION.md](VALIDATION.md) for the semantic failure and targeted
+retest, latency and simulation evidence. On an authorized Debian VM, install git, Python/uv and
 Tailscale, enroll it in the installation's tailnet, and restrict access to the
 Pi/operator devices. Check out this tested revision at `/opt/sim2real`:
 
 ```sh
 cd /opt/sim2real
-uv sync --project tools/voice_demo --locked --no-dev --python /usr/bin/python3
+uv sync --project tools/voice_demo --locked --extra google --no-dev --python /usr/bin/python3
 sudo useradd --system --home /opt/sim2real --shell /usr/sbin/nologin sesame-voice
 sudo install -d -m 750 /etc/sesame-voice
 # Create /etc/sesame-voice/server.env from deploy/server.env.example;
@@ -188,15 +206,62 @@ depend on a managed interpreter under an operator's home directory hidden by
 `ProtectHome=true`. Tailscale Serve supplies the tailnet HTTPS
 address; set that address as `VOICE_SERVER_URL` on the Pi. Do not publish port
 8765 to the Internet or use Tailscale Funnel. Verify authenticated `/health`
-through the tailnet before changing `VOICE_PROVIDER=fake` to `openai`. The latter
-uses `OPENAI_API_KEY` only from the server environment. See
-[DECISION.md](DECISION.md) for the provider choice, sources and paid-test limits.
+through the tailnet. Health reports both `provider` and `stt_provider`; it does
+not make a paid request or prove upstream credentials work. See
+[DECISION.md](DECISION.md) for the provider choice, sources and evidence limits.
+
+### Configure Claude and Google
+
+Set these **only in the server's private environment file**:
+
+```sh
+VOICE_PROVIDER=claude
+VOICE_CLAUDE_BASE_URL=https://YOUR-WORKER.YOUR-SUBDOMAIN.workers.dev
+VOICE_CLAUDE_TOKEN=YOUR-WORKER-ACCESS-TOKEN
+VOICE_PLAN_MODEL=claude-haiku-4-5
+VOICE_STT_PROVIDER=google
+GOOGLE_CLOUD_PROJECT=sesame-robots
+VOICE_STT_LOCATION=us
+VOICE_STT_MODEL=chirp_3
+VOICE_STT_LANGUAGES=en-US,ja-JP
+```
+
+Obtain the actual Worker URL from its deployment; the example is a placeholder.
+`VOICE_CLAUDE_BASE_URL` is an HTTPS origin, optionally ending in `/v1`.
+The token is the Worker's access token, **not** an Anthropic key. The request
+uses only the supported non-streaming Messages subset and `x-api-key` auth.
+
+To switch to an **Anthropic Console API key**, change
+`VOICE_CLAUDE_BASE_URL=https://api.anthropic.com` and replace
+`VOICE_CLAUDE_TOKEN` with that key; set `VOICE_PLAN_MODEL` to the desired available
+model and restart the server. No code, relay or Google change is needed.
+Application-specific variables avoid inheriting unrelated Anthropic auth settings.
+
+For audio, enable Speech-to-Text in `sesame-robots` and attach a VM service
+account with Speech Client (`roles/speech.client`) and `cloud-platform` access
+scope. ADC obtains its credentials from the VM metadata server; no key file is
+needed and `GOOGLE_APPLICATION_CREDENTIALS` should remain unset. The Google
+client is loaded only for audio. Chirp 3 uses a regional endpoint (`us`, not
+`global`) and detects English/Japanese from the two-language setting. To allow
+unrestricted language detection, set `VOICE_STT_LANGUAGES=auto` instead.
+
+Planners implement `generate(text) -> (plan, notes)`; speech adapters implement
+`transcribe(wav_bytes) -> text`. Add an adapter in `stt.py` and its factory branch
+to support another STT provider. The Pi never receives either provider's credentials.
+
+The opt-in live text matrix uses configured Claude credentials and a simulated
+robot; it consumes provider quota and stops immediately on HTTP/transport errors:
+
+```sh
+uv run --project tools/voice_demo --locked python -m tools.voice_demo.live_check --output /path/to/private-results.json
+```
 
 ## Deploy the Pi relay
 
 Use Raspberry Pi OS Bookworm or newer, 64-bit. Install `alsa-utils`, git, uv and
 Tailscale; enroll the Pi in the same tailnet. Check out the **same revision** at
-`/opt/sim2real` and create the minimal environment as above. Configure the
+`/opt/sim2real` and create the minimal environment (no `google` extra needed on
+the Pi). Configure the
 installation user's access to `dialout`, `audio`, `input` and, for GPIO, `gpio`.
 The provided service uses the dedicated `sesame-voice` user; create it as above.
 
@@ -222,10 +287,15 @@ transcripts; set the venue's local retention policy appropriately.
 | Variable | Where | Default |
 |---|---|---|
 | `VOICE_DEVICE_TOKEN` | Both | Required for HTTP; local motions work without it |
-| `VOICE_PROVIDER` | Server | `openai` when `OPENAI_API_KEY` exists, otherwise `fake` |
-| `OPENAI_API_KEY` | Server | None; never needed on Pi |
-| `VOICE_STT_MODEL` | Server | `gpt-transcribe` |
-| `VOICE_PLAN_MODEL` | Server | `gpt-6.1-terra` |
+| `VOICE_PROVIDER` | Server | `claude`; explicitly select `fake` for offline fixtures |
+| `VOICE_CLAUDE_BASE_URL` | Server | `https://api.anthropic.com`; set Worker origin for gateway testing |
+| `VOICE_CLAUDE_TOKEN` | Server | Required: Worker access token or Anthropic Console key |
+| `VOICE_PLAN_MODEL` | Server | `claude-haiku-4-5` |
+| `VOICE_STT_PROVIDER` | Server | `google`; fake planner mode uses its fixed WAV fixture |
+| `GOOGLE_CLOUD_PROJECT` | Server | `sesame-robots` |
+| `VOICE_STT_LOCATION` | Server | `us` |
+| `VOICE_STT_MODEL` | Server | `chirp_3` |
+| `VOICE_STT_LANGUAGES` | Server | `en-US,ja-JP`; or `auto` alone |
 | `VOICE_SERVER_URL` | Pi | `http://127.0.0.1:8765` for development |
 | `VOICE_SERIAL_PORT` | Pi | No inferred port |
 | `VOICE_INPUT` | Pi | `terminal`; set `evdev` for headless Pi |
@@ -246,8 +316,10 @@ transcripts; set the venue's local retention policy appropriately.
   USB-connected full-robot installation arrangement. USB-only bench capacity is
   unmeasured. See `reference/SESAME-S3-CALIBRATION.md` and the generated interface's
   `power` section; do not infer an electrical design from this serial architecture.
-- VM/Tailscale deployment, real-provider credentials/model access, latency/cost,
-  and unattended two-month endurance/restart behaviour.
+- VM/Tailscale deployment, live Google audio/ADC, direct Anthropic Console-key
+  access, load-dependent latency/cost, arbitrary-prompt semantic correctness,
+  and unattended two-month endurance/restart behaviour. The test Worker text
+  path and native PTY were exercised; see VALIDATION.md.
 
 Give the guide [GUIDE.md](GUIDE.md). Test results and review scope are recorded in
 [VALIDATION.md](VALIDATION.md).
