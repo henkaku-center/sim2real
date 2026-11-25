@@ -2,6 +2,7 @@
 import io
 import json
 import os
+import re
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -12,6 +13,7 @@ from .plan import InvalidPlan, require
 MAX_AUDIO_BYTES = 1_000_000
 MAX_AUDIO_SECONDS = 30
 MAX_TEXT = 2000
+USER_AGENT = "sesame-voice-demo/0.1.0"
 
 
 def check_wav(data):
@@ -105,7 +107,7 @@ class ClaudeProvider:
     def request(self, body):
         request = urllib.request.Request(self.url, data=json.dumps(body, allow_nan=False).encode(),
                                          headers={"x-api-key": self.key, "anthropic-version": "2023-06-01",
-                                                  "Content-Type": "application/json"})
+                                                  "Content-Type": "application/json", "User-Agent": USER_AGENT})
         try:
             opener = urllib.request.build_opener(urllib.request.ProxyHandler({}), NoRedirect())
             with opener.open(request, timeout=30) as response:
@@ -118,8 +120,19 @@ class ClaudeProvider:
                 return result
         except urllib.error.HTTPError as exc:
             code = exc.code
-            exc.close()  # Never expose an error body, headers, credentials or prompt.
-            raise ProviderError(f"Claude HTTP {code}; check endpoint, credentials and model access") from None
+            diagnostic = ""
+            try:
+                # Only an exact short numeric edge-code envelope is safe to expose.
+                # Arbitrary text/JSON/HTML may contain prompts or credentials.
+                body = exc.read(257)
+                match = re.fullmatch(rb"\s*error code:\s*([0-9]{3,6})\s*", body, re.IGNORECASE)
+                if len(body) <= 256 and match:
+                    diagnostic = f" (error code: {match[1].decode('ascii')})"
+            except OSError:
+                pass
+            finally:
+                exc.close()
+            raise ProviderError(f"Claude HTTP {code}{diagnostic}; check endpoint, credentials and model access") from None
         except (urllib.error.URLError, TimeoutError, OSError, ValueError, RecursionError):
             raise ProviderError("Claude request failed: network, timeout or invalid JSON response") from None
 

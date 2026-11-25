@@ -63,6 +63,7 @@ def test_claude_exact_shared_wire_contract(catalog, claude, monkeypatch, base):
     assert request.full_url == base.rstrip("/").removesuffix("/v1") + "/v1/messages"
     assert request.get_header("X-api-key") == "fixture-not-a-secret"
     assert request.get_header("Anthropic-version") == "2023-06-01" and timeout == 30
+    assert request.get_header("User-agent") == "sesame-voice-demo/0.1.0"
 
 
 def test_invalid_plan_then_retry_uses_validator_reason(catalog, claude, monkeypatch):
@@ -73,6 +74,7 @@ def test_invalid_plan_then_retry_uses_validator_reason(catalog, claude, monkeypa
     plan, notes = claude.generate("bow")
     assert plan == good and "at least 1500" in notes[0]
     retry = json.loads(calls[1][0].data)
+    assert all(call[0].get_header("User-agent") == "sesame-voice-demo/0.1.0" for call in calls)
     assert "at least 1500" in retry["messages"][0]["content"]
     assert len(calls) == 2
 
@@ -115,6 +117,21 @@ def test_worker_http_errors_do_not_retry_or_leak(claude, monkeypatch, status):
     with pytest.raises(ProviderError, match=f"HTTP {status}") as error:
         claude.generate("bow")
     assert len(calls) == 1 and "private" not in str(error.value) and error.value.__suppress_context__
+
+
+@pytest.mark.parametrize("body,visible", [
+    (b"error code: 1010", True), (b" Error code: 1010\n", True),
+    (b"error code: 1010 private token", False),
+    (b'{"error":"private token", "code":1010}', False),
+    (b"error code: 1010" + b" " * 257, False),
+])
+def test_only_short_numeric_edge_diagnostics_are_exposed(claude, monkeypatch, body, visible):
+    failure = urllib.error.HTTPError(claude.url, 403, "private", {}, io.BytesIO(body))
+    calls = mock_http(monkeypatch, [failure])
+    with pytest.raises(ProviderError) as error:
+        claude.generate("bow")
+    assert ("error code: 1010" in str(error.value)) == visible
+    assert "private" not in str(error.value) and len(calls) == 1
 
 
 @pytest.mark.parametrize("response", [b"not json", b"[", b"x" * 262145, TimeoutError("secret")])
@@ -194,8 +211,9 @@ def test_google_v2_request_uses_adc_and_short_bilingual_audio(google, monkeypatc
     calls = []
     monkeypatch.setenv("VOICE_STT_LANGUAGES", languages)
     class Client:
-        def __init__(self, *, client_options):
+        def __init__(self, *, client_options, client_info):
             assert client_options.api_endpoint == "us-speech.googleapis.com"
+            assert client_info.user_agent == "sesame-voice-demo/0.1.0"
         def __enter__(self):
             return self
         def __exit__(self, *_):

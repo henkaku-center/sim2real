@@ -2,7 +2,7 @@
 import os
 import re
 
-from .providers import ProviderError, check_text, check_wav
+from .providers import USER_AGENT, ProviderError, check_text, check_wav
 
 
 class GoogleSpeechProvider:
@@ -27,6 +27,7 @@ class GoogleSpeechProvider:
         # Lazy import/ADC: fake mode and text-only Claude need no Google packages or credentials.
         try:
             from google.api_core.client_options import ClientOptions
+            from google.api_core.gapic_v1.client_info import ClientInfo
             from google.api_core.exceptions import GoogleAPICallError
             from google.auth.exceptions import GoogleAuthError
             from google.cloud.speech_v2 import SpeechClient
@@ -42,7 +43,8 @@ class GoogleSpeechProvider:
         try:
             # ADC uses the VM's attached service account. No key-file plumbing.
             with SpeechClient(client_options=ClientOptions(
-                    api_endpoint=f"{self.location}-speech.googleapis.com")) as client:
+                    api_endpoint=f"{self.location}-speech.googleapis.com"),
+                    client_info=ClientInfo(user_agent=USER_AGENT)) as client:
                 response = client.recognize(request=request, retry=None, timeout=30)
         except (GoogleAPICallError, GoogleAuthError, OSError, ValueError):
             raise ProviderError("Google Speech failed; check ADC, Speech API, IAM, region and model") from None
