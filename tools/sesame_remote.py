@@ -11,6 +11,7 @@ as the commands left it: it freezes and holds after 500 ms, OFF after 600 s.
 """
 import argparse
 import re
+import socket
 import sys
 import threading
 import time
@@ -22,18 +23,35 @@ WAITS = re.compile(r"^(motion|run|rest|sweep)\b")
 
 
 class Robot:
-    def __init__(self, host, timeout=3.0):
+    def __init__(self, host, timeout=3.0, resolve=socket.gethostbyname):
         self.base = host if host.startswith("http") else f"http://{host}"
         self.timeout = timeout
         self.lock = threading.Lock()  # the firmware serves one client at a time
+        self.name = urllib.parse.urlsplit(self.base).hostname or ""
+        self.resolve, self.ip = resolve, None
+
+    def _url(self, path):
+        """macOS mDNS lookups of *.local fail now and then and cost time on every
+        request, so the address is looked up once and again only after a failure."""
+        if not self.name.endswith(".local"):
+            return self.base + path
+        if self.ip is None:
+            self.ip = self.resolve(self.name)
+        return self.base.replace(self.name, self.ip, 1) + path
 
     def get(self, path):
         with self.lock:
-            try:
-                with urllib.request.urlopen(self.base + path, timeout=self.timeout) as r:
-                    return True, r.read().decode()
-            except urllib.error.HTTPError as e:
-                return False, e.read().decode()
+            for attempt in (0, 1):
+                try:
+                    with urllib.request.urlopen(self._url(path), timeout=self.timeout) as r:
+                        return True, r.read().decode()
+                except urllib.error.HTTPError as e:
+                    return False, e.read().decode()
+                except OSError:
+                    if attempt or not self.name.endswith(".local"):
+                        raise
+                    self.ip = None  # the robot may have a new address: look it up again
+                    time.sleep(0.3)
 
     def command(self, text):
         return self.get("/cmd?c=" + urllib.parse.quote(text))

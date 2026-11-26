@@ -491,3 +491,34 @@ def test_mic_on_demand_opens_only_while_the_body_listens(monkeypatch):
     n = len(fed)
     time.sleep(0.3)
     assert len(fed) == n and starts == [1]  # closed again, not restarted
+
+
+def test_robot_caches_the_mdns_address_and_looks_again_after_a_failure(monkeypatch):
+    import urllib.request
+    from sesame_remote import Robot
+    looked, opened = [], []
+
+    class Reply:
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *a):
+            return False
+
+        def read(self):
+            return b"OK"
+
+    def urlopen(url, timeout):
+        opened.append(url)
+        if len(opened) == 3:
+            raise OSError("no route")
+        return Reply()
+
+    monkeypatch.setattr(urllib.request, "urlopen", urlopen)
+    monkeypatch.setattr(sm.time, "sleep", lambda s: None)
+    robot = Robot("sesame-s3-test.local", resolve=lambda name: looked.append(name) or f"10.0.0.{len(looked)}")
+    assert robot.get("/status") == (True, "OK") and robot.command("stop")[0]
+    assert looked == ["sesame-s3-test.local"] and opened[1].startswith("http://10.0.0.1/cmd")
+    assert robot.get("/status") == (True, "OK")  # third open fails, the name is looked up again
+    assert len(looked) == 2 and opened[-1] == "http://10.0.0.2/status"
+    assert robot.base == "http://sesame-s3-test.local"
