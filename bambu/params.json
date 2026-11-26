@@ -1,0 +1,199 @@
+{
+  "schema_version": 1,
+  "revision": "turtle-shell-v1-draft",
+  "units": "mm, g, deg (internal manifest joint convention: q = firmware_deg - 90 with manifest sign)",
+  "mass_model": {
+    "status": "provisional-nominal — weigh the real robot and parts (NEEDS-HARDWARE)",
+    "servo_g": 13.4,
+    "servo_note": "MG90S nominal from manifest/robot.yaml; SG90 is about 9 g",
+    "battery_g": 40.0,
+    "battery_note": "upstream 2x14500 7.4 V 800 mAh pack in the frame cavity; not weighed",
+    "pla_effective_density_g_cm3": 0.95,
+    "pla_note": "solid PLA is 1.24; small upstream parts with default walls/infill assumed ~77 %",
+    "oled_g": 3.0,
+    "controller_g": 6.0,
+    "switch_g": 2.0,
+    "lumped": {
+      "mass_g": 12.0,
+      "com_mm": [
+        0.0,
+        0.0,
+        18.0
+      ],
+      "note": "wiring, screws, solder"
+    }
+  },
+  "poses": {
+    "stand": {
+      "hip": 45,
+      "knee": 90
+    },
+    "rest": {
+      "hip": 0,
+      "knee": 0
+    },
+    "tuck": {
+      "hip": 90,
+      "knee": -90
+    }
+  },
+  "walking_rom": {
+    "note": "union of walk / walk_backward / turn_left / turn_right / stand / rest in manifest/motions.yaml",
+    "hip_deg": [
+      0,
+      90
+    ],
+    "knee_deg": [
+      0,
+      90
+    ],
+    "step_deg": 7.5
+  },
+  "shell": {
+    "sphere_radius": 90.0,
+    "center_above_com": 16.0,
+    "rim_z": 33.0,
+    "thickness": 1.2,
+    "knee_slot_clearance": 4.0,
+    "com_fixed_point_tol_mm": 0.3,
+    "perforation": {
+      "solid_cap_deg": 20.0,
+      "min_half": 3.0,
+      "max_half": 13.0,
+      "min_web": 2.8,
+      "facet_margin": 1.5,
+      "solid_rim_band": 5.0,
+      "regrid_ratio": 0.85
+    },
+    "socket": {
+      "fit": 0.2,
+      "wall": 2.0,
+      "roof": 1.0,
+      "below_pin": 9.0,
+      "pin_d": 2.0
+    },
+    "variant": "one-piece",
+    "variant_note": "one-piece = dome+mast+saddle printed together (screws from inside the top cover); two-piece = dome on a separate mount (filament pin)"
+  },
+  "mount": {
+    "top_cover_fit_gap": 0.3,
+    "wall": 2.0,
+    "plate": 2.0,
+    "skirt_bottom_z": 47.0,
+    "screw_x": [
+      -18.0,
+      6.0
+    ],
+    "screw_z": 50.5,
+    "screw_clear_d": 2.2,
+    "mast_outer_d": 12.0,
+    "mast_inner_d": 9.2,
+    "gusset_r": 10.0,
+    "gusset_h": 8.0,
+    "top_cover": {
+      "source": "upstream Top-Cover-Enclosed-v117.stl, raycast; replace for a different body",
+      "profile_yz": [
+        [
+          17.26,
+          44.0
+        ],
+        [
+          16.98,
+          45.0
+        ],
+        [
+          16.7,
+          46.0
+        ],
+        [
+          16.42,
+          47.0
+        ],
+        [
+          16.14,
+          48.0
+        ],
+        [
+          15.86,
+          49.0
+        ],
+        [
+          15.58,
+          50.0
+        ],
+        [
+          15.3,
+          51.0
+        ],
+        [
+          15.02,
+          52.0
+        ],
+        [
+          14.74,
+          53.0
+        ],
+        [
+          14.45,
+          54.0
+        ],
+        [
+          14.17,
+          55.0
+        ],
+        [
+          13.27,
+          56.0
+        ],
+        [
+          13.01,
+          56.2
+        ],
+        [
+          12.74,
+          56.4
+        ],
+        [
+          12.48,
+          56.6
+        ],
+        [
+          0.0,
+          56.62
+        ]
+      ],
+      "flat_x": [
+        -27.5,
+        17.25
+      ],
+      "rear_inset": 1.0,
+      "front_inset": 2.25,
+      "front_inset_note": "ear bases flare behind X = 17.25"
+    },
+    "vertical_screws": {
+      "radius": 8.0,
+      "angles_deg": [
+        45,
+        135,
+        225,
+        315
+      ],
+      "pilot_d": 1.6,
+      "depth": 5.0,
+      "guide_hole_d": 2.3,
+      "note": "M2x6 self-tapping, driven upward from inside the removed top cover"
+    },
+    "ceiling_fillet": {
+      "r": 12.0,
+      "h": 8.0
+    }
+  },
+  "acceptance": {
+    "protect_margin_mm": 6.0,
+    "rom_clearance_mm": 3.0,
+    "com_perturbation_mm": 3.0,
+    "drop_tests": 120,
+    "drop_seed": 7,
+    "max_upright_tilt_deg": 10.0
+  }
+}

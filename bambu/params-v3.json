@@ -1,0 +1,167 @@
+{
+  "schema_version": 1,
+  "revision": "turtle-shell-v3-draft",
+  "units": "mm, g, deg (internal manifest joint convention: q = firmware_deg - 90 with manifest sign)",
+  "mass_model": {
+    "status": "provisional-nominal \u2014 weigh the real robot and parts (NEEDS-HARDWARE)",
+    "servo_g": 13.4,
+    "servo_note": "MG90S nominal from manifest/robot.yaml; SG90 is about 9 g",
+    "battery_g": 47.0,
+    "battery_note": "S3 build pack (B0F3JB59B6, 47 g listing) at the V3 kit's battery_mount envelope \u2014 NEEDS-HARDWARE",
+    "pla_effective_density_g_cm3": 0.95,
+    "pla_note": "solid PLA is 1.24; small upstream parts with default walls/infill assumed ~77 %",
+    "oled_g": 3.0,
+    "controller_g": 6.0,
+    "switch_g": 2.0,
+    "lumped": {
+      "mass_g": 12.0,
+      "com_mm": [
+        0.0,
+        0.0,
+        18.0
+      ],
+      "note": "wiring, screws, solder"
+    }
+  },
+  "poses": {
+    "stand": {
+      "hip": 45,
+      "knee": 90
+    },
+    "rest": {
+      "hip": 0,
+      "knee": 0
+    },
+    "tuck": {
+      "hip": 90,
+      "knee": -90
+    }
+  },
+  "walking_rom": {
+    "note": "union of walk / walk_backward / turn_left / turn_right / stand / rest in manifest/motions.yaml",
+    "hip_deg": [
+      0,
+      90
+    ],
+    "knee_deg": [
+      0,
+      90
+    ],
+    "step_deg": 7.5
+  },
+  "shell": {
+    "sphere_radius": 98.0,
+    "center_above_com": 20.0,
+    "rim_z": 33.0,
+    "thickness": 1.2,
+    "knee_slot_clearance": 4.0,
+    "com_fixed_point_tol_mm": 0.3,
+    "perforation": {
+      "solid_cap_deg": 20.0,
+      "min_half": 3.0,
+      "max_half": 13.0,
+      "min_web": 2.8,
+      "facet_margin": 1.5,
+      "solid_rim_band": 5.0,
+      "regrid_ratio": 0.85
+    },
+    "socket": {
+      "fit": 0.2,
+      "wall": 2.0,
+      "roof": 1.0,
+      "below_pin": 9.0,
+      "pin_d": 2.0
+    },
+    "variant": "v3-brackets",
+    "variant_note": "v3-brackets = shell-dome (no mast) screwed from below onto two side brackets that sit on the inner hip-servo ears",
+    "hole_skin": 0.3,
+    "hole_skin_side": "outer",
+    "hole_skin_note": "diamond holes are blind pockets from the outside leaving 0.3 mm of the inner wall (user request 2026-11-05)"
+  },
+  "mount": {
+    "bracket": {
+      "ear_top_above_deck": 2.5,
+      "ear_top_note": "MG90S/SG90 flange thickness from the upstream servo model",
+      "foot_pad": 2.3,
+      "foot_half_y": 4.5,
+      "foot_thick": 3.0,
+      "ear_screw_clear_d": 2.4,
+      "screw_note": "replace the two inner hip-servo ear screws per side with ones 3 mm longer (bracket foot 3 mm)",
+      "tab_len": 13.0,
+      "tab_wall_gap": 1.5,
+      "lug_depth": 13.0,
+      "lug_height": 8.0,
+      "lug_half_x": 8.0,
+      "lug_screw_dx": 3.5,
+      "lug_pilot_d": 1.6,
+      "lug_pilot_depth": 6.0,
+      "tab_screw_clear_d": 2.4,
+      "lug_screw_note": "M2 x 8 self-tapping, driven upward through the counterbored tab (3.5 mm seat) into the lug",
+      "stem_half_x": 5.0,
+      "tab_half_x": 6.5,
+      "tab_chamfer": 4.0,
+      "stem_rise_len": 8.0,
+      "counterbore_d": 4.4,
+      "screw_seat_thick": 3.5,
+      "stem_note": "stem/tab stay within xc +-5/6.5: walk drives R2 to hip -10 deg and the knee servo then reaches |x| = 10.4"
+    }
+  },
+  "acceptance": {
+    "protect_margin_mm": 6.0,
+    "rom_clearance_mm": 3.0,
+    "com_perturbation_mm": 3.0,
+    "drop_tests": 120,
+    "drop_seed": 7,
+    "max_upright_tilt_deg": 10.0
+  },
+  "paths": {
+    "stl_dir": "stl/v3",
+    "build_dir": "build/v3",
+    "preview_dir": "preview/v3"
+  },
+  "body": {
+    "variant": "v3",
+    "note": "Loftwork V3 frame kit adapted for the APS carrier (reference/frame-and-cover_261105). Legs unchanged, hip axes at the kit datums.",
+    "frame_dir": "reference/frame-and-cover_261105",
+    "frame_to_robot_z": 18.0,
+    "pla_parts": [
+      "internal-frame",
+      "bottom-cover",
+      "head-cover",
+      "head-lid"
+    ],
+    "electronics": [
+      {
+        "name": "carrier-pcb",
+        "size_mm": [
+          70.0,
+          50.0,
+          1.6
+        ],
+        "xy_mm": [
+          0.0,
+          0.0
+        ],
+        "z_above_pcb_top_mm": 0.0,
+        "on_seat": true,
+        "mass_g": 9.0,
+        "note": "perfboard + headers/sockets; estimated"
+      },
+      {
+        "name": "carrier-components",
+        "size_mm": [
+          62.0,
+          42.0,
+          18.0
+        ],
+        "xy_mm": [
+          0.0,
+          0.0
+        ],
+        "z_above_pcb_top_mm": 0.0,
+        "mass_g": 33.0,
+        "note": "S3 SuperMini, PCA9685 hub, LM2596, OLED, plugs inside the head; mass estimated, box only for CoM/protection"
+      }
+    ]
+  }
+}

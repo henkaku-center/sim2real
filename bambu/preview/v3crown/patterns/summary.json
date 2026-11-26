@@ -1,0 +1,206 @@
+{
+ "walk": {
+  "keyframes": 8,
+  "collide": 0,
+  "under_6mm": 0,
+  "min_mm": 7.24,
+  "pair": "foot:front_right vs shell-dome",
+  "worst_state": {
+   "R1": 90,
+   "R2": 90,
+   "L1": 0,
+   "L2": 135,
+   "R3": 180,
+   "R4": 45,
+   "L3": 45,
+   "L4": 180
+  }
+ },
+ "turn_left": {
+  "keyframes": 9,
+  "collide": 0,
+  "under_6mm": 0,
+  "min_mm": 7.3,
+  "pair": "foot:front_left vs shell-dome",
+  "worst_state": {
+   "R1": 135,
+   "R2": 90,
+   "L1": 90,
+   "L2": 135,
+   "R3": 180,
+   "R4": 0,
+   "L3": 0,
+   "L4": 180
+  }
+ },
+ "crab": {
+  "keyframes": 5,
+  "collide": 0,
+  "under_6mm": 0,
+  "min_mm": 7.24,
+  "pair": "foot:front_right vs shell-dome",
+  "worst_state": {
+   "R1": 90,
+   "R2": 90,
+   "L1": 90,
+   "L2": 90,
+   "R3": 180,
+   "R4": 0,
+   "L3": 45,
+   "L4": 135
+  }
+ },
+ "worm": {
+  "keyframes": 5,
+  "collide": 0,
+  "under_6mm": 0,
+  "min_mm": 6.5,
+  "pair": "foot:back_left vs shell-dome",
+  "worst_state": {
+   "R1": 180,
+   "R2": 0,
+   "L1": 0,
+   "L2": 180,
+   "R3": 135,
+   "R4": 135,
+   "L3": 45,
+   "L4": 45
+  }
+ },
+ "bow": {
+  "keyframes": 4,
+  "collide": 0,
+  "under_6mm": 0,
+  "min_mm": 7.37,
+  "pair": "foot:back_right vs shell-dome",
+  "worst_state": {
+   "R1": 135,
+   "R2": 45,
+   "L1": 45,
+   "L2": 135,
+   "R3": 180,
+   "R4": 0,
+   "L3": 0,
+   "L4": 180
+  }
+ },
+ "pushup": {
+  "keyframes": 5,
+  "collide": 0,
+  "under_6mm": 0,
+  "min_mm": 7.37,
+  "pair": "foot:back_right vs shell-dome",
+  "worst_state": {
+   "R1": 135,
+   "R2": 45,
+   "L1": 45,
+   "L2": 135,
+   "R3": 180,
+   "R4": 0,
+   "L3": 0,
+   "L4": 180
+  }
+ },
+ "freaky": {
+  "keyframes": 5,
+  "collide": 0,
+  "under_6mm": 0,
+  "min_mm": 6.81,
+  "pair": "foot:front_right vs shell-dome",
+  "worst_state": {
+   "R1": 180,
+   "R2": 0,
+   "L1": 0,
+   "L2": 180,
+   "R3": 25,
+   "R4": 90,
+   "L3": 0,
+   "L4": 180
+  }
+ },
+ "cute": {
+  "keyframes": 5,
+  "collide": 0,
+  "under_6mm": 3,
+  "min_mm": 4.91,
+  "pair": "foot:back_left vs shell-dome",
+  "worst_state": {
+   "R1": 180,
+   "R2": 20,
+   "L1": 0,
+   "L2": 160,
+   "R3": 0,
+   "R4": 180,
+   "L3": 180,
+   "L4": 45
+  }
+ },
+ "wave": {
+  "keyframes": 6,
+  "collide": 3,
+  "under_6mm": 3,
+  "min_mm": 0.0,
+  "pair": "foot:front_left vs shell-dome",
+  "worst_state": {
+   "R1": 100,
+   "R2": 45,
+   "L1": 45,
+   "L2": 90,
+   "R3": 180,
+   "R4": 80,
+   "L3": 180,
+   "L4": 180
+  }
+ },
+ "dance": {
+  "keyframes": 4,
+  "collide": 3,
+  "under_6mm": 3,
+  "min_mm": 0.0,
+  "pair": "foot:back_right vs shell-dome",
+  "worst_state": {
+   "R1": 90,
+   "R2": 90,
+   "L1": 90,
+   "L2": 90,
+   "R3": 160,
+   "R4": 160,
+   "L3": 10,
+   "L4": 10
+  }
+ },
+ "point": {
+  "keyframes": 2,
+  "collide": 1,
+  "under_6mm": 1,
+  "min_mm": 0.0,
+  "pair": "foot:front_left vs shell-dome",
+  "worst_state": {
+   "R1": 135,
+   "R2": 100,
+   "L1": 25,
+   "L2": 90,
+   "R3": 170,
+   "R4": 80,
+   "L3": 145,
+   "L4": 180
+  }
+ },
+ "shrug": {
+  "keyframes": 4,
+  "collide": 1,
+  "under_6mm": 1,
+  "min_mm": 0.0,
+  "pair": "foot:back_right vs shell-dome",
+  "worst_state": {
+   "R1": 135,
+   "R2": 45,
+   "L1": 45,
+   "L2": 135,
+   "R3": 0,
+   "R4": 180,
+   "L3": 180,
+   "L4": 0
+  }
+ }
+}

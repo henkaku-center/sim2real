@@ -13,6 +13,9 @@
 assets/body/**/*.step filter=lfs diff=lfs merge=lfs -text
 assets/printing/**/*.step filter=lfs diff=lfs merge=lfs -text
 assets/body/**/*.json.gz filter=lfs diff=lfs merge=lfs -text
+bambu/**/*.step filter=lfs diff=lfs merge=lfs -text
+reference/**/*.step filter=lfs diff=lfs merge=lfs -text
+reference/*.zip filter=lfs diff=lfs merge=lfs -text
 
 # Lockfiles: treat as binary-ish in diffs to reduce noise? No — keep text for review.
 uv.lock linguist-generated=true

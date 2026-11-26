@@ -1,0 +1,170 @@
+{
+ "bed_mm": 256.0,
+ "plate1-shell-dome": {
+  "parts": {
+   "shell-dome": {
+    "xy_mm": [
+     [
+      34.0,
+      34.0
+     ],
+     [
+      222.0,
+      222.0
+     ]
+    ],
+    "height_mm": 125.6,
+    "inside_bed": true
+   }
+  },
+  "gaps_mm": {},
+  "ok": true
+ },
+ "plate2-body-head-mount": {
+  "parts": {
+   "head-mount": {
+    "xy_mm": [
+     [
+      8.0,
+      39.2
+     ],
+     [
+      95.2,
+      216.8
+     ]
+    ],
+    "height_mm": 53.8,
+    "inside_bed": true
+   },
+   "internal-frame": {
+    "xy_mm": [
+     [
+      105.2,
+      8.0
+     ],
+     [
+      192.4,
+      101.2
+     ]
+    ],
+    "height_mm": 15.7,
+    "inside_bed": true
+   },
+   "bottom-cover": {
+    "xy_mm": [
+     [
+      105.2,
+      109.2
+     ],
+     [
+      192.4,
+      188.6
+     ]
+    ],
+    "height_mm": 7.3,
+    "inside_bed": true
+   },
+   "head-lid": {
+    "xy_mm": [
+     [
+      200.4,
+      8.0
+     ],
+     [
+      252.7,
+      80.3
+     ]
+    ],
+    "height_mm": 3.8,
+    "inside_bed": true
+   },
+   "pcb-spacer-1": {
+    "xy_mm": [
+     [
+      203.9,
+      89.8
+     ],
+     [
+      208.8,
+      94.7
+     ]
+    ],
+    "height_mm": 3.0,
+    "inside_bed": true
+   },
+   "pcb-spacer-2": {
+    "xy_mm": [
+     [
+      203.9,
+      101.8
+     ],
+     [
+      208.8,
+      106.7
+     ]
+    ],
+    "height_mm": 3.0,
+    "inside_bed": true
+   },
+   "pcb-spacer-3": {
+    "xy_mm": [
+     [
+      203.9,
+      113.8
+     ],
+     [
+      208.8,
+      118.7
+     ]
+    ],
+    "height_mm": 3.0,
+    "inside_bed": true
+   },
+   "pcb-spacer-4": {
+    "xy_mm": [
+     [
+      203.9,
+      125.8
+     ],
+     [
+      208.8,
+      130.7
+     ]
+    ],
+    "height_mm": 3.0,
+    "inside_bed": true
+   }
+  },
+  "gaps_mm": {
+   "head-mount / internal-frame": 10.5,
+   "head-mount / bottom-cover": 10.0,
+   "head-mount / head-lid": 111.3,
+   "head-mount / pcb-spacer-1": 109.1,
+   "head-mount / pcb-spacer-2": 108.7,
+   "head-mount / pcb-spacer-3": 108.7,
+   "head-mount / pcb-spacer-4": 108.7,
+   "internal-frame / bottom-cover": 8.0,
+   "internal-frame / head-lid": 8.0,
+   "internal-frame / pcb-spacer-1": 11.6,
+   "internal-frame / pcb-spacer-2": 12.6,
+   "internal-frame / pcb-spacer-3": 19.9,
+   "internal-frame / pcb-spacer-4": 29.2,
+   "bottom-cover / head-lid": 35.3,
+   "bottom-cover / pcb-spacer-1": 20.2,
+   "bottom-cover / pcb-spacer-2": 12.9,
+   "bottom-cover / pcb-spacer-3": 11.6,
+   "bottom-cover / pcb-spacer-4": 11.6,
+   "head-lid / pcb-spacer-1": 10.6,
+   "head-lid / pcb-spacer-2": 22.1,
+   "head-lid / pcb-spacer-3": 33.9,
+   "head-lid / pcb-spacer-4": 45.8,
+   "pcb-spacer-1 / pcb-spacer-2": 7.1,
+   "pcb-spacer-1 / pcb-spacer-3": 19.1,
+   "pcb-spacer-1 / pcb-spacer-4": 31.1,
+   "pcb-spacer-2 / pcb-spacer-3": 7.1,
+   "pcb-spacer-2 / pcb-spacer-4": 19.1,
+   "pcb-spacer-3 / pcb-spacer-4": 7.1
+  },
+  "ok": true
+ }
+}

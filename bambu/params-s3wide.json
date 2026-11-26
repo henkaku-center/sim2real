@@ -1,0 +1,157 @@
+{
+  "schema_version": 1,
+  "revision": "turtle-shell-s3wide-v1-draft",
+  "units": "mm, g, deg (internal manifest joint convention: q = firmware_deg - 90 with manifest sign)",
+  "mass_model": {
+    "status": "provisional-nominal \u2014 weigh the real robot and parts (NEEDS-HARDWARE)",
+    "servo_g": 13.4,
+    "servo_note": "MG90S nominal from manifest/robot.yaml; SG90 is about 9 g",
+    "battery_g": 47.0,
+    "battery_note": "S3 build pack (B0F3JB59B6, 47 g listing); assumed in the frame cavity like upstream \u2014 NEEDS-HARDWARE",
+    "pla_effective_density_g_cm3": 0.95,
+    "pla_note": "solid PLA is 1.24; small upstream parts with default walls/infill assumed ~77 %",
+    "oled_g": 3.0,
+    "controller_g": 6.0,
+    "switch_g": 2.0,
+    "lumped": {
+      "mass_g": 12.0,
+      "com_mm": [
+        0.0,
+        0.0,
+        18.0
+      ],
+      "note": "wiring, screws, solder"
+    }
+  },
+  "poses": {
+    "stand": {
+      "hip": 45,
+      "knee": 90
+    },
+    "rest": {
+      "hip": 0,
+      "knee": 0
+    },
+    "tuck": {
+      "hip": 90,
+      "knee": -90
+    }
+  },
+  "walking_rom": {
+    "note": "union of walk / walk_backward / turn_left / turn_right / stand / rest in manifest/motions.yaml",
+    "hip_deg": [
+      0,
+      90
+    ],
+    "knee_deg": [
+      0,
+      90
+    ],
+    "step_deg": 7.5
+  },
+  "shell": {
+    "sphere_radius": 94.0,
+    "center_above_com": 16.0,
+    "rim_z": 33.0,
+    "thickness": 1.2,
+    "knee_slot_clearance": 4.0,
+    "com_fixed_point_tol_mm": 0.3,
+    "perforation": {
+      "solid_cap_deg": 20.0,
+      "min_half": 3.0,
+      "max_half": 13.0,
+      "min_web": 2.8,
+      "facet_margin": 1.5,
+      "solid_rim_band": 5.0,
+      "regrid_ratio": 0.85
+    },
+    "socket": {
+      "fit": 0.2,
+      "wall": 2.0,
+      "roof": 1.0,
+      "below_pin": 9.0,
+      "pin_d": 2.0
+    },
+    "variant": "s3-cover",
+    "variant_note": "s3-cover = shell-dome (socket + filament pin) on s3-top-cover (lid + mast) screwed with the 4 carrier screws"
+  },
+  "mount": {
+    "mast_outer_d": 12.0,
+    "mast_inner_d": 9.2,
+    "gusset_r": 10.0,
+    "gusset_h": 8.0,
+    "cover": {
+      "outer_half_mm": [
+        35.5,
+        25.3
+      ],
+      "outer_note": "carrier 70 x 50 mm; hip servo cases start at |y| = 26.3, femur horns at |y| = 26.1",
+      "wall": 2.0,
+      "roof": 2.5,
+      "roof_clearance": 2.0,
+      "boss_r": 3.0,
+      "bore_d": 3.6,
+      "screw_clear_d": 1.9,
+      "boss_floor": 2.4,
+      "screw_note": "replace the 4 carrier screws with M1.6 x 8 pan head: 2.5 floor + 1.6 PCB + ~4 mm in the 5 mm frame pilot",
+      "end_window_half_y": 17.0,
+      "end_window_top_above_pcb": 20.0,
+      "leg_extra_clearance": 0.3,
+      "leg_note": "below the femur band top the lid keeps |y| <= (inner leg |y|) - rom_clearance - leg_extra_clearance; sides open there for cables"
+    }
+  },
+  "acceptance": {
+    "protect_margin_mm": 6.0,
+    "rom_clearance_mm": 3.0,
+    "com_perturbation_mm": 3.0,
+    "drop_tests": 120,
+    "drop_seed": 7,
+    "max_upright_tilt_deg": 10.0
+  },
+  "paths": {
+    "stl_dir": "stl/s3-wide",
+    "build_dir": "build/s3-wide",
+    "preview_dir": "preview/s3-wide"
+  },
+  "body": {
+    "variant": "s3-wide",
+    "note": "APS S3 body: reference/frame-and-cover (frame widened 14 mm, 70 x 50 mm carrier on 4 mm posts). Legs, servos and pivots move +-7 mm in Y.",
+    "frame_dir": "reference/frame-and-cover",
+    "frame_to_robot_z": 18.0,
+    "electronics_height_above_pcb_mm": 38.0,
+    "electronics_height_note": "PROVISIONAL: carrier top to the highest part incl. servo plugs/wires on the PCA9685 (hub underside 13.5 mm above carrier). Replace with the measured value \u2014 NEEDS-HARDWARE",
+    "electronics": [
+      {
+        "name": "carrier-pcb",
+        "size_mm": [
+          70.0,
+          50.0,
+          1.6
+        ],
+        "xy_mm": [
+          0.0,
+          0.0
+        ],
+        "z_above_pcb_top_mm": 0.0,
+        "on_seat": true,
+        "mass_g": 9.0,
+        "note": "perfboard 70 x 50 x 1.6 + headers/sockets; estimated"
+      },
+      {
+        "name": "carrier-components",
+        "size_mm": [
+          62.0,
+          42.0,
+          38.0
+        ],
+        "xy_mm": [
+          0.0,
+          0.0
+        ],
+        "z_above_pcb_top_mm": 0.0,
+        "mass_g": 33.0,
+        "note": "envelope of S3 SuperMini, PCA9685 hub, LM2596, OLED, servo plugs; height = electronics_height_above_pcb_mm; mass estimated"
+      }
+    ]
+  }
+}

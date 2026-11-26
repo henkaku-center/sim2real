@@ -1,0 +1,26 @@
+{
+  "tool": "Bambu Studio 02.08.02.61",
+  "date": "2026-11-02",
+  "printer": "Bambu Lab P1S 0.4 nozzle",
+  "layer_height_mm": 0.2,
+  "wall_loops": 4,
+  "infill": "25%",
+  "filament": [
+    "Generic PLA"
+  ],
+  "supports_enabled": true,
+  "support_feature_seconds": {
+    "Support": 405.1101379394531,
+    "Support interface": 16.871665954589844
+  },
+  "object_count": 2,
+  "return_code": 0,
+  "warning": "",
+  "models": {
+    "head-cover-print.stl": "bb12aa35f913f1452769336e59a96f680ddd52b7ad22ae6f2d9a79da7c74f042",
+    "head-lid-print.stl": "551bf4bd003b8d8e43d99d9d74d6c81452c501a7b0e17c6071697bddbbcfbb9e"
+  },
+  "estimated_seconds": 4757.07275390625,
+  "estimated_filament_g": 41.66353225708008,
+  "scope": "Historical November 2 slicing of the exact model hashes above, before the centred tail-switch bore. The November 3 shell has native solid/mesh validation but has not been re-sliced or physically printed."
+}

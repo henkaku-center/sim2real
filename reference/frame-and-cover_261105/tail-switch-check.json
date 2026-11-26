@@ -1,0 +1,134 @@
+{
+  "scope": "Native reference-switch versus all carrier electronics. Same two-lug stand-in as the guide; not measured purchased-part fit or physical cable reach.",
+  "checker_sha256": "ef74fd7dce0c0f6519d41fc9dad363145c247e900c6c7098cf08503f58e68deb",
+  "assembly_sha256": "b3fa7fdee24e4f5ba4c4158a13c72e0f2fb7aa6d9173b0b7a0e9f1ebd66a68aa",
+  "switch_reference_sha256": "07466e906d8b30a731328551ff3cdb2b21adfef703325d224d8139ed8d8dd0d6",
+  "electronics_sha256": "d96973c182bf78b99527ad390e552871f7b5ec073eee68850c346b291ffa1b88",
+  "results": {
+    "rejected_vertical_midpoint": {
+      "centre_mm": [
+        -41.826504788677106,
+        0.005083606858546474,
+        28.467756901865002
+      ],
+      "intersections": [
+        {
+          "part": "Part__Feature400",
+          "volume_mm3": 8.286137313826876
+        },
+        {
+          "part": "HubHeaderSolder_A8",
+          "volume_mm3": 0.023492120916006245
+        },
+        {
+          "part": "OriginalSpacer_A",
+          "volume_mm3": 0.005209372851576897
+        },
+        {
+          "part": "DonorSpacer_A",
+          "volume_mm3": 0.7375000120018216
+        },
+        {
+          "part": "S3Source_Part__Feature030",
+          "volume_mm3": 0.8649271498667324
+        },
+        {
+          "part": "S3Spacer_11",
+          "volume_mm3": 0.005171944089515269
+        }
+      ],
+      "nearest": [
+        {
+          "part": "Part__Feature400",
+          "distance_mm": 0.0
+        },
+        {
+          "part": "HubHeaderSolder_A8",
+          "distance_mm": 0.0
+        },
+        {
+          "part": "OriginalSpacer_A",
+          "distance_mm": 0.0
+        },
+        {
+          "part": "DonorSpacer_A",
+          "distance_mm": 0.0
+        },
+        {
+          "part": "S3Source_Part__Feature030",
+          "distance_mm": 0.0
+        },
+        {
+          "part": "S3Spacer_11",
+          "distance_mm": 0.0
+        },
+        {
+          "part": "HubMalePin_A8",
+          "distance_mm": 0.034916393141448676
+        },
+        {
+          "part": "S3MalePin_A11",
+          "distance_mm": 0.06508360685855052
+        },
+        {
+          "part": "S3TopSolder_A11",
+          "distance_mm": 0.11523823905923682
+        },
+        {
+          "part": "SocketHousing_A",
+          "distance_mm": 1.3680607320167582
+        }
+      ]
+    },
+    "delivered": {
+      "centre_mm": [
+        -39.93685855186,
+        0.005083606858546474,
+        37.600941996849
+      ],
+      "intersections": [],
+      "nearest": [
+        {
+          "part": "HubMalePin_A8",
+          "distance_mm": 1.7913208907862306
+        },
+        {
+          "part": "S3MalePin_A11",
+          "distance_mm": 1.7985247317432664
+        },
+        {
+          "part": "S3MalePin_B11",
+          "distance_mm": 2.5510523858265595
+        },
+        {
+          "part": "HubMalePin_A7",
+          "distance_mm": 3.116450950018897
+        },
+        {
+          "part": "HubHeaderSolder_A8",
+          "distance_mm": 3.413521243030787
+        },
+        {
+          "part": "S3MalePin_C11",
+          "distance_mm": 3.5495472187632364
+        },
+        {
+          "part": "Part__Feature400",
+          "distance_mm": 3.8668194338573834
+        },
+        {
+          "part": "HubHeaderSolder_A7",
+          "distance_mm": 4.284262527990831
+        },
+        {
+          "part": "Part__Feature269",
+          "distance_mm": 4.366279822322749
+        },
+        {
+          "part": "S3MalePin_D11",
+          "distance_mm": 4.534506418780869
+        }
+      ]
+    }
+  }
+}

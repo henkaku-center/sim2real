@@ -1,0 +1,259 @@
+{
+ "schema_version": 1,
+ "revision": "turtle-shell-v3crown-draft",
+ "units": "mm, g, deg (internal manifest joint convention: q = firmware_deg - 90 with manifest sign)",
+ "mass_model": {
+  "status": "provisional-nominal — weigh the real robot and parts (NEEDS-HARDWARE)",
+  "servo_g": 13.4,
+  "servo_note": "MG90S nominal from manifest/robot.yaml; SG90 is about 9 g",
+  "battery_g": 47.0,
+  "battery_note": "S3 build pack (B0F3JB59B6, 47 g listing) at the V3 kit's battery_mount envelope — NEEDS-HARDWARE",
+  "pla_effective_density_g_cm3": 0.95,
+  "pla_note": "solid PLA is 1.24; small upstream parts with default walls/infill assumed ~77 %",
+  "oled_g": 3.0,
+  "controller_g": 6.0,
+  "switch_g": 2.0,
+  "lumped": {
+   "mass_g": 12.0,
+   "com_mm": [
+    0.0,
+    0.0,
+    18.0
+   ],
+   "note": "wiring, screws, solder"
+  }
+ },
+ "poses": {
+  "stand": {
+   "hip": 45,
+   "knee": 90
+  },
+  "rest": {
+   "hip": 0,
+   "knee": 0
+  },
+  "tuck": {
+   "hip": 90,
+   "knee": -90
+  }
+ },
+ "walking_rom": {
+  "note": "union of walk / walk_backward / turn_left / turn_right / stand / rest in manifest/motions.yaml",
+  "hip_deg": [
+   0,
+   90
+  ],
+  "knee_deg": [
+   0,
+   90
+  ],
+  "step_deg": 7.5
+ },
+ "shell": {
+  "sphere_radius": 94.0,
+  "center_above_com": 18.0,
+  "rim_z": 34.5,
+  "thickness": 1.3,
+  "knee_slot_clearance": 6.5,
+  "com_fixed_point_tol_mm": 0.3,
+  "perforation": {
+   "solid_cap_deg": 20.0,
+   "min_half": 3.0,
+   "max_half": 16.0,
+   "min_web": 4.0,
+   "facet_margin": 1.5,
+   "solid_rim_band": 3.0,
+   "regrid_ratio": 0.85
+  },
+  "socket": {
+   "fit": 0.2,
+   "wall": 2.0,
+   "roof": 1.0,
+   "below_pin": 9.0,
+   "pin_d": 2.0
+  },
+  "variant": "v3-crown",
+  "variant_note": "v3-crown = support-free ogive dome (sphere band + 45 deg cone cap) snapped onto a crown that is printed with a replacement V3 head lid (slides into the head-cover rail, rear snap latch). No screws.",
+  "cap_slope_deg": 30.0,
+  "tip_radius": 6.0,
+  "solid_fraction": 0.45,
+  "density_g_cm3": 1.24,
+  "slot_roof_slope_deg": 45.0
+ },
+ "acceptance": {
+  "protect_margin_mm": 6.0,
+  "rom_clearance_mm": 6.0,
+  "com_perturbation_mm": 3.0,
+  "drop_tests": 120,
+  "drop_seed": 7,
+  "max_upright_tilt_deg": 10.0,
+  "max_other_rest_depth_mm": 0.2,
+  "max_other_rest_depth_note": "2026-11-11: non-belly rests that need < 0.2 mm of CoM rise to leave (vs ~14 mm belly) are accepted; they appear only with the +-3 mm CoM perturbation. MuJoCo drop/recovery stay the functional check."
+ },
+ "paths": {
+  "stl_dir": "stl/v3crown",
+  "build_dir": "build/v3crown",
+  "preview_dir": "preview/v3crown"
+ },
+ "body": {
+  "variant": "v3",
+  "note": "Loftwork V3 frame kit adapted for the APS carrier (reference/frame-and-cover_261105). Legs unchanged, hip axes at the kit datums.",
+  "frame_dir": "reference/frame-and-cover_261105",
+  "frame_to_robot_z": 18.0,
+  "pla_parts": [
+   "internal-frame",
+   "bottom-cover",
+   "head-cover"
+  ],
+  "electronics": [
+   {
+    "name": "carrier-pcb",
+    "size_mm": [
+     70.0,
+     50.0,
+     1.6
+    ],
+    "xy_mm": [
+     0.0,
+     0.0
+    ],
+    "z_above_pcb_top_mm": 0.0,
+    "on_seat": true,
+    "mass_g": 9.0,
+    "note": "perfboard + headers/sockets; estimated"
+   },
+   {
+    "name": "carrier-components",
+    "size_mm": [
+     62.0,
+     42.0,
+     18.0
+    ],
+    "xy_mm": [
+     0.0,
+     0.0
+    ],
+    "z_above_pcb_top_mm": 0.0,
+    "mass_g": 33.0,
+    "note": "S3 SuperMini, PCA9685 hub, LM2596, OLED, plugs inside the head; mass estimated, box only for CoM/protection"
+   }
+  ],
+  "pla_parts_note": "head-lid is replaced by crown-lid (a shell part, mass from CAD)"
+ },
+ "extra_parts": [
+  {
+   "name": "crown-lid minus kit lid (quick_screen estimate only)",
+   "mass_g": 18.0,
+   "com_mm": [
+    0.0,
+    0.0,
+    85.0
+   ]
+  }
+ ],
+ "crown": {
+  "lid_step": "head-lid.step",
+  "lid_top_z": 51.967756901865,
+  "base_r": 20.0,
+  "slope_deg": 45.0,
+  "wall": 0.5,
+  "seat_gap": 0.0,
+  "seat_band_deg": 1.5,
+  "windows": {
+   "count": 0,
+   "phase_deg": 22.5,
+   "bottom_margin": 3.0,
+   "top_margin": 6.0,
+   "strut": 4.0,
+   "note": "count 0 = closed 45-degree cone.  With 8 windows the cone was 8 struts (4 mm wide) cantilevered from the foot; they turned to spaghetti below the brace (print 2026-11-13).  The struts were also only 0.6 mm thick: build_shell's inner cone ignored its 1 mm lower start, so wall 1.3 gave 0.84 mm horizontally (fixed).  wall / wall_top are now true normal thicknesses: 0.5 mm (0.71 horizontal) and 0.6 mm (0.85, as printed before, where the fingers root and the brace bites) within wall_top_band mm under the seat; mass is bounded by the CoM-error rest check (a closed 0.85 mm cone, 15 g, failed it by 0.008 mm)."
+  },
+  "fingers": {
+   "phi_deg": [
+    90.0,
+    270.0
+   ],
+   "window_offset_deg": 9.0,
+   "thick": 1.6,
+   "width": 8.0,
+   "gap": 0.4,
+   "root_extend_deg": -0.3,
+   "tip_extend": 2.0,
+   "window_width": 9.0,
+   "window_web": 4.0,
+   "barb_width": 7.0,
+   "window_h": 5.0,
+   "lock_play": 0.4,
+   "barb_tip_h": 1.0,
+   "root_note": "the finger starts just above the seat, on the crown wall's top (below the seat the 45-degree cone falls away from the sphere and a root there would start in mid-air)"
+  },
+  "note": "lid rail profile = kit head-lid.step unchanged; crown printed upright on the lid (no supports)",
+  "key": {
+   "x": [
+    -35.9,
+    -33.9
+   ],
+   "y": [
+    6.0,
+    14.0
+   ],
+   "clear": 0.1,
+   "below": 3.0,
+   "head_half_y": 7.0,
+   "head_h": 3.2,
+   "pull_hole_d": 3.5,
+   "slit": 1.2,
+   "slit_top_above_lid_bottom": 1.8,
+   "barb": 0.35,
+   "lid_bottom_z": 48.2117,
+   "note": "separate stopper key: drops through a slot in the lid's rear so its tip sits in front of the head-cover rear panel's inner top edge (x = -36.2); y = +10 keeps it clear of the centred switch and the USB plug"
+  },
+  "bayonet": {
+   "count": 3,
+   "phase_deg": 30.0,
+   "turn_deg": 60.0,
+   "seat_depth": 1.0,
+   "clear": 0.2,
+   "tube_wall": 2.0,
+   "lug_w": 7.0,
+   "lug_r": 22.5,
+   "lug_t": 1.2,
+   "lug_gap": 0.1,
+   "lid_bottom_z": 66.2117,
+   "note": "crown tube drops through the lid (lugs through the notches) and turns 60 deg in a recess in the lid's underside: lugs end flush with the underside, so nothing hangs where the kit routes the servo ribbons (2 mm below it).",
+   "lip": 0.0,
+   "groove_clear": 0.25
+  },
+  "print_brace": {
+   "wall": 0.9,
+   "gap": 0.7,
+   "tabs": 12,
+   "tab_w": 1.5,
+   "bite": 0.5,
+   "note": "print aid only (crown-print.stl): a thin cylinder from the bed to the solid band above the windows, joined by small tabs across a gap wider than a line width; snap the tabs and slide it off downwards"
+  },
+  "wall_top": 0.6,
+  "wall_top_band": 6.0
+ },
+ "fit_check": {
+  "key_lock_mm": 0.6,
+  "snap_lock_mm": 1.0,
+  "overhang_min_slope_deg": {
+   "shell-dome": 25,
+   "crown": 30,
+   "head-lid": 40,
+   "lid-key": 40,
+   "crown-print": 30
+  },
+  "overhang_tolerance_mm2": {
+   "shell-dome": 80.0,
+   "crown": 60.0,
+   "head-lid": 60.0,
+   "lid-key": 5.0,
+   "crown-print": 60.0
+  },
+  "note": "overhang: downward-facing area whose slope from horizontal is below the part's limit (bed excluded); dome inner cap is 30 deg (print with <= 0.16 mm layers)",
+  "max_finger_deflection_mm": 2.6,
+  "bayonet_lock_mm": 0.5,
+  "ribbon_clearance_mm": 1.0
+ }
+}

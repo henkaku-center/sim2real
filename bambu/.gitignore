@@ -1,0 +1,7 @@
+# downloaded upstream sources (nested git clone) and derived intermediates
+vendor/
+build/
+__pycache__/
+# local backups of regenerated outputs and trial builds
+_backup/
+_try/

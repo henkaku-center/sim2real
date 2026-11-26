@@ -1,0 +1,28 @@
+{
+ "source_job": "/Users/kotaronomac/dev/sim2real/bambu/build/job.json",
+ "scale": 0.5555555555555556,
+ "radius_mm": 50.0,
+ "thickness_mm": 3.0,
+ "skin_mm": 1.0,
+ "pockets": 183,
+ "parts": {
+  "test-dome-d100-outer": {
+   "volume_mm3": 33644.57781349497,
+   "mass_g_pla_solid": 41.71927648873376,
+   "bbox_mm": [
+    99.95282583762535,
+    99.95722409141113,
+    57.34878960991657
+   ]
+  },
+  "test-dome-d100-inner": {
+   "volume_mm3": 33643.60349732384,
+   "mass_g_pla_solid": 41.71806833668157,
+   "bbox_mm": [
+    99.95118255089352,
+    99.95722409141113,
+    57.34878960991657
+   ]
+  }
+ }
+}

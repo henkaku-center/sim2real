@@ -1,0 +1,161 @@
+{
+  "coordinates": "X front, Y left, Z up; frame centred laterally; PCB USB rear",
+  "electronics_intersections": [],
+  "electronics_sha256": "d96973c182bf78b99527ad390e552871f7b5ec073eee68850c346b291ffa1b88",
+  "electronics_shapes_checked": 710,
+  "fit_note": "CAD geometry check, not a physical print test. PCB hole datums retain the recorded instructor estimates. Servo mounting features are preserved from the linked frame.",
+  "hip_shaft_xy_mm": {
+    "L1": [
+      24.47673,
+      32.40000232182349
+    ],
+    "L2": [
+      -23.92327,
+      32.40000232182349
+    ],
+    "R1": [
+      24.47673,
+      -32.39999767817651
+    ],
+    "R2": [
+      -23.92327,
+      -32.39999767817651
+    ]
+  },
+  "parameters": {
+    "mesh_deflection_mm": 0.08,
+    "pcb_pilot_depth_mm": 5.0,
+    "pcb_pilot_diameter_mm": 1.4,
+    "pcb_standoff_height_mm": 4.0,
+    "pcb_standoff_radius_mm": 2.45,
+    "schema_version": 1,
+    "splice_y_mm": 3.5,
+    "units": "mm",
+    "widening_mm": 14.0
+  },
+  "parts": {
+    "bottom-cover": {
+      "bounds_mm": [
+        [
+          -39.63255567668173,
+          -34.12157551933801,
+          -18.00198309813487
+        ],
+        [
+          39.59283342810326,
+          34.12157551933809,
+          -10.73198309813487
+        ]
+      ],
+      "closed_mesh": true,
+      "frame_intersection_mm3": 0.0,
+      "original_frame_intersection_mm3": 0.0,
+      "step_sha256": "a29bc2d1c063cefe3c48dd8ad75a2d6806e8dcbd45c382b62ab4dcce6a27e2bd",
+      "stl_sha256": "a983569041f5031506e8d73922b25bbf4e6f0e208d395ac4250b445f6a618deb",
+      "triangles": 3664,
+      "valid_solid": true,
+      "volume_mm3": 21122.55189033033
+    },
+    "internal-frame": {
+      "bounds_mm": [
+        [
+          -39.63255567668173,
+          -41.04000000000003,
+          -10.731983098134872
+        ],
+        [
+          39.59283342810326,
+          41.039999999999935,
+          8.967756901865165
+        ]
+      ],
+      "closed_mesh": true,
+      "step_sha256": "50dcd0df897fe8c801c114236e5435f06952f3eb6d237c044ae59788ca97c9f0",
+      "stl_sha256": "5a345e08f35e4f976787ae3f3245503af086a1f4f959ccde78bd85ecd0decce2",
+      "triangles": 18110,
+      "valid_solid": true,
+      "volume_mm3": 44590.96112117552
+    }
+  },
+  "pcb_hole_diameter_mm": 2.0,
+  "pcb_mount_holes_mm": [
+    [
+      33.0,
+      23.2,
+      8.967756901865165
+    ],
+    [
+      33.0,
+      -23.200000000000003,
+      8.967756901865165
+    ],
+    [
+      -33.0,
+      23.2,
+      8.967756901865165
+    ],
+    [
+      -33.0,
+      -23.200000000000003,
+      8.967756901865165
+    ]
+  ],
+  "pcb_seat_z_mm": 8.967756901865165,
+  "pcb_side_margin_mm": 1.2203304297217201,
+  "pcb_size_mm": [
+    70.0,
+    50.0,
+    1.6
+  ],
+  "schema_version": 1,
+  "servo_bay_checks": [
+    {
+      "max_surface_deviation_mm": 1.0048591735576161e-14,
+      "side": -1,
+      "surface_samples": 510,
+      "translation_y_mm": -7.0,
+      "volume_difference_mm3": 3.637978807091713e-12
+    },
+    {
+      "max_surface_deviation_mm": 1.0048591735576161e-14,
+      "side": 1,
+      "surface_samples": 546,
+      "translation_y_mm": 7.0,
+      "volume_difference_mm3": 1.042568328557536e-06
+    }
+  ],
+  "servo_flange_seat_z_mm": 4.967756901865166,
+  "source": {
+    "frame_stl_sha256": "6df1f1f0fc60da4498de36412be317fc953dc52c33a9933733e2c967c200c916",
+    "path": "hardware/cad/Sesame-ESP32-v122.step",
+    "repository": "dorianborian/sesame-robot",
+    "revision": "d106cbc8e158c982f408db421134f23273c5f51f",
+    "sha256": "b6ae8936df90d85d4d6f6b24ea53bd387bd0508da2090fdbc535227d5feb9be0"
+  },
+  "source_frame_bounds_mm": [
+    [
+      -39.63255567668185,
+      -34.04000000000007,
+      -11.237185271939373
+    ],
+    [
+      39.59283342810328,
+      34.04000000000007,
+      4.967756901865166
+    ]
+  ],
+  "source_script_sha256": "53f694087d1ad43136e882f875f76080e503ef1306398bb332ddd7491f42ff82",
+  "source_support_width_mm": 38.440660859444506,
+  "support_width_mm": 52.44066085944344,
+  "unchanged_legs": {
+    "L1": "081896568cc9776393c038d05ecc8caf01090c6971efebe799d064def4c92558",
+    "L2": "4e47eef40bf523aa0d7b0ac285f3086b3e6c5ccd347525f5c93bbf0c5bcd1fbf",
+    "L3": "136b0f28814629c654a45da1ebed93f496399c0d97007c6c02e1df4422be56a3",
+    "L4": "731819f13cd34efb4ab1b9121e9fae835a463ae11f6689670f7800113ec7b470",
+    "R1": "443f956016ad416699d8d5e56ab2fb0e36b10d42f02ff47ea02ae5986180e871",
+    "R2": "fab2770d0d7f1384c4888e2b3a25cd7a6729c2b4230894b4771a177b73c6452c",
+    "R3": "c2c35b4c948849878649d99e512af6702b5fcbbd2b30578bbec87ab15b8ec99e",
+    "R4": "131348a19491edad32f29d7a64109fdfadc3a03e01feedbf08dc1769e050938a"
+  },
+  "units": "mm"
+}

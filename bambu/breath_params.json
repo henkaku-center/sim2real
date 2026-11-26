@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "revision": "breath-dome-v1-draft",
+  "units": "mm; assembly coordinates of reference/frame-and-cover_261105 (X forward, Y left, Z up)",
+  "head": {
+    "dir": "reference/frame-and-cover_261105",
+    "lid_step": "head-lid.step",
+    "lid_stl": "head-lid.stl",
+    "cover_stl": "head-cover.stl",
+    "lid_top_z": 51.968,
+    "lid_bottom_z": 48.21,
+    "ear_top_z": 58.743,
+    "ear_min_x": 21.0,
+    "note": "measured by raycast from the delivered STLs (2026-11-05)"
+  },
+  "dome": {
+    "center_xy": [0.0, 0.0],
+    "outer_r": 50.0,
+    "rib_t": 3.0,
+    "skin_t": 1.0,
+    "cells": {"half": 4.5, "web": 3.0, "theta_min_deg": 27.0, "rim_band": 5.0, "window_margin": 3.0},
+    "rim_notch": {"azimuth_deg": 180.0, "d": 7.0, "note": "air tube exit"},
+    "tabs": {"azimuth_deg": [90.0, 210.0, 330.0], "width": 8.0, "depth": 6.0, "height": 6.0,
+             "pilot_d": 1.6, "pilot_depth": 5.5}
+  },
+  "base": {
+    "floor_bottom_z": 59.6,
+    "floor_t": 2.4,
+    "floor_screw_clear_d": 2.2,
+    "pedestal": {"x": [-32.0, 16.0], "y": [-18.0, 18.0], "wall": 2.4, "boss_d": 7.0,
+                 "screws_xy": [[-27.0, 13.5], [-27.0, -13.5], [11.0, 13.5], [11.0, -13.5]],
+                 "pilot_d": 1.6, "pilot_depth": 6.0, "lid_hole_d": 2.2,
+                 "note": "M2x10 self-tapping, driven upward from the underside of the removed lid"}
+  },
+  "lung": {
+    "window_d": 40.0, "free_d": 36.0, "ring_outer_d": 52.0, "bolts": 6, "bolt_circle_d": 44.0,
+    "ring_t": 3.0, "membrane_t": 1.2, "flange_t": 4.0, "cavity_depth": 8.0, "post_d": 14.0,
+    "head_clear": 2.3, "channel_d": 2.0, "barb_od": 4.5, "barb_len": 6.0, "channel_exit_above_floor": 5.0,
+    "pilot_d": 1.6, "pilot_depth": 6.0
+  },
+  "mouth": {
+    "azimuth_deg": 0.0, "theta_deg": 65.0, "window": [12.0, 22.0],
+    "free_d": 16.0, "ring_outer_d": 28.0, "bolts": 4, "bolt_circle_d": 22.5,
+    "ring_t": 3.0, "lip_t": 1.5, "bead": [13.0, 5.0, 2.0], "flange_t": 4.0, "cavity_depth": 2.0,
+    "back_wall": 2.0, "head_clear": 2.3, "fin_t": 8.0, "channel_d": 2.0, "barb_od": 4.5, "barb_len": 6.0,
+    "pilot_d": 1.6, "pilot_depth": 4.0
+  },
+  "molds": {"plate_t": 3.0, "margin": 6.0, "pin_d": 2.2},
+  "density_g_cm3": 1.20,
+  "preview_inflation_mm": [0.0, 12.0, 20.0]
+}

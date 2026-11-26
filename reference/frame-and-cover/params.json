@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "units": "mm",
+  "widening_mm": 14.0,
+  "splice_y_mm": 3.5,
+  "pcb_standoff_height_mm": 4.0,
+  "pcb_standoff_radius_mm": 2.45,
+  "pcb_pilot_diameter_mm": 1.4,
+  "pcb_pilot_depth_mm": 5.0,
+  "mesh_deflection_mm": 0.08
+}
