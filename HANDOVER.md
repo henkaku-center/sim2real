@@ -11,7 +11,8 @@ Calibration (saved=1) and Wi-Fi were checked after the flash. When the page
 is served by the robot, "実機に送る" streams `pose` frames; this has not yet
 moved the real robot. The same page is the single, self-contained file
 `web/public/motion-space/index.html`, ready to copy into the presentation.
-See `reference/MOTION-SPACE.md`.
+See `reference/MOTION-SPACE-HANDOFF.md` (how to run, rebuild, reflash; what is
+open) and `reference/MOTION-SPACE.md` (findings).
 
 ## Voice body — November 26, 2026
 
