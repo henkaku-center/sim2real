@@ -174,3 +174,22 @@ request was used. No firmware source/table or calibration data was changed.
 The native PTY proves the implemented serial seam, not MCU scheduling or physical
 motion. Complete unverified items are in README and simulator fidelity limits in
 SIMULATOR.md. Provider endpoint/schema tests use fixtures, not paid API calls.
+
+### Cloud Run deployment check — 26 November 2026
+
+Service `sesame-voice`, project `sesame-robots`, region `asia-northeast1`,
+Claude through the test Worker (`claude-haiku-4-5`), Google Speech-to-Text
+`chirp_3` in `us` with `en-US,ja-JP`. Requests came from a development Mac over
+the public service URL with the device token.
+
+| Input | Transcript | Plan | Total time |
+|---|---|---|---:|
+| no token, `GET /health` | — | HTTP 401 | — |
+| typed "do a bow" | do a bow | motion `bow` | 2.80 s |
+| synthetic speech, English "Do a bow" | Do a bow. | motion `bow` | 5.16 s |
+| synthetic speech, Japanese 「みんなに挨拶して」 | みんな に 挨拶 し て 。 | motion `wave` | 4.22 s |
+
+The audio was generated with macOS text-to-speech (16 kHz mono WAV), so this
+shows the deployed speech and planning path works end to end; it says nothing
+about a real voice, the exhibition microphone or cafe noise. Plans were not
+played on a robot or the simulator in this check.

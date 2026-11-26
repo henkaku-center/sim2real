@@ -18,7 +18,7 @@ git -C "$ROOT" archive "$REF" firmware manifest reference tools \
   assets/printing/internal-frame-s3 assets/stl/upstream | tar -x -C "$STAGE"
 cp "$STAGE/tools/voice_demo/deploy/Dockerfile" "$STAGE/Dockerfile"
 gcloud run deploy "$SERVICE" --source "$STAGE" --project "$GCP_PROJECT" --region "$REGION" \
-  --service-account "$ACCOUNT" --build-service-account "$BUILDER" --allow-unauthenticated \
+  --service-account "$ACCOUNT" --build-service-account "$BUILDER" --no-invoker-iam-check \
   --min-instances "${VOICE_MIN_INSTANCES:-0}" --max-instances 1 --concurrency 8 \
   --memory 512Mi --cpu 1 --timeout 120 \
   --set-secrets "VOICE_DEVICE_TOKEN=voice-device-token:latest,VOICE_CLAUDE_TOKEN=voice-claude-token:latest" \
