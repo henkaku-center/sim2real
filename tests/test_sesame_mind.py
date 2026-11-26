@@ -599,3 +599,21 @@ def test_trace_shows_reasoning_design_and_curve(tmp_path):
     assert c["keys"] == [{"t": 0.4, "ease": "in"}, {"t": 0.5, "ease": "linear"}]  # tempo 2 halves time
     assert len(c["t"]) == 21 and c["series"]["height"][-1] == pytest.approx(4)
     assert sm.curve(M, {"kind": "firmware", "name": "dance"}) is None
+
+
+def test_a_reset_robot_is_armed_again():
+    class Robot:
+        def __init__(self):
+            self.armed, self.sent = False, []
+
+        def command(self, text):
+            self.sent.append(text)
+            if text == "arm run":
+                self.armed = True
+                return True, "OK ARMED"
+            return (True, "OK") if self.armed else (False, "ERR arm run first")
+
+    robot = Robot()
+    assert sm.armed_command(robot, "pose 90 90 90 90 90 90 90 90") == (True, "OK")
+    assert robot.sent == ["pose 90 90 90 90 90 90 90 90", "arm run", "pose 90 90 90 90 90 90 90 90"]
+    assert sm.armed_command(robot, "stop") == (True, "OK") and robot.sent[-1] == "stop" and len(robot.sent) == 4

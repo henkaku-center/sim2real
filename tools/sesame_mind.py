@@ -648,6 +648,18 @@ def build(settings, manifest):
 # ---------------------------------------------------------------- spine
 
 
+def armed_command(robot, text):
+    """Send one command. A robot that reset (brownout, power switch) comes back disarmed
+    and answers "ERR arm run first": arm it again and retry once."""
+    ok, reply = robot.command(text)
+    if not ok and "arm run first" in reply:
+        print("  (robot was reset; arming again)", flush=True)
+        ok, reply = robot.command("arm run")
+        if ok:
+            ok, reply = robot.command(text)
+    return ok, reply
+
+
 class Spine:
     """Plays one library entry at a time; a newer play() interrupts the current one."""
 
@@ -679,7 +691,8 @@ class Spine:
             if self.robot is None:
                 print("  (dry) " + lines[0], flush=True)
                 return 0
-            return run_lines(self.robot, lines)
+            # "?arm run" is a no-op (tolerated ERR) when armed and re-arms a robot that reset
+            return run_lines(self.robot, ["?arm run", *lines])
         poses = list(frames(self.manifest, spec, self.hz, intensity, tempo))
         if self.robot is None:
             print(f"  (dry) {len(poses)} frames @ {self.hz} Hz, first: pose {' '.join(map(str, poses[0]))}", flush=True)
@@ -688,7 +701,7 @@ class Spine:
         for i, p in enumerate(poses):
             if self.cancel.is_set():
                 return 0
-            ok, text = self.robot.command("pose " + " ".join(f"{x:g}" for x in p))
+            ok, text = armed_command(self.robot, "pose " + " ".join(f"{x:g}" for x in p))
             if not ok:
                 print(f"  (spine) {text}", file=sys.stderr)
                 return 1
@@ -814,7 +827,7 @@ class VoiceBody:
 
     def _command(self, text):
         try:
-            ok, reply = self.robot.command(text)
+            ok, reply = armed_command(self.robot, text)
         except (OSError, AttributeError) as e:
             self.error = f"robot not reachable: {e}"
             return False
