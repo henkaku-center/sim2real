@@ -49,6 +49,7 @@ prints the motion space as the text the designer reads.
 from __future__ import annotations
 
 import argparse
+import collections
 import json
 import math
 import os
@@ -856,7 +857,7 @@ class Mind:
             except Exception as e:  # an outage must not stop the robot listening
                 print(f"(ruminate) {e}", file=sys.stderr)
                 return
-            print("💭 ruminated:\n" + self.memory.notes, flush=True)
+            print(f"💭 ruminated ({len(self.memory.notes.splitlines())} lines of notes)", flush=True)
 
 
 # ---------------------------------------------------------------- ears
@@ -927,14 +928,47 @@ def hear(args, moments, body=None, poll_s=0.2):
 # ---------------------------------------------------------------- chat page
 
 
+class Console:
+    """Tees stdout/stderr and keeps the newest lines, so the pages can show what
+    the mind printed (commands sent, robot replies, errors) without a terminal."""
+
+    def __init__(self, keep=200):
+        self.lines, self.lock = collections.deque(maxlen=keep), threading.Lock()
+
+    def tee(self, stream):
+        console, partial = self, []
+
+        class Tee:
+            def write(self, text):
+                stream.write(text)
+                with console.lock:
+                    *done, rest = ("".join(partial) + text).split("\n")
+                    partial[:] = [rest]
+                    console.lines.extend((round(time.time(), 1), line) for line in done if line.strip())
+                return len(text)
+
+            def __getattr__(self, name):
+                return getattr(stream, name)
+
+        return Tee()
+
+    def recent(self, n=60):
+        with self.lock:
+            return list(self.lines)[-n:]
+
+
+CONSOLE = Console()
+
+
+
 PAGE = """<!doctype html><meta charset=utf-8><meta name=viewport content="width=device-width">
 <title>Sesame mind</title><style>body{font:16px system-ui;margin:12px;max-width:640px}
-#log,#bst{white-space:pre-wrap;font:13px ui-monospace,monospace}form{display:flex;gap:6px}input{flex:1;font:16px system-ui}
+#log,#bst,#con{white-space:pre-wrap;font:13px ui-monospace,monospace}#con{color:#555}form{display:flex;gap:6px}input{flex:1;font:16px system-ui}
 img{width:100%;display:none;margin:6px 0}</style><h3>Sesame mind</h3>
 <form id=f><input id=t placeholder="話しかける / ○○みたいな動きを作って" autofocus><button>送る</button></form>
 <p><select id=body><option value=off>声で動く: オフ<option value=both>声で動く: 抑揚＋言葉<option value=prosody>声で動く: 抑揚だけ
 <option value=words>声で動く: 言葉だけ</select> <button id=r>反芻</button></p><div id=bst></div><img id=sim alt="sim">
-<div id=log></div><script>
+<div id=log></div><details open><summary>ログ（PC）</summary><div id=con></div></details><script>
 body.onchange=()=>fetch('config',{method:'POST',body:JSON.stringify({body:body.value})});
 setInterval(async()=>{const b=await (await fetch('body')).json();if(document.activeElement!==body)body.value=b.mode;
 if(b.robot==='sim'&&!sim.src){sim.src='sim.mjpg';sim.style.display='block'}
@@ -945,7 +979,9 @@ const show=async()=>{const l=await (await fetch('log')).json();log.textContent=l
 `${new Date(e.t*1000).toLocaleTimeString()} ${e.source}「${e.text}」→ ${e.did} (${e.by} ${e.reflex_ms}ms) ${e.note}`).join('\\n')};
 f.onsubmit=async e=>{e.preventDefault();const s=t.value;t.value='';
 await fetch('say',{method:'POST',body:s});show()};r.onclick=()=>fetch('ruminate',{method:'POST'});
-setInterval(show,1000);show()</script>"""
+setInterval(show,1000);show();
+setInterval(async()=>{const l=await (await fetch('console')).json();
+con.textContent=l.reverse().map(([t,s])=>new Date(t*1000).toLocaleTimeString()+' '+s).join('\\n')},1000)</script>"""
 
 
 def config_view(mind):
@@ -972,6 +1008,8 @@ def serve(port, mind, moments):
                 return self.reply(200, PAGE, "text/html")
             if self.path == "/log":
                 return self.reply(200, json.dumps(mind.memory.recent(40), ensure_ascii=False))
+            if self.path == "/console":
+                return self.reply(200, json.dumps(CONSOLE.recent(), ensure_ascii=False))
             if self.path == "/config":
                 return self.reply(200, json.dumps(config_view(mind), ensure_ascii=False))
             if self.path == "/space":  # the motion space as text, for any LLM
@@ -1095,6 +1133,7 @@ def main(argv=None):
     p.add_argument("--host", help="drive this robot now (saved setting otherwise; settings page can switch); "
                    "'sim' drives a MuJoCo stand-in shown on the chat page (needs --group dev)")
     args = p.parse_args(argv)
+    sys.stdout, sys.stderr = CONSOLE.tee(sys.stdout), CONSOLE.tee(sys.stderr)
     audio = args.sdr is not None or args.mic or args.file
     if not (audio or args.text or args.serve):
         p.error("give an ear (--sdr/--mic/--file/--text) and/or --serve")

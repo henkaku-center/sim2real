@@ -522,3 +522,17 @@ def test_robot_caches_the_mdns_address_and_looks_again_after_a_failure(monkeypat
     assert robot.get("/status") == (True, "OK")  # third open fails, the name is looked up again
     assert len(looked) == 2 and opened[-1] == "http://10.0.0.2/status"
     assert robot.base == "http://sesame-s3-test.local"
+
+
+def test_console_keeps_printed_lines_for_the_pages():
+    out = io.StringIO()
+    console = sm.Console(keep=3)
+    tee = console.tee(out)
+    print("> motion dance", file=tee)
+    tee.write("OK MOT")
+    tee.write("ION dance\n\n  (spine) no link\nhalf")
+    assert out.getvalue().startswith("> motion dance\nOK MOTION dance")  # still reaches the terminal/log
+    assert [line for _, line in console.recent()] == ["> motion dance", "OK MOTION dance", "  (spine) no link"]
+    print("next", file=tee)
+    assert [line for _, line in console.recent(2)] == ["  (spine) no link", "halfnext"]  # a partial line waits
+    assert tee.encoding == out.encoding
