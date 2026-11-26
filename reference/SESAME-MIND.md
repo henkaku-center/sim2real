@@ -91,6 +91,25 @@ flashed on 2026-11-26. Calibration survived (`saved=1`, manifest
 `f7382b66d6f7a844`), and the page served over Wi-Fi includes the panel. The
 voice body has not yet driven the real robot.
 
+### Everything on the robot page (2026-11-26)
+
+`http://sesame-s3-8b2c.local` is the single control surface. Start the PC with
+`--robot`; nobody has to type the PC address:
+
+```sh
+uv run --group radio --group dev python tools/sesame_mind.py --mic --mic-device :1 --serve 8765 --robot sesame-s3-8b2c.local
+```
+
+Every 10 s the PC checks the robot's `/status` and, if needed, sends
+`mind http://<its LAN IP>:8765`. The firmware saves this in NVS (`sesame-net`
+key `mind`) and reports it as `mind=` in `status`; the page adopts it as the
+Mind URL. This covers hotspot address changes and robot reboots. The Mind
+panel holds chat, "声で動く", the "仮想ロボット" switch (the PC drives
+`--host sim`, and its live view appears on the page), 反芻 (ruminate) and the
+settings. Like the rest of the mind link, it has no authentication: on an
+untrusted network anyone could announce themselves as the mind, and keys typed
+into the settings would go to them.
+
 ### Without the robot: `--host sim` (2026-11-26)
 
 `sim/live_robot.py` stands in for the S3's command interface. It accepts

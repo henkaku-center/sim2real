@@ -42,7 +42,7 @@ limits. The firmware applies its own clamps and rate limit on top. Without
 prints the motion space as the text the designer reads.
 
     uv run --group radio python tools/sesame_mind.py --text
-    uv run --group radio python tools/sesame_mind.py --serve 8765    # then configure from the robot page
+    uv run --group radio python tools/sesame_mind.py --serve 8765 --robot sesame-s3-8b2c.local  # then use the robot page
     uv run --group radio python tools/sesame_mind.py --mic --whisper-model ggml-small.bin \\
         --serve 8765 --reflex jev --host sesame-s3-8b2c.local
 """
@@ -53,6 +53,7 @@ import json
 import math
 import os
 import queue
+import socket
 import subprocess
 import sys
 import threading
@@ -1008,6 +1009,34 @@ def serve(port, mind, moments):
     return server
 
 
+def lan_url(robot_host, port):
+    """This computer's URL as seen from the robot's network (the interface that routes to it)."""
+    host = robot_host.split("://")[-1].split("/")[0]
+    with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
+        s.connect((socket.gethostbyname(host), 80))  # UDP connect sends nothing
+        return f"http://{s.getsockname()[0]}:{port}"
+
+
+def announce(mind, robots, port, every=10.0, stop=None, robot_of=Robot):
+    """Tell each robot where this mind is (`mind URL`, saved on the robot) so its page
+    fills in the Mind URL by itself; again when it forgets, reboots or our address changes."""
+    stop = stop or threading.Event()
+    while True:
+        v = mind.settings.values if mind.settings else {}
+        targets = set(robots) | ({v["host"]} if v.get("live") and v.get("host") not in ("", "sim") else set())
+        for host in sorted(targets):
+            try:
+                url = lan_url(host, port)
+                robot = robot_of(host)
+                if f" mind={url}" not in robot.get("/status")[1]:
+                    ok, text = robot.command(f"mind {url}")
+                    print(f"📣 {host}: {text.strip() if ok else 'ERR ' + text.strip()}", flush=True)
+            except OSError:
+                pass  # robot off or out of reach: try again later
+        if stop.wait(every):
+            return
+
+
 def think(mind, moments, idle_s=None):
     """Single worker: moments in arrival order; ruminate after idle_s without any."""
     while True:
@@ -1043,6 +1072,8 @@ def main(argv=None):
     p.add_argument("--ruminate-s", type=float, default=300.0, help="ruminate after this long without input")
     p.add_argument("--state", type=Path, default=ROOT / ".sesame-mind",
                    help="library.json, memory.jsonl, notes.md, config.json")
+    p.add_argument("--robot", action="append", default=[], metavar="HOST",
+                   help="tell this robot (e.g. sesame-s3-8b2c.local) where the mind is, so its page finds it")
     p.add_argument("--host", help="drive this robot now (saved setting otherwise; settings page can switch); "
                    "'sim' drives a MuJoCo stand-in shown on the chat page (needs --group dev)")
     args = p.parse_args(argv)
@@ -1065,6 +1096,7 @@ def main(argv=None):
     try:
         if args.serve:
             serve(args.serve, mind, moments)
+            threading.Thread(target=announce, args=(mind, args.robot, args.serve), daemon=True).start()
         if audio:
             threading.Thread(target=hear, args=(args, moments, mind.body), daemon=True).start()
         if args.text:

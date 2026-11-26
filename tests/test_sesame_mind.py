@@ -420,3 +420,28 @@ def test_body_drives_the_simulated_robot(tmp_path):
         settings.update({"body": "off", "live": False})
         mind.configure(settings)
         mind.link and mind.link.set()
+
+
+def test_announce_tells_the_robot_where_the_mind_is(tmp_path):
+    import threading
+    sent = []
+
+    class Robot:
+        def __init__(self, host):
+            self.host = host
+
+        def get(self, path):
+            return True, "mode=0 outputs=0 mind=" + (sent[-1].split()[1] if sent else "-") + "\n"
+
+        def command(self, text):
+            sent.append(text)
+            return True, "OK MIND " + text.split()[1]
+
+    mind = sm.Mind(sm.RuleReflex(), sm.Library(), sm.Memory(tmp_path), FakeSpine())
+    mind.configure(sm.Settings(tmp_path))
+    assert sm.lan_url("127.0.0.1", 8765) == "http://127.0.0.1:8765"
+    stop = threading.Event()
+    stop.set()  # one round
+    sm.announce(mind, ["127.0.0.1"], 8765, stop=stop, robot_of=Robot)
+    sm.announce(mind, ["127.0.0.1"], 8765, stop=stop, robot_of=Robot)  # already told: nothing new
+    assert sent == ["mind http://127.0.0.1:8765"]
