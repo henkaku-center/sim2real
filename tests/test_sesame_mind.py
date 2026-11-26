@@ -334,7 +334,7 @@ def test_config_endpoint_round_trip(tmp_path, monkeypatch):
         assert view["status"] == {"reflex": "rules", "designer": "none", "robot": "", "body": "off", "error": ""}
         assert view["local_models"] == []
         with urllib.request.urlopen(base + "/thoughts") as r:
-            assert "セサミの思考ログ" in r.read().decode()
+            assert "セサミの頭の中" in r.read().decode()
         with urllib.request.urlopen(base + "/trace") as r:
             assert json.loads(r.read()) == []
         bad = urllib.request.Request(base + "/config", b'{"reflex": "psychic"}', method="POST")
