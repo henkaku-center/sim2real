@@ -23,6 +23,7 @@ from analyze import bvh  # noqa: E402
 from sesame_model import BAMBU, ROOT  # noqa: E402
 
 BED, MARGIN, BRIM, DOME_BRIM, MIN_GAP = 256.0, 3.0, 5.0, 10.0, 5.0
+NEST_HEAD_DEG, NEST_MIN_GAP = 65.0, 2.5  # v3-headarms one-run plate: head inside the dome
 V, K = BAMBU / "stl" / "v3crown", ROOT / "reference" / "frame-and-cover_261105"
 OUT = V / "plates"
 
@@ -57,7 +58,7 @@ def write_3mf(path, objects):
         z.writestr("3D/3dmodel.model", model)
 
 
-def check(plate, brims):
+def check(plate, brims, min_gap=MIN_GAP):
     rows, ok = {}, True
     for n, m in plate.items():
         lo, hi, b = m.bounds[0], m.bounds[1], brims.get(n, 0.0)
@@ -70,7 +71,7 @@ def check(plate, brims):
         for b in names[i + 1:]:
             g = fcl.distance(bvh(plate[a]), bvh(plate[b]), fcl.DistanceRequest(), fcl.DistanceResult())
             gaps[f"{a} / {b}"] = round(float(g), 1)
-            ok &= g >= MIN_GAP
+            ok &= g >= min_gap
     return {"parts": rows, "gaps_mm": gaps, "ok": bool(ok)}
 
 
@@ -97,9 +98,19 @@ def main_headarms():
     p2["head-lid"] = m
     for i in range(4):
         p2[f"pcb-spacer-{i + 1}"] = place(K / "pcb-spacer.stl", x3 + 6, m.bounds[1][1] + 12 + i * 12)
+    # optional one-run layout: the head stands on the bed inside the dome, turned so its arm tips point between a
+    # side lug and a knee slot (65 deg: 2.6 mm to the dome wall, vs 1.2 mm unturned).  Outer brim only on the dome.
+    p3 = {"shell-dome": p1["shell-dome"].copy()}
+    h = trimesh.load(v / "head-mount.stl")
+    h.apply_translation([-h.bounds[:, 0].mean(), -h.bounds[:, 1].mean(), -h.bounds[0][2]])
+    h.apply_transform(trimesh.transformations.rotation_matrix(np.radians(NEST_HEAD_DEG), [0, 0, 1]))
+    h.apply_translation([*p3["shell-dome"].bounds[:, :2].mean(axis=0), 0.0])
+    p3["head-mount"] = h
+    nested = check(p3, {"shell-dome": DOME_BRIM}, min_gap=NEST_MIN_GAP)
     report = {"bed_mm": BED, "plate1-shell-dome": check(p1, {"shell-dome": DOME_BRIM}),
-              "plate2-body-head-mount": check(p2, {"head-mount": BRIM})}
-    for name, plate in (("plate1-shell-dome", p1), ("plate2-body-head-mount", p2)):
+              "plate2-body-head-mount": check(p2, {"head-mount": BRIM}),
+              "plate-dome-with-head": nested}
+    for name, plate in (("plate1-shell-dome", p1), ("plate2-body-head-mount", p2), ("plate-dome-with-head", p3)):
         write_3mf(out / f"{name}.3mf", plate)
     (out / "plates.json").write_text(json.dumps(report, indent=1))
     print(json.dumps({k: v["ok"] if isinstance(v, dict) else v for k, v in report.items()}))

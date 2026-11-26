@@ -166,5 +166,41 @@
    "pcb-spacer-3 / pcb-spacer-4": 7.1
   },
   "ok": true
+ },
+ "plate-dome-with-head": {
+  "parts": {
+   "shell-dome": {
+    "xy_mm": [
+     [
+      34.0,
+      34.0
+     ],
+     [
+      222.0,
+      222.0
+     ]
+    ],
+    "height_mm": 125.6,
+    "inside_bed": true
+   },
+   "head-mount": {
+    "xy_mm": [
+     [
+      44.1,
+      77.0
+     ],
+     [
+      212.3,
+      178.5
+     ]
+    ],
+    "height_mm": 53.8,
+    "inside_bed": true
+   }
+  },
+  "gaps_mm": {
+   "shell-dome / head-mount": 2.6
+  },
+  "ok": true
  }
 }
