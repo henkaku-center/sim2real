@@ -60,6 +60,25 @@ saved calibration would be rejected.
 
 ## Running
 
+The mind can run all the time under launchd, so the robot's page finds it
+without starting anything by hand. It starts at login, restarts if it dies,
+announces itself to the robot every 10 s, and opens the microphone only while
+声で動く is on (`--mic-on-demand`). It runs whatever is checked out in this
+working tree and logs to `.sesame-mind/mind.log`.
+
+```sh
+python3 tools/sesame_mind_agent.py install    # once; writes ~/Library/LaunchAgents/com.sesame.mind.plist
+python3 tools/sesame_mind_agent.py restart    # after new code, `ant auth login` or a whisper model
+python3 tools/sesame_mind_agent.py status | log | uninstall
+```
+
+Verified 2026-11-26 from a temporary plist: under launchd the microphone
+delivers real audio (macOS did not block it), ffmpeg starts within about 1.5 s
+of 声で動く turning on and exits when it turns off. A SIGTERM from launchd
+sends `off` to the robot, like Ctrl-C.
+
+By hand:
+
 ```sh
 # With the robot: open http://sesame-s3-8b2c.local on the phone; the Mind URL fills in by itself
 uv run --group radio --group dev python tools/sesame_mind.py --mic --mic-device :1 --serve 8765 --robot sesame-s3-8b2c.local
@@ -111,14 +130,14 @@ spoken words are not transcribed; type them into the chat instead
 
 ## Open decisions for the user
 
-- **API keys should stay on the PC.** The settings panel sends keys over plain
-  HTTP, and with announcements any LAN device can pose as the mind. Proposed:
-  remove the key fields from the page and use `ant auth login` (OAuth profile)
-  or `ANTHROPIC_API_KEY` on the PC. `ClaudeBrain` currently rejects a missing
-  key before the SDK can find a profile (`tools/sesame_mind.py`, "no Claude
-  API key"); that check needs to go. Installing `ant` needs the user's OK.
-- **Whisper model** (`ggml-small.bin`, about 466 MB) for spoken words: the
-  download needs the user's OK.
+- **API keys stay on the PC (done 2026-11-26).** The page no longer has key
+  fields and `/config` ignores keys; `ClaudeBrain` uses `ANTHROPIC_API_KEY` or
+  an `ant auth login` profile and the page shows which (`claude_auth`). `ant`
+  2.14.0 is installed (`brew install anthropics/tap/ant`); the user still has to
+  run `ant auth login` once (it needs a browser).
+- **Whisper model** (`ggml-small.bin`, about 466 MB): approved, but the agent's
+  download was blocked by the harness; the user downloads it to
+  `~/models/whisper/ggml-small.bin`, which the launchd agent picks up.
 
 ## Remote operation (asked 2026-11-26, not built)
 

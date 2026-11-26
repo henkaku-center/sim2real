@@ -458,3 +458,36 @@ def test_announce_tells_the_robot_where_the_mind_is(tmp_path):
     sm.announce(mind, ["127.0.0.1"], 8765, stop=stop, robot_of=Robot)
     sm.announce(mind, ["127.0.0.1"], 8765, stop=stop, robot_of=Robot)  # already told: nothing new
     assert sent == ["mind http://127.0.0.1:8765"]
+
+
+def test_mic_on_demand_opens_only_while_the_body_listens(monkeypatch):
+    import argparse
+    import queue
+    import threading
+    import time
+    starts, fed = [], []
+    silence = [sys.executable, "-c", "import sys,time\nwhile True: sys.stdout.buffer.write(bytes(3200)); "
+               "sys.stdout.flush(); time.sleep(0.05)"]
+    monkeypatch.setattr(sm, "source_command", lambda args: starts.append(1) or silence)
+
+    class Body:
+        mode = "off"
+
+        def feed(self, data):
+            fed.append(len(data))
+
+    body = Body()
+    args = argparse.Namespace(sdr=None, mic=True, mic_on_demand=True, whisper_model=None, silence_rms=300.0)
+    threading.Thread(target=sm.hear, args=(args, queue.Queue(), body, 0.02), daemon=True).start()
+    time.sleep(0.3)
+    assert starts == [] and fed == []  # body off: the microphone stays closed
+    body.mode = "prosody"
+    deadline = time.monotonic() + 5
+    while not fed and time.monotonic() < deadline:
+        time.sleep(0.02)
+    assert starts == [1] and fed
+    body.mode = "off"
+    time.sleep(0.5)
+    n = len(fed)
+    time.sleep(0.3)
+    assert len(fed) == n and starts == [1]  # closed again, not restarted

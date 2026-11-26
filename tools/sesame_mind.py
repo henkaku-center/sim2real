@@ -53,6 +53,7 @@ import json
 import math
 import os
 import queue
+import signal
 import socket
 import subprocess
 import sys
@@ -881,31 +882,43 @@ def utterances(stream, frame_ms=100, silence_rms=300.0, loud_rms=3000.0, end_ms=
 class Tap:
     """A stream that hands every chunk it reads to a listener (the voice body)."""
 
-    def __init__(self, stream, listener):
-        self.stream, self.listener = stream, listener
+    def __init__(self, stream, listener, open_while=None):
+        self.stream, self.listener, self.open_while = stream, listener, open_while
 
     def read(self, n):
+        if self.open_while and not self.open_while():
+            return b""  # reads as the end of the stream
         data = self.stream.read(n)
         if data:
             self.listener(data)
         return data
 
 
-def hear(args, moments, body=None):
+def hear(args, moments, body=None, poll_s=0.2):
     """Audio ears -> moments; the newest win (offer drops the oldest). Without a
-    whisper model only the body hears (prosody), nothing is transcribed."""
-    proc = subprocess.Popen(source_command(args), stdout=subprocess.PIPE)
+    whisper model only the body hears (prosody), nothing is transcribed. With
+    --mic-on-demand the microphone is open only while the voice body is on."""
     source = "radio" if args.sdr is not None else "voice"
-    stream = Tap(proc.stdout, body.feed) if body else proc.stdout
-    try:
-        for kind, value in utterances(stream, silence_rms=args.silence_rms):
-            if kind == "sound":
-                offer(moments, Moment("sound", loudness=value, onset=True))
-            elif args.whisper_model and (text := transcribe(value, args.whisper_cmd, args.whisper_model,
-                                                              args.language)):
-                offer(moments, Moment(source, text, loudness=rms(value)))
-    finally:
-        proc.terminate()
+    on_demand = bool(getattr(args, "mic_on_demand", False) and body)
+    listening = (lambda: body.mode != "off") if on_demand else None
+    while True:
+        while on_demand and not listening():
+            time.sleep(poll_s)
+        proc = subprocess.Popen(source_command(args), stdout=subprocess.PIPE)
+        stream = Tap(proc.stdout, body.feed, listening) if body else proc.stdout
+        try:
+            for kind, value in utterances(stream, silence_rms=args.silence_rms):
+                if kind == "sound":
+                    offer(moments, Moment("sound", loudness=value, onset=True))
+                elif args.whisper_model and (text := transcribe(value, args.whisper_cmd, args.whisper_model,
+                                                                  args.language)):
+                    offer(moments, Moment(source, text, loudness=rms(value)))
+        finally:
+            proc.terminate()
+            proc.wait()
+        if not on_demand:
+            return
+        time.sleep(poll_s)  # also paces restarts if the microphone fails
 
 
 # ---------------------------------------------------------------- chat page
@@ -1059,7 +1072,9 @@ def main(argv=None):
     src.add_argument("--text", action="store_true", help="chat lines on stdin")
     p.add_argument("--serve", type=int, metavar="PORT", help="chat page for phone/PC on this port")
     p.add_argument("--gain", type=float, help="rtl_fm tuner gain in dB (default: auto)")
-    p.add_argument("--mic-device", help="ffmpeg input (macOS ':0', Linux pulse 'default')")
+    p.add_argument("--mic-device", help="ffmpeg input (macOS ':0' or ':<name>', Linux pulse 'default')")
+    p.add_argument("--mic-on-demand", action="store_true",
+                   help="open the microphone only while the voice body is on (for an always-running mind)")
     p.add_argument("--whisper-cmd", default="whisper-cli")
     p.add_argument("--whisper-model", help="ggml model for whisper.cpp, e.g. ggml-small.bin")
     p.add_argument("--language", default="ja")
@@ -1093,6 +1108,11 @@ def main(argv=None):
     print(f"mind: reflex {status['reflex']}, designer {status['designer']}, robot {status['robot'] or 'dry run'}"
           + (f"\n  ({status['error']})" if status["error"] else ""), flush=True)
     moments = queue.Queue(maxsize=4)
+
+    def stopped(*_):
+        raise KeyboardInterrupt  # launchd stops with SIGTERM: release the robot the same way
+
+    signal.signal(signal.SIGTERM, stopped)
     try:
         if args.serve:
             serve(args.serve, mind, moments)
