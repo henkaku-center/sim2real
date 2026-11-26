@@ -177,7 +177,9 @@ robot (the cap is 20).
   `https://kotaromacbook-air.taile70e.ts.net/sesame/` (any phone, any network; checked
   through the public ingress: page 200, /trace 200, /config 404). Public means the
   thought log, including admin chats, is readable by anyone with the URL, and the
-  `--guest-daily` cap (300) bounds model spend. Undo: `tailscale funnel --https=443
+  `--guest-daily` cap (300) bounds model spend. English: `?lang=en` (or a non-Japanese
+  browser) switches the page text and speech recognition (en-US); the reflex and
+  designer write `why` and `about` in the language they hear. Undo: `tailscale funnel --https=443
   --set-path /sesame off`.
 - Speed and dynamics (2026-11-26). `intensity` sizes a designed motion (0.3–1×);
   `tempo` (0.5–2, from the reflex: 速く, ゆっくり, キビキビ; the rule reflex knows

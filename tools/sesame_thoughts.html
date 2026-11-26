@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="ja">
+<html lang="ja" id="root">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>セサミの思考ログ</title>
@@ -46,7 +46,7 @@ main { max-width: 760px; margin: 0 auto }
 .chip i { width: 8px; height: 8px; border-radius: 50%; display: inline-block }
 .meta { color: var(--text-secondary); font-size: 13px; font-variant-numeric: tabular-nums }
 .why { color: var(--text-secondary); margin-top: 2px }
-.why::before { content: "理由　"; color: var(--muted); font-size: 12px }
+.why::before { content: var(--why, "理由　"); color: var(--muted); font-size: 12px }
 .about { font-weight: 600 } .name { color: var(--muted); font-size: 12px; margin-left: 6px }
 .chart { position: relative; margin-top: 6px }
 .chart svg { display: block; width: 100%; height: auto; overflow: visible }
@@ -77,43 +77,99 @@ details.table th:first-child, details.table td:first-child { text-align: left }
   background: var(--page); color: var(--text-primary) }
 .now { margin-top: 10px; min-height: 1.5em; font-size: 20px; font-weight: 600 }
 .hint { color: var(--muted); font-size: 13px }
+.lang { font-size: 13px; color: var(--text-secondary) } .lang a { color: inherit }
 </style>
 <body>
 <div class="viz-root">
-<section class="talk" aria-label="話しかける">
+<section class="talk" data-t-aria="talk">
   <div class="row">
-    <button class="mic" id="mic" type="button">🎤 話しかける</button>
-    <label class="keep"><input type="checkbox" id="keep"> ずっと聞く</label>
+    <button class="mic" id="mic" type="button"></button>
+    <label class="keep"><input type="checkbox" id="keep"> <span data-t="keep"></span></label>
+    <span class="lang" style="margin-left:auto"><a id="other" href="#"></a></span>
   </div>
   <div class="now" id="now"></div>
-  <div class="hint" id="hint">ボタンを押してセサミに話しかけてね。言葉の気持ちに合う動きを考えて、体で答えます。</div>
-  <form id="say"><input id="text" maxlength="200" placeholder="文字でも話しかけられます" autocomplete="off"><button>送る</button></form>
+  <div class="hint" id="hint" data-t="hint"></div>
+  <form id="say"><input id="text" maxlength="200" autocomplete="off" data-t-placeholder="placeholder"><button data-t="send"></button></form>
 </section>
 <header>
-  <h1>セサミの思考ログ</h1>
-  <span class="sub">聞こえたこと → 反射の判断 → 振付 → 動き</span>
-  <span class="live" id="live">接続中…</span>
+  <h1 data-t="title"></h1>
+  <span class="sub" data-t="flow"></span>
+  <span class="live" id="live"></span>
 </header>
-<main id="list"><p class="empty">まだ何も聞いていません。話しかけてみてください。</p></main>
+<main id="list"></main>
 </div>
 <script>
 // Mounted under a path (tailscale serve /sesame): relative URLs need the trailing slash.
 if (!location.pathname.endsWith('/') && !location.pathname.endsWith('/thoughts'))
   location.replace(location.pathname + '/' + location.search);
-// Labels and units of the motion-space axes (manifest/motion_space.yaml); joints are in degrees.
-const AXIS = {surge: ['前後振り', '°'], spread: ['開き', '°'], yaw: ['ひねり', '°'], stride: ['歩幅', '°'],
-  height: ['高さ', 'mm'], pitch: ['前上がり', '°'], roll: ['横傾き', '°'], lift: ['足上げ', 'mm']};
-const EASE = {linear: '等速', in: '溜め', out: '余韻', inout: 'なめらか'};
-const label = n => AXIS[n] ? AXIS[n][0] : n, unit = n => AXIS[n] ? AXIS[n][1] : '°';
+
+// Language: ?lang=en|ja, else the browser's. Speech recognition follows it, and the mind
+// answers in the language it hears, so reasons and motion names read the same way.
+const asked = new URLSearchParams(location.search).get('lang');
+const LANG = asked === 'en' || asked === 'ja' ? asked : (navigator.language || 'ja').startsWith('ja') ? 'ja' : 'en';
+const STR = {
+  ja: {
+    talk: '話しかける', mic: '🎤 話しかける', listening: '● 聞いています', keep: 'ずっと聞く', other: 'English',
+    hint: 'ボタンを押してセサミに話しかけてね。言葉の気持ちに合う動きを考えて、体で答えます。',
+    placeholder: '文字でも話しかけられます', send: '送る', title: 'セサミの思考ログ',
+    flow: '聞こえたこと → 反射の判断 → 振付 → 動き', connecting: '接続中…', updated: '更新 ',
+    offline: 'mind に接続できません', empty: 'まだ何も聞いていません。話しかけてみてください。',
+    sent: 'とどいたよ。考え中…', failed: 'うまく送れませんでした', unreachable: 'セサミの頭（PC）につながりません',
+    wait: s => `ちょっと待ってね（あと ${s} 秒）`, done: '今日はたくさん話したので、セサミはおやすみです。また明日！',
+    https: '声で話すには https のアドレスで開いてください。文字なら送れます。',
+    nosr: 'このブラウザは声の聞き取りに対応していません。文字で話しかけてね。',
+    allow: 'マイクを許可してください', misheard: e => `聞き取れませんでした（${e}）`, hearing: '聞いています…',
+    q: t => '「' + t + '」', noise: '（物音）', reflex: '反射', design: '振付', motion: '動き',
+    candidates: '候補', strength: '強さ', speed: '速さ', addressed: '話しかけ', why: '理由',
+    none: '何もしない', made: '新しく作った', stock: '内蔵の動き', reuse: '覚えた動きを再生',
+    nochart: 'ロボットに入っている動き（グラフなし）', table: '数値で見る', keyend: 'キーの終わり', ease: '移り方',
+    chart: '動きの時間変化', src: {chat: 'チャット', voice: '声', radio: 'ラジオ', sound: '物音'},
+    EASE: {linear: '等速', in: '溜め', out: '余韻', inout: 'なめらか'},
+    AXIS: {surge: '前後振り', spread: '開き', yaw: 'ひねり', stride: '歩幅', height: '高さ', pitch: '前上がり', roll: '横傾き', lift: '足上げ'},
+  },
+  en: {
+    talk: 'Talk', mic: '🎤 Talk to Sesame', listening: '● Listening', keep: 'Keep listening', other: '日本語',
+    hint: 'Press the button and talk to Sesame. It thinks of a movement that fits what you said and answers with its body.',
+    placeholder: 'Or type a message', send: 'Send', title: 'Sesame’s thoughts',
+    flow: 'what it heard → reflex → choreography → movement', connecting: 'Connecting…', updated: 'Updated ',
+    offline: 'Cannot reach the mind', empty: 'Nothing heard yet. Say something!',
+    sent: 'Got it. Thinking…', failed: 'Could not send', unreachable: 'Cannot reach Sesame’s brain (the PC)',
+    wait: s => `Just a moment (${s} s)`, done: 'Sesame has talked a lot today and is resting. See you tomorrow!',
+    https: 'Open the https address to use your voice. Typing works here.',
+    nosr: 'This browser cannot listen to speech. Please type instead.',
+    allow: 'Please allow the microphone', misheard: e => `Didn’t catch that (${e})`, hearing: 'Listening…',
+    q: t => '“' + t + '”', noise: '(a sound)', reflex: 'Reflex', design: 'Choreography', motion: 'Movement',
+    candidates: 'choices', strength: 'size', speed: 'speed', addressed: 'addressed', why: 'Why',
+    none: 'Does nothing', made: 'Made a new movement', stock: 'Built-in movement', reuse: 'Replays a learned movement',
+    nochart: 'Built into the robot (no chart)', table: 'Show numbers', keyend: 'Key ends', ease: 'Ease',
+    chart: 'Movement over time', src: {chat: 'chat', voice: 'voice', radio: 'radio', sound: 'sound'},
+    EASE: {linear: 'steady', in: 'wind-up', out: 'settle', inout: 'smooth'},
+    AXIS: {surge: 'sweep', spread: 'spread', yaw: 'twist', stride: 'stride', height: 'height', pitch: 'nose up', roll: 'tilt', lift: 'paw lift'},
+  },
+}[LANG];
+document.getElementById('root').lang = LANG;
+document.title = STR.title;
+document.querySelectorAll('[data-t]').forEach(el => el.textContent = STR[el.dataset.t]);
+document.querySelectorAll('[data-t-placeholder]').forEach(el => el.placeholder = STR[el.dataset.tPlaceholder]);
+document.querySelectorAll('[data-t-aria]').forEach(el => el.setAttribute('aria-label', STR[el.dataset.tAria]));
+document.getElementById('other').textContent = STR.other;
+document.getElementById('other').href = '?lang=' + (LANG === 'ja' ? 'en' : 'ja');
+document.getElementById('live').textContent = STR.connecting;
+document.getElementById('list').innerHTML = `<p class="empty">${STR.empty}</p>`;
+document.documentElement.style.setProperty('--why', `"${STR.why}　"`);
+
+// Units of the motion-space axes (manifest/motion_space.yaml); joints are in degrees.
+const UNIT = {surge: '°', spread: '°', yaw: '°', stride: '°', height: 'mm', pitch: '°', roll: '°', lift: 'mm'};
+const EASE = STR.EASE;
+const label = n => STR.AXIS[n] || n, unit = n => UNIT[n] || '°';
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'}[c]));
 const fmt = (x, d = 1) => (Math.round(x * 10 ** d) / 10 ** d).toString();
-const SRC = {chat: 'チャット', voice: '声', radio: 'ラジオ', sound: '物音'};
 
 function kindOf(e) {
-  if (e.did === 'none' || !e.did) return ['none', '何もしない', 'var(--none)'];
-  if (e.design) return ['new', '新しく作った', 'var(--new)'];
-  if (e.motion && e.motion.kind === 'firmware') return ['stock', '内蔵の動き', 'var(--none)'];
-  return ['reuse', '覚えた動きを再生', 'var(--reuse)'];
+  if (e.did === 'none' || !e.did) return ['none', STR.none, 'var(--none)'];
+  if (e.design) return ['new', STR.made, 'var(--new)'];
+  if (e.motion && e.motion.kind === 'firmware') return ['stock', STR.stock, 'var(--none)'];
+  return ['reuse', STR.reuse, 'var(--reuse)'];
 }
 
 // Small multiples: one row per axis on a shared time scale; each row has its own scale and
@@ -122,7 +178,7 @@ function chart(c, id) {
   const names = Object.keys(c.series), W = 680, L = 128, R = 12, top = 20, H = 46, gap = 10;
   const T = c.t[c.t.length - 1] || 1, x = t => L + (W - L - R) * t / T;
   const height = top + names.length * (H + gap) + 18;
-  let svg = `<svg viewBox="0 0 ${W} ${height}" role="img" aria-label="動きの時間変化">`;
+  let svg = `<svg viewBox="0 0 ${W} ${height}" role="img" aria-label="${STR.chart}">`;
   let start = 0;
   for (const k of c.keys) {  // ease labels centred on each key's span
     const mid = x((start + k.t) / 2);
@@ -151,7 +207,7 @@ function chart(c, id) {
     const j = c.t.findIndex(t => t >= k.t - 1e-9);
     return `<tr><td>${fmt(k.t, 2)} s</td><td>${EASE[k.ease] || k.ease}</td>${names.map(n => `<td>${fmt(c.series[n][j < 0 ? c.t.length - 1 : j])}</td>`).join('')}</tr>`;
   }).join('');
-  const table = rows ? `<details class="table"><summary>数値で見る</summary><table><tr><th>キーの終わり</th><th>移り方</th>${names.map(n => `<th>${esc(label(n))}</th>`).join('')}</tr>${rows}</table></details>` : '';
+  const table = rows ? `<details class="table"><summary>${STR.table}</summary><table><tr><th>${STR.keyend}</th><th>${STR.ease}</th>${names.map(n => `<th>${esc(label(n))}</th>`).join('')}</tr>${rows}</table></details>` : '';
   return `<div class="chart" id="${id}">${svg}<div class="tip"></div></div>${table}`;
 }
 
@@ -183,20 +239,20 @@ function hover(el, c) {
 
 function card(e, i) {
   const [k, said, color] = kindOf(e), time = new Date(e.t * 1000).toLocaleTimeString();
-  const tempo = e.tempo && e.tempo !== 1 ? ` · 速さ ×${fmt(e.tempo)}` : '';
-  const addressed = e.addressed != null ? ` · 話しかけ ${Math.round(e.addressed * 100)}%` : '';
-  const offered = e.considered ? ` · 候補 ${e.considered}` : '';
+  const tempo = e.tempo && e.tempo !== 1 ? ` · ${STR.speed} ×${fmt(e.tempo)}` : '';
+  const addressed = e.addressed != null ? ` · ${STR.addressed} ${Math.round(e.addressed * 100)}%` : '';
+  const offered = e.considered ? ` · ${STR.candidates} ${e.considered}` : '';
   let html = `<article class="card"><div class="heard"><span class="time">${time}</span>
-    <span class="text">${e.text ? '「' + esc(e.text) + '」' : '（物音）'}</span><span class="src">${SRC[e.source] || esc(e.source)}</span></div>
-    <div class="steps"><div class="step ${k}"><div class="label"><b>反射</b> ${esc(e.by)} · ${fmt(e.reflex_ms / 1000)} s${offered}</div>
+    <span class="text">${e.text ? STR.q(esc(e.text)) : STR.noise}</span><span class="src">${STR.src[e.source] || esc(e.source)}</span></div>
+    <div class="steps"><div class="step ${k}"><div class="label"><b>${STR.reflex}</b> ${esc(e.by)} · ${fmt(e.reflex_ms / 1000)} s${offered}</div>
     <div class="choice"><span class="chip"><i style="background:${color}"></i>${said}</span>
-    <span class="meta">強さ ${fmt(e.intensity, 2)}${tempo}${addressed}</span></div>
+    <span class="meta">${STR.strength} ${fmt(e.intensity, 2)}${tempo}${addressed}</span></div>
     ${e.why ? `<div class="why">${esc(e.why)}</div>` : ''}${e.note && !e.design ? `<div class="err">${esc(e.note)}</div>` : ''}</div>`;
-  if (e.design) html += `<div class="step new"><div class="label"><b>振付</b> ${esc(e.design.by)} · ${fmt(e.design.ms / 1000)} s</div>
+  if (e.design) html += `<div class="step new"><div class="label"><b>${STR.design}</b> ${esc(e.design.by)} · ${fmt(e.design.ms / 1000)} s</div>
     ${e.design.why ? `<div class="why">${esc(e.design.why)}</div>` : ''}</div>`;
   if (e.motion) {
-    html += `<div class="step ${k}"><div class="label"><b>動き</b></div><div><span class="about">${esc(e.motion.about)}</span><span class="name">${esc(e.motion.name)}</span></div>`;
-    html += e.motion.curve ? chart(e.motion.curve, 'c' + i) : `<div class="meta">ロボットに入っている動き（グラフなし）</div>`;
+    html += `<div class="step ${k}"><div class="label"><b>${STR.motion}</b></div><div><span class="about">${esc(e.motion.about)}</span><span class="name">${esc(e.motion.name)}</span></div>`;
+    html += e.motion.curve ? chart(e.motion.curve, 'c' + i) : `<div class="meta">${STR.nochart}</div>`;
     html += `</div>`;
   }
   return html + `</div></article>`;
@@ -206,16 +262,16 @@ let shown = '';
 async function refresh() {
   try {
     const list = await (await fetch('trace', {signal: AbortSignal.timeout(4000)})).json();
-    document.getElementById('live').textContent = '更新 ' + new Date().toLocaleTimeString();
+    document.getElementById('live').textContent = STR.updated + new Date().toLocaleTimeString();
     const key = list.length + ':' + (list.length ? list[list.length - 1].t : 0);
     if (key === shown) return;
     shown = key;
     const items = list.slice().reverse();
     const main = document.getElementById('list');
-    main.innerHTML = items.length ? items.map(card).join('') : '<p class="empty">まだ何も聞いていません。話しかけてみてください。</p>';
+    main.innerHTML = items.length ? items.map(card).join('') : `<p class="empty">${STR.empty}</p>`;
     items.forEach((e, i) => { if (e.motion && e.motion.curve) hover(document.getElementById('c' + i), e.motion.curve) });
   } catch (err) {
-    document.getElementById('live').textContent = 'mind に接続できません';
+    document.getElementById('live').textContent = STR.offline;
   }
 }
 refresh(); setInterval(refresh, 2000);
@@ -226,38 +282,39 @@ const $ = id => document.getElementById(id);
 const now = $('now'), hint = $('hint'), mic = $('mic'), keep = $('keep');
 async function send(text) {
   text = text.trim(); if (!text) return;
-  now.textContent = '「' + text + '」';
+  now.textContent = STR.q(text);
   try {
     const r = await fetch('say', {method: 'POST', body: text, signal: AbortSignal.timeout(5000)});
     if (r.status === 429) {
       const j = await r.json();
-      hint.textContent = j.done_for_today ? '今日はたくさん話したので、セサミはおやすみです。また明日！' : `ちょっと待ってね（あと ${Math.ceil(j.wait_s)} 秒）`;
+      hint.textContent = j.done_for_today ? STR.done : STR.wait(Math.ceil(j.wait_s));
       return;
     }
-    hint.textContent = r.ok ? 'とどいたよ。考え中…' : 'うまく送れませんでした';
+    hint.textContent = r.ok ? STR.sent : STR.failed;
     shown = ''; setTimeout(refresh, 1500); setTimeout(refresh, 4000);
-  } catch (e) { hint.textContent = 'セサミの頭（PC）につながりません' }
+  } catch (e) { hint.textContent = STR.unreachable }
 }
 $('say').onsubmit = e => { e.preventDefault(); send($('text').value); $('text').value = '' };
 const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
 let rec = null, listening = false;
 if (!SR || !window.isSecureContext) {
   mic.hidden = true; keep.parentElement.hidden = true;
-  hint.textContent = SR ? '声で話すには https のアドレスで開いてください。文字なら送れます。' : 'このブラウザは声の聞き取りに対応していません。文字で話しかけてね。';
+  hint.textContent = SR ? STR.https : STR.nosr;
 }
 function listen() {
-  rec = new SR(); rec.lang = 'ja-JP'; rec.interimResults = true; rec.continuous = false;
+  rec = new SR(); rec.lang = LANG === 'ja' ? 'ja-JP' : 'en-US'; rec.interimResults = true; rec.continuous = false;
   rec.onresult = e => {
     const r = e.results[e.results.length - 1], t = r[0].transcript;
-    now.textContent = '「' + t + '」';
+    now.textContent = STR.q(t);
     if (r.isFinal) send(t);
   };
-  rec.onerror = e => { hint.textContent = e.error === 'not-allowed' ? 'マイクを許可してください' : '聞き取れませんでした（' + e.error + '）' };
+  rec.onerror = e => { hint.textContent = e.error === 'not-allowed' ? STR.allow : STR.misheard(e.error) };
   rec.onend = () => { listening = false; draw(); if (keep.checked) setTimeout(() => { if (keep.checked && !listening) start() }, 400) };
-  rec.start(); listening = true; draw(); hint.textContent = '聞いています…';
+  rec.start(); listening = true; draw(); hint.textContent = STR.hearing;
 }
 function start() { try { listen() } catch (e) { listening = false; draw() } }
-function draw() { mic.classList.toggle('on', listening); mic.textContent = listening ? '● 聞いています' : '🎤 話しかける' }
+function draw() { mic.classList.toggle('on', listening); mic.textContent = listening ? STR.listening : STR.mic }
+draw();
 mic.onclick = () => { if (listening) { keep.checked = false; rec.stop() } else start() };
 keep.onchange = () => { if (keep.checked && !listening) start() };
 </script>
