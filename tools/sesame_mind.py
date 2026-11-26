@@ -50,6 +50,7 @@ from __future__ import annotations
 
 import argparse
 import collections
+import gzip
 import json
 import math
 import os
@@ -1114,6 +1115,21 @@ setInterval(async()=>{const l=await (await fetch('console')).json();
 con.textContent=l.reverse().map(([t,s])=>new Date(t*1000).toLocaleTimeString()+' '+s).join('\\n')},1000)</script>"""
 
 
+def encoded(handler, body):
+    """Body bytes and extra headers: gzip when the client takes it and it pays off (the thought
+    log is mostly numbers, and phones fetch it through the Funnel relay)."""
+    data = body.encode()
+    if len(data) > 2048 and "gzip" in handler.headers.get("Accept-Encoding", ""):
+        return gzip.compress(data, 5), {"Content-Encoding": "gzip", "Vary": "Accept-Encoding"}
+    return data, {}
+
+
+def latest(mind):
+    """A few bytes that change whenever the thought log does, for cheap polling."""
+    recent = mind.memory.recent(1)
+    return json.dumps({"n": len(mind.memory.lines), "t": recent[-1]["t"] if recent else 0})
+
+
 def config_view(mind):
     view = mind.settings.public()
     view["local_models"] = local_models(view["local_url"])
@@ -1124,10 +1140,12 @@ def config_view(mind):
 def serve(port, mind, moments):
     class Handler(BaseHTTPRequestHandler):
         def reply(self, code, body, kind="application/json"):
-            data = body.encode()
+            data, extra = encoded(self, body)
             self.send_response(code)
             self.send_header("Content-Type", kind + "; charset=utf-8")
             self.send_header("Content-Length", str(len(data)))
+            for k, v in extra.items():
+                self.send_header(k, v)
             # the robot's own page (another origin) posts chat here; plain-text POSTs need no preflight
             self.send_header("Access-Control-Allow-Origin", "*")
             self.end_headers()
@@ -1140,6 +1158,8 @@ def serve(port, mind, moments):
                 return self.reply(200, json.dumps(mind.memory.recent(40), ensure_ascii=False))
             if self.path == "/trace":
                 return self.reply(200, json.dumps(trace(mind), ensure_ascii=False))
+            if self.path == "/latest":
+                return self.reply(200, latest(mind))
             if self.path == "/thoughts":
                 return self.reply(200, TRACE_PAGE.read_text(), "text/html")
             if self.path == "/console":
@@ -1230,11 +1250,12 @@ def serve_guest(port, mind, moments, gate=None, host="127.0.0.1", daily=300):
 
     class Guest(BaseHTTPRequestHandler):
         def reply(self, code, body, kind="application/json"):
-            data = body.encode()
+            data, extra = encoded(self, body)
             self.send_response(code)
             self.send_header("Content-Type", kind + "; charset=utf-8")
             self.send_header("Content-Length", str(len(data)))
-            self.send_header("Cache-Control", "no-store")
+            for k, v in {"Cache-Control": "no-store", **extra}.items():
+                self.send_header(k, v)
             self.end_headers()
             self.wfile.write(data)
 
@@ -1244,6 +1265,8 @@ def serve_guest(port, mind, moments, gate=None, host="127.0.0.1", daily=300):
                 return self.reply(200, TRACE_PAGE.read_text(), "text/html")  # read per request: edit and reload
             if path == "/trace":
                 return self.reply(200, json.dumps(trace(mind), ensure_ascii=False))
+            if path == "/latest":
+                return self.reply(200, latest(mind))
             self.reply(404, "{}")
 
         def do_POST(self):

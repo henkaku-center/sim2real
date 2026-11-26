@@ -652,6 +652,16 @@ def test_guest_port_only_talks_and_shows_thoughts(tmp_path):
             assert e.value.code == 404  # settings stay on the admin port
         with pytest.raises(urllib.error.HTTPError):
             urllib.request.urlopen(base + "/config")
+        with urllib.request.urlopen(base + "/latest") as r:
+            assert json.loads(r.read()) == {"n": 0, "t": 0}
+        mind.memory.add({"t": 5.0, "text": "x" * 4000, "did": "none"})
+        with urllib.request.urlopen(base + "/latest") as r:
+            assert json.loads(r.read()) == {"n": 1, "t": 5.0}
+        import gzip
+        req = urllib.request.Request(base + "/trace", headers={"Accept-Encoding": "gzip"})
+        with urllib.request.urlopen(req) as r:
+            assert r.headers["Content-Encoding"] == "gzip"
+            assert json.loads(gzip.decompress(r.read()))[0]["text"] == "x" * 4000
     finally:
         server.shutdown()
 

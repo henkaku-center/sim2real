@@ -117,7 +117,7 @@ const STR = {
     placeholder: '文字でも話しかけられます', send: '送る', title: 'セサミの思考ログ',
     flow: '聞こえたこと → 反射の判断 → 振付 → 動き', connecting: '接続中…', updated: '更新 ',
     offline: 'mind に接続できません', empty: 'まだ何も聞いていません。話しかけてみてください。',
-    sent: 'とどいたよ。考え中…', failed: 'うまく送れませんでした', unreachable: 'セサミの頭（PC）につながりません',
+    sent: 'とどいたよ。考え中…', slow: '通信が遅いようです。届いているかもしれないので、少し待ってみてね', failed: 'うまく送れませんでした', unreachable: 'セサミの頭（PC）につながりません',
     wait: s => `ちょっと待ってね（あと ${s} 秒）`, done: '今日はたくさん話したので、セサミはおやすみです。また明日！',
     https: '声で話すには https のアドレスで開いてください。文字なら送れます。',
     nosr: 'このブラウザは声の聞き取りに対応していません。文字で話しかけてね。',
@@ -136,7 +136,7 @@ const STR = {
     placeholder: 'Or type a message', send: 'Send', title: 'Sesame’s thoughts',
     flow: 'what it heard → reflex → choreography → movement', connecting: 'Connecting…', updated: 'Updated ',
     offline: 'Cannot reach the mind', empty: 'Nothing heard yet. Say something!',
-    sent: 'Got it. Thinking…', failed: 'Could not send', unreachable: 'Cannot reach Sesame’s brain (the PC)',
+    sent: 'Got it. Thinking…', slow: 'The connection is slow. It may have arrived; give it a moment.', failed: 'Could not send', unreachable: 'Cannot reach Sesame’s brain (the PC)',
     wait: s => `Just a moment (${s} s)`, done: 'Sesame has talked a lot today and is resting. See you tomorrow!',
     https: 'Open the https address to use your voice. Typing works here.',
     nosr: 'This browser cannot listen to speech. Please type instead.',
@@ -264,13 +264,18 @@ function card(e, i) {
   return html + `</div></article>`;
 }
 
-let shown = '';
+// Poll a few bytes; fetch the whole log (gzip) only when it changed. Phones on mobile data
+// reach this through the Funnel relay, where re-sending 200 kB every 2 s clogs the line.
+let shown = '', busy = false;
 async function refresh() {
+  if (busy) return;
+  busy = true;
   try {
-    const list = await (await fetch('trace', {signal: AbortSignal.timeout(4000)})).json();
+    const v = await (await fetch('latest', {signal: AbortSignal.timeout(8000)})).json();
     document.getElementById('live').textContent = STR.updated + new Date().toLocaleTimeString();
-    const key = list.length + ':' + (list.length ? list[list.length - 1].t : 0);
+    const key = v.n + ':' + v.t;
     if (key === shown) return;
+    const list = await (await fetch('trace', {signal: AbortSignal.timeout(20000)})).json();
     shown = key;
     const items = list.slice().reverse();
     const main = document.getElementById('list');
@@ -278,7 +283,7 @@ async function refresh() {
     items.forEach((e, i) => { if (e.motion && e.motion.curve) hover(document.getElementById('c' + i), e.motion.curve) });
   } catch (err) {
     document.getElementById('live').textContent = STR.offline;
-  }
+  } finally { busy = false }
 }
 refresh(); setInterval(refresh, 2000);
 
@@ -290,7 +295,7 @@ async function send(text) {
   text = text.trim(); if (!text) return;
   now.textContent = STR.q(text);
   try {
-    const r = await fetch('say', {method: 'POST', body: text, signal: AbortSignal.timeout(5000)});
+    const r = await fetch('say', {method: 'POST', body: text, signal: AbortSignal.timeout(15000)});
     if (r.status === 429) {
       const j = await r.json();
       hint.textContent = j.done_for_today ? STR.done : STR.wait(Math.ceil(j.wait_s));
@@ -298,7 +303,7 @@ async function send(text) {
     }
     hint.textContent = r.ok ? STR.sent : STR.failed;
     shown = ''; setTimeout(refresh, 1500); setTimeout(refresh, 4000);
-  } catch (e) { hint.textContent = STR.unreachable }
+  } catch (e) { hint.textContent = e.name === 'TimeoutError' ? STR.slow : STR.unreachable }
 }
 $('say').onsubmit = e => { e.preventDefault(); send($('text').value); $('text').value = '' };
 const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
