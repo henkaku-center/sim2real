@@ -12,7 +12,10 @@ project goal of rehearsing a build before hardware moves. Started on 26 November
 - `sim/line.py` composes it into one MuJoCo model and writes the reach evidence.
 - `tools/fetch_line_models.py` downloads the pinned third-party models into the
   ignored `upstream/` folder (about 40 MB).
-- `<layout>/reach.json` is the committed evidence for the current layout.
+- `<layout>/reach.json` is the committed evidence for a layout. Only the current
+  layout's record is checked for staleness; earlier ones are kept for comparison.
+- `manifest/line_previs.yaml` and `sim/line_previs.py` play the trailer's twelve
+  shots inside the twin and cut them into one video.
 
 ```bash
 uv run python tools/fetch_line_models.py     # once
@@ -20,6 +23,8 @@ uv run python -m sim.line --summary          # findings
 uv run python -m sim.line                    # regenerate reach.json
 uv run python -m sim.line --check            # fail when reach.json is stale
 uv run python -m sim.line --render out/      # stills, rehearsal video, index.html
+uv run python -m sim.line_previs --summary   # shots, length, worst arm waypoint error
+uv run python -m sim.line_previs --render out/   # previs.mp4 and previs.html (needs ffmpeg)
 uv run pytest tests/test_line.py
 ```
 
@@ -52,3 +57,29 @@ standing on the table. The twin finds that 6 of 14 gripper targets are reachable
 
 These are properties of this layout, not of the machines. They are recorded so the
 next layout can be compared against them.
+
+## Layout `tabletop-v1`
+
+The second layout answers each finding, and all 14 gripper targets are reachable:
+
+- The printers eject finished parts onto an outfeed tray at their front, which is
+  the common hobby practice, so one SO-101 serves all three.
+- The trays and the kitting arm are pulled together.
+- The OpenArm pedestal stands on a low stand behind the table, 0.45 m below the
+  table top.
+- No single pallet position was inside both the kitting arm's and the OpenArm's
+  reach, so a short belt carries the pallet between them. The belt is a concept
+  fixture; nothing about it is modelled beyond its footprint.
+
+Collisions are still unchecked: an arm can pass through a printer frame or another
+machine in this model without any warning.
+
+## Pre-visualisation
+
+`manifest/line_previs.yaml` restates the trailer storyboard (twelve shots, 59
+seconds; `trailer/storyboard.js` in the `aps` repository) as cameras and events in
+this layout. Arms move through inverse-kinematics waypoints, loose objects, hands,
+screens and print heads are boxes on written paths, and the Sesame plays its stock
+walk as joint angles while sliding along a path. It is an animatic for staging,
+reach and timing. It is not evidence that any step works, and the rendered video is
+not committed.

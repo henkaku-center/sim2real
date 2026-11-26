@@ -21,13 +21,13 @@
 #   concept             invented for this line; no real counterpart yet
 
 schema_version: 1
-layout: tabletop-v0
+layout: tabletop-v1
 
 table:
   size: [2.4, 0.9]
   thickness: 0.03
   status: concept
-  note: A large workbench. The trailer keyframes that inspired this layout show a shorter table.
+  note: A large workbench. The trailer keyframes show a shorter table.
 
 machines:
   so101:
@@ -67,38 +67,59 @@ machines:
       No simulation model is used and the door, gantry and frame are not modelled.
 
 # Placed machine instances. `yaw` turns the machine about Z.
+# Changes from tabletop-v0, each answering one of its reach findings:
+# - printers eject finished parts onto an outfeed tray at their front, so one
+#   arm serves all three instead of reaching into each enclosure;
+# - trays and the kitting arm are pulled together;
+# - the assembly arms stand on a low stand behind the table, 0.45 m below the
+#   table top;
+# - a short belt carries the pallet from the kitting arm to the assembly arms,
+#   because no single position is inside both reaches.
 instances:
   printer_1: {machine: voron, pos: [-0.95, 0.22, 0.0]}
   printer_2: {machine: voron, pos: [-0.52, 0.22, 0.0]}
   printer_3: {machine: voron, pos: [-0.09, 0.22, 0.0]}
-  harvest_arm: {machine: so101, pos: [-0.52, -0.20, 0.0], yaw: 90}
-  kit_arm: {machine: so101, pos: [0.22, -0.02, 0.0], yaw: -90}
-  assembly_arms: {machine: openarm, pos: [1.0, 0.28, 0.0], yaw: -90}
-  new_sesame: {machine: sesame, pos: [0.74, -0.28, 0.03], yaw: -90}
+  harvest_arm: {machine: so101, pos: [-0.48, -0.33, 0.0], yaw: 90}
+  kit_arm: {machine: so101, pos: [0.18, -0.04, 0.0], yaw: -90}
+  assembly_arms: {machine: openarm, pos: [0.72, 0.56, -0.45], yaw: -90}
+  new_sesame: {machine: sesame, pos: [0.72, 0.20, 0.05], yaw: -90, tint: blue}
+  elder_sesame_a: {machine: sesame, pos: [1.04, -0.08, 0.05], yaw: -90, tint: orange}
+  elder_sesame_b: {machine: sesame, pos: [1.04, -0.30, 0.05], yaw: -90, tint: mint}
 
-# Passive fixtures: open trays, the kit pallet and the assembly jig.
+# Passive fixtures. `pos` is the centre of the footprint at its base.
 fixtures:
-  parts_tray: {kind: tray, pos: [-0.22, -0.28, 0.0], size: [0.18, 0.12, 0.03], colour: yellow, holds: printed parts}
-  servo_tray: {kind: tray, pos: [0.02, -0.30, 0.0], size: [0.18, 0.12, 0.03], colour: pink, holds: servos}
-  pcb_tray: {kind: tray, pos: [0.22, -0.30, 0.0], size: [0.18, 0.12, 0.03], colour: mint, holds: circuit boards}
-  oled_tray: {kind: tray, pos: [0.42, -0.30, 0.0], size: [0.18, 0.12, 0.03], colour: yellow, holds: displays}
-  pallet: {kind: pallet, pos: [0.48, -0.04, 0.0], size: [0.20, 0.16, 0.012], holds: one kit}
-  jig: {kind: jig, pos: [1.0, -0.12, 0.0], size: [0.16, 0.12, 0.02], holds: board nest and assembly jig}
+  outfeed_1: {kind: tray, pos: [-0.76, -0.07, 0.0], size: [0.12, 0.10, 0.02], colour: blue, holds: ejected prints}
+  outfeed_2: {kind: tray, pos: [-0.52, -0.07, 0.0], size: [0.12, 0.10, 0.02], colour: blue, holds: ejected prints}
+  outfeed_3: {kind: tray, pos: [-0.26, -0.07, 0.0], size: [0.12, 0.10, 0.02], colour: blue, holds: ejected prints}
+  parts_tray: {kind: tray, pos: [-0.14, -0.30, 0.0], size: [0.14, 0.12, 0.03], colour: yellow, holds: printed parts}
+  servo_tray: {kind: tray, pos: [0.06, -0.34, 0.0], size: [0.14, 0.12, 0.03], colour: pink, holds: servos}
+  pcb_tray: {kind: tray, pos: [0.22, -0.34, 0.0], size: [0.14, 0.12, 0.03], colour: mint, holds: circuit boards}
+  oled_tray: {kind: tray, pos: [0.38, -0.34, 0.0], size: [0.14, 0.12, 0.03], colour: yellow, holds: displays}
+  conveyor: {kind: belt, pos: [0.47, 0.08, 0.0], size: [0.22, 0.42, 0.01], holds: the pallet between kitting and assembly}
+  pallet: {kind: pallet, pos: [0.48, -0.06, 0.01], size: [0.18, 0.14, 0.012], holds: one kit}
+  jig: {kind: jig, pos: [0.72, 0.20, 0.0], size: [0.16, 0.12, 0.02], holds: board nest and assembly jig}
+  arm_stand: {kind: stand, pos: [0.72, 0.56, -0.75], size: [0.30, 0.30, 0.30], off_table: true, holds: the assembly arms}
 
 # Named points that steps refer to. Left and right are as seen from the front;
-# the assembly arms face the viewer, so their left gripper works on the right. `at` is a fixture or instance; `offset` is
-# added to its position (for a printer, to the centre of its bed plate).
+# the assembly arms face the viewer, so their left gripper works on the right.
+# `at` is a fixture or instance; `offset` is added to its position (for a
+# printer with `surface: bed`, to the centre of its bed plate).
 targets:
   bed_1: {at: printer_1, surface: bed, offset: [0, 0, 0.03]}
   bed_2: {at: printer_2, surface: bed, offset: [0, 0, 0.03]}
   bed_3: {at: printer_3, surface: bed, offset: [0, 0, 0.03]}
+  outfeed_1: {at: outfeed_1, offset: [0, 0, 0.05]}
+  outfeed_2: {at: outfeed_2, offset: [0, 0, 0.05]}
+  outfeed_3: {at: outfeed_3, offset: [0, 0, 0.05]}
   parts_tray: {at: parts_tray, offset: [0, 0, 0.06]}
   servo_tray: {at: servo_tray, offset: [0, 0, 0.06]}
   pcb_tray: {at: pcb_tray, offset: [0, 0, 0.06]}
   oled_tray: {at: oled_tray, offset: [0, 0, 0.06]}
   pallet: {at: pallet, offset: [0, 0, 0.05]}
+  pallet_stop: {at: conveyor, offset: [-0.01, 0.14, 0.07]}
   jig_left: {at: jig, offset: [-0.05, 0, 0.06]}
   jig_right: {at: jig, offset: [0.05, 0, 0.06]}
+  jig_top: {at: jig, offset: [0, 0, 0.13]}
 
 reach:
   tolerance_m: 0.005
@@ -115,12 +136,12 @@ reach:
 steps:
   - id: print
     actor: printer_1
-    does: Print the shell, frame and leg parts.
+    does: Print the shell, frame and leg parts, then eject them onto the outfeed tray.
     evidence: works-today
   - id: harvest
     actor: harvest_arm
-    does: Take finished parts off each printer bed and put them in the parts tray.
-    visits: {main: [bed_1, bed_2, bed_3, parts_tray]}
+    does: Collect ejected parts from each printer's outfeed tray into the parts tray.
+    visits: {main: [outfeed_1, outfeed_2, outfeed_3, parts_tray]}
     evidence: demo-level
   - id: order
     actor: agent
@@ -135,6 +156,10 @@ steps:
     does: Collect one kit from the trays onto the pallet.
     visits: {main: [parts_tray, servo_tray, pcb_tray, oled_tray, pallet]}
     evidence: demo-level
+  - id: transfer
+    actor: conveyor
+    does: Carry the loaded pallet from the kitting arm to the assembly arms.
+    evidence: concept
   - id: solder
     actor: assembly_arms
     does: Hold the board in its nest with one gripper and solder its headers with the other.
@@ -147,7 +172,7 @@ steps:
   - id: assemble
     actor: assembly_arms
     does: Fit servos, legs and the head shell.
-    visits: {left: [jig_right], right: [jig_left, pallet]}
+    visits: {left: [jig_right], right: [jig_left, pallet_stop]}
     evidence: concept
   - id: walk_off
     actor: new_sesame
@@ -166,3 +191,22 @@ rehearsals:
     place: pallet
     lift_m: 0.07
     seconds: 6.0
+
+# Loose objects that the pre-visualisation moves around (manifest/line_previs.yaml).
+# They are plain boxes with assumed sizes, parked out of sight until a shot uses them.
+props:
+  part_a: {size: [0.060, 0.020, 0.012], colour: blue}
+  part_b: {size: [0.050, 0.030, 0.012], colour: blue}
+  print: {size: [0.050, 0.020, 0.004], colour: blue}
+  toolhead: {size: [0.050, 0.050, 0.070], colour: green}
+  servo: {size: [0.023, 0.012, 0.029], colour: blue}
+  board: {size: [0.060, 0.040, 0.004], colour: green}
+  head_shell: {size: [0.070, 0.060, 0.040], colour: blue}
+  phone: {size: [0.075, 0.150, 0.008], colour: dark}
+  parcel: {size: [0.200, 0.150, 0.100], colour: card}
+  hand: {size: [0.080, 0.100, 0.030], colour: skin}
+  monitor: {size: [0.420, 0.020, 0.260], colour: dark}
+  screen: {size: [0.390, 0.004, 0.230], colour: paper}
+  laptop: {size: [0.300, 0.020, 0.200], colour: dark}
+  cable: {size: [0.008, 0.120, 0.006], colour: dark}
+  led: {size: [0.006, 0.006, 0.006], colour: green}

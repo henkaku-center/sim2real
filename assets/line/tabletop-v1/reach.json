@@ -1,0 +1,374 @@
+{
+  "schema": "sim2real-line-reach/1",
+  "status": "simulated-geometry-unmeasured",
+  "layout": "tabletop-v1",
+  "limits": "Position-only inverse kinematics for the gripper point of the published model, inside its joint limits. Tool orientation, collisions with the printer frame or other machines, payload and grasping are not checked.",
+  "inputs": {
+    "manifest/line.yaml": "42a2a080acc74b5801e505c9581bf8ebfadb0a84b17aa884ba916c2178840d7b",
+    "models": {
+      "openarm": "102317900868c5619d06a45c415c28a959b95ccd",
+      "sesame": "5457896080f18f9f6ff1b06568c0ade07bb4229886f975fb153f885dd69bea2c",
+      "so101": "141aea7bcac2744d92998e30268c413202a56f96"
+    }
+  },
+  "model": {
+    "bodies": 93,
+    "joints": 57,
+    "actuators": 52,
+    "meshes": 222
+  },
+  "table_fit": {
+    "conveyor": {
+      "on_table": true,
+      "overhang_m": [
+        0.0,
+        0.0
+      ]
+    },
+    "jig": {
+      "on_table": true,
+      "overhang_m": [
+        0.0,
+        0.0
+      ]
+    },
+    "oled_tray": {
+      "on_table": true,
+      "overhang_m": [
+        0.0,
+        0.0
+      ]
+    },
+    "outfeed_1": {
+      "on_table": true,
+      "overhang_m": [
+        0.0,
+        0.0
+      ]
+    },
+    "outfeed_2": {
+      "on_table": true,
+      "overhang_m": [
+        0.0,
+        0.0
+      ]
+    },
+    "outfeed_3": {
+      "on_table": true,
+      "overhang_m": [
+        0.0,
+        0.0
+      ]
+    },
+    "pallet": {
+      "on_table": true,
+      "overhang_m": [
+        0.0,
+        0.0
+      ]
+    },
+    "parts_tray": {
+      "on_table": true,
+      "overhang_m": [
+        0.0,
+        0.0
+      ]
+    },
+    "pcb_tray": {
+      "on_table": true,
+      "overhang_m": [
+        0.0,
+        0.0
+      ]
+    },
+    "printer_1": {
+      "on_table": true,
+      "overhang_m": [
+        0.0,
+        0.0
+      ]
+    },
+    "printer_2": {
+      "on_table": true,
+      "overhang_m": [
+        0.0,
+        0.0
+      ]
+    },
+    "printer_3": {
+      "on_table": true,
+      "overhang_m": [
+        0.0,
+        0.0
+      ]
+    },
+    "servo_tray": {
+      "on_table": true,
+      "overhang_m": [
+        0.0,
+        0.0
+      ]
+    }
+  },
+  "reach": [
+    {
+      "step": "harvest",
+      "actor": "harvest_arm",
+      "gripper": "main",
+      "target": "outfeed_1",
+      "point_m": [
+        -0.76,
+        -0.07,
+        0.05
+      ],
+      "horizontal_distance_from_base_m": 0.382,
+      "residual_mm": 0,
+      "reachable": true
+    },
+    {
+      "step": "harvest",
+      "actor": "harvest_arm",
+      "gripper": "main",
+      "target": "outfeed_2",
+      "point_m": [
+        -0.52,
+        -0.07,
+        0.05
+      ],
+      "horizontal_distance_from_base_m": 0.263,
+      "residual_mm": 1,
+      "reachable": true
+    },
+    {
+      "step": "harvest",
+      "actor": "harvest_arm",
+      "gripper": "main",
+      "target": "outfeed_3",
+      "point_m": [
+        -0.26,
+        -0.07,
+        0.05
+      ],
+      "horizontal_distance_from_base_m": 0.341,
+      "residual_mm": 0,
+      "reachable": true
+    },
+    {
+      "step": "harvest",
+      "actor": "harvest_arm",
+      "gripper": "main",
+      "target": "parts_tray",
+      "point_m": [
+        -0.14,
+        -0.3,
+        0.06
+      ],
+      "horizontal_distance_from_base_m": 0.341,
+      "residual_mm": 0,
+      "reachable": true
+    },
+    {
+      "step": "kit",
+      "actor": "kit_arm",
+      "gripper": "main",
+      "target": "parts_tray",
+      "point_m": [
+        -0.14,
+        -0.3,
+        0.06
+      ],
+      "horizontal_distance_from_base_m": 0.412,
+      "residual_mm": 0,
+      "reachable": true
+    },
+    {
+      "step": "kit",
+      "actor": "kit_arm",
+      "gripper": "main",
+      "target": "servo_tray",
+      "point_m": [
+        0.06,
+        -0.34,
+        0.06
+      ],
+      "horizontal_distance_from_base_m": 0.323,
+      "residual_mm": 0,
+      "reachable": true
+    },
+    {
+      "step": "kit",
+      "actor": "kit_arm",
+      "gripper": "main",
+      "target": "pcb_tray",
+      "point_m": [
+        0.22,
+        -0.34,
+        0.06
+      ],
+      "horizontal_distance_from_base_m": 0.303,
+      "residual_mm": 1,
+      "reachable": true
+    },
+    {
+      "step": "kit",
+      "actor": "kit_arm",
+      "gripper": "main",
+      "target": "oled_tray",
+      "point_m": [
+        0.38,
+        -0.34,
+        0.06
+      ],
+      "horizontal_distance_from_base_m": 0.361,
+      "residual_mm": 0,
+      "reachable": true
+    },
+    {
+      "step": "kit",
+      "actor": "kit_arm",
+      "gripper": "main",
+      "target": "pallet",
+      "point_m": [
+        0.48,
+        -0.06,
+        0.06
+      ],
+      "horizontal_distance_from_base_m": 0.301,
+      "residual_mm": 0,
+      "reachable": true
+    },
+    {
+      "step": "solder",
+      "actor": "assembly_arms",
+      "gripper": "left",
+      "target": "jig_right",
+      "point_m": [
+        0.77,
+        0.2,
+        0.06
+      ],
+      "horizontal_distance_from_base_m": 0.363,
+      "residual_mm": 1,
+      "reachable": true
+    },
+    {
+      "step": "solder",
+      "actor": "assembly_arms",
+      "gripper": "right",
+      "target": "jig_left",
+      "point_m": [
+        0.67,
+        0.2,
+        0.06
+      ],
+      "horizontal_distance_from_base_m": 0.363,
+      "residual_mm": 1,
+      "reachable": true
+    },
+    {
+      "step": "assemble",
+      "actor": "assembly_arms",
+      "gripper": "left",
+      "target": "jig_right",
+      "point_m": [
+        0.77,
+        0.2,
+        0.06
+      ],
+      "horizontal_distance_from_base_m": 0.363,
+      "residual_mm": 1,
+      "reachable": true
+    },
+    {
+      "step": "assemble",
+      "actor": "assembly_arms",
+      "gripper": "right",
+      "target": "jig_left",
+      "point_m": [
+        0.67,
+        0.2,
+        0.06
+      ],
+      "horizontal_distance_from_base_m": 0.363,
+      "residual_mm": 1,
+      "reachable": true
+    },
+    {
+      "step": "assemble",
+      "actor": "assembly_arms",
+      "gripper": "right",
+      "target": "pallet_stop",
+      "point_m": [
+        0.46,
+        0.22,
+        0.07
+      ],
+      "horizontal_distance_from_base_m": 0.428,
+      "residual_mm": 0,
+      "reachable": true
+    }
+  ],
+  "rehearsals": {
+    "kit_servo": {
+      "waypoints": [
+        {
+          "label": "above_pick",
+          "point_m": [
+            0.06,
+            -0.34,
+            0.13
+          ],
+          "residual_mm": 0.6
+        },
+        {
+          "label": "pick",
+          "point_m": [
+            0.06,
+            -0.34,
+            0.06
+          ],
+          "residual_mm": 0.3
+        },
+        {
+          "label": "above_pick",
+          "point_m": [
+            0.06,
+            -0.34,
+            0.13
+          ],
+          "residual_mm": 0.6
+        },
+        {
+          "label": "above_place",
+          "point_m": [
+            0.48,
+            -0.06,
+            0.13
+          ],
+          "residual_mm": 0.7
+        },
+        {
+          "label": "place",
+          "point_m": [
+            0.48,
+            -0.06,
+            0.06
+          ],
+          "residual_mm": 0.3
+        },
+        {
+          "label": "above_place",
+          "point_m": [
+            0.48,
+            -0.06,
+            0.13
+          ],
+          "residual_mm": 0.5
+        }
+      ],
+      "worst_residual_mm": 0.7,
+      "feasible": true
+    }
+  },
+  "findings": []
+}

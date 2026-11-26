@@ -53,7 +53,14 @@ COLOURS = {
     "pink": (0.97, 0.66, 0.74, 1),
     "mint": (0.60, 0.87, 0.66, 1),
     "blue": (0.23, 0.56, 0.90, 1),
+    "orange": (0.96, 0.55, 0.20, 1),
+    "green": (0.18, 0.62, 0.36, 1),
+    "dark": (0.13, 0.13, 0.15, 1),
+    "card": (0.76, 0.62, 0.44, 1),
+    "skin": (0.90, 0.72, 0.60, 1),
+    "paper": (0.93, 0.94, 0.96, 1),
 }
+PARKED = [0.0, 0.0, -5.0]
 
 
 class LineError(ValueError):
@@ -95,7 +102,7 @@ def validate_line(line: dict) -> None:
         if step.get("evidence") not in EVIDENCE:
             raise LineError(f"step {step['id']}: evidence must be one of {EVIDENCE}")
         actor = step["actor"]
-        if actor not in instances and actor not in NON_ROBOT_ACTORS:
+        if actor not in instances and actor not in fixtures and actor not in NON_ROBOT_ACTORS:
             raise LineError(f"step {step['id']}: unknown actor {actor}")
         for gripper, names in step.get("visits", {}).items():
             grippers = machines[instances[actor]["machine"]].get("grippers", {})
@@ -130,7 +137,7 @@ def footprints(line: dict) -> dict[str, dict]:
     """Table-fit check for placeholder machines and fixtures (axis-aligned boxes)."""
     half = np.array(line["table"]["size"]) / 2
     result = {}
-    boxes = {name: (fixture["pos"], fixture["size"]) for name, fixture in line["fixtures"].items()}
+    boxes = {name: (fixture["pos"], fixture["size"]) for name, fixture in line["fixtures"].items() if not fixture.get("off_table")}
     for name, instance in line["instances"].items():
         machine = line["machines"][instance["machine"]]
         if "box" in machine:
@@ -184,10 +191,12 @@ def build_spec(line: dict):
 
     for name, fixture in line["fixtures"].items():
         fx, fy, fz = fixture["size"]
-        body = world.add_body(name=name, pos=fixture["pos"])
+        body = world.add_body(name=name, pos=fixture["pos"], mocap=fixture["kind"] == "pallet")
         rgba = COLOURS.get(fixture.get("colour"), (0.80, 0.68, 0.48, 1))
         if fixture["kind"] == "jig":
             rgba = COLOURS["blue"]
+        elif fixture["kind"] in ("belt", "stand"):
+            rgba = (0.25, 0.26, 0.28, 1)
         body.add_geom(type=box, size=[fx / 2, fy / 2, 0.003], pos=[0, 0, 0.003], rgba=rgba, contype=0, conaffinity=0)
         if fixture["kind"] == "tray":
             wall = 0.004
@@ -206,6 +215,10 @@ def build_spec(line: dict):
                     child.delete(geom)
             for light in list(child.worldbody.lights):
                 child.delete(light)
+            if "tint" in instance:  # recolour the model's red printed parts
+                for geom in child.geoms:
+                    if geom.rgba[0] > 0.6 and geom.rgba[1] < 0.4 and geom.rgba[2] < 0.4:
+                        geom.rgba = COLOURS[instance["tint"]]
             frame = world.add_frame(pos=instance["pos"], quat=quat)
             with warnings.catch_warnings():
                 # Children carry their own solver options; the line keeps MuJoCo's defaults.
@@ -230,6 +243,9 @@ def build_spec(line: dict):
         item = rehearsal["item"]
         body = world.add_body(name=f"item/{name}", mocap=True, pos=target_point(line, rehearsal["pick"]).tolist())
         body.add_geom(type=box, size=[v / 2 for v in item["size"]], rgba=COLOURS.get(item.get("colour"), (0.5, 0.5, 0.5, 1)), contype=0, conaffinity=0)
+    for name, prop in line.get("props", {}).items():
+        body = world.add_body(name=f"prop/{name}", mocap=True, pos=PARKED)
+        body.add_geom(name=f"prop/{name}", type=box, size=[v / 2 for v in prop["size"]], rgba=COLOURS[prop["colour"]], contype=0, conaffinity=0)
     return spec
 
 
@@ -411,7 +427,7 @@ def render(line: dict, out: Path, fps: int = 30) -> list[Path]:
         "overview": ([0.0, 0.0, 0.1], 2.6, 90, -32),
         "printers": ([-0.52, 0.05, 0.12], 1.3, 70, -25),
         "kitting": ([0.25, -0.15, 0.08], 0.95, 110, -32),
-        "assembly": ([0.95, 0.0, 0.3], 1.6, 120, -18),
+        "assembly": ([0.66, 0.25, 0.05], 1.7, 125, -20),
     }
     for name, view in views.items():
         path = out / f"{name}.jpg"
@@ -503,6 +519,7 @@ tr.bad td:last-child{{color:#c0392b;font-weight:700}}tr.ok td:last-child{{color:
 <h1>Sesame line twin</h1>
 <p class="big"><b>{reachable} of {len(record['reach'])}</b> gripper targets are reachable in this layout.</p>
 {stills}{videos}
+<p><a href="previs.html">Watch the trailer pre-visualisation</a> (if it has been rendered into this folder).</p>
 <h2>Findings</h2><ul>{findings}</ul>
 <h2>Reach, target by target</h2>
 <table><thead><tr><th>Step</th><th>Gripper</th><th>Target</th><th>Result</th></tr></thead><tbody>{rows}</tbody></table>

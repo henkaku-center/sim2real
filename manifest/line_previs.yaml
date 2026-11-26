@@ -1,0 +1,158 @@
+# Pre-visualisation of the "Sesame makes Sesame" trailer, played in the line twin
+# (manifest/line.yaml, layout tabletop-v1). Shots, timings and cuts follow the
+# storyboard in the aps repository (trailer/storyboard.js).
+#
+# It is an animatic: scripted joint motion through inverse-kinematics waypoints,
+# loose objects moved by hand-written paths, and the Sesame's stock walk played
+# kinematically. No physics, grasping or soldering is simulated.
+#
+# camera: [look-at x, y, z, distance, azimuth, elevation]; the view moves from
+# `from` to `to` over the shot. Azimuth 90 looks from the front of the table.
+# Event times are seconds from the start of the shot. Points are target names
+# from line.yaml or [x, y, z] in the line frame.
+#
+# Events
+#   goto        arm moves its gripper through `points`
+#   pick_place  arm carries `item` (a prop) from `pick` to `place`
+#   prop        a loose object appears at the first point and moves through the rest
+#   grow        a prop's box grows from `size_from` to `size_to` with its base at `at`
+#   pallet      the kit pallet moves through `points`
+#   sesame      one Sesame shows a pose, or walks from `path[0]` to `path[1]`
+
+schema_version: 1
+fps: 30
+size: [1280, 720]
+tilt_shift: true
+
+shots:
+  - id: 1
+    title: Tiny factory
+    status: concept
+    seconds: 4
+    camera: {from: [0.0, 0.0, 0.1, 3.1, 90, -36], to: [0.0, 0.0, 0.1, 2.5, 90, -30]}
+    events:
+      - {type: goto, actor: harvest_arm, gripper: main, points: [outfeed_2, parts_tray], start: 0.2, end: 3.6}
+      - {type: goto, actor: kit_arm, gripper: main, points: [servo_tray, pallet], start: 0.4, end: 3.8}
+      - {type: goto, actor: assembly_arms, gripper: left, points: [jig_right], start: 0.3, end: 3.0}
+      - {type: goto, actor: assembly_arms, gripper: right, points: [jig_left], start: 0.6, end: 3.4}
+      - {type: prop, name: toolhead, points: [[-0.60, 0.22, 0.20], [-0.44, 0.22, 0.20], [-0.60, 0.22, 0.20], [-0.44, 0.22, 0.20]], start: 0, end: 4}
+
+  - id: 2
+    title: The digital twin
+    status: works-today
+    seconds: 5
+    camera: {from: [-0.95, -0.28, 0.14, 0.95, 70, -12], to: [-0.95, -0.28, 0.14, 0.80, 95, -14]}
+    events:
+      - {type: prop, name: monitor, points: [[-0.95, -0.22, 0.15]], start: 0, end: 5}
+      - {type: prop, name: screen, points: [[-0.95, -0.233, 0.15]], start: 0, end: 5}
+      - {type: sesame, who: new_sesame, pose: rest, at: [-0.95, -0.36, 0.0], yaw: -60, start: 0, end: 5}
+
+  - id: 3
+    title: Printing
+    status: works-today
+    seconds: 5
+    camera: {from: [-0.95, 0.22, 0.16, 0.36, 84, -10], to: [-0.95, 0.22, 0.17, 0.30, 98, -12]}
+    events:
+      - {type: grow, name: print, at: [-0.95, 0.22, 0.12], size_from: [0.05, 0.02, 0.002], size_to: [0.05, 0.02, 0.06], start: 0, end: 5}
+      - type: prop
+        name: toolhead
+        points: [[-0.99, 0.22, 0.17], [-0.91, 0.22, 0.175], [-0.99, 0.22, 0.18], [-0.91, 0.22, 0.19], [-0.99, 0.22, 0.195], [-0.91, 0.22, 0.205], [-0.99, 0.22, 0.21], [-0.91, 0.22, 0.22], [-0.99, 0.22, 0.225]]
+        start: 0
+        end: 5
+
+  - id: 4
+    title: Harvest
+    status: demo-level
+    seconds: 5
+    camera: {from: [-0.46, -0.14, 0.06, 1.05, 62, -30], to: [-0.40, -0.18, 0.06, 0.90, 70, -28]}
+    events:
+      - {type: prop, name: part_a, points: [[-0.52, 0.10, 0.126], [-0.52, -0.07, 0.03]], start: 0, end: 0.9}
+      - {type: prop, name: part_b, points: [[-0.14, -0.30, 0.015]], start: 0, end: 5}
+      - {type: pick_place, actor: harvest_arm, gripper: main, item: part_a, pick: outfeed_2, place: parts_tray, rest: [-0.14, -0.27, 0.014], start: 1.0, end: 4.8}
+
+  - id: 5
+    title: The order
+    status: demo-level
+    seconds: 5
+    camera: {from: [0.78, -0.30, 0.0, 0.62, 90, -88], to: [0.78, -0.30, 0.0, 0.52, 90, -88]}
+    events:
+      - {type: prop, name: phone, points: [[0.78, -0.30, 0.006]], start: 0, end: 5}
+      - {type: prop, name: hand, points: [[0.80, -0.62, 0.08], [0.80, -0.62, 0.08], [0.79, -0.40, 0.03], [0.79, -0.40, 0.03], [0.80, -0.62, 0.08]], start: 0, end: 5}
+
+  - id: 6
+    title: Delivery
+    status: works-today
+    seconds: 5
+    camera: {from: [0.36, -0.34, 0.06, 1.05, 90, -14], to: [0.30, -0.34, 0.06, 0.92, 86, -16]}
+    events:
+      - {type: prop, name: parcel, points: [[0.66, -0.33, 0.05]], start: 0, end: 5}
+      - {type: prop, name: hand, points: [[0.66, -0.36, 0.17], [0.66, -0.36, 0.13], [0.06, -0.36, 0.13], [0.06, -0.36, 0.07], [0.30, -0.42, 0.16]], start: 0.3, end: 4.6}
+      - {type: prop, name: servo, points: [[0.66, -0.34, 0.14], [0.66, -0.34, 0.10], [0.06, -0.34, 0.10], [0.06, -0.34, 0.025], [0.06, -0.34, 0.025]], start: 0.3, end: 4.6}
+      - {type: prop, name: board, points: [[0.22, -0.34, 0.012]], start: 0, end: 5}
+
+  - id: 7
+    title: Kitting
+    status: demo-level
+    seconds: 4
+    camera: {from: [0.30, -0.12, 0.0, 1.15, 90, -72], to: [0.34, -0.06, 0.0, 1.05, 90, -68]}
+    events:
+      - {type: prop, name: board, points: [[0.45, -0.07, 0.026]], start: 0, end: 2.9}
+      - {type: pick_place, actor: kit_arm, gripper: main, item: servo, pick: servo_tray, place: pallet, from: [0.06, -0.34, 0.022], rest: [0.50, -0.05, 0.037], start: 0.1, end: 2.9}
+      - {type: pallet, points: [[0.48, -0.06, 0.01], [0.46, 0.22, 0.01]], start: 3.0, end: 3.9, carries: [servo, board]}
+
+  - id: 8
+    title: Soldering
+    status: concept
+    seconds: 8
+    camera: {from: [0.70, 0.20, 0.06, 0.75, 100, -20], to: [0.69, 0.20, 0.06, 0.50, 112, -24]}
+    events:
+      - {type: prop, name: board, points: [[0.69, 0.20, 0.024]], start: 0, end: 8}
+      - {type: goto, actor: assembly_arms, gripper: left, points: [jig_right, [0.78, 0.20, 0.06]], start: 0.2, end: 1.8}
+      - type: goto
+        actor: assembly_arms
+        gripper: right
+        points: [jig_left, [0.660, 0.205, 0.060], [0.660, 0.205, 0.085], [0.675, 0.205, 0.060], [0.675, 0.205, 0.085], [0.690, 0.205, 0.060], [0.690, 0.205, 0.085], [0.705, 0.205, 0.060], [0.705, 0.205, 0.110]]
+        start: 0.6
+        end: 7.6
+
+  - id: 9
+    title: First breath
+    status: works-today
+    seconds: 6
+    camera: {from: [0.72, 0.20, 0.03, 0.55, 78, -24], to: [0.72, 0.20, 0.03, 0.40, 86, -26]}
+    events:
+      - {type: prop, name: board, points: [[0.72, 0.20, 0.024]], start: 0, end: 6}
+      - {type: prop, name: laptop, points: [[0.90, 0.30, 0.10]], start: 0, end: 6}
+      - {type: prop, name: cable, points: [[0.72, 0.02, 0.026], [0.72, 0.12, 0.026]], start: 0.4, end: 1.8}
+      - {type: prop, name: led, points: [[0.735, 0.21, 0.03]], start: 2.6, end: 6}
+
+  - id: 10
+    title: Final assembly
+    status: concept
+    seconds: 6
+    camera: {from: [0.66, 0.20, 0.08, 0.95, 112, -12], to: [0.70, 0.20, 0.08, 0.75, 120, -14]}
+    events:
+      - {type: sesame, who: new_sesame, pose: rest, at: [0.72, 0.20, 0.02], yaw: -90, start: 0, end: 6}
+      - {type: pallet, points: [[0.46, 0.22, 0.01]], start: 0, end: 6}
+      - {type: goto, actor: assembly_arms, gripper: left, points: [jig_right, [0.80, 0.20, 0.06]], start: 0.2, end: 1.6}
+      - {type: pick_place, actor: assembly_arms, gripper: right, item: head_shell, pick: pallet_stop, place: jig_top, from: [0.46, 0.22, 0.045], rest: [0.72, 0.20, 0.085], start: 0.8, end: 5.6}
+
+  - id: 11
+    title: Off it goes
+    status: works-today
+    seconds: 4
+    camera: {from: [0.72, 0.12, 0.05, 0.62, 58, -8], to: [0.72, -0.16, 0.05, 0.62, 64, -8]}
+    events:
+      - {type: sesame, who: new_sesame, pose: stand, at: [0.72, 0.20, 0.0], yaw: -90, start: 0, end: 0.9}
+      - {type: sesame, who: new_sesame, walk: [[0.72, 0.20], [0.72, -0.22]], yaw: -90, start: 0.9, end: 4}
+      - {type: goto, actor: assembly_arms, gripper: left, points: [[0.86, 0.26, 0.30], [0.90, 0.22, 0.34], [0.86, 0.26, 0.30], [0.90, 0.22, 0.34]], start: 0.8, end: 3.8}
+
+  - id: 12
+    title: And again
+    status: concept
+    seconds: 2
+    camera: {from: [0.50, -0.10, 0.08, 1.3, 88, -22], to: [0.0, 0.0, 0.1, 3.1, 90, -36]}
+    events:
+      - {type: sesame, who: new_sesame, walk: [[0.72, -0.22], [0.76, -0.34]], yaw: -90, start: 0, end: 2}
+      - {type: prop, name: toolhead, points: [[-0.60, 0.22, 0.17], [-0.44, 0.22, 0.17], [-0.60, 0.22, 0.17]], start: 0, end: 2}
+      - {type: grow, name: print, at: [-0.52, 0.22, 0.12], size_from: [0.05, 0.02, 0.002], size_to: [0.05, 0.02, 0.01], start: 0, end: 2}
