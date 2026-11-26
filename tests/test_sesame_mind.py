@@ -613,10 +613,16 @@ def test_a_reset_robot_is_armed_again():
                 return True, "OK ARMED"
             return (True, "OK") if self.armed else (False, "ERR arm run first")
 
-    robot = Robot()
-    assert sm.armed_command(robot, "pose 90 90 90 90 90 90 90 90") == (True, "OK")
+    robot, t = Robot(), [0.0]
+    clock = lambda: t[0]  # noqa: E731
+    assert sm.armed_command(robot, "pose 90 90 90 90 90 90 90 90", clock) == (True, "OK")
     assert robot.sent == ["pose 90 90 90 90 90 90 90 90", "arm run", "pose 90 90 90 90 90 90 90 90"]
-    assert sm.armed_command(robot, "stop") == (True, "OK") and robot.sent[-1] == "stop" and len(robot.sent) == 4
+    assert sm.armed_command(robot, "stop", clock) == (True, "OK") and robot.sent[-1] == "stop" and len(robot.sent) == 4
+    robot.armed, t[0] = False, 5.0  # reset again while moving: a sagging battery
+    assert sm.armed_command(robot, "pose 1", clock) == (False, "ERR robot keeps resetting (battery low?)")
+    assert robot.sent[-1] == "pose 1" and "arm run" not in robot.sent[4:]
+    t[0] = 40.0  # quiet for the window: try again
+    assert sm.armed_command(robot, "pose 2", clock) == (True, "OK") and robot.sent[-2:] == ["arm run", "pose 2"]
 
 
 def test_guest_port_only_talks_and_shows_thoughts(tmp_path):

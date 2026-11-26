@@ -648,15 +648,28 @@ def build(settings, manifest):
 # ---------------------------------------------------------------- spine
 
 
-def armed_command(robot, text):
+RESET_WINDOW_S = 30.0
+
+
+def armed_command(robot, text, clock=time.monotonic):
     """Send one command. A robot that reset (brownout, power switch) comes back disarmed
-    and answers "ERR arm run first": arm it again and retry once."""
+    and answers "ERR arm run first": arm it again and retry once. A second reset within
+    RESET_WINDOW_S means the supply sags whenever the servos pull (low battery); arming
+    again would only reset it again, so stop until it has been quiet for that long."""
     ok, reply = robot.command(text)
-    if not ok and "arm run first" in reply:
-        print("  (robot was reset; arming again)", flush=True)
-        ok, reply = robot.command("arm run")
-        if ok:
-            ok, reply = robot.command(text)
+    if ok or "arm run first" not in reply:
+        return ok, reply
+    now = clock()
+    resets = [t for t in getattr(robot, "resets", []) if now - t < RESET_WINDOW_S]
+    robot.resets = resets + [now]
+    if resets:
+        if len(resets) == 1:
+            print("  (robot keeps resetting when it moves: battery low? not arming again for a while)", flush=True)
+        return False, "ERR robot keeps resetting (battery low?)"
+    print("  (robot was reset; arming again)", flush=True)
+    ok, reply = robot.command("arm run")
+    if ok:
+        ok, reply = robot.command(text)
     return ok, reply
 
 
