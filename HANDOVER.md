@@ -1,5 +1,16 @@
 # HANDOVER
 
+## Voice body — November 26, 2026
+
+Sound and voice move Sesame through a coupled-oscillator body: prosody drives
+it, words set its intent. It runs live on the robot or on a MuJoCo stand-in
+(`--host sim`), and everything is reachable from `http://sesame-s3-8b2c.local`.
+The PC announces its URL to the robot, which saves it in NVS. The robot runs
+`feat/s3-mind-chat` @824666e. Calibration was kept, and the announcement
+round trip was verified, but the voice body has not yet moved the real robot.
+To run it, check what is verified and see the open decisions (keys on the PC,
+whisper model, remote operation), read `reference/VOICE-BODY-HANDOFF.md`.
+
 ## Motion space — November 13, 2026 (simulation only)
 
 `sim/motion_space.py` re-expresses the 8 joints as 8 body-level axes:

@@ -110,6 +110,10 @@ settings. Like the rest of the mind link, it has no authentication: on an
 untrusted network anyone could announce themselves as the mind, and keys typed
 into the settings would go to them.
 
+Flashed `feat/s3-mind-chat` @824666e on 2026-11-26. The robot learned
+`mind=http://10.248.198.140:8765` from `--robot`, and it survived a reset.
+Not yet checked in a phone browser.
+
 ### Without the robot: `--host sim` (2026-11-26)
 
 `sim/live_robot.py` stands in for the S3's command interface. It accepts
