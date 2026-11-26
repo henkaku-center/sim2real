@@ -904,14 +904,22 @@ class Mind:
         self.settings, self.link, self.error = None, None, ""
         self.body = VoiceBody(spine.manifest, spine)
 
-    def stand(self, source="button"):
-        """Stand now (the stock motion; no model call), logged like any other moment."""
-        entry = {"t": self.clock(), "source": source, "text": "stand", "did": "stand", "by": source,
-                 "intensity": 0.5, "tempo": 1.0, "reflex_ms": 0, "note": ""}
+    def play(self, name, intensity=0.5, tempo=1.0, source="pad"):
+        """Play a library motion now (a pad or button press; no model call), logged like any
+        other moment. KeyError for an unknown name."""
+        item = self.library.items[name]
+        intensity = min(max(float(intensity), 0.0), 1.0)
+        tempo = min(max(float(tempo), TEMPO[0]), TEMPO[1])
+        entry = {"t": self.clock(), "source": source, "text": name, "did": name, "by": source,
+                 "intensity": intensity, "tempo": tempo, "reflex_ms": 0, "note": ""}
         self.memory.add(entry)
-        print(f"🧍 {source} → stand", flush=True)
-        self.spine.start(self.library.items["stand"])
+        print(f"🎛 {source} → {name}" + (f" ×{tempo:g}" if tempo != 1 else ""), flush=True)
+        self.spine.start(item, intensity, tempo)
         return entry
+
+    def stand(self, source="button"):
+        """Stand now (the stock motion)."""
+        return self.play("stand", source=source)
 
     def handle(self, moment):
         if self.body.mode != "off":
@@ -1141,6 +1149,24 @@ def encoded(handler, body):
     return data, {}
 
 
+def motions(mind):
+    """The pads: learned motions newest first, then the stock ones."""
+    items = mind.library.items.items()
+    learned = [{"name": n, "about": v["about"], "stock": False} for n, v in items if v["spec"]["kind"] != "firmware"]
+    stock = [{"name": n, "about": v["about"], "stock": True} for n, v in items if v["spec"]["kind"] == "firmware"]
+    return json.dumps(learned[::-1] + stock, ensure_ascii=False)
+
+
+def play_request(mind, body):
+    """POST /play body {"name", "intensity"?, "tempo"?} -> (code, reply)."""
+    try:
+        req = json.loads(body or "{}")
+        mind.play(req["name"], req.get("intensity", 0.6), req.get("tempo", 1.0))
+    except (ValueError, KeyError, TypeError) as e:
+        return 400, json.dumps({"error": f"unknown motion or bad request: {e}"}, ensure_ascii=False)
+    return 202, "{}"
+
+
 def latest(mind):
     """A few bytes that change whenever the thought log does, for cheap polling."""
     recent = mind.memory.recent(1)
@@ -1177,6 +1203,8 @@ def serve(port, mind, moments):
                 return self.reply(200, json.dumps(trace(mind), ensure_ascii=False))
             if self.path == "/latest":
                 return self.reply(200, latest(mind))
+            if self.path == "/motions":
+                return self.reply(200, motions(mind))
             if self.path == "/thoughts":
                 return self.reply(200, TRACE_PAGE.read_text(), "text/html")
             if self.path == "/console":
@@ -1218,6 +1246,8 @@ def serve(port, mind, moments):
                 threading.Thread(target=mind.ruminate, daemon=True).start()
             elif self.path == "/stand":
                 mind.stand()
+            elif self.path == "/play":
+                return self.reply(*play_request(mind, body))
             elif self.path == "/config":
                 try:
                     mind.settings.update(json.loads(body or "{}"))
@@ -1266,7 +1296,7 @@ def serve_guest(port, mind, moments, gate=None, host="127.0.0.1", daily=300):
     Bound to localhost: `tailscale serve` gives it an HTTPS address, which phones need
     before a page may use the microphone."""
     gate = gate or Gate(daily=daily)
-    stand_gate = Gate(every=1.5, daily=10_000)
+    pad_gate = Gate(every=0.4, daily=20_000)
 
     class Guest(BaseHTTPRequestHandler):
         def reply(self, code, body, kind="application/json"):
@@ -1287,14 +1317,19 @@ def serve_guest(port, mind, moments, gate=None, host="127.0.0.1", daily=300):
                 return self.reply(200, json.dumps(trace(mind), ensure_ascii=False))
             if path == "/latest":
                 return self.reply(200, latest(mind))
+            if path == "/motions":
+                return self.reply(200, motions(mind))
             self.reply(404, "{}")
 
         def do_POST(self):
-            if self.path.split("?")[0] == "/stand":  # no model call: a light gate is enough
-                if stand_gate.wait_s() > 0:
+            if self.path.split("?")[0] in ("/stand", "/play"):  # no model call: a light gate is enough
+                body = self.rfile.read(min(int(self.headers.get("Content-Length", 0)), 2000)).decode(errors="replace")
+                if pad_gate.wait_s() > 0:
                     return self.reply(429, json.dumps({"wait_s": 1}))
-                mind.stand()
-                return self.reply(202, "{}")
+                if self.path.startswith("/stand"):
+                    mind.stand()
+                    return self.reply(202, "{}")
+                return self.reply(*play_request(mind, body))
             if self.path.split("?")[0] != "/say":
                 return self.reply(404, "{}")
             n = int(self.headers.get("Content-Length", 0))

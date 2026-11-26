@@ -695,3 +695,31 @@ def test_designed_motions_stand_up_after_and_the_stand_button(tmp_path):
     e = mind.stand()
     assert (e["did"], e["source"]) == ("stand", "button") and mind.spine.played[-1][0]["name"] == "stand"
     assert sm.trace(mind)[-1]["motion"]["kind"] == "firmware"
+
+
+def test_pads_list_learned_first_and_play_at_once(tmp_path):
+    import queue
+    import urllib.error
+    import urllib.request
+    lib = sm.Library()
+    lib.add("hop", "ぴょん", {"kind": "axes_keys", "keys": [{"ms": 300, "axes": [{"axis": "height", "value": 3}]}]})
+    lib.add("sway", "ゆらゆら", {"kind": "axes_keys", "keys": [{"ms": 300, "axes": [{"axis": "roll", "value": 2}]}]})
+    mind = sm.Mind(sm.RuleReflex(), lib, sm.Memory(tmp_path), FakeSpine())
+    server = sm.serve_guest(0, mind, queue.Queue())
+    base = f"http://127.0.0.1:{server.server_address[1]}"
+    try:
+        with urllib.request.urlopen(base + "/motions") as r:
+            pads = json.loads(r.read())
+        assert [p["name"] for p in pads[:3]] == ["sway", "hop", "rest"] and pads[2]["stock"]
+        body = json.dumps({"name": "hop", "tempo": 5, "intensity": 0.9}).encode()
+        assert urllib.request.urlopen(urllib.request.Request(base + "/play", body, method="POST")).status == 202
+        assert mind.spine.played[-1][0]["keys"][0]["axes"][0]["axis"] == "height" and mind.spine.tempo == 2.0
+        e = sm.trace(mind)[-1]
+        assert (e["source"], e["did"], e["tempo"], e["intensity"]) == ("pad", "hop", 2.0, 0.9)
+        import time
+        time.sleep(0.45)
+        with pytest.raises(urllib.error.HTTPError) as err:
+            urllib.request.urlopen(urllib.request.Request(base + "/play", b'{"name": "nope"}', method="POST"))
+        assert err.value.code == 400
+    finally:
+        server.shutdown()

@@ -179,7 +179,13 @@ robot (the cap is 20).
   thought log, including admin chats, is readable by anyone with the URL, and the
   `--guest-daily` cap (300) bounds model spend. English: one URL; the 日本語/English toggle
   (remembered per phone), `?lang=en` or a non-Japanese browser switches the page text and speech recognition (en-US); the reflex and
-  designer write `why` and `about` in the language they hear. Undo: `tailscale funnel --https=443
+  designer write `why` and `about` in the language they hear.
+- Pads (2026-11-26): the guest page lists every motion as a pad (learned ones newest
+  first, then the 19 stock ones) with speed (0.5–2×) and size knobs that apply to
+  learned motions; `GET /motions`, `POST /play {"name","tempo","intensity"}` on both
+  ports, 0.4 s apart on the guest port, no model call, logged as `source: pad`. A 🧍
+  stand button does the same for `stand`, and every designed motion ends with
+  `motion stand` (not waited for; the next pose cancels it). Undo: `tailscale funnel --https=443
   --set-path /sesame off`.
 - Speed and dynamics (2026-11-26). `intensity` sizes a designed motion (0.3–1×);
   `tempo` (0.5–2, from the reflex: 速く, ゆっくり, キビキビ; the rule reflex knows

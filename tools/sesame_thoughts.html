@@ -78,6 +78,23 @@ details.table th:first-child, details.table td:first-child { text-align: left }
 .now { margin-top: 10px; min-height: 1.5em; font-size: 20px; font-weight: 600 }
 .hint { color: var(--muted); font-size: 13px }
 .lang { font-size: 13px; color: var(--text-secondary) } .lang a { color: inherit }
+.pads { max-width: 760px; margin: 0 auto 18px; background: var(--surface-1); border: 1px solid var(--ring);
+  border-radius: 16px; padding: 14px 16px 16px }
+.padhead { display: flex; flex-wrap: wrap; gap: 10px 18px; align-items: center }
+.padhead h2 { font-size: 16px; margin: 0; font-weight: 650 }
+.knob { display: inline-flex; align-items: center; gap: 6px; color: var(--text-secondary); font-size: 13px;
+  font-variant-numeric: tabular-nums }
+.knob input { width: 120px; accent-color: var(--series-1) } .knob output { min-width: 2.6em }
+.padlabel { color: var(--muted); font-size: 12px; margin-top: 12px }
+.pads details summary { color: var(--muted); font-size: 12px; margin-top: 12px; cursor: pointer }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(128px, 1fr)); gap: 8px; margin-top: 6px }
+.pad { min-height: 64px; border-radius: 12px; border: 1px solid var(--ring); background: var(--page);
+  color: var(--text-primary); font: inherit; font-size: 14px; font-weight: 600; line-height: 1.3; padding: 8px 10px;
+  text-align: left; display: flex; flex-direction: column; justify-content: space-between; gap: 4px; cursor: pointer;
+  touch-action: manipulation; transition: background .25s, transform .08s }
+.pad small { color: var(--muted); font-weight: 400; font-size: 11px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap }
+.pad.learned { border-left: 4px solid var(--reuse) }
+.pad:active { transform: scale(.97) } .pad.hit { background: var(--series-1); color: #fff } .pad.hit small { color: #fff }
 </style>
 <body>
 <div class="viz-root">
@@ -91,6 +108,16 @@ details.table th:first-child, details.table td:first-child { text-align: left }
   <div class="now" id="now"></div>
   <div class="hint" id="hint" data-t="hint"></div>
   <form id="say"><input id="text" maxlength="200" autocomplete="off" data-t-placeholder="placeholder"><button data-t="send"></button></form>
+</section>
+<section class="pads" data-t-aria="padsTitle">
+  <div class="padhead">
+    <h2 data-t="padsTitle"></h2>
+    <label class="knob"><span data-t="speedLbl"></span><input type="range" id="tempo" min="0.5" max="2" step="0.1" value="1"><output id="tempoV">×1</output></label>
+    <label class="knob"><span data-t="sizeLbl"></span><input type="range" id="size" min="0" max="1" step="0.1" value="0.6"><output id="sizeV">0.6</output></label>
+  </div>
+  <div class="hint" data-t="padNote"></div>
+  <div class="padlabel" data-t="learnedLbl"></div><div class="grid" id="learned"></div>
+  <details open><summary data-t="stockLbl"></summary><div class="grid" id="stock"></div></details>
 </section>
 <header>
   <h1 data-t="title"></h1>
@@ -113,7 +140,10 @@ const LANG = ['en', 'ja'].includes(asked) ? asked : ['en', 'ja'].includes(saved)
   : (navigator.language || 'ja').startsWith('ja') ? 'ja' : 'en';
 const STR = {
   ja: {
-    talk: '話しかける', mic: '🎤 話しかける', stand: '🧍 立つ', standing: '立ちます', button: 'ボタン', listening: '● 聞いています', keep: 'ずっと聞く', other: 'English',
+    talk: '話しかける', mic: '🎤 話しかける', stand: '🧍 立つ', standing: '立ちます', button: 'ボタン',
+    padsTitle: '🎛 パッド', speedLbl: '速さ', sizeLbl: '大きさ', learnedLbl: 'セサミが作った動き（新しい順）',
+    stockLbl: '内蔵の動き', padNote: '押すとすぐ動きます。速さと大きさは、セサミが作った動きにかかります。',
+    noLearned: 'まだありません。話しかけると増えていきます。', playing: n => `${n}！`, pad: 'パッド', listening: '● 聞いています', keep: 'ずっと聞く', other: 'English',
     hint: 'ボタンを押してセサミに話しかけてね。言葉の気持ちに合う動きを考えて、体で答えます。',
     placeholder: '文字でも話しかけられます', send: '送る', title: 'セサミの思考ログ',
     flow: '聞こえたこと → 反射の判断 → 振付 → 動き', connecting: '接続中…', updated: '更新 ',
@@ -127,12 +157,15 @@ const STR = {
     candidates: '候補', strength: '強さ', speed: '速さ', addressed: '話しかけ', why: '理由',
     none: '何もしない', made: '新しく作った', stock: '内蔵の動き', reuse: '覚えた動きを再生',
     nochart: 'ロボットに入っている動き（グラフなし）', table: '数値で見る', keyend: 'キーの終わり', ease: '移り方',
-    chart: '動きの時間変化', src: {chat: 'チャット', voice: '声', radio: 'ラジオ', sound: '物音', button: 'ボタン'},
+    chart: '動きの時間変化', src: {chat: 'チャット', voice: '声', radio: 'ラジオ', sound: '物音', button: 'ボタン', pad: 'パッド'},
     EASE: {linear: '等速', in: '溜め', out: '余韻', inout: 'なめらか'},
     AXIS: {surge: '前後振り', spread: '開き', yaw: 'ひねり', stride: '歩幅', height: '高さ', pitch: '前上がり', roll: '横傾き', lift: '足上げ'},
   },
   en: {
-    talk: 'Talk', mic: '🎤 Talk to Sesame', stand: '🧍 Stand', standing: 'Standing up', button: 'button', listening: '● Listening', keep: 'Keep listening', other: '日本語',
+    talk: 'Talk', mic: '🎤 Talk to Sesame', stand: '🧍 Stand', standing: 'Standing up', button: 'button',
+    padsTitle: '🎛 Pads', speedLbl: 'Speed', sizeLbl: 'Size', learnedLbl: 'Made by Sesame (newest first)',
+    stockLbl: 'Built-in', padNote: 'Tap to play right away. Speed and size apply to movements Sesame made.',
+    noLearned: 'None yet. Talk to Sesame and it will make some.', playing: n => `${n}!`, pad: 'pad', listening: '● Listening', keep: 'Keep listening', other: '日本語',
     hint: 'Press the button and talk to Sesame. It thinks of a movement that fits what you said and answers with its body.',
     placeholder: 'Or type a message', send: 'Send', title: 'Sesame’s thoughts',
     flow: 'what it heard → reflex → choreography → movement', connecting: 'Connecting…', updated: 'Updated ',
@@ -146,7 +179,7 @@ const STR = {
     candidates: 'choices', strength: 'size', speed: 'speed', addressed: 'addressed', why: 'Why',
     none: 'Does nothing', made: 'Made a new movement', stock: 'Built-in movement', reuse: 'Replays a learned movement',
     nochart: 'Built into the robot (no chart)', table: 'Show numbers', keyend: 'Key ends', ease: 'Ease',
-    chart: 'Movement over time', src: {chat: 'chat', voice: 'voice', radio: 'radio', sound: 'sound', button: 'button'},
+    chart: 'Movement over time', src: {chat: 'chat', voice: 'voice', radio: 'radio', sound: 'sound', button: 'button', pad: 'pad'},
     EASE: {linear: 'steady', in: 'wind-up', out: 'settle', inout: 'smooth'},
     AXIS: {surge: 'sweep', spread: 'spread', yaw: 'twist', stride: 'stride', height: 'height', pitch: 'nose up', roll: 'tilt', lift: 'paw lift'},
   },
@@ -249,8 +282,12 @@ function card(e, i) {
   const tempo = e.tempo && e.tempo !== 1 ? ` · ${STR.speed} ×${fmt(e.tempo)}` : '';
   const addressed = e.addressed != null ? ` · ${STR.addressed} ${Math.round(e.addressed * 100)}%` : '';
   const offered = e.considered ? ` · ${STR.candidates} ${e.considered}` : '';
-  if (e.source === 'button') return `<article class="card"><div class="heard"><span class="time">${time}</span>
-    <span class="text">${STR.stand}</span><span class="src">${STR.button}</span></div></article>`;
+  if (e.source === 'button' || e.source === 'pad') {
+    const m = e.motion || {}, what = e.source === 'button' ? STR.stand : '🎛 ' + esc(m.about || e.did);
+    const tempo = e.tempo && e.tempo !== 1 ? ` · ${STR.speed} ×${fmt(e.tempo)}` : '';
+    return `<article class="card"><div class="heard"><span class="time">${time}</span><span class="text">${what}</span>
+      <span class="src">${STR.src[e.source]}</span></div>${m.curve ? `<div class="meta">${esc(e.did)} · ${STR.strength} ${fmt(e.intensity, 2)}${tempo}</div>` + chart(m.curve, 'c' + i) : ''}</article>`;
+  }
   let html = `<article class="card"><div class="heard"><span class="time">${time}</span>
     <span class="text">${e.text ? STR.q(esc(e.text)) : STR.noise}</span><span class="src">${STR.src[e.source] || esc(e.source)}</span></div>
     <div class="steps"><div class="step ${k}"><div class="label"><b>${STR.reflex}</b> ${esc(e.by)} · ${fmt(e.reflex_ms / 1000)} s${offered}</div>
@@ -280,6 +317,7 @@ async function refresh() {
     if (key === shown) return;
     const list = await (await fetch('trace', {signal: AbortSignal.timeout(20000)})).json();
     shown = key;
+    loadPads().catch(() => {});
     const items = list.slice().reverse();
     const main = document.getElementById('list');
     main.innerHTML = items.length ? items.map(card).join('') : `<p class="empty">${STR.empty}</p>`;
@@ -308,6 +346,32 @@ async function send(text) {
     shown = ''; setTimeout(refresh, 1500); setTimeout(refresh, 4000);
   } catch (e) { hint.textContent = e.name === 'TimeoutError' ? STR.slow : STR.unreachable }
 }
+// Pads: every motion the robot knows, played at once (no model call), like a DJ's pads.
+const tempoIn = $('tempo'), sizeIn = $('size');
+const knobs = () => { $('tempoV').textContent = '×' + fmt(+tempoIn.value); $('sizeV').textContent = fmt(+sizeIn.value) };
+tempoIn.oninput = sizeIn.oninput = knobs; knobs();
+let padKey = '';
+async function loadPads() {
+  const list = await (await fetch('motions', {signal: AbortSignal.timeout(15000)})).json();
+  const key = list.map(m => m.name).join(',');
+  if (key === padKey) return;
+  padKey = key;
+  const pad = m => `<button class="pad${m.stock ? '' : ' learned'}" type="button" data-name="${esc(m.name)}">
+    ${esc(m.stock && LANG !== 'ja' ? m.name : m.about)}<small>${esc(m.name)}</small></button>`;
+  const learned = list.filter(m => !m.stock);
+  $('learned').innerHTML = learned.length ? learned.map(pad).join('') : `<p class="hint">${STR.noLearned}</p>`;
+  $('stock').innerHTML = list.filter(m => m.stock).map(pad).join('');
+}
+document.querySelector('.pads').addEventListener('click', async ev => {
+  const b = ev.target.closest('.pad'); if (!b) return;
+  b.classList.add('hit'); setTimeout(() => b.classList.remove('hit'), 350);
+  try {
+    const r = await fetch('play', {method: 'POST', signal: AbortSignal.timeout(15000),
+      body: JSON.stringify({name: b.dataset.name, tempo: +tempoIn.value, intensity: +sizeIn.value})});
+    if (r.ok) { hint.textContent = STR.playing(b.firstChild.textContent.trim()); shown = ''; setTimeout(refresh, 800) }
+  } catch (e) { hint.textContent = e.name === 'TimeoutError' ? STR.slow : STR.unreachable }
+});
+loadPads().catch(() => {});
 $('stand').textContent = STR.stand;
 $('stand').onclick = async () => {
   try {
