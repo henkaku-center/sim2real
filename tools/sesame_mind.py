@@ -866,6 +866,7 @@ class VoiceBody:
                 "intent": intent, "hz": round(hz, 2), "f0": None if math.isnan(self.f0) else round(self.f0),
                 "f0_ref": round(self.stream.f0_ref), "loud": round(env, 2), "heard": self.heard,
                 "mic": time.monotonic() - self.mic_at < 1.0, "robot": robot.base if robot else "",
+                "robot_page": f"http://{robot.ip}" if getattr(robot, "ip", None) else "",
                 "steps": self.steps, "sent": self.sent, "error": self.error}
 
 
@@ -1079,10 +1080,12 @@ PAGE = """<!doctype html><meta charset=utf-8><meta name=viewport content="width=
 img{width:100%;display:none;margin:6px 0}</style><h3>Sesame mind <a href="thoughts" style="font-size:14px">思考ログ →</a></h3>
 <form id=f><input id=t placeholder="話しかける / ○○みたいな動きを作って" autofocus><button>送る</button></form>
 <p><select id=body><option value=off>声で動く: オフ<option value=both>声で動く: 抑揚＋言葉<option value=prosody>声で動く: 抑揚だけ
-<option value=words>声で動く: 言葉だけ</select> <button id=r>反芻</button></p><div id=bst></div><img id=sim alt="sim">
+<option value=words>声で動く: 言葉だけ</select> <button id=r>反芻</button></p>
+<p id=rp style="display:none">ロボットのページ（スマホはこちら）: <a id=rpa></a></p><div id=bst></div><img id=sim alt="sim">
 <div id=log></div><details open><summary>ログ（PC）</summary><div id=con></div></details><script>
 body.onchange=()=>fetch('config',{method:'POST',body:JSON.stringify({body:body.value})});
 setInterval(async()=>{const b=await (await fetch('body')).json();if(document.activeElement!==body)body.value=b.mode;
+if(b.robot_page){rp.style.display='block';rpa.href=rpa.textContent=b.robot_page}
 if(b.robot==='sim'&&!sim.src){sim.src='sim.mjpg';sim.style.display='block'}
 bst.textContent=(b.mode==='off'?'':`声 ${b.f0??'-'} Hz (基準 ${b.f0_ref}) 音量 ${b.loud} | 覚醒 ${b.arousal} 振幅 ${b.amp} ${b.gait} ${b.hz} Hz\\n`+
 `意図 ${b.intent} 「${b.heard}」 | ${b.mic?'マイク受信中':'マイクなし（--mic）'} | pose ${b.sent}`)+
