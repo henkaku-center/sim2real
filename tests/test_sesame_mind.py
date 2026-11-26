@@ -617,3 +617,34 @@ def test_a_reset_robot_is_armed_again():
     assert sm.armed_command(robot, "pose 90 90 90 90 90 90 90 90") == (True, "OK")
     assert robot.sent == ["pose 90 90 90 90 90 90 90 90", "arm run", "pose 90 90 90 90 90 90 90 90"]
     assert sm.armed_command(robot, "stop") == (True, "OK") and robot.sent[-1] == "stop" and len(robot.sent) == 4
+
+
+def test_guest_port_only_talks_and_shows_thoughts(tmp_path):
+    import queue
+    import urllib.error
+    import urllib.request
+    mind = sm.Mind(sm.RuleReflex(), sm.Library(), sm.Memory(tmp_path), sm.Spine(M))
+    moments, t = queue.Queue(), [100.0]
+    server = sm.serve_guest(0, mind, moments, sm.Gate(every=4.0, clock=lambda: t[0]))
+    base = f"http://127.0.0.1:{server.server_address[1]}"
+
+    def post(path, body):
+        return urllib.request.urlopen(urllib.request.Request(base + path, body.encode(), method="POST"))
+
+    try:
+        with urllib.request.urlopen(base + "/") as r:
+            assert "話しかける" in r.read().decode() and r.headers["Cache-Control"] == "no-store"
+        assert post("/say", "こんにちは").status == 202 and moments.get_nowait().text == "こんにちは"
+        with pytest.raises(urllib.error.HTTPError) as e:
+            post("/say", "もう一回")  # within 4 s
+        assert e.value.code == 429 and json.loads(e.value.read())["wait_s"] == 4.0
+        t[0] += 4.0
+        assert post("/say", "あ" * 500).status == 202 and len(moments.get_nowait().text) == 200
+        for path, body in (("/config", '{"live": true}'), ("/ruminate", "")):
+            with pytest.raises(urllib.error.HTTPError) as e:
+                post(path, body)
+            assert e.value.code == 404  # settings stay on the admin port
+        with pytest.raises(urllib.error.HTTPError):
+            urllib.request.urlopen(base + "/config")
+    finally:
+        server.shutdown()

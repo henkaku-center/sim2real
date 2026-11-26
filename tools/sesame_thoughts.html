@@ -63,9 +63,32 @@ details.table td, details.table th { padding: 2px 10px 2px 0; text-align: right;
 details.table th:first-child, details.table td:first-child { text-align: left }
 .empty { color: var(--muted); text-align: center; padding: 40px 0 }
 .err { color: var(--text-secondary); font-size: 13px }
+.talk { max-width: 760px; margin: 0 auto 18px; background: var(--surface-1); border: 1px solid var(--ring);
+  border-radius: 16px; padding: 16px }
+.talk .row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap }
+.mic { font: inherit; font-size: 18px; font-weight: 650; padding: 14px 22px; border-radius: 999px; border: 0;
+  background: var(--series-1); color: #fff; cursor: pointer; min-width: 12em }
+.mic.on { background: var(--new) }
+.keep { color: var(--text-secondary); font-size: 14px; display: inline-flex; gap: 6px; align-items: center }
+.talk form { display: flex; gap: 8px; margin-top: 12px }
+.talk input { flex: 1; font: inherit; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--ring);
+  background: var(--page); color: var(--text-primary) }
+.talk form button { font: inherit; padding: 10px 16px; border-radius: 10px; border: 1px solid var(--ring);
+  background: var(--page); color: var(--text-primary) }
+.now { margin-top: 10px; min-height: 1.5em; font-size: 20px; font-weight: 600 }
+.hint { color: var(--muted); font-size: 13px }
 </style>
 <body>
 <div class="viz-root">
+<section class="talk" aria-label="話しかける">
+  <div class="row">
+    <button class="mic" id="mic" type="button">🎤 話しかける</button>
+    <label class="keep"><input type="checkbox" id="keep"> ずっと聞く</label>
+  </div>
+  <div class="now" id="now"></div>
+  <div class="hint" id="hint">ボタンを押してセサミに話しかけてね。言葉の気持ちに合う動きを考えて、体で答えます。</div>
+  <form id="say"><input id="text" maxlength="200" placeholder="文字でも話しかけられます" autocomplete="off"><button>送る</button></form>
+</section>
 <header>
   <h1>セサミの思考ログ</h1>
   <span class="sub">聞こえたこと → 反射の判断 → 振付 → 動き</span>
@@ -74,6 +97,9 @@ details.table th:first-child, details.table td:first-child { text-align: left }
 <main id="list"><p class="empty">まだ何も聞いていません。話しかけてみてください。</p></main>
 </div>
 <script>
+// Mounted under a path (tailscale serve /sesame): relative URLs need the trailing slash.
+if (!location.pathname.endsWith('/') && !location.pathname.endsWith('/thoughts'))
+  location.replace(location.pathname + '/' + location.search);
 // Labels and units of the motion-space axes (manifest/motion_space.yaml); joints are in degrees.
 const AXIS = {surge: ['前後振り', '°'], spread: ['開き', '°'], yaw: ['ひねり', '°'], stride: ['歩幅', '°'],
   height: ['高さ', 'mm'], pitch: ['前上がり', '°'], roll: ['横傾き', '°'], lift: ['足上げ', 'mm']};
@@ -193,6 +219,43 @@ async function refresh() {
   }
 }
 refresh(); setInterval(refresh, 2000);
+
+// Talking: the browser's speech recognition (needs HTTPS or localhost) turns speech into
+// text; the text goes to the mind like a chat line. Typing works everywhere.
+const $ = id => document.getElementById(id);
+const now = $('now'), hint = $('hint'), mic = $('mic'), keep = $('keep');
+async function send(text) {
+  text = text.trim(); if (!text) return;
+  now.textContent = '「' + text + '」';
+  try {
+    const r = await fetch('say', {method: 'POST', body: text, signal: AbortSignal.timeout(5000)});
+    if (r.status === 429) { const w = (await r.json()).wait_s; hint.textContent = `ちょっと待ってね（あと ${Math.ceil(w)} 秒）`; return }
+    hint.textContent = r.ok ? 'とどいたよ。考え中…' : 'うまく送れませんでした';
+    shown = ''; setTimeout(refresh, 1500); setTimeout(refresh, 4000);
+  } catch (e) { hint.textContent = 'セサミの頭（PC）につながりません' }
+}
+$('say').onsubmit = e => { e.preventDefault(); send($('text').value); $('text').value = '' };
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+let rec = null, listening = false;
+if (!SR || !window.isSecureContext) {
+  mic.hidden = true; keep.parentElement.hidden = true;
+  hint.textContent = SR ? '声で話すには https のアドレスで開いてください。文字なら送れます。' : 'このブラウザは声の聞き取りに対応していません。文字で話しかけてね。';
+}
+function listen() {
+  rec = new SR(); rec.lang = 'ja-JP'; rec.interimResults = true; rec.continuous = false;
+  rec.onresult = e => {
+    const r = e.results[e.results.length - 1], t = r[0].transcript;
+    now.textContent = '「' + t + '」';
+    if (r.isFinal) send(t);
+  };
+  rec.onerror = e => { hint.textContent = e.error === 'not-allowed' ? 'マイクを許可してください' : '聞き取れませんでした（' + e.error + '）' };
+  rec.onend = () => { listening = false; draw(); if (keep.checked) setTimeout(() => { if (keep.checked && !listening) start() }, 400) };
+  rec.start(); listening = true; draw(); hint.textContent = '聞いています…';
+}
+function start() { try { listen() } catch (e) { listening = false; draw() } }
+function draw() { mic.classList.toggle('on', listening); mic.textContent = listening ? '● 聞いています' : '🎤 話しかける' }
+mic.onclick = () => { if (listening) { keep.checked = false; rec.stop() } else start() };
+keep.onchange = () => { if (keep.checked && !listening) start() };
 </script>
 </body>
 </html>

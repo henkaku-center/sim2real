@@ -1182,6 +1182,69 @@ def serve(port, mind, moments):
     return server
 
 
+class Gate:
+    """At most one guest message per `every` seconds: model calls cost money and a motion
+    needs time to be seen before the next one interrupts it."""
+
+    def __init__(self, every=4.0, clock=time.monotonic):
+        self.every, self.clock, self.last, self.lock = every, clock, -1e9, threading.Lock()
+
+    def wait_s(self):
+        """0 and take the slot if a message may pass now, else seconds until it may."""
+        with self.lock:
+            left = self.last + self.every - self.clock()
+            if left > 0:
+                return left
+            self.last = self.clock()
+            return 0.0
+
+
+def serve_guest(port, mind, moments, gate=None, host="127.0.0.1"):
+    """The guest page (talk + thought log) for people who walk up to the robot. Only these
+    routes exist here, so settings, rumination and the voice body stay on the admin port.
+    Bound to localhost: `tailscale serve` gives it an HTTPS address, which phones need
+    before a page may use the microphone."""
+    gate = gate or Gate()
+
+    class Guest(BaseHTTPRequestHandler):
+        def reply(self, code, body, kind="application/json"):
+            data = body.encode()
+            self.send_response(code)
+            self.send_header("Content-Type", kind + "; charset=utf-8")
+            self.send_header("Content-Length", str(len(data)))
+            self.send_header("Cache-Control", "no-store")
+            self.end_headers()
+            self.wfile.write(data)
+
+        def do_GET(self):
+            path = self.path.split("?")[0]
+            if path in ("/", "/thoughts"):
+                return self.reply(200, TRACE_PAGE.read_text(), "text/html")  # read per request: edit and reload
+            if path == "/trace":
+                return self.reply(200, json.dumps(trace(mind), ensure_ascii=False))
+            self.reply(404, "{}")
+
+        def do_POST(self):
+            if self.path.split("?")[0] != "/say":
+                return self.reply(404, "{}")
+            n = int(self.headers.get("Content-Length", 0))
+            text = self.rfile.read(min(n, 2000)).decode(errors="replace").strip()[:200]
+            if not text:
+                return self.reply(400, json.dumps({"error": "empty"}))
+            if (left := gate.wait_s()) > 0:
+                return self.reply(429, json.dumps({"wait_s": round(left, 1)}))
+            offer(moments, Moment("chat", text))
+            self.reply(202, "{}")
+
+        def log_message(self, *a):
+            pass
+
+    server = ThreadingHTTPServer((host, port), Guest)
+    threading.Thread(target=server.serve_forever, daemon=True).start()
+    print(f"guest page: http://{host}:{port}/ (publish with tailscale serve)", flush=True)
+    return server
+
+
 def lan_url(robot_host, port):
     """This computer's URL as seen from the robot's network (the interface that routes to it)."""
     host = robot_host.split("://")[-1].split("/")[0]
@@ -1231,6 +1294,8 @@ def main(argv=None):
     src.add_argument("--file", help="audio file played in real time")
     src.add_argument("--text", action="store_true", help="chat lines on stdin")
     p.add_argument("--serve", type=int, metavar="PORT", help="chat page for phone/PC on this port")
+    p.add_argument("--guest", type=int, metavar="PORT",
+                   help="guest page (talk + thought log) on localhost; default PORT+1 with --serve, 0 = off")
     p.add_argument("--gain", type=float, help="rtl_fm tuner gain in dB (default: auto)")
     p.add_argument("--mic-device", help="ffmpeg input (macOS ':0' or ':<name>', Linux pulse 'default')")
     p.add_argument("--mic-on-demand", action="store_true",
@@ -1277,6 +1342,8 @@ def main(argv=None):
     try:
         if args.serve:
             serve(args.serve, mind, moments)
+            if (guest := args.serve + 1 if args.guest is None else args.guest):
+                serve_guest(guest, mind, moments)
             threading.Thread(target=announce, args=(mind, args.robot, args.serve), daemon=True).start()
         if audio:
             threading.Thread(target=hear, args=(args, moments, mind.body), daemon=True).start()

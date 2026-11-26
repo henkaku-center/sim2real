@@ -164,6 +164,15 @@ robot (the cap is 20).
   multiples (one row per axis/joint, its own unit and scale, key ends labelled
   with their ease, hover crosshair, table view). Reflex and designer now return a
   short `why`; `/trace` serves the entries with curves from `curve()`.
+- Guest page (2026-11-26): with `--serve PORT` the mind also serves PORT+1 on
+  localhost only (`--guest`), with just the thought log, `/trace` and `/say`
+  (one message per 4 s, 200 characters). The same HTML (`tools/sesame_thoughts.html`,
+  read per request, so design edits need only a reload) has a talk bar: the
+  browser's speech recognition (ja-JP, "ずっと聞く" for a phone left by the robot)
+  or typed text. Speech recognition needs HTTPS, so the page is published
+  tailnet-only with `tailscale serve --bg --https=8443 --set-path /sesame
+  http://127.0.0.1:8766` at `https://kotaromacbook-air.taile70e.ts.net:8443/sesame/`;
+  the phone needs Tailscale. Not on Funnel (public) unless the user asks.
 - Speed and dynamics (2026-11-26). `intensity` sizes a designed motion (0.3–1×);
   `tempo` (0.5–2, from the reflex: 速く, ゆっくり, キビキビ; the rule reflex knows
   速く/ゆっくり) rescales its time. Each key may carry `ease`: `linear`, `in`
