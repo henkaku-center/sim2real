@@ -253,30 +253,43 @@ def test_chat_server_accepts_posts_from_the_robot_page(tmp_path):
         server.shutdown()
 
 
-def test_settings_validate_persist_and_hide_keys(tmp_path, monkeypatch):
-    monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
-    monkeypatch.delenv("TYPESAFE_API_KEY", raising=False)
+def no_claude_auth(monkeypatch, tmp_path):
+    for env in ("ANTHROPIC_API_KEY", "ANTHROPIC_AUTH_TOKEN", "ANTHROPIC_PROFILE", "TYPESAFE_API_KEY"):
+        monkeypatch.delenv(env, raising=False)
+    monkeypatch.setenv("ANTHROPIC_CONFIG_DIR", str(tmp_path / "anthropic"))
+
+
+def test_settings_validate_persist_and_refuse_keys(tmp_path, monkeypatch):
+    no_claude_auth(monkeypatch, tmp_path)
     st = sm.Settings(tmp_path)
-    assert st.values["reflex"] == "rules" and not st.public()["anthropic_key_set"]
+    assert st.values["reflex"] == "rules" and st.public()["claude_auth"] == ""
     st.update({"reflex": "jev", "anthropic_key": "sk-secret", "live": 1, "unknown": "x"})
     with pytest.raises(ValueError):
         st.update({"designer": "gpt"})
-    st.update({"anthropic_key": ""})  # empty keeps the stored key
     again = sm.Settings(tmp_path)
     view = again.public()
     assert view["reflex"] == "jev" and view["live"] is True and "unknown" not in view
-    assert view["anthropic_key_set"] and "sk-secret" not in json.dumps(view)
+    assert "sk-secret" not in (tmp_path / "config.json").read_text()  # keys never arrive over HTTP
     assert (tmp_path / "config.json").stat().st_mode & 0o777 == 0o600
-    again.update({"anthropic_key": None})
-    assert not again.public()["anthropic_key_set"]
+
+
+def test_claude_auth_sources(tmp_path, monkeypatch):
+    no_claude_auth(monkeypatch, tmp_path)
+    assert sm.claude_auth() == ""
+    creds = tmp_path / "anthropic" / "credentials"
+    creds.mkdir(parents=True)
+    (creds / "default.json").write_text("{}")  # what `ant auth login` leaves behind
+    assert sm.claude_auth() == "profile"
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "sk-test")
+    assert sm.claude_auth() == "key"
 
 
 def test_build_reports_missing_keys_and_falls_back(tmp_path, monkeypatch):
-    monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
+    no_claude_auth(monkeypatch, tmp_path)
     st = sm.Settings(tmp_path)
     mind = sm.Mind(sm.RuleReflex(), sm.Library(), sm.Memory(), sm.Spine(M))
     status = mind.configure(st)  # designer claude without a key
-    assert status["designer"] == "none" and "key" in status["error"] and status["reflex"] == "rules"
+    assert status["designer"] == "none" and "ant auth login" in status["error"] and status["reflex"] == "rules"
     st.update({"reflex": "llm", "reflex_brain": "local", "designer": "local", "local_model": "tiny"})
     status = mind.configure(st)
     assert (status["reflex"], status["designer"], status["error"]) == ("llm:local", "local", "")
@@ -302,7 +315,7 @@ def test_local_brain_and_llm_reflex():
 def test_config_endpoint_round_trip(tmp_path, monkeypatch):
     import queue
     import urllib.request
-    monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
+    no_claude_auth(monkeypatch, tmp_path)
     mind = sm.Mind(sm.RuleReflex(), sm.Library(), sm.Memory(tmp_path), sm.Spine(M))
     mind.configure(sm.Settings(tmp_path))
     server = sm.serve(0, mind, queue.Queue())
@@ -311,7 +324,7 @@ def test_config_endpoint_round_trip(tmp_path, monkeypatch):
         body = json.dumps({"designer": "none", "typesafe_key": "ts-secret", "local_url": "http://127.0.0.1:9/v1"})
         with urllib.request.urlopen(urllib.request.Request(base + "/config", body.encode(), method="POST")) as r:
             view = json.loads(r.read())
-        assert view["typesafe_key_set"] and "ts-secret" not in json.dumps(view)
+        assert not view["typesafe_key_set"] and "ts-secret" not in json.dumps(view)
         assert view["status"] == {"reflex": "rules", "designer": "none", "robot": "", "body": "off", "error": ""}
         assert view["local_models"] == []
         bad = urllib.request.Request(base + "/config", b'{"reflex": "psychic"}', method="POST")

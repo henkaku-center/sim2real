@@ -375,8 +375,8 @@ class ClaudeBrain:
             import anthropic
         except ImportError:
             raise ValueError("the `anthropic` package is missing (uv run --group radio ...)")
-        if not (key or os.environ.get("ANTHROPIC_API_KEY")):
-            raise ValueError("no Claude API key")
+        if not (key or claude_auth()):
+            raise ValueError("no Claude credentials on the PC: run `ant auth login` or set ANTHROPIC_API_KEY")
         self.client = anthropic.Anthropic(api_key=key) if key else anthropic.Anthropic()
         self.model, self.effort = model, effort
 
@@ -486,14 +486,23 @@ DEFAULTS = {
     "live": False,
     "body": "off",  # voice body: off | both | prosody | words
 }
-SECRETS = ("anthropic_key", "typesafe_key")
+
+
+def claude_auth():
+    """Where the Anthropic SDK will find credentials on this PC: "key", "profile" or ""."""
+    if os.environ.get("ANTHROPIC_API_KEY") or os.environ.get("ANTHROPIC_AUTH_TOKEN"):
+        return "key"
+    folder = Path(os.environ.get("ANTHROPIC_CONFIG_DIR") or Path.home() / ".config" / "anthropic") / "credentials"
+    return "profile" if os.environ.get("ANTHROPIC_PROFILE") or any(folder.glob("*.json")) else ""
+
 CHOICES = {"reflex": ("rules", "jev", "llm"), "reflex_brain": ("claude", "local"),
            "designer": ("claude", "local", "none"), "claude_model": CLAUDE_MODELS,
            "claude_reflex_model": CLAUDE_MODELS, "body": BODY_MODES}
 
 
 class Settings:
-    """config.json in the state folder (mode 600). Keys are write-only: never sent back."""
+    """config.json in the state folder (mode 600). API keys never pass through here: the page talks
+    plain HTTP and anyone on the LAN can reach it, so keys stay in the PC's environment or `ant` profile."""
 
     def __init__(self, folder=None):
         self.path = folder / "config.json" if folder else None
@@ -503,12 +512,7 @@ class Settings:
 
     def update(self, changes):
         for k, v in changes.items():
-            if k in SECRETS:
-                if v is None:
-                    self.values.pop(k, None)  # null clears
-                elif str(v).strip():
-                    self.values[k] = str(v).strip()  # "" keeps the stored key
-            elif k in DEFAULTS:
+            if k in DEFAULTS:
                 if k in CHOICES and v not in CHOICES[k]:
                     raise ValueError(f"{k} must be one of {', '.join(CHOICES[k])}")
                 self.values[k] = bool(v) if k == "live" else str(v).strip()
@@ -517,13 +521,9 @@ class Settings:
             self.path.write_text(json.dumps(self.values, indent=1))
             self.path.chmod(0o600)
 
-    def key(self, name, env):
-        return self.values.get(name) or os.environ.get(env)
-
     def public(self):
-        out = {k: v for k, v in self.values.items() if k not in SECRETS}
-        out.update({f"{k}_set": bool(self.key(k, e)) for k, e in
-                    (("anthropic_key", "ANTHROPIC_API_KEY"), ("typesafe_key", "TYPESAFE_API_KEY"))})
+        out = {k: v for k, v in self.values.items() if k in DEFAULTS}
+        out.update(claude_auth=claude_auth(), typesafe_key_set=bool(os.environ.get("TYPESAFE_API_KEY")))
         out["choices"] = CHOICES
         return out
 
@@ -532,14 +532,14 @@ def brain_of(settings, which, claude_model):
     v = settings.values
     if which == "local":
         return LocalBrain(v["local_url"], v["local_model"])
-    return ClaudeBrain(settings.key("anthropic_key", "ANTHROPIC_API_KEY"), claude_model)
+    return ClaudeBrain(None, claude_model)
 
 
 def build(settings, manifest):
     """(reflex, designer) for the current settings; ValueError explains what is missing."""
     v = settings.values
     if v["reflex"] == "jev":
-        reflex = JevReflex(v["jev_url"], settings.key("typesafe_key", "TYPESAFE_API_KEY"), v["jev_model"])
+        reflex = JevReflex(v["jev_url"], os.environ.get("TYPESAFE_API_KEY"), v["jev_model"])
     elif v["reflex"] == "llm":
         reflex = LLMReflex(brain_of(settings, v["reflex_brain"], v["claude_reflex_model"]))
     else:
