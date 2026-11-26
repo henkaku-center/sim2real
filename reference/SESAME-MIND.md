@@ -86,6 +86,30 @@ browsers only allow `getUserMedia` on secure origins. `GET /body` returns
 the body's state as JSON. Without `--whisper-model`, speech is not
 transcribed; no whisper model is on disk yet.
 
+The firmware with the "声で動く" panel (`feat/s3-mind-chat` @3fa6484) was
+flashed on 2026-11-26. Calibration survived (`saved=1`, manifest
+`f7382b66d6f7a844`), and the page served over Wi-Fi includes the panel. The
+voice body has not yet driven the real robot.
+
+### Without the robot: `--host sim` (2026-11-26)
+
+`sim/live_robot.py` stands in for the S3's command interface. It accepts
+`arm run`, `pose`, `motion`, `off`, `stop` and `heartbeat`, approaches targets
+at the firmware's 300 deg/s run rate within the soft limits, and freezes when
+commands stop for 0.5 s. It steps MuJoCo in real time, and the chat page
+(`http://localhost:8765/`) shows it live (MJPEG at `/sim.mjpg`) next to the
+"声で動く" selector and the body's status line.
+
+```sh
+uv run --group radio --group dev python tools/sesame_mind.py --mic --mic-device :1 --serve 8765 --host sim
+```
+
+The body loop ticks at 50 Hz on the wall clock and takes one prosody frame
+per tick. Microphone chunks bring 5 frames at once, so before this the loop
+moved in bursts and only about 5 poses per second went out. Measured with a
+WAV standing in for the microphone: about 18 poses per second reach the
+robot (the cap is 20).
+
 ## Design choices
 
 - The LLM never emits per-tick angles. Specs are `osc` (per-joint sine around a

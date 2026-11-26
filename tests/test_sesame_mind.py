@@ -397,3 +397,26 @@ def test_body_endpoint(tmp_path):
         assert state["mode"] == "off" and state["mic"] is False and state["f0"] is None
     finally:
         server.shutdown()
+
+
+def test_body_drives_the_simulated_robot(tmp_path):
+    import time
+    mind = sm.Mind(sm.RuleReflex(), sm.Library(), sm.Memory(tmp_path), sm.Spine(M))
+    settings = sm.Settings(tmp_path)
+    settings.update({"host": "sim", "live": True, "body": "words"})
+    mind.configure(settings)
+    try:
+        robot = mind.spine.robot
+        assert robot is sm.sim_robot() and robot.host == "sim"
+        mind.handle(sm.Moment("chat", "あそぼう"))  # play: a lively trot
+        deadline = time.monotonic() + 5
+        while mind.body.sent < 10 and time.monotonic() < deadline:
+            time.sleep(0.1)
+        state = mind.body.state()
+        assert state["robot"] == "sim" and state["intent"] == "play" and state["sent"] >= 10, state
+        assert robot.mode == "run" and not state["error"]
+        assert 'id=body' in sm.PAGE and "sim.mjpg" in sm.PAGE
+    finally:
+        settings.update({"body": "off", "live": False})
+        mind.configure(settings)
+        mind.link and mind.link.set()

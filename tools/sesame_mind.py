@@ -598,6 +598,20 @@ class Spine:
         return 0
 
 
+# ---------------------------------------------------------------- simulated robot
+
+
+_SIM = []
+
+
+def sim_robot():
+    """The one MuJoCo stand-in (sim/live_robot.py) behind --host sim, started on first use."""
+    if not _SIM:
+        from sim.live_robot import SimRobot
+        _SIM.append(SimRobot().start())
+    return _SIM[0]
+
+
 # ---------------------------------------------------------------- voice body
 
 
@@ -620,7 +634,7 @@ class VoiceBody:
         self.stream = ProsodyStream(f0_ref=None)  # pitch reference follows the speaker
         self.mic_at = -1e9  # monotonic time of the last microphone chunk
         self.last, self.f0 = self.SILENCE, math.nan  # newest frame, last voiced pitch
-        self.heard, self.error, self.sent = "", "", 0
+        self.heard, self.error, self.sent, self.steps = "", "", 0, 0
         self.target, self.fresh = None, threading.Event()
         self.started = False
 
@@ -667,26 +681,34 @@ class VoiceBody:
             if math.isfinite(frame[2]):
                 self.f0 = frame[2]
             self.target = self.cpg.step(*frame[:2], *frame[3:])
+            self.steps += 1
         self.fresh.set()
         return self.target
 
     def _loop(self):
+        """BODY_HZ ticks on the wall clock. Microphone chunks bring 5 frames at once, so
+        each tick takes one, waits briefly for the next chunk when the queue is empty,
+        and drops the oldest frames when more than a chunk has piled up (latency)."""
         period, next_t = 1 / BODY_HZ, time.monotonic()
         while True:
             if self.mode == "off":
                 time.sleep(0.1)
                 next_t = time.monotonic()
                 continue
-            if time.monotonic() - self.mic_at < 0.5:  # the microphone is the clock
+            frame = self.SILENCE
+            if time.monotonic() - self.mic_at < 0.5:
+                while self.frames.qsize() > 6:
+                    self.frames.get_nowait()
                 try:
-                    self.step(self.frames.get(timeout=0.2))
+                    frame = self.frames.get(timeout=1.5 * period)
                 except queue.Empty:
                     pass
-                next_t = time.monotonic()
-                continue
-            self.step(self.SILENCE)
+            self.step(frame)
             next_t += period
-            time.sleep(max(0.0, next_t - time.monotonic()))
+            now = time.monotonic()
+            if next_t < now - 0.1:  # fell behind: do not try to catch up
+                next_t = now
+            time.sleep(max(0.0, next_t - now))
 
     def pose(self, target):
         return [round(min(max(self.manifest.to_firmware(j, q), j.limits_deg[0]), j.limits_deg[1]), 1)
@@ -733,7 +755,7 @@ class VoiceBody:
                 "intent": intent, "hz": round(hz, 2), "f0": None if math.isnan(self.f0) else round(self.f0),
                 "f0_ref": round(self.stream.f0_ref), "loud": round(env, 2), "heard": self.heard,
                 "mic": time.monotonic() - self.mic_at < 1.0, "robot": robot.base if robot else "",
-                "sent": self.sent, "error": self.error}
+                "steps": self.steps, "sent": self.sent, "error": self.error}
 
 
 # ---------------------------------------------------------------- mind
@@ -804,7 +826,7 @@ class Mind:
             if self.link:
                 self.link.set()
                 self.link = None
-            self.spine.robot = Robot(host) if host else None
+            self.spine.robot = (sim_robot() if host == "sim" else Robot(host)) if host else None
             if self.spine.robot:
                 self.spine.robot.host = host
                 self.link = start_heartbeat(self.spine.robot)
@@ -890,9 +912,18 @@ def hear(args, moments, body=None):
 
 PAGE = """<!doctype html><meta charset=utf-8><meta name=viewport content="width=device-width">
 <title>Sesame mind</title><style>body{font:16px system-ui;margin:12px;max-width:640px}
-#log{white-space:pre-wrap;font:13px ui-monospace,monospace}form{display:flex;gap:6px}input{flex:1;font:16px system-ui}
-</style><h3>Sesame mind</h3><form id=f><input id=t placeholder="話しかける / ○○みたいな動きを作って" autofocus>
-<button>送る</button></form><p><button id=r>反芻</button></p><div id=log></div><script>
+#log,#bst{white-space:pre-wrap;font:13px ui-monospace,monospace}form{display:flex;gap:6px}input{flex:1;font:16px system-ui}
+img{width:100%;display:none;margin:6px 0}</style><h3>Sesame mind</h3>
+<form id=f><input id=t placeholder="話しかける / ○○みたいな動きを作って" autofocus><button>送る</button></form>
+<p><select id=body><option value=off>声で動く: オフ<option value=both>声で動く: 抑揚＋言葉<option value=prosody>声で動く: 抑揚だけ
+<option value=words>声で動く: 言葉だけ</select> <button id=r>反芻</button></p><div id=bst></div><img id=sim alt="sim">
+<div id=log></div><script>
+body.onchange=()=>fetch('config',{method:'POST',body:JSON.stringify({body:body.value})});
+setInterval(async()=>{const b=await (await fetch('body')).json();if(document.activeElement!==body)body.value=b.mode;
+if(b.robot==='sim'&&!sim.src){sim.src='sim.mjpg';sim.style.display='block'}
+bst.textContent=(b.mode==='off'?'':`声 ${b.f0??'-'} Hz (基準 ${b.f0_ref}) 音量 ${b.loud} | 覚醒 ${b.arousal} 振幅 ${b.amp} ${b.gait} ${b.hz} Hz\\n`+
+`意図 ${b.intent} 「${b.heard}」 | ${b.mic?'マイク受信中':'マイクなし（--mic）'} | pose ${b.sent}`)+
+`\\nrobot: ${b.robot||'なし（試し）'}`+(b.error?'\\nERR '+b.error:'')},500);
 const show=async()=>{const l=await (await fetch('log')).json();log.textContent=l.reverse().map(e=>
 `${new Date(e.t*1000).toLocaleTimeString()} ${e.source}「${e.text}」→ ${e.did} (${e.by} ${e.reflex_ms}ms) ${e.note}`).join('\\n')};
 f.onsubmit=async e=>{e.preventDefault();const s=t.value;t.value='';
@@ -930,7 +961,21 @@ def serve(port, mind, moments):
                 return self.reply(200, describe(), "text/plain")
             if self.path == "/body":
                 return self.reply(200, json.dumps(mind.body.state(), ensure_ascii=False))
+            if self.path == "/sim.mjpg" and getattr(mind.spine.robot, "host", "") == "sim":
+                return self.stream_sim(mind.spine.robot)
             self.reply(404, "{}")
+
+        def stream_sim(self, robot):
+            """MJPEG of the simulated robot until the browser goes away."""
+            self.send_response(200)
+            self.send_header("Content-Type", "multipart/x-mixed-replace; boundary=frame")
+            self.end_headers()
+            try:
+                for frame in robot.frames():
+                    self.wfile.write(b"--frame\r\nContent-Type: image/jpeg\r\nContent-Length: "
+                                     + str(len(frame)).encode() + b"\r\n\r\n" + frame + b"\r\n")
+            except OSError:
+                pass
 
         def do_OPTIONS(self):
             self.send_response(204)
@@ -998,7 +1043,8 @@ def main(argv=None):
     p.add_argument("--ruminate-s", type=float, default=300.0, help="ruminate after this long without input")
     p.add_argument("--state", type=Path, default=ROOT / ".sesame-mind",
                    help="library.json, memory.jsonl, notes.md, config.json")
-    p.add_argument("--host", help="drive this robot now (saved setting otherwise; settings page can switch)")
+    p.add_argument("--host", help="drive this robot now (saved setting otherwise; settings page can switch); "
+                   "'sim' drives a MuJoCo stand-in shown on the chat page (needs --group dev)")
     args = p.parse_args(argv)
     audio = args.sdr is not None or args.mic or args.file
     if not (audio or args.text or args.serve):
