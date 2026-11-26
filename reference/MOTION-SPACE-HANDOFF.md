@@ -47,7 +47,7 @@ and numbers themselves are in `reference/MOTION-SPACE.md`.
 | | Branch (remote `fork` = memorist17/sim2real) | Head |
 |---|---|---|
 | Model, viewer, mind, tests, docs | `feat/sesame-mind` | `c6162cd` plus this note |
-| Robot firmware | `feat/s3-mind-chat` (worktree `../sim2real-s3-mind-chat`) | `3de6e45` (= 824666e + `/space`) |
+| Robot firmware | `feat/s3-mind-chat` (worktree `../sim2real-s3-mind-chat`) | `/space` added in `3de6e45`; the robot runs the branch head (includes 6d55e64 from the voice-body work) |
 
 `feat/s3-mind-chat` is the robot's build line. **Never flash a main-based
 build on this robot**: its saved calibration would be rejected.
@@ -104,12 +104,29 @@ and `CLS` tables. Numbers in the texts are read from the YAML, not typed in.
   signs and soft limits are the manifest's assumptions. The geometry is the
   MJCF collision boxes, and masses, servo gain and torque are nominal. The
   next hardware checks are listed in `reference/MOTION-SPACE.md`.
-- **Presentation hosting.** The talk is at
-  `https://mini.taile70e.ts.net/presentation/1/`. Copy
-  `web/public/motion-space/index.html` there, for example as
-  `motion-space.html`, and link or iframe it. Do not iframe the robot's
-  http page from the https deck: browsers block the mixed content.
-- **Agent access to those URLs.** In auto mode, Claude's read-only GETs to
-  `*.taile70e.ts.net` and the robot were refused as oversight-sensitive.
-  Allowing them takes an `autoMode` entry in the user's own
-  `~/.claude/settings.json`, which only the user can add.
+- **Presentation hosting (not done).** The talk is at
+  `https://mini.taile70e.ts.net/presentation/1/`. The served deck is a
+  newer copy on mini than either `proto-kotaro` checkout, so nothing was
+  written there. To add the viewer, copy `web/public/motion-space/index.html`
+  next to the deck's `index.html` as `motion-space.html`. Then add one line
+  to the "Motion space" list on slide 8 (`id="s7"`, after "Too-wild requests
+  shrink back…"):
+
+  ```html
+  <li><a href="motion-space.html" target="_blank" rel="noopener">Try it: interactive viewer →</a></li>
+  ```
+
+  Do not iframe the robot's http page from the https deck: browsers block
+  the mixed content.
+
+## Languages
+
+The viewer is bilingual. On the presentation site it follows the site's
+toggle (`localStorage('site-lang')` and the `langchange` event from
+`/_assets/i18n.js`). It marks its UI `translate="no"`, so the site's machine
+translation leaves it alone, and it pads its header clear of the site's
+toggle. Elsewhere, on the robot or from a file, it shows its own JA/EN
+button and starts in the browser's language. UI strings live in the
+template's `TX`, `AXT`, `RULET`, `CLST` and `STORIES` tables, one entry per
+language. The LLM text stays Japanese, because that is what the designer
+reads.
