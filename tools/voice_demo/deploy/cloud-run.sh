@@ -10,6 +10,7 @@ REGION="${GCP_REGION:-asia-northeast1}"
 SERVICE="${VOICE_SERVICE:-sesame-voice}"
 REF="${1:-HEAD}"
 ACCOUNT="voice-server@${GCP_PROJECT}.iam.gserviceaccount.com"
+BUILDER="projects/${GCP_PROJECT}/serviceAccounts/voice-build@${GCP_PROJECT}.iam.gserviceaccount.com"
 ROOT="$(git rev-parse --show-toplevel)"
 STAGE="$(mktemp -d)"
 trap 'rm -rf "$STAGE"' EXIT
@@ -17,7 +18,7 @@ git -C "$ROOT" archive "$REF" firmware manifest reference tools \
   assets/printing/internal-frame-s3 assets/stl/upstream | tar -x -C "$STAGE"
 cp "$STAGE/tools/voice_demo/deploy/Dockerfile" "$STAGE/Dockerfile"
 gcloud run deploy "$SERVICE" --source "$STAGE" --project "$GCP_PROJECT" --region "$REGION" \
-  --service-account "$ACCOUNT" --allow-unauthenticated \
+  --service-account "$ACCOUNT" --build-service-account "$BUILDER" --allow-unauthenticated \
   --min-instances "${VOICE_MIN_INSTANCES:-0}" --max-instances 1 --concurrency 8 \
   --memory 512Mi --cpu 1 --timeout 120 \
   --set-secrets "VOICE_DEVICE_TOKEN=voice-device-token:latest,VOICE_CLAUDE_TOKEN=voice-claude-token:latest" \
