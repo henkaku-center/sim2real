@@ -21,5 +21,5 @@ gcloud run deploy "$SERVICE" --source "$STAGE" --project "$GCP_PROJECT" --region
   --min-instances "${VOICE_MIN_INSTANCES:-0}" --max-instances 1 --concurrency 8 \
   --memory 512Mi --cpu 1 --timeout 120 \
   --set-secrets "VOICE_DEVICE_TOKEN=voice-device-token:latest,VOICE_CLAUDE_TOKEN=voice-claude-token:latest" \
-  --set-env-vars "VOICE_PROVIDER=claude,VOICE_CLAUDE_BASE_URL=${VOICE_CLAUDE_BASE_URL},VOICE_PLAN_MODEL=${VOICE_PLAN_MODEL:-claude-haiku-4-5},VOICE_STT_PROVIDER=google,GOOGLE_CLOUD_PROJECT=${GCP_PROJECT},VOICE_STT_LOCATION=${VOICE_STT_LOCATION:-us},VOICE_STT_MODEL=${VOICE_STT_MODEL:-chirp_3},VOICE_STT_LANGUAGES=${VOICE_STT_LANGUAGES:-en-US,ja-JP},SOURCE_REVISION=$(git -C "$ROOT" rev-parse --short "$REF")"
+  --set-env-vars "^@^VOICE_PROVIDER=claude@VOICE_CLAUDE_BASE_URL=${VOICE_CLAUDE_BASE_URL}@VOICE_PLAN_MODEL=${VOICE_PLAN_MODEL:-claude-haiku-4-5}@VOICE_STT_PROVIDER=google@GOOGLE_CLOUD_PROJECT=${GCP_PROJECT}@VOICE_STT_LOCATION=${VOICE_STT_LOCATION:-us}@VOICE_STT_MODEL=${VOICE_STT_MODEL:-chirp_3}@VOICE_STT_LANGUAGES=${VOICE_STT_LANGUAGES:-en-US,ja-JP}@SOURCE_REVISION=$(git -C "$ROOT" rev-parse --short "$REF")"
 gcloud run services describe "$SERVICE" --project "$GCP_PROJECT" --region "$REGION" --format='value(status.url)'
