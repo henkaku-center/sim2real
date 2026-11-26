@@ -146,9 +146,17 @@ robot (the cap is 20).
 - Ears: a rising edge above `loud_rms` is an immediate `sound` moment (no
   model); speech is split on 600 ms silence for whisper instead of fixed 12 s chunks.
 - One worker handles moments in order; a newer motion interrupts the playing one.
+- Speed and dynamics (2026-11-26). `intensity` sizes a designed motion (0.3–1×);
+  `tempo` (0.5–2, from the reflex: 速く, ゆっくり, キビキビ; the rule reflex knows
+  速く/ゆっくり) rescales its time. Each key may carry `ease`: `linear`, `in`
+  (wind-up), `out` (soft landing) or `inout`; the designer is told to shape
+  dynamics with key lengths and eases. Firmware motions (dance, worm…) keep their
+  own speed: tempo does not reach them, and the firmware's 300 deg/s limit caps
+  every motion. Checked with Claude: 速く踊って → dance ×1.5, ゆっくり手を振って →
+  wave ×0.5; "溜めて跳ねて、ふわっと着地" → 900 ms `in`, 150 ms `linear`, `out`, `inout`.
 - The PC server answers the robot page cross-origin (`Access-Control-Allow-Origin: *`).
   No authentication: anyone on the LAN can chat, change settings or drive the
-  robot, and keys typed on the phone travel over plain HTTP. Use a trusted network.
+  robot. API keys no longer pass through the page (2026-11-26). Use a trusted network.
 
 ## Verified
 

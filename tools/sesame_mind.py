@@ -99,13 +99,20 @@ class Moment:
 @dataclass(frozen=True)
 class Decision:
     action: str  # library name, NEW or NONE
-    intensity: float = 0.5  # 0..1
+    intensity: float = 0.5  # 0..1, the size of the motion
     addressed: float | None = None  # probability the speech was meant for the robot
     confidence: float | None = None
     by: str = ""
+    tempo: float = 1.0  # speed factor for designed motions (0.5 = half speed, 2 = twice)
 
 
 # ---------------------------------------------------------------- specs
+
+# How a key's transition moves in time: in = slow start (wind-up), out = soft landing,
+# inout = both. A key's ms sets how long; the ease sets where in that time the motion happens.
+EASE = {"linear": lambda u: u, "in": lambda u: u * u, "out": lambda u: 1 - (1 - u) ** 2,
+        "inout": lambda u: u * u * (3 - 2 * u)}
+TEMPO = (0.5, 2.0)
 
 
 def angles(manifest, spec, t, scale=1.0):
@@ -123,7 +130,7 @@ def angles(manifest, spec, t, scale=1.0):
                   else {a["axis"]: a["value"] for a in key["axes"]})
         end = start + key["ms"] / 1000
         if t < end:
-            u = (t - start) / (end - start) if end > start else 1.0
+            u = EASE[key.get("ease", "linear")]((t - start) / (end - start) if end > start else 1.0)
             names = set(prev) | set(target)
             return {n: scale * (prev.get(n, 0.0) + u * (target.get(n, 0.0) - prev.get(n, 0.0))) for n in names}
         prev, start = target, end
@@ -136,13 +143,15 @@ def duration(spec):
     return sum(k["ms"] for k in spec["keys"]) / 1000
 
 
-def frames(manifest, spec, hz=FRAME_HZ, intensity=0.5):
-    """`pose` angles (firmware degrees, canonical order, soft-limit clamped) per frame."""
+def frames(manifest, spec, hz=FRAME_HZ, intensity=0.5, tempo=1.0):
+    """`pose` angles (firmware degrees, canonical order, soft-limit clamped) per frame.
+    intensity sizes the motion; tempo plays it faster (>1) or slower (<1)."""
     base = manifest.pose_internal(spec.get("base", "stand"))
     center = load_space()["center"]
     scale = 0.3 + 0.7 * intensity
-    for i in range(int(duration(spec) * hz) + 1):
-        delta = angles(manifest, spec, i / hz, scale)
+    tempo = min(max(tempo, TEMPO[0]), TEMPO[1])
+    for i in range(int(duration(spec) / tempo * hz) + 1):
+        delta = angles(manifest, spec, i * tempo / hz, scale)
         if spec["kind"] in ("axes", "axes_keys"):
             z = project({a: center[a] + delta.get(a, 0.0) for a in AXES}, manifest)
             degs = firmware_pose(z, manifest)
@@ -168,6 +177,8 @@ def validate(manifest, spec):
         raise ValueError(f"unknown spec kind {kind}")
     if unknown := set(used) - (names if kind in ("osc", "keys") else set(AXES)):
         raise ValueError(f"unknown {'joints' if kind in ('osc', 'keys') else 'axes'} {sorted(unknown)}")
+    if kind in ("keys", "axes_keys") and (bad := {k.get("ease", "linear") for k in spec["keys"]} - set(EASE)):
+        raise ValueError(f"unknown ease {sorted(bad)}")
     if not 0 < duration(spec) <= 30:
         raise ValueError("duration must be in (0, 30] s")
 
@@ -237,6 +248,15 @@ class Memory:
 # ---------------------------------------------------------------- reflexes
 
 
+def spoken_tempo(text):
+    """Offline speed words: 速く → 1.5, ゆっくり → 0.6, otherwise 1."""
+    if any(w in text for w in ("速く", "早く", "はやく", "素早く", "fast", "quick")):
+        return 1.5
+    if any(w in text for w in ("ゆっくり", "そっと", "slow")):
+        return 0.6
+    return 1.0
+
+
 class RuleReflex:
     """Offline fallback: library names in the text, 作って/new for a new motion, onsets startle."""
     by = "rules"
@@ -244,10 +264,10 @@ class RuleReflex:
     def decide(self, moment, library, notes=""):
         text = moment.text.lower()
         if moment.source == "chat" and any(w in text for w in ("作って", "つくって", "new ")):
-            return Decision(NEW, 0.6, 1.0, by=self.by)
+            return Decision(NEW, 0.6, 1.0, by=self.by, tempo=spoken_tempo(text))
         for name in sorted(library.names(), key=len, reverse=True):
             if name in text:
-                return Decision(name, 0.6, 1.0, by=self.by)
+                return Decision(name, 0.6, 1.0, by=self.by, tempo=spoken_tempo(text))
         if moment.onset:
             return Decision("shake", min(1.0, moment.loudness / 8000), by=self.by)
         return Decision(NONE, 0.0, by=self.by)
@@ -316,6 +336,9 @@ DESIGN_SYSTEM = """\
 なるべく下の動作空間の8軸で書いてください（転ばない範囲に自動で収まります）。
 - axes: 軸の周期運動。hz は 0.2〜3、seconds は 1〜10、各軸の amp（振幅）、offset（中心からのずれ）、phase（0〜1周期）
 - axes_keys: 軸のキーポーズの列。各キーの ms は 100〜2000、合計10秒以内、value は中心からの差分
+- 各キーの ease でそのキーへの移り方を決めます: linear（等速）、in（ゆっくり出て速く着く＝溜め）、
+  out（速く出てふわっと止まる）、inout（両端がなめらか）。緩急は ms の長短と ease で付けてください
+  （例: 長い in で溜めて、短い linear で弾く、out で余韻）。
 関節を直接動かす必要があるとき（片足を上げて振るなど）だけ osc / keys を使います。
 角度は基準姿勢（base）からの差分で、内部座標の度数です（0 = 基準のまま）。
 - osc: 関節の周期運動（joints）。keys: 関節のキーポーズの列（angles）
@@ -349,6 +372,7 @@ def design_schema(manifest):
         "joints": {"type": "array", "items": obj({"joint": joint, "amp": num, "offset": num, "phase": num})},
         "keys": {"type": "array", "items": obj({
             "ms": num,
+            "ease": {"type": "string", "enum": list(EASE)},
             "axes": {"type": "array", "items": obj({"axis": axis, "value": num})},
             "angles": {"type": "array", "items": obj({"joint": joint, "deg": num})},
         })},
@@ -363,7 +387,8 @@ def spec_of(design):
     else:
         field = "angles" if kind == "keys" else "axes"
         spec = {"kind": kind, "base": design["base"],
-                "keys": [{"ms": k["ms"], field: k.get(field, [])} for k in design["keys"]]}
+                "keys": [{"ms": k["ms"], **({"ease": k["ease"]} if k.get("ease", "linear") != "linear" else {}),
+                          field: k.get(field, [])} for k in design["keys"]]}
     if kind.startswith("axes"):
         del spec["base"]
     return design["name"], design["about"], spec
@@ -451,7 +476,8 @@ new = 新しい動きを作る（「〜みたいな動きを作って」など�
 チャットはセサミへの話しかけです。動きや様子や気持ちを頼まれたら、名前が一致しなくても
 いちばん近い動きを選んでください（例: 悶えて → worm か freaky、喜んで → dance）。
 none は、頼みではない独り言のときと、どの動きも合わないときだけです。
-intensity は 0〜1 の勢い、addressed はセサミ自身に話しかけられた確率（0〜1）。
+intensity は 0〜1 の動きの大きさ、tempo は速さの倍率 0.5〜2（1 = ふつう。「速く」「ゆっくり」
+「のんびり」「キビキビ」などに合わせる）、addressed はセサミ自身に話しかけられた確率（0〜1）。
 """
 
 
@@ -461,15 +487,17 @@ class LLMReflex:
 
     def decide(self, moment, library, notes=""):
         options = library.names() + [NEW, NONE]
-        schema = {"type": "object", "additionalProperties": False, "required": ["action", "intensity", "addressed"],
-                  "properties": {"action": {"type": "string", "enum": options},
-                                 "intensity": {"type": "number"}, "addressed": {"type": "number"}}}
+        schema = {"type": "object", "additionalProperties": False,
+                  "required": ["action", "intensity", "tempo", "addressed"],
+                  "properties": {"action": {"type": "string", "enum": options}, "intensity": {"type": "number"},
+                                 "tempo": {"type": "number"}, "addressed": {"type": "number"}}}
         user = (f"動き: {json.dumps(library.menu(), ensure_ascii=False)}\nメモ: {notes[-800:]}\n"
                 f"聞こえたこと（{moment.source}, 音量 {moment.loudness:.0f}{', 急な音' if moment.onset else ''}）:"
                 f"「{moment.text}」")
         d = json.loads(self.brain.ask(REFLEX_SYSTEM, user, schema))
         return Decision(d["action"] if d["action"] in options else NONE,
-                        min(1.0, max(0.0, float(d["intensity"]))), float(d["addressed"]), by=self.by)
+                        min(1.0, max(0.0, float(d["intensity"]))), float(d["addressed"]), by=self.by,
+                        tempo=min(max(float(d.get("tempo", 1.0)), TEMPO[0]), TEMPO[1]))
 
 
 # ---------------------------------------------------------------- settings
@@ -565,22 +593,23 @@ class Spine:
         self.cancel = threading.Event()
         self.thread = None
 
-    def start(self, entry, intensity=0.5):
+    def start(self, entry, intensity=0.5, tempo=1.0):
         """Interrupt the current motion and play this one in the background."""
         self.cancel.set()
         if self.thread:
             self.thread.join()
         self.cancel = threading.Event()
-        self.thread = threading.Thread(target=self._play_logged, args=(entry, intensity), daemon=True)
+        self.thread = threading.Thread(target=self._play_logged, args=(entry, intensity, tempo), daemon=True)
         self.thread.start()
 
-    def _play_logged(self, entry, intensity):
+    def _play_logged(self, entry, intensity, tempo=1.0):
         try:
-            self.play(entry, intensity)
+            self.play(entry, intensity, tempo)
         except OSError as e:
             print(f"  (spine) no link: {e}", file=sys.stderr)
 
-    def play(self, entry, intensity=0.5):
+    def play(self, entry, intensity=0.5, tempo=1.0):
+        """Firmware motions keep their own speed; tempo applies to designed ones."""
         spec = entry["spec"]
         if spec["kind"] == "firmware":
             lines = [f"motion {spec['name']}"]
@@ -588,7 +617,7 @@ class Spine:
                 print("  (dry) " + lines[0], flush=True)
                 return 0
             return run_lines(self.robot, lines)
-        poses = list(frames(self.manifest, spec, self.hz, intensity))
+        poses = list(frames(self.manifest, spec, self.hz, intensity, tempo))
         if self.robot is None:
             print(f"  (dry) {len(poses)} frames @ {self.hz} Hz, first: pose {' '.join(map(str, poses[0]))}", flush=True)
             return 0
@@ -790,10 +819,11 @@ class Mind:
         entry = {"t": self.clock(), **asdict(moment), **asdict(decision), "did": action,
                  "reflex_ms": round(reflex_ms), "note": note}
         self.memory.add(entry)
-        print(f"🧠 {moment.source}「{moment.text}」→ {action} ({decision.by}, {reflex_ms:.0f} ms){note and ' ' + note}",
-              flush=True)
+        speed = f" ×{decision.tempo:g}" if decision.tempo != 1 else ""
+        print(f"🧠 {moment.source}「{moment.text}」→ {action}{speed} ({decision.by}, {reflex_ms:.0f} ms)"
+              f"{note and ' ' + note}", flush=True)
         if action != NONE:
-            self.spine.start(self.library.items[action], decision.intensity)
+            self.spine.start(self.library.items[action], decision.intensity, decision.tempo)
         return entry
 
     def handle_body(self, moment):

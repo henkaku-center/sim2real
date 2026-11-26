@@ -160,8 +160,9 @@ class FakeSpine:
     def __init__(self):
         self.played = []
 
-    def start(self, entry, intensity):
+    def start(self, entry, intensity, tempo=1.0):
         self.played.append((entry["spec"], intensity))
+        self.tempo = tempo
 
 
 class FakeDesigner:
@@ -536,3 +537,31 @@ def test_console_keeps_printed_lines_for_the_pages():
     print("next", file=tee)
     assert [line for _, line in console.recent(2)] == ["  (spine) no link", "halfnext"]  # a partial line waits
     assert tee.encoding == out.encoding
+
+
+def test_ease_shapes_a_key_and_tempo_rescales_time():
+    eased = {"kind": "keys", "base": "stand", "keys": [{"ms": 1000, "ease": "in", "angles": [{"joint": "L1", "deg": 40}]},
+                                                       {"ms": 1000, "ease": "out", "angles": []}]}
+    sm.validate(M, eased)
+    assert sm.angles(M, KEYS, 0.5)["L1"] == pytest.approx(20)  # linear: halfway at half time
+    assert sm.angles(M, eased, 0.5)["L1"] == pytest.approx(10)  # in: a quarter of the way (wind-up)
+    assert sm.angles(M, eased, 1.5)["L1"] == pytest.approx(10)  # out: already 3/4 of the way back
+    with pytest.raises(ValueError):
+        sm.validate(M, {**eased, "keys": [{"ms": 500, "ease": "bounce", "angles": []}]})
+    normal = list(sm.frames(M, eased, hz=20, intensity=1.0))
+    fast = list(sm.frames(M, eased, hz=20, intensity=1.0, tempo=2.0))
+    slow = list(sm.frames(M, eased, hz=20, intensity=1.0, tempo=0.1))  # clamped to 0.5
+    assert (len(normal), len(fast), len(slow)) == (41, 21, 81)
+    assert fast[10] == normal[20] and slow[80] == normal[40]
+    design = {"name": "flick", "about": "ため", "kind": "keys", "base": "stand", "hz": 0, "seconds": 0,
+              "axes": [], "joints": [], "keys": [{"ms": 800, "ease": "in", "axes": [], "angles": []},
+                                                 {"ms": 200, "ease": "linear", "axes": [], "angles": []}]}
+    assert [k.get("ease") for k in sm.spec_of(design)[2]["keys"]] == ["in", None]
+    assert sm.design_schema(M)["properties"]["keys"]["items"]["properties"]["ease"]["enum"] == list(sm.EASE)
+
+
+def test_speed_words_set_the_tempo():
+    lib = sm.Library()
+    assert sm.RuleReflex().decide(sm.Moment("chat", "速く dance"), lib).tempo == 1.5
+    assert sm.RuleReflex().decide(sm.Moment("chat", "ゆっくり wave"), lib).tempo == 0.6
+    assert sm.RuleReflex().decide(sm.Moment("chat", "dance"), lib).tempo == 1.0
