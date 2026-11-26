@@ -20,6 +20,7 @@ import plistlib
 import shutil
 import subprocess
 import sys
+import time
 from pathlib import Path
 
 LABEL = "com.sesame.mind"
@@ -45,7 +46,20 @@ def plist(robot, mic, port, whisper):
 
 
 def launchctl(*args, check=False):
-    return subprocess.run(["launchctl", *args], check=check, capture_output=True, text=True)
+    r = subprocess.run(["launchctl", *args], capture_output=True, text=True)
+    if check and r.returncode:
+        raise SystemExit(f"launchctl {' '.join(args)} failed ({r.returncode}): {(r.stderr or r.stdout).strip()}")
+    return r
+
+
+def unload(timeout_s=15.0):
+    """bootout returns before the old mind has exited; bootstrap fails (5) until it has."""
+    launchctl("bootout", f"{DOMAIN}/{LABEL}")
+    deadline = time.monotonic() + timeout_s
+    while launchctl("print", f"{DOMAIN}/{LABEL}").returncode == 0:
+        if time.monotonic() > deadline:
+            raise SystemExit(f"{LABEL} is still running; try again in a moment")
+        time.sleep(0.3)
 
 
 def main(argv=None):
@@ -62,13 +76,13 @@ def main(argv=None):
             sys.stdout.write(data.decode())
             return 0
         STATE.mkdir(exist_ok=True)
-        launchctl("bootout", f"{DOMAIN}/{LABEL}")  # replace an older copy
+        unload()  # replace an older copy
         TARGET.parent.mkdir(parents=True, exist_ok=True)
         TARGET.write_bytes(data)
         launchctl("bootstrap", DOMAIN, str(TARGET), check=True)
         print(f"installed {TARGET}\nlog: {LOG}")
     elif a.command == "uninstall":
-        launchctl("bootout", f"{DOMAIN}/{LABEL}")
+        unload()
         TARGET.unlink(missing_ok=True)
         print("uninstalled")
     elif a.command == "restart":
