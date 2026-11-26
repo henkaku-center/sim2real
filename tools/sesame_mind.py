@@ -722,7 +722,15 @@ class Spine:
                 print(f"  (spine) {text}", file=sys.stderr)
                 return 1
             self.sleep(max(0.0, t0 + (i + 1) / self.hz - time.monotonic()))
-        return 0
+        if self.cancel.is_set():
+            return 0
+        # a designed motion ends wherever its last key left the body: stand up again, so the
+        # robot looks at rest and the next motion starts from the same place. Not waited
+        # for: the next motion's first pose cancels it.
+        ok, text = armed_command(self.robot, "motion stand")
+        if not ok:
+            print(f"  (spine) {text}", file=sys.stderr)
+        return 0 if ok else 1
 
 
 # ---------------------------------------------------------------- simulated robot
@@ -895,6 +903,15 @@ class Mind:
         self.designer, self.clock = designer, clock
         self.settings, self.link, self.error = None, None, ""
         self.body = VoiceBody(spine.manifest, spine)
+
+    def stand(self, source="button"):
+        """Stand now (the stock motion; no model call), logged like any other moment."""
+        entry = {"t": self.clock(), "source": source, "text": "stand", "did": "stand", "by": source,
+                 "intensity": 0.5, "tempo": 1.0, "reflex_ms": 0, "note": ""}
+        self.memory.add(entry)
+        print(f"🧍 {source} → stand", flush=True)
+        self.spine.start(self.library.items["stand"])
+        return entry
 
     def handle(self, moment):
         if self.body.mode != "off":
@@ -1096,7 +1113,7 @@ PAGE = """<!doctype html><meta charset=utf-8><meta name=viewport content="width=
 img{width:100%;display:none;margin:6px 0}</style><h3>Sesame mind <a href="thoughts" style="font-size:14px">思考ログ →</a></h3>
 <form id=f><input id=t placeholder="話しかける / ○○みたいな動きを作って" autofocus><button>送る</button></form>
 <p><select id=body><option value=off>声で動く: オフ<option value=both>声で動く: 抑揚＋言葉<option value=prosody>声で動く: 抑揚だけ
-<option value=words>声で動く: 言葉だけ</select> <button id=r>反芻</button></p>
+<option value=words>声で動く: 言葉だけ</select> <button id=r>反芻</button> <button id=st>🧍 立つ</button></p>
 <p id=rp style="display:none">ロボットのページ（スマホはこちら）: <a id=rpa></a></p><div id=bst></div><img id=sim alt="sim">
 <div id=log></div><details open><summary>ログ（PC）</summary><div id=con></div></details><script>
 body.onchange=()=>fetch('config',{method:'POST',body:JSON.stringify({body:body.value})});
@@ -1109,7 +1126,7 @@ bst.textContent=(b.mode==='off'?'':`声 ${b.f0??'-'} Hz (基準 ${b.f0_ref}) 音
 const show=async()=>{const l=await (await fetch('log')).json();log.textContent=l.reverse().map(e=>
 `${new Date(e.t*1000).toLocaleTimeString()} ${e.source}「${e.text}」→ ${e.did} (${e.by} ${e.reflex_ms}ms) ${e.note}`).join('\\n')};
 f.onsubmit=async e=>{e.preventDefault();const s=t.value;t.value='';
-await fetch('say',{method:'POST',body:s});show()};r.onclick=()=>fetch('ruminate',{method:'POST'});
+await fetch('say',{method:'POST',body:s});show()};r.onclick=()=>fetch('ruminate',{method:'POST'});st.onclick=()=>fetch('stand',{method:'POST'});
 setInterval(show,1000);show();
 setInterval(async()=>{const l=await (await fetch('console')).json();
 con.textContent=l.reverse().map(([t,s])=>new Date(t*1000).toLocaleTimeString()+' '+s).join('\\n')},1000)</script>"""
@@ -1199,6 +1216,8 @@ def serve(port, mind, moments):
                 offer(moments, Moment("chat", body.strip()))
             elif self.path == "/ruminate":
                 threading.Thread(target=mind.ruminate, daemon=True).start()
+            elif self.path == "/stand":
+                mind.stand()
             elif self.path == "/config":
                 try:
                     mind.settings.update(json.loads(body or "{}"))
@@ -1247,6 +1266,7 @@ def serve_guest(port, mind, moments, gate=None, host="127.0.0.1", daily=300):
     Bound to localhost: `tailscale serve` gives it an HTTPS address, which phones need
     before a page may use the microphone."""
     gate = gate or Gate(daily=daily)
+    stand_gate = Gate(every=1.5, daily=10_000)
 
     class Guest(BaseHTTPRequestHandler):
         def reply(self, code, body, kind="application/json"):
@@ -1270,6 +1290,11 @@ def serve_guest(port, mind, moments, gate=None, host="127.0.0.1", daily=300):
             self.reply(404, "{}")
 
         def do_POST(self):
+            if self.path.split("?")[0] == "/stand":  # no model call: a light gate is enough
+                if stand_gate.wait_s() > 0:
+                    return self.reply(429, json.dumps({"wait_s": 1}))
+                mind.stand()
+                return self.reply(202, "{}")
             if self.path.split("?")[0] != "/say":
                 return self.reply(404, "{}")
             n = int(self.headers.get("Content-Length", 0))

@@ -160,7 +160,7 @@ class FakeSpine:
     def __init__(self):
         self.played = []
 
-    def start(self, entry, intensity, tempo=1.0):
+    def start(self, entry, intensity=0.5, tempo=1.0):
         self.played.append((entry["spec"], intensity))
         self.tempo = tempo
 
@@ -217,7 +217,8 @@ def test_spine_dry_run_and_streaming():
 
     sm.Spine(M).play({"spec": OSC})  # dry: prints, sends nothing
     assert sm.Spine(M, FakeRobot(), hz=4, sleep=lambda s: None).play({"spec": OSC}) == 0
-    assert len(sent) == 9 and all(s.startswith("pose ") and len(s.split()) == 9 for s in sent)
+    assert len(sent) == 10 and sent[-1] == "motion stand"  # stands up again afterwards
+    assert all(s.startswith("pose ") and len(s.split()) == 9 for s in sent[:-1])
 
 
 def tone(level, seconds):
@@ -676,3 +677,21 @@ def test_gate_spaces_messages_and_stops_for_the_day():
     assert gate.wait_s() == math.inf  # two used today
     day[0] = "2026-11-27"
     assert gate.wait_s() == 0
+
+
+def test_designed_motions_stand_up_after_and_the_stand_button(tmp_path):
+    class Robot:
+        sent = []
+
+        def command(self, text):
+            self.sent.append(text)
+            return True, "OK"
+
+    robot = Robot()
+    spine = sm.Spine(M, robot, hz=10, sleep=lambda s: None)
+    spine.play({"spec": {"kind": "axes_keys", "keys": [{"ms": 300, "axes": [{"axis": "height", "value": -4}]}]}})
+    assert robot.sent[0].startswith("pose ") and robot.sent[-1] == "motion stand"
+    mind = sm.Mind(sm.RuleReflex(), sm.Library(), sm.Memory(tmp_path), FakeSpine())
+    e = mind.stand()
+    assert (e["did"], e["source"]) == ("stand", "button") and mind.spine.played[-1][0]["name"] == "stand"
+    assert sm.trace(mind)[-1]["motion"]["kind"] == "firmware"
