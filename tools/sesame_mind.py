@@ -683,6 +683,7 @@ class Spine:
         self.manifest, self.robot, self.hz, self.sleep = manifest, robot, hz, sleep
         self.cancel = threading.Event()
         self.thread = None
+        self.health = "idle"  # how the last motion went: idle | ok | offline | resetting | error
 
     def start(self, entry, intensity=0.5, tempo=1.0):
         """Interrupt the current motion and play this one in the background."""
@@ -697,6 +698,7 @@ class Spine:
         try:
             self.play(entry, intensity, tempo)
         except OSError as e:
+            self.health = "offline"
             print(f"  (spine) no link: {e}", file=sys.stderr)
 
     def play(self, entry, intensity=0.5, tempo=1.0):
@@ -708,7 +710,9 @@ class Spine:
                 print("  (dry) " + lines[0], flush=True)
                 return 0
             # "?arm run" is a no-op (tolerated ERR) when armed and re-arms a robot that reset
-            return run_lines(self.robot, ["?arm run", *lines])
+            code = run_lines(self.robot, ["?arm run", *lines])
+            self.health = "ok" if code == 0 else "error"
+            return code
         poses = list(frames(self.manifest, spec, self.hz, intensity, tempo))
         if self.robot is None:
             print(f"  (dry) {len(poses)} frames @ {self.hz} Hz, first: pose {' '.join(map(str, poses[0]))}", flush=True)
@@ -719,6 +723,7 @@ class Spine:
                 return 0
             ok, text = armed_command(self.robot, "pose " + " ".join(f"{x:g}" for x in p))
             if not ok:
+                self.health = "resetting" if "resetting" in text else "error"
                 print(f"  (spine) {text}", file=sys.stderr)
                 return 1
             self.sleep(max(0.0, t0 + (i + 1) / self.hz - time.monotonic()))
@@ -728,6 +733,7 @@ class Spine:
         # robot looks at rest and the next motion starts from the same place. Not waited
         # for: the next motion's first pose cancels it.
         ok, text = armed_command(self.robot, "motion stand")
+        self.health = "ok" if ok else "resetting" if "resetting" in text else "error"
         if not ok:
             print(f"  (spine) {text}", file=sys.stderr)
         return 0 if ok else 1
@@ -1168,9 +1174,13 @@ def play_request(mind, body):
 
 
 def latest(mind):
-    """A few bytes that change whenever the thought log does, for cheap polling."""
+    """A few bytes that change whenever the thought log does, for cheap polling, plus how the
+    robot is doing (no robot = dry run) for the page's status line."""
     recent = mind.memory.recent(1)
-    return json.dumps({"n": len(mind.memory.lines), "t": recent[-1]["t"] if recent else 0})
+    robot = mind.spine.robot
+    return json.dumps({"n": len(mind.memory.lines), "t": recent[-1]["t"] if recent else 0,
+                       "robot": mind.spine.health if robot else "dry",
+                       "doing": recent[-1].get("did", "") if recent else ""})
 
 
 def config_view(mind):

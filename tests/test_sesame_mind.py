@@ -654,10 +654,10 @@ def test_guest_port_only_talks_and_shows_thoughts(tmp_path):
         with pytest.raises(urllib.error.HTTPError):
             urllib.request.urlopen(base + "/config")
         with urllib.request.urlopen(base + "/latest") as r:
-            assert json.loads(r.read()) == {"n": 0, "t": 0}
+            assert json.loads(r.read()) == {"n": 0, "t": 0, "robot": "dry", "doing": ""}
         mind.memory.add({"t": 5.0, "text": "x" * 4000, "did": "none"})
         with urllib.request.urlopen(base + "/latest") as r:
-            assert json.loads(r.read()) == {"n": 1, "t": 5.0}
+            assert json.loads(r.read()) == {"n": 1, "t": 5.0, "robot": "dry", "doing": "none"}
         import gzip
         req = urllib.request.Request(base + "/trace", headers={"Accept-Encoding": "gzip"})
         with urllib.request.urlopen(req) as r:
@@ -691,6 +691,7 @@ def test_designed_motions_stand_up_after_and_the_stand_button(tmp_path):
     spine = sm.Spine(M, robot, hz=10, sleep=lambda s: None)
     spine.play({"spec": {"kind": "axes_keys", "keys": [{"ms": 300, "axes": [{"axis": "height", "value": -4}]}]}})
     assert robot.sent[0].startswith("pose ") and robot.sent[-1] == "motion stand"
+    assert spine.health == "ok"
     mind = sm.Mind(sm.RuleReflex(), sm.Library(), sm.Memory(tmp_path), FakeSpine())
     e = mind.stand()
     assert (e["did"], e["source"]) == ("stand", "button") and mind.spine.played[-1][0]["name"] == "stand"

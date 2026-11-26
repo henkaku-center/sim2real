@@ -1,130 +1,157 @@
 <!doctype html>
 <html lang="ja" id="root">
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>セサミの思考ログ</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#17195E">
+<title>Sesame</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&display=swap" rel="stylesheet">
 <style>
-.viz-root {
-  color-scheme: light;
-  --page: #f9f9f7; --surface-1: #fcfcfb;
-  --text-primary: #0b0b0b; --text-secondary: #52514e; --muted: #898781;
-  --grid: #e1e0d9; --axis: #c3c2b7; --ring: rgba(11,11,11,0.10);
-  --series-1: #2a78d6; --new: #eb6834; --reuse: #1baf7a; --none: #898781;
-}
-@media (prefers-color-scheme: dark) {
-  :root:where(:not([data-theme="light"])) .viz-root {
-    color-scheme: dark;
-    --page: #0d0d0d; --surface-1: #1a1a19;
-    --text-primary: #f0efec; --text-secondary: #c3c2b7; --muted: #898781;
-    --grid: #2c2c2a; --axis: #383835; --ring: rgba(255,255,255,0.10);
-    --series-1: #3987e5; --new: #d95926; --reuse: #199e70; --none: #898781;
-  }
+/* Sesame at the café: a night-indigo room, a pink talk button, pads in 3D-printer filament
+   colours. Charts sit on white cards with the validated chart neutrals. */
+:root {
+  --night: #17195E; --night-2: #23278A; --night-3: #2F35A8; --ink: #17195E;
+  --white: #FFFFFF; --mist: #C9CCF5; --pink: #FF4F9A; --pink-deep: #E0237A;
+  --f-yellow: #FFD23F; --f-mint: #3DDC97; --f-sky: #4CC9F0; --f-orange: #FF8A3D; --f-lilac: #B69CFF; --f-coral: #FF7070;
+  --ok: #3DDC97; --warn: #FFB020; --bad: #FF5A5A; --idle: #C9CCF5;
+  /* chart neutrals on white (validated reference palette) */
+  --grid: #e1e0d9; --axis: #c3c2b7; --muted: #6f6e69; --line: #2a78d6;
+  --display: "Dela Gothic One", "Hiragino Sans", "Noto Sans JP", system-ui, sans-serif;
+  --body: system-ui, -apple-system, "Hiragino Sans", "Noto Sans JP", sans-serif;
 }
 * { box-sizing: border-box }
-body { margin: 0 }
-.viz-root { background: var(--page); color: var(--text-primary); min-height: 100vh;
-  font: 15px/1.5 system-ui, -apple-system, "Hiragino Sans", sans-serif; padding: 20px 16px 60px }
-header { max-width: 760px; margin: 0 auto 18px; display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap }
-h1 { font-size: 20px; margin: 0; font-weight: 650 }
-header .sub { color: var(--text-secondary); font-size: 13px }
-header .live { margin-left: auto; color: var(--muted); font-size: 12px }
-main { max-width: 760px; margin: 0 auto }
-.card { background: var(--surface-1); border: 1px solid var(--ring); border-radius: 12px; padding: 14px 16px 12px; margin-bottom: 14px }
-.heard { display: flex; align-items: baseline; gap: 10px }
-.heard .time { color: var(--muted); font-size: 12px; font-variant-numeric: tabular-nums }
-.heard .text { font-size: 18px; font-weight: 600 }
-.heard .src { color: var(--muted); font-size: 12px }
-.steps { margin: 10px 0 0 6px; border-left: 1px solid var(--axis); padding-left: 16px }
-.step { position: relative; padding: 4px 0 8px }
-.step::before { content: ""; position: absolute; left: -21px; top: 11px; width: 9px; height: 9px; border-radius: 50%;
-  background: var(--surface-1); border: 2px solid var(--axis) }
-.step.new::before { border-color: var(--new) } .step.reuse::before { border-color: var(--reuse) }
-.label { color: var(--muted); font-size: 12px; letter-spacing: .02em }
-.label b { color: var(--text-secondary); font-weight: 600 }
-.choice { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; margin-top: 2px }
-.chip { display: inline-flex; align-items: center; gap: 6px; font-weight: 600 }
-.chip i { width: 8px; height: 8px; border-radius: 50%; display: inline-block }
-.meta { color: var(--text-secondary); font-size: 13px; font-variant-numeric: tabular-nums }
-.why { color: var(--text-secondary); margin-top: 2px }
-.why::before { content: var(--why, "理由　"); color: var(--muted); font-size: 12px }
-.about { font-weight: 600 } .name { color: var(--muted); font-size: 12px; margin-left: 6px }
-.chart { position: relative; margin-top: 6px }
+html { background: var(--night); color: var(--white); -webkit-text-size-adjust: 100% }
+body { margin: 0; font: 17px/1.55 var(--body); min-height: 100vh;
+  background: radial-gradient(120% 60% at 50% 0%, var(--night-3) 0%, var(--night) 60%) fixed }
+.wrap { max-width: 720px; margin: 0 auto; padding: 14px 16px 80px }
+button, input { font: inherit }
+:focus-visible { outline: 3px solid var(--f-yellow); outline-offset: 3px }
+
+/* top bar */
+.top { display: flex; justify-content: flex-end }
+.lang { background: transparent; color: var(--mist); border: 2px solid var(--night-3); border-radius: 999px;
+  padding: 6px 14px; font-size: 15px; cursor: pointer }
+
+/* hero: the wordmark and the talk button */
+.hero { text-align: center; padding: 6px 0 4px }
+.word { font-family: var(--display); font-weight: 400; font-size: clamp(44px, 14vw, 76px); line-height: 1; letter-spacing: .02em; margin: 4px 0 6px }
+.tag { color: var(--mist); font-size: 17px; margin: 0 0 22px }
+.mic { width: min(68vw, 260px); aspect-ratio: 1; border-radius: 50%; border: 0; cursor: pointer;
+  background: var(--pink); color: var(--white); font-family: var(--display); font-size: clamp(24px, 7.5vw, 34px);
+  line-height: 1.15; box-shadow: 0 10px 0 var(--pink-deep); transition: transform .08s, box-shadow .08s;
+  position: relative; padding: 0 18px }
+.mic:active { transform: translateY(6px); box-shadow: 0 4px 0 var(--pink-deep) }
+.mic .em { display: block; font-size: 1.6em; margin-bottom: 4px }
+.mic.on::after { content: ""; position: absolute; inset: -14px; border-radius: 50%; border: 5px solid var(--pink);
+  animation: ring 1.2s ease-out infinite }
+@keyframes ring { from { transform: scale(.92); opacity: 1 } to { transform: scale(1.18); opacity: 0 } }
+.keep { display: inline-flex; align-items: center; gap: 10px; margin-top: 22px; font-size: 17px; color: var(--mist); cursor: pointer }
+.keep input { width: 24px; height: 24px; accent-color: var(--pink) }
+.heard { font-family: var(--display); font-size: clamp(26px, 7vw, 38px); line-height: 1.25; min-height: 1.3em; margin: 18px 0 0; word-break: break-word }
+
+/* status: big enough to read across the table */
+.status { display: flex; align-items: center; gap: 14px; margin: 18px 0 6px; padding: 14px 18px; border-radius: 20px;
+  background: var(--night-2); font-size: 20px; font-weight: 700; text-align: left }
+.status .dot { flex: none; width: 18px; height: 18px; border-radius: 50%; background: var(--idle); box-shadow: 0 0 0 5px rgba(255,255,255,.08) }
+.status[data-s="ok"] .dot { background: var(--ok) } .status[data-s="warn"] .dot { background: var(--warn) }
+.status[data-s="bad"] .dot { background: var(--bad) } .status[data-s="busy"] .dot { background: var(--pink); animation: blink 1s infinite }
+@keyframes blink { 50% { opacity: .35 } }
+.status small { display: block; font-size: 16px; font-weight: 400; color: var(--mist) }
+.type { display: flex; gap: 10px; margin-top: 16px }
+.type input { flex: 1; min-width: 0; padding: 14px 16px; border-radius: 16px; border: 2px solid var(--night-3);
+  background: var(--night); color: var(--white); font-size: 17px }
+.type input::placeholder { color: var(--mist); opacity: .8 }
+.type button { padding: 14px 20px; border-radius: 16px; border: 0; background: var(--white); color: var(--ink); font-weight: 800; cursor: pointer }
+
+/* pads */
+h2 { font-family: var(--display); font-weight: 400; font-size: 28px; margin: 40px 0 6px }
+.lead { color: var(--mist); margin: 0 0 14px; font-size: 16px }
+.knobs { display: flex; flex-wrap: wrap; gap: 12px 26px; margin-bottom: 14px }
+.knob { display: flex; align-items: center; gap: 10px; font-size: 17px; font-weight: 700 }
+.knob input { width: 150px; height: 28px; accent-color: var(--f-yellow) }
+.knob output { min-width: 3em; font-variant-numeric: tabular-nums; color: var(--f-yellow) }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px }
+.pad { min-height: 92px; border: 0; border-radius: 18px; padding: 12px 14px; text-align: left; cursor: pointer;
+  color: var(--ink); font-size: 17px; font-weight: 800; line-height: 1.3; display: flex; flex-direction: column;
+  justify-content: space-between; gap: 6px; touch-action: manipulation; box-shadow: 0 6px 0 rgba(0,0,0,.28);
+  transition: transform .07s, box-shadow .07s, filter .2s }
+.pad small { font-size: 13px; font-weight: 600; opacity: .7; overflow: hidden; text-overflow: ellipsis; white-space: nowrap }
+.pad:active { transform: translateY(4px); box-shadow: 0 2px 0 rgba(0,0,0,.28) }
+.pad.hit { filter: brightness(1.25) saturate(1.2) }
+.pad.c0 { background: var(--f-yellow) } .pad.c1 { background: var(--f-mint) } .pad.c2 { background: var(--f-sky) }
+.pad.c3 { background: var(--f-orange) } .pad.c4 { background: var(--f-lilac) } .pad.c5 { background: var(--f-coral) }
+.pad.stock { background: transparent; color: var(--white); border: 2px solid var(--night-3); box-shadow: none; min-height: 72px; font-weight: 700 }
+.pad.stock.hit { background: var(--night-3) }
+.sub { font-size: 18px; font-weight: 700; margin: 26px 0 10px; color: var(--mist) }
+.empty { color: var(--mist); font-size: 17px }
+
+/* thought log: quiet white cards */
+.log-head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; flex-wrap: wrap }
+.live { color: var(--mist); font-size: 15px }
+.card { background: var(--white); color: var(--ink); border-radius: 18px; padding: 16px 18px; margin-top: 14px }
+.card .said { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap }
+.card .text { font-family: var(--display); font-size: 23px; line-height: 1.3 }
+.card .when { color: var(--muted); font-size: 14px; font-variant-numeric: tabular-nums }
+.steps { margin: 12px 0 0 6px; border-left: 3px solid #E6E7FA; padding-left: 16px }
+.step { position: relative; padding: 4px 0 10px }
+.step::before { content: ""; position: absolute; left: -24px; top: 9px; width: 13px; height: 13px; border-radius: 50%;
+  background: var(--white); border: 3px solid #B9BCEB }
+.step.new::before { border-color: var(--pink) } .step.reuse::before { border-color: #1baf7a }
+.step .what { font-size: 14px; font-weight: 800; color: #5B5FC7 }
+.step .what span { font-weight: 500; color: var(--muted); margin-left: 8px }
+.choice { font-size: 19px; font-weight: 800; margin-top: 2px }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px }
+.chip { background: #EEEFFC; border-radius: 999px; padding: 2px 10px; font-size: 14px; font-variant-numeric: tabular-nums }
+.why { margin-top: 6px; font-size: 16px; color: #33356B }
+.about { font-size: 18px; font-weight: 800 } .name { color: var(--muted); font-size: 14px; margin-left: 8px }
+.err { color: #B4232C; font-size: 15px; margin-top: 4px }
+.chart { position: relative; margin-top: 8px }
 .chart svg { display: block; width: 100%; height: auto; overflow: visible }
-.chart text { font-size: 11px; fill: var(--muted) }
-.chart .rowname { fill: var(--text-secondary); font-size: 12px }
-.tip { position: absolute; pointer-events: none; background: var(--surface-1); border: 1px solid var(--ring);
-  border-radius: 8px; padding: 6px 8px; font-size: 12px; box-shadow: 0 2px 8px rgba(0,0,0,.08); display: none;
-  white-space: nowrap; font-variant-numeric: tabular-nums; color: var(--text-primary) }
-.tip .t { color: var(--muted) }
-details.table { margin-top: 4px; font-size: 12px; color: var(--text-secondary) }
+.chart text { font-size: 12px; fill: var(--muted); font-family: var(--body) }
+.chart .rowname { fill: var(--ink); font-size: 13px; font-weight: 700 }
+.tip { position: absolute; pointer-events: none; background: var(--ink); color: var(--white); border-radius: 10px;
+  padding: 6px 9px; font-size: 13px; display: none; white-space: nowrap; font-variant-numeric: tabular-nums }
+.tip .t { color: var(--mist) }
+details.table { margin-top: 6px; font-size: 14px; color: #33356B }
 details.table summary { cursor: pointer; color: var(--muted) }
 details.table table { border-collapse: collapse; margin-top: 4px; font-variant-numeric: tabular-nums }
-details.table td, details.table th { padding: 2px 10px 2px 0; text-align: right; font-weight: 400 }
+details.table td, details.table th { padding: 2px 12px 2px 0; text-align: right; font-weight: 500 }
 details.table th:first-child, details.table td:first-child { text-align: left }
-.empty { color: var(--muted); text-align: center; padding: 40px 0 }
-.err { color: var(--text-secondary); font-size: 13px }
-.talk { max-width: 760px; margin: 0 auto 18px; background: var(--surface-1); border: 1px solid var(--ring);
-  border-radius: 16px; padding: 16px }
-.talk .row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap }
-.mic { font: inherit; font-size: 18px; font-weight: 650; padding: 14px 22px; border-radius: 999px; border: 0;
-  background: var(--series-1); color: #fff; cursor: pointer; min-width: 12em }
-.mic.on { background: var(--new) }
-.keep { color: var(--text-secondary); font-size: 14px; display: inline-flex; gap: 6px; align-items: center }
-.talk form { display: flex; gap: 8px; margin-top: 12px }
-.talk input { flex: 1; font: inherit; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--ring);
-  background: var(--page); color: var(--text-primary) }
-.talk form button { font: inherit; padding: 10px 16px; border-radius: 10px; border: 1px solid var(--ring);
-  background: var(--page); color: var(--text-primary) }
-.now { margin-top: 10px; min-height: 1.5em; font-size: 20px; font-weight: 600 }
-.hint { color: var(--muted); font-size: 13px }
-.lang { font-size: 13px; color: var(--text-secondary) } .lang a { color: inherit }
-.pads { max-width: 760px; margin: 0 auto 18px; background: var(--surface-1); border: 1px solid var(--ring);
-  border-radius: 16px; padding: 14px 16px 16px }
-.padhead { display: flex; flex-wrap: wrap; gap: 10px 18px; align-items: center }
-.padhead h2 { font-size: 16px; margin: 0; font-weight: 650 }
-.knob { display: inline-flex; align-items: center; gap: 6px; color: var(--text-secondary); font-size: 13px;
-  font-variant-numeric: tabular-nums }
-.knob input { width: 120px; accent-color: var(--series-1) } .knob output { min-width: 2.6em }
-.padlabel { color: var(--muted); font-size: 12px; margin-top: 12px }
-.pads details summary { color: var(--muted); font-size: 12px; margin-top: 12px; cursor: pointer }
-.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(128px, 1fr)); gap: 8px; margin-top: 6px }
-.pad { min-height: 64px; border-radius: 12px; border: 1px solid var(--ring); background: var(--page);
-  color: var(--text-primary); font: inherit; font-size: 14px; font-weight: 600; line-height: 1.3; padding: 8px 10px;
-  text-align: left; display: flex; flex-direction: column; justify-content: space-between; gap: 4px; cursor: pointer;
-  touch-action: manipulation; transition: background .25s, transform .08s }
-.pad small { color: var(--muted); font-weight: 400; font-size: 11px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap }
-.pad.learned { border-left: 4px solid var(--reuse) }
-.pad:active { transform: scale(.97) } .pad.hit { background: var(--series-1); color: #fff } .pad.hit small { color: #fff }
+@media (prefers-reduced-motion: reduce) { .mic.on::after, .status[data-s="busy"] .dot { animation: none } }
 </style>
 <body>
-<div class="viz-root">
-<section class="talk" data-t-aria="talk">
-  <div class="row">
+<div class="wrap">
+  <div class="top"><button class="lang" id="other" type="button"></button></div>
+
+  <section class="hero" data-t-aria="talk">
+    <h1 class="word">SESAME</h1>
+    <p class="tag" data-t="tag"></p>
     <button class="mic" id="mic" type="button"></button>
-    <button class="mic" id="stand" type="button" style="min-width:0;background:var(--page);color:var(--text-primary);border:1px solid var(--ring)"></button>
-    <label class="keep"><input type="checkbox" id="keep"> <span data-t="keep"></span></label>
-    <button class="lang" id="other" type="button" style="margin-left:auto;border:1px solid var(--ring);background:var(--page);color:var(--text-secondary);border-radius:999px;padding:6px 12px;font:inherit;font-size:13px;cursor:pointer"></button>
-  </div>
-  <div class="now" id="now"></div>
-  <div class="hint" id="hint" data-t="hint"></div>
-  <form id="say"><input id="text" maxlength="200" autocomplete="off" data-t-placeholder="placeholder"><button data-t="send"></button></form>
-</section>
-<section class="pads" data-t-aria="padsTitle">
-  <div class="padhead">
+    <div><label class="keep"><input type="checkbox" id="keep"> <span data-t="keep"></span></label></div>
+    <p class="heard" id="now" aria-live="polite"></p>
+    <div class="status" id="status" data-s="idle" aria-live="polite"><span class="dot"></span>
+      <div><span id="statusText"></span><small id="hint"></small></div></div>
+    <form class="type" id="say"><input id="text" maxlength="200" autocomplete="off" data-t-placeholder="placeholder"><button data-t="send"></button></form>
+  </section>
+
+  <section class="pads" data-t-aria="padsTitle">
     <h2 data-t="padsTitle"></h2>
-    <label class="knob"><span data-t="speedLbl"></span><input type="range" id="tempo" min="0.5" max="2" step="0.1" value="1"><output id="tempoV">×1</output></label>
-    <label class="knob"><span data-t="sizeLbl"></span><input type="range" id="size" min="0" max="1" step="0.1" value="0.6"><output id="sizeV">0.6</output></label>
-  </div>
-  <div class="hint" data-t="padNote"></div>
-  <div class="padlabel" data-t="learnedLbl"></div><div class="grid" id="learned"></div>
-  <details open><summary data-t="stockLbl"></summary><div class="grid" id="stock"></div></details>
-</section>
-<header>
-  <h1 data-t="title"></h1>
-  <span class="sub" data-t="flow"></span>
-  <span class="live" id="live"></span>
-</header>
-<main id="list"></main>
+    <p class="lead" data-t="padNote"></p>
+    <div class="knobs">
+      <label class="knob"><span data-t="speedLbl"></span><input type="range" id="tempo" min="0.5" max="2" step="0.1" value="1"><output id="tempoV">×1</output></label>
+      <label class="knob"><span data-t="sizeLbl"></span><input type="range" id="size" min="0" max="1" step="0.1" value="0.6"><output id="sizeV">0.6</output></label>
+    </div>
+    <div class="grid" id="learned"></div>
+    <div class="sub" data-t="stockLbl"></div>
+    <div class="grid" id="stock"></div>
+  </section>
+
+  <section>
+    <div class="log-head"><h2 data-t="title"></h2><span class="live" id="live"></span></div>
+    <p class="lead" data-t="flow"></p>
+    <main id="list"></main>
+  </section>
 </div>
 <script>
 // Mounted under a path (tailscale serve /sesame): relative URLs need the trailing slash.
@@ -140,63 +167,70 @@ const LANG = ['en', 'ja'].includes(asked) ? asked : ['en', 'ja'].includes(saved)
   : (navigator.language || 'ja').startsWith('ja') ? 'ja' : 'en';
 const STR = {
   ja: {
-    talk: '話しかける', mic: '🎤 話しかける', stand: '🧍 立つ', standing: '立ちます', button: 'ボタン',
-    padsTitle: '🎛 パッド', speedLbl: '速さ', sizeLbl: '大きさ', learnedLbl: 'セサミが作った動き（新しい順）',
-    stockLbl: '内蔵の動き', padNote: '押すとすぐ動きます。速さと大きさは、セサミが作った動きにかかります。',
-    noLearned: 'まだありません。話しかけると増えていきます。', playing: n => `${n}！`, pad: 'パッド', listening: '● 聞いています', keep: 'ずっと聞く', other: 'English',
-    hint: 'ボタンを押してセサミに話しかけてね。言葉の気持ちに合う動きを考えて、体で答えます。',
-    placeholder: '文字でも話しかけられます', send: '送る', title: 'セサミの思考ログ',
-    flow: '聞こえたこと → 反射の判断 → 振付 → 動き', connecting: '接続中…', updated: '更新 ',
-    offline: 'mind に接続できません', empty: 'まだ何も聞いていません。話しかけてみてください。',
-    sent: 'とどいたよ。考え中…', slow: '通信が遅いようです。届いているかもしれないので、少し待ってみてね', failed: 'うまく送れませんでした', unreachable: 'セサミの頭（PC）につながりません',
-    wait: s => `ちょっと待ってね（あと ${s} 秒）`, done: '今日はたくさん話したので、セサミはおやすみです。また明日！',
-    https: '声で話すには https のアドレスで開いてください。文字なら送れます。',
-    nosr: 'このブラウザは声の聞き取りに対応していません。文字で話しかけてね。',
-    allow: 'マイクを許可してください', misheard: e => `聞き取れませんでした（${e}）`, hearing: '聞いています…',
+    talk: '話しかける', mic: '話しかける', listening: '聞いてるよ', keep: 'ずっと聞く', other: 'English',
+    tag: '話しかけると、体で答えるロボット', placeholder: '文字でも話しかけられます', send: '送る',
+    title: 'セサミの頭の中', flow: '聞こえたことを、どう考えて、どう動いたか', connecting: '接続中…', updated: '更新 ',
+    empty: 'まだ何も聞いていません。話しかけてみてください。',
+    st: {ok: '元気です', idle: '待っています', dry: '試しモード', offline: 'ロボットにつながりません', resetting: '電池が少ないかも',
+      error: 'うまく動けませんでした', mind: 'セサミの頭（PC）につながりません', listening: '聞いています…', thinking: '考え中…',
+      busy: 'ちょっと待ってね', done: '今日はおやすみ'},
+    sub: {ok: 'さっき: ', idle: 'ボタンを押して話しかけてね', dry: 'ロボットには送っていません', offline: '電源と Wi-Fi を確認してください',
+      resetting: '動くたびに再起動しています。バッテリーを充電してください', error: 'もう一度試してみてね', mind: 'Mac と mind が動いているか確認してください',
+      listening: 'しゃべり終わると届きます', thinking: '動きを考えています', busy: s => `あと ${s} 秒`, done: 'たくさん話したので、また明日！'},
+    slow: '通信が遅いようです。届いているかもしれません',
+    https: '声で話すには https のアドレスで開いてください（文字なら送れます）',
+    nosr: 'このブラウザは声を聞き取れません。文字で話しかけてね',
+    allow: 'マイクを許可してください', misheard: e => `聞き取れませんでした（${e}）`,
     q: t => '「' + t + '」', noise: '（物音）', reflex: '反射', design: '振付', motion: '動き',
-    candidates: '候補', strength: '強さ', speed: '速さ', addressed: '話しかけ', why: '理由',
-    none: '何もしない', made: '新しく作った', stock: '内蔵の動き', reuse: '覚えた動きを再生',
+    candidates: n => `候補 ${n}`, strength: n => `大きさ ${n}`, speed: n => `速さ ×${n}`, addressed: n => `話しかけ ${n}%`,
+    why: '理由', none: '何もしない', made: '新しく作った', stock: '内蔵の動き', reuse: '覚えた動きを再生',
     nochart: 'ロボットに入っている動き（グラフなし）', table: '数値で見る', keyend: 'キーの終わり', ease: '移り方',
     chart: '動きの時間変化', src: {chat: 'チャット', voice: '声', radio: 'ラジオ', sound: '物音', button: 'ボタン', pad: 'パッド'},
+    padsTitle: 'パッド', speedLbl: '速さ', sizeLbl: '大きさ', stockLbl: 'ロボットに最初から入っている動き',
+    padNote: '叩くとすぐ動きます。色つきはセサミが自分で作った動き（新しい順）。速さと大きさは色つきの動きにかかります。',
+    noLearned: 'まだありません。話しかけると増えていきます。', playing: n => `${n}！`,
     EASE: {linear: '等速', in: '溜め', out: '余韻', inout: 'なめらか'},
     AXIS: {surge: '前後振り', spread: '開き', yaw: 'ひねり', stride: '歩幅', height: '高さ', pitch: '前上がり', roll: '横傾き', lift: '足上げ'},
   },
   en: {
-    talk: 'Talk', mic: '🎤 Talk to Sesame', stand: '🧍 Stand', standing: 'Standing up', button: 'button',
-    padsTitle: '🎛 Pads', speedLbl: 'Speed', sizeLbl: 'Size', learnedLbl: 'Made by Sesame (newest first)',
-    stockLbl: 'Built-in', padNote: 'Tap to play right away. Speed and size apply to movements Sesame made.',
-    noLearned: 'None yet. Talk to Sesame and it will make some.', playing: n => `${n}!`, pad: 'pad', listening: '● Listening', keep: 'Keep listening', other: '日本語',
-    hint: 'Press the button and talk to Sesame. It thinks of a movement that fits what you said and answers with its body.',
-    placeholder: 'Or type a message', send: 'Send', title: 'Sesame’s thoughts',
-    flow: 'what it heard → reflex → choreography → movement', connecting: 'Connecting…', updated: 'Updated ',
-    offline: 'Cannot reach the mind', empty: 'Nothing heard yet. Say something!',
-    sent: 'Got it. Thinking…', slow: 'The connection is slow. It may have arrived; give it a moment.', failed: 'Could not send', unreachable: 'Cannot reach Sesame’s brain (the PC)',
-    wait: s => `Just a moment (${s} s)`, done: 'Sesame has talked a lot today and is resting. See you tomorrow!',
-    https: 'Open the https address to use your voice. Typing works here.',
-    nosr: 'This browser cannot listen to speech. Please type instead.',
-    allow: 'Please allow the microphone', misheard: e => `Didn’t catch that (${e})`, hearing: 'Listening…',
+    talk: 'Talk', mic: 'Talk to me', listening: 'Listening', keep: 'Keep listening', other: '日本語',
+    tag: 'A robot that answers with its body', placeholder: 'Or type a message', send: 'Send',
+    title: 'Inside Sesame’s head', flow: 'What it heard, how it thought, how it moved', connecting: 'Connecting…', updated: 'Updated ',
+    empty: 'Nothing heard yet. Say something!',
+    st: {ok: 'Feeling fine', idle: 'Waiting for you', dry: 'Practice mode', offline: 'Can’t reach the robot', resetting: 'Battery may be low',
+      error: 'Couldn’t move', mind: 'Can’t reach Sesame’s brain (the PC)', listening: 'Listening…', thinking: 'Thinking…',
+      busy: 'Just a moment', done: 'Resting for today'},
+    sub: {ok: 'Just now: ', idle: 'Press the button and talk', dry: 'Not sending to the robot', offline: 'Check its power and Wi-Fi',
+      resetting: 'It restarts whenever it moves. Charge the battery', error: 'Give it another try', mind: 'Check that the Mac and the mind are running',
+      listening: 'It goes through when you stop talking', thinking: 'Working out a movement', busy: s => `${s} s`, done: 'Lots of talking today. See you tomorrow!'},
+    slow: 'The connection is slow. It may have arrived',
+    https: 'Open the https address to use your voice (typing works here)',
+    nosr: 'This browser can’t listen to speech. Please type instead',
+    allow: 'Please allow the microphone', misheard: e => `Didn’t catch that (${e})`,
     q: t => '“' + t + '”', noise: '(a sound)', reflex: 'Reflex', design: 'Choreography', motion: 'Movement',
-    candidates: 'choices', strength: 'size', speed: 'speed', addressed: 'addressed', why: 'Why',
-    none: 'Does nothing', made: 'Made a new movement', stock: 'Built-in movement', reuse: 'Replays a learned movement',
+    candidates: n => `${n} choices`, strength: n => `size ${n}`, speed: n => `speed ×${n}`, addressed: n => `addressed ${n}%`,
+    why: 'Why', none: 'Does nothing', made: 'Made a new movement', stock: 'Built-in movement', reuse: 'Replays a learned movement',
     nochart: 'Built into the robot (no chart)', table: 'Show numbers', keyend: 'Key ends', ease: 'Ease',
     chart: 'Movement over time', src: {chat: 'chat', voice: 'voice', radio: 'radio', sound: 'sound', button: 'button', pad: 'pad'},
+    padsTitle: 'Pads', speedLbl: 'Speed', sizeLbl: 'Size', stockLbl: 'Built into the robot',
+    padNote: 'Tap to play right away. Coloured pads are movements Sesame made itself, newest first. Speed and size apply to those.',
+    noLearned: 'None yet. Talk to Sesame and it will make some.', playing: n => `${n}!`,
     EASE: {linear: 'steady', in: 'wind-up', out: 'settle', inout: 'smooth'},
     AXIS: {surge: 'sweep', spread: 'spread', yaw: 'twist', stride: 'stride', height: 'height', pitch: 'nose up', roll: 'tilt', lift: 'paw lift'},
   },
 }[LANG];
-document.getElementById('root').lang = LANG;
-document.title = STR.title;
+const $ = id => document.getElementById(id);
+$('root').lang = LANG;
 document.querySelectorAll('[data-t]').forEach(el => el.textContent = STR[el.dataset.t]);
 document.querySelectorAll('[data-t-placeholder]').forEach(el => el.placeholder = STR[el.dataset.tPlaceholder]);
 document.querySelectorAll('[data-t-aria]').forEach(el => el.setAttribute('aria-label', STR[el.dataset.tAria]));
-document.getElementById('other').textContent = STR.other;
-document.getElementById('other').onclick = () => {
+$('other').textContent = STR.other;
+$('other').onclick = () => {
   try { localStorage.setItem('sesame-lang', LANG === 'ja' ? 'en' : 'ja') } catch (e) {}
   location.replace(location.pathname);  // same URL, without ?lang
 };
-document.getElementById('live').textContent = STR.connecting;
-document.getElementById('list').innerHTML = `<p class="empty">${STR.empty}</p>`;
-document.documentElement.style.setProperty('--why', `"${STR.why}　"`);
+$('live').textContent = STR.connecting;
+$('list').innerHTML = `<p class="empty">${STR.empty}</p>`;
 
 // Units of the motion-space axes (manifest/motion_space.yaml); joints are in degrees.
 const UNIT = {surge: '°', spread: '°', yaw: '°', stride: '°', height: 'mm', pitch: '°', roll: '°', lift: 'mm'};
@@ -205,24 +239,42 @@ const label = n => STR.AXIS[n] || n, unit = n => UNIT[n] || '°';
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'}[c]));
 const fmt = (x, d = 1) => (Math.round(x * 10 ** d) / 10 ** d).toString();
 
+// Status line: one place that says, in big type, what Sesame is doing and what to do about it.
+// Moments (listening, thinking, a wait) show for a while; otherwise the robot's health shows.
+const MOOD = {ok: 'ok', idle: 'idle', dry: 'idle', offline: 'bad', resetting: 'warn', error: 'warn', mind: 'bad',
+  listening: 'busy', thinking: 'busy', busy: 'warn', done: 'warn'};
+let health = {robot: 'idle', doing: ''}, moment = null, momentUntil = 0;
+const aboutOf = {};
+function status(kind, sub, ms = 4000) { moment = {kind, sub}; momentUntil = Date.now() + ms; drawStatus() }
+function drawStatus() {
+  const m = moment && Date.now() < momentUntil ? moment : null;
+  const kind = m ? m.kind : health.robot;
+  let sub = m && m.sub != null ? m.sub : STR.sub[kind];
+  if (!m && kind === 'ok') sub = health.doing && health.doing !== 'none' ? STR.sub.ok + (aboutOf[health.doing] || health.doing) : STR.sub.idle;
+  $('status').dataset.s = MOOD[kind] || 'idle';
+  $('statusText').textContent = STR.st[kind] || kind;
+  $('hint').textContent = typeof sub === 'string' ? sub : '';
+}
+setInterval(drawStatus, 1000);
+
 function kindOf(e) {
-  if (e.did === 'none' || !e.did) return ['none', STR.none, 'var(--none)'];
-  if (e.design) return ['new', STR.made, 'var(--new)'];
-  if (e.motion && e.motion.kind === 'firmware') return ['stock', STR.stock, 'var(--none)'];
-  return ['reuse', STR.reuse, 'var(--reuse)'];
+  if (e.did === 'none' || !e.did) return ['none', STR.none];
+  if (e.design) return ['new', STR.made];
+  if (e.motion && e.motion.kind === 'firmware') return ['stock', STR.stock];
+  return ['reuse', STR.reuse];
 }
 
 // Small multiples: one row per axis on a shared time scale; each row has its own scale and
 // unit, so mixed units never share a y-axis. Key ends are hairlines labelled with their ease.
+const G = {W: 680, L: 128, R: 12, top: 20, H: 46, gap: 10};
 function chart(c, id) {
-  const names = Object.keys(c.series), W = 680, L = 128, R = 12, top = 20, H = 46, gap = 10;
+  const names = Object.keys(c.series), {W, L, R, top, H, gap} = G;
   const T = c.t[c.t.length - 1] || 1, x = t => L + (W - L - R) * t / T;
   const height = top + names.length * (H + gap) + 18;
   let svg = `<svg viewBox="0 0 ${W} ${height}" role="img" aria-label="${STR.chart}">`;
   let start = 0;
   for (const k of c.keys) {  // ease labels centred on each key's span
-    const mid = x((start + k.t) / 2);
-    svg += `<text x="${mid}" y="12" text-anchor="middle">${EASE[k.ease] || k.ease}</text>`;
+    svg += `<text x="${x((start + k.t) / 2)}" y="12" text-anchor="middle">${EASE[k.ease] || k.ease}</text>`;
     svg += `<line x1="${x(k.t)}" x2="${x(k.t)}" y1="16" y2="${height - 18}" stroke="var(--grid)" stroke-width="1"/>`;
     start = k.t;
   }
@@ -232,13 +284,13 @@ function chart(c, id) {
     if (hi - lo < 1e-6) { lo -= 1; hi += 1 }
     const y = val => y0 + H - (val - lo) / (hi - lo) * H;
     svg += `<text class="rowname" x="0" y="${y0 + H / 2 - 2}">${esc(label(n))}</text>`;
-    svg += `<text x="0" y="${y0 + H / 2 + 13}">${esc(n)} ${unit(n)}</text>`;
+    svg += `<text x="0" y="${y0 + H / 2 + 14}">${esc(n)} ${unit(n)}</text>`;
     svg += `<line x1="${L}" x2="${W - R}" y1="${y(0)}" y2="${y(0)}" stroke="var(--axis)" stroke-width="1"/>`;
     svg += `<text x="${L - 6}" y="${y0 + 9}" text-anchor="end">${fmt(hi)}</text>`;
     svg += `<text x="${L - 6}" y="${y0 + H}" text-anchor="end">${fmt(lo)}</text>`;
     const pts = v.map((val, j) => `${x(c.t[j]).toFixed(1)},${y(val).toFixed(1)}`).join(' ');
-    svg += `<polyline points="${pts}" fill="none" stroke="var(--series-1)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>`;
-    svg += `<circle class="dot" data-row="${i}" r="4" cx="0" cy="0" visibility="hidden" fill="var(--series-1)" stroke="var(--surface-1)" stroke-width="2"/>`;
+    svg += `<polyline points="${pts}" fill="none" stroke="var(--line)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>`;
+    svg += `<circle class="dot" r="4" cx="0" cy="0" visibility="hidden" fill="var(--line)" stroke="#fff" stroke-width="2"/>`;
   });
   svg += `<text x="${L}" y="${height - 2}">0 s</text><text x="${W - R}" y="${height - 2}" text-anchor="end">${fmt(T, 2)} s</text>`;
   svg += `<line class="cross" visibility="hidden" x1="0" x2="0" y1="16" y2="${height - 18}" stroke="var(--axis)" stroke-width="1"/>`;
@@ -253,7 +305,7 @@ function chart(c, id) {
 
 function hover(el, c) {
   const svg = el.querySelector('svg'), tip = el.querySelector('.tip'), names = Object.keys(c.series);
-  const W = 680, L = 128, R = 12, top = 20, H = 46, gap = 10, T = c.t[c.t.length - 1] || 1;
+  const {W, L, R, top, H, gap} = G, T = c.t[c.t.length - 1] || 1;
   const dots = [...svg.querySelectorAll('.dot')], cross = svg.querySelector('.cross');
   const move = ev => {
     const p = svg.createSVGPoint(); p.x = ev.clientX; p.y = ev.clientY;
@@ -278,27 +330,27 @@ function hover(el, c) {
 }
 
 function card(e, i) {
-  const [k, said, color] = kindOf(e), time = new Date(e.t * 1000).toLocaleTimeString();
-  const tempo = e.tempo && e.tempo !== 1 ? ` · ${STR.speed} ×${fmt(e.tempo)}` : '';
-  const addressed = e.addressed != null ? ` · ${STR.addressed} ${Math.round(e.addressed * 100)}%` : '';
-  const offered = e.considered ? ` · ${STR.candidates} ${e.considered}` : '';
+  const time = new Date(e.t * 1000).toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
+  const m = e.motion || {};
+  const chips = [STR.strength(fmt(e.intensity, 2))];
+  if (e.tempo && e.tempo !== 1) chips.push(STR.speed(fmt(e.tempo)));
   if (e.source === 'button' || e.source === 'pad') {
-    const m = e.motion || {}, what = e.source === 'button' ? STR.stand : '🎛 ' + esc(m.about || e.did);
-    const tempo = e.tempo && e.tempo !== 1 ? ` · ${STR.speed} ×${fmt(e.tempo)}` : '';
-    return `<article class="card"><div class="heard"><span class="time">${time}</span><span class="text">${what}</span>
-      <span class="src">${STR.src[e.source]}</span></div>${m.curve ? `<div class="meta">${esc(e.did)} · ${STR.strength} ${fmt(e.intensity, 2)}${tempo}</div>` + chart(m.curve, 'c' + i) : ''}</article>`;
+    return `<article class="card"><div class="said"><span class="text">${esc(m.about || e.did)}</span>
+      <span class="when">${time}, ${STR.src[e.source]}</span></div>
+      ${m.curve ? `<div class="chips">${chips.map(c => `<span class="chip">${c}</span>`).join('')}</div>` + chart(m.curve, 'c' + i) : ''}</article>`;
   }
-  let html = `<article class="card"><div class="heard"><span class="time">${time}</span>
-    <span class="text">${e.text ? STR.q(esc(e.text)) : STR.noise}</span><span class="src">${STR.src[e.source] || esc(e.source)}</span></div>
-    <div class="steps"><div class="step ${k}"><div class="label"><b>${STR.reflex}</b> ${esc(e.by)} · ${fmt(e.reflex_ms / 1000)} s${offered}</div>
-    <div class="choice"><span class="chip"><i style="background:${color}"></i>${said}</span>
-    <span class="meta">${STR.strength} ${fmt(e.intensity, 2)}${tempo}${addressed}</span></div>
-    ${e.why ? `<div class="why">${esc(e.why)}</div>` : ''}${e.note && !e.design ? `<div class="err">${esc(e.note)}</div>` : ''}</div>`;
-  if (e.design) html += `<div class="step new"><div class="label"><b>${STR.design}</b> ${esc(e.design.by)} · ${fmt(e.design.ms / 1000)} s</div>
-    ${e.design.why ? `<div class="why">${esc(e.design.why)}</div>` : ''}</div>`;
+  const [k, said] = kindOf(e);
+  if (e.addressed != null) chips.push(STR.addressed(Math.round(e.addressed * 100)));
+  let html = `<article class="card"><div class="said"><span class="text">${e.text ? STR.q(esc(e.text)) : STR.noise}</span>
+    <span class="when">${time}, ${STR.src[e.source] || esc(e.source)}</span></div><div class="steps">
+    <div class="step ${k}"><div class="what">${STR.reflex}<span>${esc(e.by)} ${fmt(e.reflex_ms / 1000)} s${e.considered ? ', ' + STR.candidates(e.considered) : ''}</span></div>
+    <div class="choice">${said}</div><div class="chips">${chips.map(c => `<span class="chip">${c}</span>`).join('')}</div>
+    ${e.why ? `<div class="why">${STR.why}: ${esc(e.why)}</div>` : ''}${e.note && !e.design ? `<div class="err">${esc(e.note)}</div>` : ''}</div>`;
+  if (e.design) html += `<div class="step new"><div class="what">${STR.design}<span>${esc(e.design.by)} ${fmt(e.design.ms / 1000)} s</span></div>
+    ${e.design.why ? `<div class="why">${STR.why}: ${esc(e.design.why)}</div>` : ''}</div>`;
   if (e.motion) {
-    html += `<div class="step ${k}"><div class="label"><b>${STR.motion}</b></div><div><span class="about">${esc(e.motion.about)}</span><span class="name">${esc(e.motion.name)}</span></div>`;
-    html += e.motion.curve ? chart(e.motion.curve, 'c' + i) : `<div class="meta">${STR.nochart}</div>`;
+    html += `<div class="step ${k}"><div class="what">${STR.motion}</div><div><span class="about">${esc(m.about)}</span><span class="name">${esc(m.name)}</span></div>`;
+    html += m.curve ? chart(m.curve, 'c' + i) : `<div class="why">${STR.nochart}</div>`;
     html += `</div>`;
   }
   return html + `</div></article>`;
@@ -312,26 +364,26 @@ async function refresh() {
   busy = true;
   try {
     const v = await (await fetch('latest', {signal: AbortSignal.timeout(8000)})).json();
-    document.getElementById('live').textContent = STR.updated + new Date().toLocaleTimeString();
+    health = {robot: v.robot || 'idle', doing: v.doing || ''}; drawStatus();
+    $('live').textContent = STR.updated + new Date().toLocaleTimeString([], {hour: '2-digit', minute: '2-digit', second: '2-digit'});
     const key = v.n + ':' + v.t;
     if (key === shown) return;
     const list = await (await fetch('trace', {signal: AbortSignal.timeout(20000)})).json();
     shown = key;
     loadPads().catch(() => {});
     const items = list.slice().reverse();
-    const main = document.getElementById('list');
-    main.innerHTML = items.length ? items.map(card).join('') : `<p class="empty">${STR.empty}</p>`;
-    items.forEach((e, i) => { if (e.motion && e.motion.curve) hover(document.getElementById('c' + i), e.motion.curve) });
+    $('list').innerHTML = items.length ? items.map(card).join('') : `<p class="empty">${STR.empty}</p>`;
+    items.forEach((e, i) => { if (e.motion && e.motion.curve) hover($('c' + i), e.motion.curve) });
+    if (moment && moment.kind === 'thinking') momentUntil = 0;  // the answer arrived
   } catch (err) {
-    document.getElementById('live').textContent = STR.offline;
+    health = {robot: 'mind', doing: ''}; drawStatus();
   } finally { busy = false }
 }
 refresh(); setInterval(refresh, 2000);
 
 // Talking: the browser's speech recognition (needs HTTPS or localhost) turns speech into
 // text; the text goes to the mind like a chat line. Typing works everywhere.
-const $ = id => document.getElementById(id);
-const now = $('now'), hint = $('hint'), mic = $('mic'), keep = $('keep');
+const now = $('now'), mic = $('mic'), keep = $('keep');
 async function send(text) {
   text = text.trim(); if (!text) return;
   now.textContent = STR.q(text);
@@ -339,52 +391,18 @@ async function send(text) {
     const r = await fetch('say', {method: 'POST', body: text, signal: AbortSignal.timeout(15000)});
     if (r.status === 429) {
       const j = await r.json();
-      hint.textContent = j.done_for_today ? STR.done : STR.wait(Math.ceil(j.wait_s));
-      return;
+      return j.done_for_today ? status('done', null, 8000) : status('busy', STR.sub.busy(Math.ceil(j.wait_s)), 3000);
     }
-    hint.textContent = r.ok ? STR.sent : STR.failed;
-    shown = ''; setTimeout(refresh, 1500); setTimeout(refresh, 4000);
-  } catch (e) { hint.textContent = e.name === 'TimeoutError' ? STR.slow : STR.unreachable }
+    if (!r.ok) return status('error', null);
+    status('thinking', null, 20000); shown = ''; setTimeout(refresh, 1500); setTimeout(refresh, 4000);
+  } catch (e) { status('mind', e.name === 'TimeoutError' ? STR.slow : null, 6000) }
 }
-// Pads: every motion the robot knows, played at once (no model call), like a DJ's pads.
-const tempoIn = $('tempo'), sizeIn = $('size');
-const knobs = () => { $('tempoV').textContent = '×' + fmt(+tempoIn.value); $('sizeV').textContent = fmt(+sizeIn.value) };
-tempoIn.oninput = sizeIn.oninput = knobs; knobs();
-let padKey = '';
-async function loadPads() {
-  const list = await (await fetch('motions', {signal: AbortSignal.timeout(15000)})).json();
-  const key = list.map(m => m.name).join(',');
-  if (key === padKey) return;
-  padKey = key;
-  const pad = m => `<button class="pad${m.stock ? '' : ' learned'}" type="button" data-name="${esc(m.name)}">
-    ${esc(m.stock && LANG !== 'ja' ? m.name : m.about)}<small>${esc(m.name)}</small></button>`;
-  const learned = list.filter(m => !m.stock);
-  $('learned').innerHTML = learned.length ? learned.map(pad).join('') : `<p class="hint">${STR.noLearned}</p>`;
-  $('stock').innerHTML = list.filter(m => m.stock).map(pad).join('');
-}
-document.querySelector('.pads').addEventListener('click', async ev => {
-  const b = ev.target.closest('.pad'); if (!b) return;
-  b.classList.add('hit'); setTimeout(() => b.classList.remove('hit'), 350);
-  try {
-    const r = await fetch('play', {method: 'POST', signal: AbortSignal.timeout(15000),
-      body: JSON.stringify({name: b.dataset.name, tempo: +tempoIn.value, intensity: +sizeIn.value})});
-    if (r.ok) { hint.textContent = STR.playing(b.firstChild.textContent.trim()); shown = ''; setTimeout(refresh, 800) }
-  } catch (e) { hint.textContent = e.name === 'TimeoutError' ? STR.slow : STR.unreachable }
-});
-loadPads().catch(() => {});
-$('stand').textContent = STR.stand;
-$('stand').onclick = async () => {
-  try {
-    const r = await fetch('stand', {method: 'POST', signal: AbortSignal.timeout(15000)});
-    if (r.ok) { hint.textContent = STR.standing; shown = ''; setTimeout(refresh, 800) }
-  } catch (e) { hint.textContent = e.name === 'TimeoutError' ? STR.slow : STR.unreachable }
-};
 $('say').onsubmit = e => { e.preventDefault(); send($('text').value); $('text').value = '' };
 const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
 let rec = null, listening = false;
 if (!SR || !window.isSecureContext) {
-  mic.hidden = true; keep.parentElement.hidden = true;
-  hint.textContent = SR ? STR.https : STR.nosr;
+  mic.disabled = true; mic.style.opacity = .45; keep.parentElement.hidden = true;
+  $('text').placeholder = SR ? STR.https : STR.nosr;
 }
 function listen() {
   rec = new SR(); rec.lang = LANG === 'ja' ? 'ja-JP' : 'en-US'; rec.interimResults = true; rec.continuous = false;
@@ -393,15 +411,49 @@ function listen() {
     now.textContent = STR.q(t);
     if (r.isFinal) send(t);
   };
-  rec.onerror = e => { hint.textContent = e.error === 'not-allowed' ? STR.allow : STR.misheard(e.error) };
+  rec.onerror = e => status('error', e.error === 'not-allowed' ? STR.allow : STR.misheard(e.error), 5000);
   rec.onend = () => { listening = false; draw(); if (keep.checked) setTimeout(() => { if (keep.checked && !listening) start() }, 400) };
-  rec.start(); listening = true; draw(); hint.textContent = STR.hearing;
+  rec.start(); listening = true; draw(); status('listening', null, 8000);
 }
 function start() { try { listen() } catch (e) { listening = false; draw() } }
-function draw() { mic.classList.toggle('on', listening); mic.textContent = listening ? STR.listening : STR.mic }
+function draw() {
+  mic.classList.toggle('on', listening);
+  mic.innerHTML = `<span class="em" aria-hidden="true">${listening ? '👂' : '🎤'}</span>${listening ? STR.listening : STR.mic}`;
+}
 draw();
 mic.onclick = () => { if (listening) { keep.checked = false; rec.stop() } else start() };
 keep.onchange = () => { if (keep.checked && !listening) start() };
+
+// Pads: every motion the robot knows, played at once (no model call), like a DJ's pads.
+// A pad keeps its colour (from its name) wherever it moves in the list.
+const tempoIn = $('tempo'), sizeIn = $('size');
+const knobs = () => { $('tempoV').textContent = '×' + fmt(+tempoIn.value); $('sizeV').textContent = fmt(+sizeIn.value) };
+tempoIn.oninput = sizeIn.oninput = knobs; knobs();
+const hue = name => [...name].reduce((h, ch) => (h * 31 + ch.charCodeAt(0)) >>> 0, 7) % 6;
+let padKey = '';
+async function loadPads() {
+  const list = await (await fetch('motions', {signal: AbortSignal.timeout(15000)})).json();
+  list.forEach(m => aboutOf[m.name] = m.stock && LANG !== 'ja' ? m.name : m.about);
+  const key = list.map(m => m.name).join(',');
+  if (key === padKey) return;
+  padKey = key;
+  const pad = m => `<button class="pad ${m.stock ? 'stock' : 'c' + hue(m.name)}" type="button" data-name="${esc(m.name)}">
+    ${esc(aboutOf[m.name])}<small>${esc(m.name)}</small></button>`;
+  const learned = list.filter(m => !m.stock);
+  $('learned').innerHTML = learned.length ? learned.map(pad).join('') : `<p class="empty">${STR.noLearned}</p>`;
+  $('stock').innerHTML = list.filter(m => m.stock).map(pad).join('');
+  drawStatus();
+}
+document.querySelector('.pads').addEventListener('click', async ev => {
+  const b = ev.target.closest('.pad'); if (!b) return;
+  b.classList.add('hit'); setTimeout(() => b.classList.remove('hit'), 350);
+  try {
+    const r = await fetch('play', {method: 'POST', signal: AbortSignal.timeout(15000),
+      body: JSON.stringify({name: b.dataset.name, tempo: +tempoIn.value, intensity: +sizeIn.value})});
+    if (r.ok) { now.textContent = STR.playing(aboutOf[b.dataset.name] || b.dataset.name); shown = ''; setTimeout(refresh, 800) }
+  } catch (e) { status('mind', e.name === 'TimeoutError' ? STR.slow : null, 6000) }
+});
+loadPads().catch(() => {});
 </script>
 </body>
 </html>
