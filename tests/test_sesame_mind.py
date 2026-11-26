@@ -303,13 +303,17 @@ def test_local_brain_and_llm_reflex():
 
     def post(body):
         sent.append(body)
-        return {"choices": [{"message": {"content": 'Sure! {"action": "wave", "intensity": 2, "addressed": 0.7}'}}]}
+        return {"choices": [{"message": {"content": 'Sure! {"action": "wave_2", "intensity": -1, "addressed": 0.7}'}}]}
 
     brain = sm.LocalBrain("http://localhost:8080/v1/", "tiny", post=post)
-    d = sm.LLMReflex(brain).decide(sm.Moment("chat", "手を振って"), sm.Library())
-    assert (d.action, d.intensity, d.addressed, d.by) == ("wave", 1.0, 0.7, "llm:local")
+    lib = sm.Library()
+    lib.add("wave", "前足をふりふり", {"kind": "keys", "base": "stand", "keys": [{"ms": 300, "angles": []}]})
+    d = sm.LLMReflex(brain).decide(sm.Moment("chat", "手を振って"), lib)
+    assert (d.action, d.intensity, d.addressed, d.by) == ("wave_2", 0.0, 0.7, "llm:local")  # stock wave is hidden
     rf = sent[0]["response_format"]["json_schema"]
-    assert sent[0]["model"] == "tiny" and sm.NEW in rf["schema"]["properties"]["action"]["enum"]
+    assert sent[0]["model"] == "tiny" and rf["schema"]["properties"]["action"]["enum"] == ["wave_2", sm.NEW, sm.NONE]
+    sm.LLMReflex(brain, use_stock=True).decide(sm.Moment("chat", "x"), lib)
+    assert "dance" in sent[-1]["response_format"]["json_schema"]["schema"]["properties"]["action"]["enum"]
     assert sm.local_models("http://127.0.0.1:9/v1") == []  # nothing listening
 
 

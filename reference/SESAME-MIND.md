@@ -153,6 +153,11 @@ robot (the cap is 20).
   it for instant replay. `none` is for noise and empty words (テスト). Measured
   with Claude: reflex 1.3–2.3 s (Haiku 5.5), design 3.3 s (Opus 5.5, low effort).
   A design never replaces an existing name (`dance` → `dance_2`).
+  Later the same day, at the user's request, the LLM reflex stopped offering the
+  stock motions at all (`LLMReflex(use_stock=False)`): it designs by default and
+  replays a learned motion only when its meaning is nearly the same
+  (おいしい！ → yummy_wiggle, 喉かわいたね → thirsty_sip, こんにちは → new).
+  The rule reflex and Jev still see the stock motions.
 - Speed and dynamics (2026-11-26). `intensity` sizes a designed motion (0.3–1×);
   `tempo` (0.5–2, from the reflex: 速く, ゆっくり, キビキビ; the rule reflex knows
   速く/ゆっくり) rescales its time. Each key may carry `ease`: `linear`, `in`

@@ -489,9 +489,9 @@ class Designer:
 REFLEX_SYSTEM = """\
 あなたはロボット「セサミ」の反射です。セサミは言葉を話せないので、話しかけられたことには
 頼まれていなくても体で応えます。聞こえたことに対して、今やる動きを一つ選んでください。
-- 手持ちの動き（名前と説明）の中に、言葉の意味や気持ちをよく表すものがあればそれを選ぶ
-  （例: 悶えて → worm、やったー → dance、こんにちは → wave）
-- どれも合わないときは new（その言葉に合う動きを新しく作って覚える。例: 寒いね → 震えて縮こまる動き）
+- 基本は new（その言葉に合う動きを新しく作って覚える。例: 寒いね → 震えて縮こまる動き）
+- これまでに作った動き（名前と説明）の中に、言葉の意味や気持ちがほぼ同じものがあるときだけそれを選ぶ。
+  似ているだけ、場面が違う、気持ちの強さが違うなら new
 - none は、話しかけではない雑音や、意味のない言葉（「テスト」など）のときだけ
 チャットはセサミへの話しかけです。
 intensity は 0〜1 の動きの大きさ、tempo は速さの倍率 0.5〜2（1 = ふつう。「速く」「ゆっくり」
@@ -500,16 +500,22 @@ intensity は 0〜1 の動きの大きさ、tempo は速さの倍率 0.5〜2（1
 
 
 class LLMReflex:
-    def __init__(self, brain):
-        self.brain, self.by = brain, f"llm:{brain.by}"
+    """Answers with motions it designed itself; the stock (firmware) motions are left out
+    unless use_stock, so the robot keeps inventing instead of falling back on them."""
+
+    def __init__(self, brain, use_stock=False):
+        self.brain, self.by, self.use_stock = brain, f"llm:{brain.by}", use_stock
 
     def decide(self, moment, library, notes=""):
-        options = library.names() + [NEW, NONE]
+        menu = {n: v["about"] for n, v in library.items.items()
+                if self.use_stock or v["spec"]["kind"] != "firmware"}
+        options = list(menu) + [NEW, NONE]
         schema = {"type": "object", "additionalProperties": False,
                   "required": ["action", "intensity", "tempo", "addressed"],
                   "properties": {"action": {"type": "string", "enum": options}, "intensity": {"type": "number"},
                                  "tempo": {"type": "number"}, "addressed": {"type": "number"}}}
-        user = (f"動き: {json.dumps(library.menu(), ensure_ascii=False)}\nメモ: {notes[-800:]}\n"
+        user = (f"これまでに作った動き: {json.dumps(menu, ensure_ascii=False) if menu else '（まだない）'}\n"
+                f"メモ: {notes[-800:]}\n"
                 f"聞こえたこと（{moment.source}, 音量 {moment.loudness:.0f}{', 急な音' if moment.onset else ''}）:"
                 f"「{moment.text}」")
         d = json.loads(self.brain.ask(REFLEX_SYSTEM, user, schema))
