@@ -179,36 +179,42 @@ a request is outstanding; they invalidate the request, and its late response
 cannot start motion or interrupt the new local action. Once a complete validated
 plan is downloaded, playback needs no server connection. Escape cancels locally.
 
-## Deploy the server on a Google Cloud VM
+## Deploy the server on Cloud Run
 
-The VM has **not been provisioned**. Live text checks through the test Worker
-passed after fixing the application's User-Agent; no Google audio request was
-made. See [VALIDATION.md](VALIDATION.md) for the semantic failure and targeted
-retest, latency and simulation evidence. On an authorized Debian VM, install git, Python/uv and
-Tailscale, enroll it in the installation's tailnet, and restrict access to the
-Pi/operator devices. Check out this tested revision at `/opt/sim2real`:
+The exhibition project `sesame-robots` sits under an organisation policy that
+denies Compute Engine, so the server runs as a Cloud Run service, not a VM.
+It was first deployed on **26 November 2026** in `asia-northeast1` and checked
+with a typed prompt and with synthetic English and Japanese speech; see
+[VALIDATION.md](VALIDATION.md).
+
+One-time setup in the project: enable Cloud Run, Cloud Build, Artifact Registry,
+Secret Manager and Speech-to-Text; create the service accounts `voice-server`
+(Speech Client, plus Secret Accessor on the two secrets) and `voice-build`
+(Cloud Run Builder and Logs Writer; the project has no Compute Engine default
+account for builds); and create the secrets `voice-device-token` and
+`voice-claude-token` without a trailing newline. Then, from a clean checkout of
+the revision to deploy:
 
 ```sh
-cd /opt/sim2real
-uv sync --project tools/voice_demo --locked --extra google --no-dev --python /usr/bin/python3
-sudo useradd --system --home /opt/sim2real --shell /usr/sbin/nologin sesame-voice
-sudo install -d -m 750 /etc/sesame-voice
-# Create /etc/sesame-voice/server.env from deploy/server.env.example;
-# supply real values outside git, and chmod 600 the file.
-sudo install -m 644 tools/voice_demo/deploy/voice-server.service /etc/systemd/system/
-sudo systemctl daemon-reload
-sudo systemctl enable --now voice-server
-sudo tailscale serve --bg http://127.0.0.1:8765
+GCP_PROJECT=sesame-robots VOICE_CLAUDE_BASE_URL=https://YOUR-WORKER-ORIGIN \
+  tools/voice_demo/deploy/cloud-run.sh HEAD
 ```
 
-The service binds loopback only. Use the system Python (3.11 or newer), as shown, so it does not
-depend on a managed interpreter under an operator's home directory hidden by
-`ProtectHome=true`. Tailscale Serve supplies the tailnet HTTPS
-address; set that address as `VOICE_SERVER_URL` on the Pi. Do not publish port
-8765 to the Internet or use Tailscale Funnel. Verify authenticated `/health`
-through the tailnet. Health reports both `provider` and `stt_provider`; it does
-not make a paid request or prove upstream credentials work. See
-[DECISION.md](DECISION.md) for the provider choice, sources and evidence limits.
+The script stages only what the server reads (firmware, manifests, reference,
+tools and the course body's leg-clearance evidence), builds
+`deploy/Dockerfile`, and prints the service URL; set that URL as
+`VOICE_SERVER_URL` on the Pi. Secrets are mounted from Secret Manager and never
+pass through the script. The service scales to zero by default; set
+`VOICE_MIN_INSTANCES=1` for the party so the first prompt does not wait for a
+cold start.
+
+The service URL is reachable from the Internet, because the organisation does
+not allow public invoker bindings and the Pi has no Google identity: the
+invoker check is disabled and **the device token is the only gate**. Every
+route, including `/health`, answers 401 without it. Keep the token only in
+Secret Manager and on the Pi, and rotate it by adding a secret version and
+redeploying. The systemd unit in `deploy/` remains for running the server on a
+private host instead.
 
 ### Configure Claude and Google
 
@@ -237,9 +243,9 @@ To switch to an **Anthropic Console API key**, change
 model and restart the server. No code, relay or Google change is needed.
 Application-specific variables avoid inheriting unrelated Anthropic auth settings.
 
-For audio, enable Speech-to-Text in `sesame-robots` and attach a VM service
-account with Speech Client (`roles/speech.client`) and `cloud-platform` access
-scope. ADC obtains its credentials from the VM metadata server; no key file is
+For audio, enable Speech-to-Text in `sesame-robots` and run the service as an
+account with Speech Client (`roles/speech.client`). ADC obtains its credentials
+from the metadata server; no key file is
 needed and `GOOGLE_APPLICATION_CREDENTIALS` should remain unset. The Google
 client is loaded only for audio. Chirp 3 uses a regional endpoint (`us`, not
 `global`) and detects English/Japanese from the two-language setting. To allow
