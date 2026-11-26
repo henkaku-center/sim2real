@@ -229,7 +229,11 @@ async function send(text) {
   now.textContent = '「' + text + '」';
   try {
     const r = await fetch('say', {method: 'POST', body: text, signal: AbortSignal.timeout(5000)});
-    if (r.status === 429) { const w = (await r.json()).wait_s; hint.textContent = `ちょっと待ってね（あと ${Math.ceil(w)} 秒）`; return }
+    if (r.status === 429) {
+      const j = await r.json();
+      hint.textContent = j.done_for_today ? '今日はたくさん話したので、セサミはおやすみです。また明日！' : `ちょっと待ってね（あと ${Math.ceil(j.wait_s)} 秒）`;
+      return;
+    }
     hint.textContent = r.ok ? 'とどいたよ。考え中…' : 'うまく送れませんでした';
     shown = ''; setTimeout(refresh, 1500); setTimeout(refresh, 4000);
   } catch (e) { hint.textContent = 'セサミの頭（PC）につながりません' }

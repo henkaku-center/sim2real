@@ -1183,28 +1183,35 @@ def serve(port, mind, moments):
 
 
 class Gate:
-    """At most one guest message per `every` seconds: model calls cost money and a motion
-    needs time to be seen before the next one interrupts it."""
+    """At most one guest message per `every` seconds (a motion needs time to be seen before
+    the next interrupts it) and `daily` per day: the page is public and each message costs
+    model calls."""
 
-    def __init__(self, every=4.0, clock=time.monotonic):
-        self.every, self.clock, self.last, self.lock = every, clock, -1e9, threading.Lock()
+    def __init__(self, every=4.0, daily=300, clock=time.monotonic, today=lambda: time.strftime("%Y-%m-%d")):
+        self.every, self.daily, self.clock, self.today = every, daily, clock, today
+        self.last, self.day, self.used, self.lock = -1e9, None, 0, threading.Lock()
 
     def wait_s(self):
-        """0 and take the slot if a message may pass now, else seconds until it may."""
+        """0 and take the slot if a message may pass now, else seconds until it may
+        (math.inf once today's messages are used up)."""
         with self.lock:
+            if self.today() != self.day:
+                self.day, self.used = self.today(), 0
+            if self.used >= self.daily:
+                return math.inf
             left = self.last + self.every - self.clock()
             if left > 0:
                 return left
-            self.last = self.clock()
+            self.last, self.used = self.clock(), self.used + 1
             return 0.0
 
 
-def serve_guest(port, mind, moments, gate=None, host="127.0.0.1"):
+def serve_guest(port, mind, moments, gate=None, host="127.0.0.1", daily=300):
     """The guest page (talk + thought log) for people who walk up to the robot. Only these
     routes exist here, so settings, rumination and the voice body stay on the admin port.
     Bound to localhost: `tailscale serve` gives it an HTTPS address, which phones need
     before a page may use the microphone."""
-    gate = gate or Gate()
+    gate = gate or Gate(daily=daily)
 
     class Guest(BaseHTTPRequestHandler):
         def reply(self, code, body, kind="application/json"):
@@ -1231,7 +1238,9 @@ def serve_guest(port, mind, moments, gate=None, host="127.0.0.1"):
             text = self.rfile.read(min(n, 2000)).decode(errors="replace").strip()[:200]
             if not text:
                 return self.reply(400, json.dumps({"error": "empty"}))
-            if (left := gate.wait_s()) > 0:
+            if (left := gate.wait_s()) == math.inf:
+                return self.reply(429, json.dumps({"done_for_today": True}))
+            if left > 0:
                 return self.reply(429, json.dumps({"wait_s": round(left, 1)}))
             offer(moments, Moment("chat", text))
             self.reply(202, "{}")
@@ -1296,6 +1305,7 @@ def main(argv=None):
     p.add_argument("--serve", type=int, metavar="PORT", help="chat page for phone/PC on this port")
     p.add_argument("--guest", type=int, metavar="PORT",
                    help="guest page (talk + thought log) on localhost; default PORT+1 with --serve, 0 = off")
+    p.add_argument("--guest-daily", type=int, default=300, help="guest messages allowed per day")
     p.add_argument("--gain", type=float, help="rtl_fm tuner gain in dB (default: auto)")
     p.add_argument("--mic-device", help="ffmpeg input (macOS ':0' or ':<name>', Linux pulse 'default')")
     p.add_argument("--mic-on-demand", action="store_true",
@@ -1343,7 +1353,7 @@ def main(argv=None):
         if args.serve:
             serve(args.serve, mind, moments)
             if (guest := args.serve + 1 if args.guest is None else args.guest):
-                serve_guest(guest, mind, moments)
+                serve_guest(guest, mind, moments, daily=args.guest_daily)
             threading.Thread(target=announce, args=(mind, args.robot, args.serve), daemon=True).start()
         if audio:
             threading.Thread(target=hear, args=(args, moments, mind.body), daemon=True).start()

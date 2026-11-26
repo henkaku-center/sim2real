@@ -172,7 +172,13 @@ robot (the cap is 20).
   or typed text. Speech recognition needs HTTPS, so the page is published
   tailnet-only with `tailscale serve --bg --https=8443 --set-path /sesame
   http://127.0.0.1:8766` at `https://kotaromacbook-air.taile70e.ts.net:8443/sesame/`;
-  the phone needs Tailscale. Not on Funnel (public) unless the user asks.
+  the phone needs Tailscale. At the user's request the same page is also public on
+  Funnel: `tailscale funnel --bg --set-path /sesame http://127.0.0.1:8766` →
+  `https://kotaromacbook-air.taile70e.ts.net/sesame/` (any phone, any network; checked
+  through the public ingress: page 200, /trace 200, /config 404). Public means the
+  thought log, including admin chats, is readable by anyone with the URL, and the
+  `--guest-daily` cap (300) bounds model spend. Undo: `tailscale funnel --https=443
+  --set-path /sesame off`.
 - Speed and dynamics (2026-11-26). `intensity` sizes a designed motion (0.3–1×);
   `tempo` (0.5–2, from the reflex: 速く, ゆっくり, キビキビ; the rule reflex knows
   速く/ゆっくり) rescales its time. Each key may carry `ease`: `linear`, `in`

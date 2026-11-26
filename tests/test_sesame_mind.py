@@ -648,3 +648,15 @@ def test_guest_port_only_talks_and_shows_thoughts(tmp_path):
             urllib.request.urlopen(base + "/config")
     finally:
         server.shutdown()
+
+
+def test_gate_spaces_messages_and_stops_for_the_day():
+    t, day = [0.0], ["2026-11-26"]
+    gate = sm.Gate(every=4.0, daily=2, clock=lambda: t[0], today=lambda: day[0])
+    assert gate.wait_s() == 0 and gate.wait_s() == 4.0
+    t[0] = 4.0
+    assert gate.wait_s() == 0
+    t[0] = 100.0
+    assert gate.wait_s() == math.inf  # two used today
+    day[0] = "2026-11-27"
+    assert gate.wait_s() == 0
