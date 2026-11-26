@@ -158,6 +158,12 @@ robot (the cap is 20).
   replays a learned motion only when its meaning is nearly the same
   (おいしい！ → yummy_wiggle, 喉かわいたね → thirsty_sip, こんにちは → new).
   The rule reflex and Jev still see the stock motions.
+- Thought log (2026-11-26): `http://<mind>:8765/thoughts` (linked from the chat
+  page) shows each remark as a card: reflex (backend, time, choices offered,
+  decision, intensity, tempo, why), designer (time, why) and the motion as small
+  multiples (one row per axis/joint, its own unit and scale, key ends labelled
+  with their ease, hover crosshair, table view). Reflex and designer now return a
+  short `why`; `/trace` serves the entries with curves from `curve()`.
 - Speed and dynamics (2026-11-26). `intensity` sizes a designed motion (0.3–1×);
   `tempo` (0.5–2, from the reflex: 速く, ゆっくり, キビキビ; the rule reflex knows
   速く/ゆっくり) rescales its time. Each key may carry `ease`: `linear`, `in`

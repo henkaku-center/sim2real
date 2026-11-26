@@ -332,6 +332,10 @@ def test_config_endpoint_round_trip(tmp_path, monkeypatch):
         assert not view["typesafe_key_set"] and "ts-secret" not in json.dumps(view)
         assert view["status"] == {"reflex": "rules", "designer": "none", "robot": "", "body": "off", "error": ""}
         assert view["local_models"] == []
+        with urllib.request.urlopen(base + "/thoughts") as r:
+            assert "セサミの思考ログ" in r.read().decode()
+        with urllib.request.urlopen(base + "/trace") as r:
+            assert json.loads(r.read()) == []
         bad = urllib.request.Request(base + "/config", b'{"reflex": "psychic"}', method="POST")
         with pytest.raises(urllib.error.HTTPError) as e:
             urllib.request.urlopen(bad)
@@ -569,3 +573,29 @@ def test_speed_words_set_the_tempo():
     assert sm.RuleReflex().decide(sm.Moment("chat", "速く dance"), lib).tempo == 1.5
     assert sm.RuleReflex().decide(sm.Moment("chat", "ゆっくり wave"), lib).tempo == 0.6
     assert sm.RuleReflex().decide(sm.Moment("chat", "dance"), lib).tempo == 1.0
+
+
+def test_trace_shows_reasoning_design_and_curve(tmp_path):
+    class Brainy:
+        by = "fake"
+
+        def decide(self, moment, library, notes=""):
+            return sm.Decision(sm.NEW, 1.0, 0.9, by="fake", tempo=2.0, why="まだ無い動き", considered=3)
+
+    class Designer:
+        by = "fake"
+
+        def design(self, moment, library, notes=""):
+            return ("flick", "ため", {"kind": "axes_keys", "keys": [
+                {"ms": 800, "ease": "in", "axes": [{"axis": "height", "value": -6}]},
+                {"ms": 200, "axes": [{"axis": "height", "value": 4}, {"axis": "pitch", "value": 2}]}]}, "溜めて弾く")
+
+    mind = sm.Mind(Brainy(), sm.Library(), sm.Memory(tmp_path), FakeSpine(), Designer())
+    mind.handle(sm.Moment("chat", "寒いね"))
+    [e] = sm.trace(mind)
+    assert (e["why"], e["considered"], e["design"]["why"], e["did"]) == ("まだ無い動き", 3, "溜めて弾く", "flick")
+    c = e["motion"]["curve"]
+    assert list(c["series"]) == ["height", "pitch"] and c["unit"] == "axis"
+    assert c["keys"] == [{"t": 0.4, "ease": "in"}, {"t": 0.5, "ease": "linear"}]  # tempo 2 halves time
+    assert len(c["t"]) == 21 and c["series"]["height"][-1] == pytest.approx(4)
+    assert sm.curve(M, {"kind": "firmware", "name": "dance"}) is None

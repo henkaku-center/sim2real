@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="ja">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>セサミの思考ログ</title>
+<style>
+.viz-root {
+  color-scheme: light;
+  --page: #f9f9f7; --surface-1: #fcfcfb;
+  --text-primary: #0b0b0b; --text-secondary: #52514e; --muted: #898781;
+  --grid: #e1e0d9; --axis: #c3c2b7; --ring: rgba(11,11,11,0.10);
+  --series-1: #2a78d6; --new: #eb6834; --reuse: #1baf7a; --none: #898781;
+}
+@media (prefers-color-scheme: dark) {
+  :root:where(:not([data-theme="light"])) .viz-root {
+    color-scheme: dark;
+    --page: #0d0d0d; --surface-1: #1a1a19;
+    --text-primary: #f0efec; --text-secondary: #c3c2b7; --muted: #898781;
+    --grid: #2c2c2a; --axis: #383835; --ring: rgba(255,255,255,0.10);
+    --series-1: #3987e5; --new: #d95926; --reuse: #199e70; --none: #898781;
+  }
+}
+* { box-sizing: border-box }
+body { margin: 0 }
+.viz-root { background: var(--page); color: var(--text-primary); min-height: 100vh;
+  font: 15px/1.5 system-ui, -apple-system, "Hiragino Sans", sans-serif; padding: 20px 16px 60px }
+header { max-width: 760px; margin: 0 auto 18px; display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap }
+h1 { font-size: 20px; margin: 0; font-weight: 650 }
+header .sub { color: var(--text-secondary); font-size: 13px }
+header .live { margin-left: auto; color: var(--muted); font-size: 12px }
+main { max-width: 760px; margin: 0 auto }
+.card { background: var(--surface-1); border: 1px solid var(--ring); border-radius: 12px; padding: 14px 16px 12px; margin-bottom: 14px }
+.heard { display: flex; align-items: baseline; gap: 10px }
+.heard .time { color: var(--muted); font-size: 12px; font-variant-numeric: tabular-nums }
+.heard .text { font-size: 18px; font-weight: 600 }
+.heard .src { color: var(--muted); font-size: 12px }
+.steps { margin: 10px 0 0 6px; border-left: 1px solid var(--axis); padding-left: 16px }
+.step { position: relative; padding: 4px 0 8px }
+.step::before { content: ""; position: absolute; left: -21px; top: 11px; width: 9px; height: 9px; border-radius: 50%;
+  background: var(--surface-1); border: 2px solid var(--axis) }
+.step.new::before { border-color: var(--new) } .step.reuse::before { border-color: var(--reuse) }
+.label { color: var(--muted); font-size: 12px; letter-spacing: .02em }
+.label b { color: var(--text-secondary); font-weight: 600 }
+.choice { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; margin-top: 2px }
+.chip { display: inline-flex; align-items: center; gap: 6px; font-weight: 600 }
+.chip i { width: 8px; height: 8px; border-radius: 50%; display: inline-block }
+.meta { color: var(--text-secondary); font-size: 13px; font-variant-numeric: tabular-nums }
+.why { color: var(--text-secondary); margin-top: 2px }
+.why::before { content: "理由　"; color: var(--muted); font-size: 12px }
+.about { font-weight: 600 } .name { color: var(--muted); font-size: 12px; margin-left: 6px }
+.chart { position: relative; margin-top: 6px }
+.chart svg { display: block; width: 100%; height: auto; overflow: visible }
+.chart text { font-size: 11px; fill: var(--muted) }
+.chart .rowname { fill: var(--text-secondary); font-size: 12px }
+.tip { position: absolute; pointer-events: none; background: var(--surface-1); border: 1px solid var(--ring);
+  border-radius: 8px; padding: 6px 8px; font-size: 12px; box-shadow: 0 2px 8px rgba(0,0,0,.08); display: none;
+  white-space: nowrap; font-variant-numeric: tabular-nums; color: var(--text-primary) }
+.tip .t { color: var(--muted) }
+details.table { margin-top: 4px; font-size: 12px; color: var(--text-secondary) }
+details.table summary { cursor: pointer; color: var(--muted) }
+details.table table { border-collapse: collapse; margin-top: 4px; font-variant-numeric: tabular-nums }
+details.table td, details.table th { padding: 2px 10px 2px 0; text-align: right; font-weight: 400 }
+details.table th:first-child, details.table td:first-child { text-align: left }
+.empty { color: var(--muted); text-align: center; padding: 40px 0 }
+.err { color: var(--text-secondary); font-size: 13px }
+</style>
+<body>
+<div class="viz-root">
+<header>
+  <h1>セサミの思考ログ</h1>
+  <span class="sub">聞こえたこと → 反射の判断 → 振付 → 動き</span>
+  <span class="live" id="live">接続中…</span>
+</header>
+<main id="list"><p class="empty">まだ何も聞いていません。話しかけてみてください。</p></main>
+</div>
+<script>
+// Labels and units of the motion-space axes (manifest/motion_space.yaml); joints are in degrees.
+const AXIS = {surge: ['前後振り', '°'], spread: ['開き', '°'], yaw: ['ひねり', '°'], stride: ['歩幅', '°'],
+  height: ['高さ', 'mm'], pitch: ['前上がり', '°'], roll: ['横傾き', '°'], lift: ['足上げ', 'mm']};
+const EASE = {linear: '等速', in: '溜め', out: '余韻', inout: 'なめらか'};
+const label = n => AXIS[n] ? AXIS[n][0] : n, unit = n => AXIS[n] ? AXIS[n][1] : '°';
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'}[c]));
+const fmt = (x, d = 1) => (Math.round(x * 10 ** d) / 10 ** d).toString();
+const SRC = {chat: 'チャット', voice: '声', radio: 'ラジオ', sound: '物音'};
+
+function kindOf(e) {
+  if (e.did === 'none' || !e.did) return ['none', '何もしない', 'var(--none)'];
+  if (e.design) return ['new', '新しく作った', 'var(--new)'];
+  if (e.motion && e.motion.kind === 'firmware') return ['stock', '内蔵の動き', 'var(--none)'];
+  return ['reuse', '覚えた動きを再生', 'var(--reuse)'];
+}
+
+// Small multiples: one row per axis on a shared time scale; each row has its own scale and
+// unit, so mixed units never share a y-axis. Key ends are hairlines labelled with their ease.
+function chart(c, id) {
+  const names = Object.keys(c.series), W = 680, L = 128, R = 12, top = 20, H = 46, gap = 10;
+  const T = c.t[c.t.length - 1] || 1, x = t => L + (W - L - R) * t / T;
+  const height = top + names.length * (H + gap) + 18;
+  let svg = `<svg viewBox="0 0 ${W} ${height}" role="img" aria-label="動きの時間変化">`;
+  let start = 0;
+  for (const k of c.keys) {  // ease labels centred on each key's span
+    const mid = x((start + k.t) / 2);
+    svg += `<text x="${mid}" y="12" text-anchor="middle">${EASE[k.ease] || k.ease}</text>`;
+    svg += `<line x1="${x(k.t)}" x2="${x(k.t)}" y1="16" y2="${height - 18}" stroke="var(--grid)" stroke-width="1"/>`;
+    start = k.t;
+  }
+  names.forEach((n, i) => {
+    const v = c.series[n], y0 = top + i * (H + gap);
+    let lo = Math.min(0, ...v), hi = Math.max(0, ...v);
+    if (hi - lo < 1e-6) { lo -= 1; hi += 1 }
+    const y = val => y0 + H - (val - lo) / (hi - lo) * H;
+    svg += `<text class="rowname" x="0" y="${y0 + H / 2 - 2}">${esc(label(n))}</text>`;
+    svg += `<text x="0" y="${y0 + H / 2 + 13}">${esc(n)} ${unit(n)}</text>`;
+    svg += `<line x1="${L}" x2="${W - R}" y1="${y(0)}" y2="${y(0)}" stroke="var(--axis)" stroke-width="1"/>`;
+    svg += `<text x="${L - 6}" y="${y0 + 9}" text-anchor="end">${fmt(hi)}</text>`;
+    svg += `<text x="${L - 6}" y="${y0 + H}" text-anchor="end">${fmt(lo)}</text>`;
+    const pts = v.map((val, j) => `${x(c.t[j]).toFixed(1)},${y(val).toFixed(1)}`).join(' ');
+    svg += `<polyline points="${pts}" fill="none" stroke="var(--series-1)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>`;
+    svg += `<circle class="dot" data-row="${i}" r="4" cx="0" cy="0" visibility="hidden" fill="var(--series-1)" stroke="var(--surface-1)" stroke-width="2"/>`;
+  });
+  svg += `<text x="${L}" y="${height - 2}">0 s</text><text x="${W - R}" y="${height - 2}" text-anchor="end">${fmt(T, 2)} s</text>`;
+  svg += `<line class="cross" visibility="hidden" x1="0" x2="0" y1="16" y2="${height - 18}" stroke="var(--axis)" stroke-width="1"/>`;
+  svg += `<rect class="hit" x="${L}" y="0" width="${W - L - R}" height="${height}" fill="transparent"/></svg>`;
+  const rows = c.keys.map(k => {  // the table view: values where each key ends
+    const j = c.t.findIndex(t => t >= k.t - 1e-9);
+    return `<tr><td>${fmt(k.t, 2)} s</td><td>${EASE[k.ease] || k.ease}</td>${names.map(n => `<td>${fmt(c.series[n][j < 0 ? c.t.length - 1 : j])}</td>`).join('')}</tr>`;
+  }).join('');
+  const table = rows ? `<details class="table"><summary>数値で見る</summary><table><tr><th>キーの終わり</th><th>移り方</th>${names.map(n => `<th>${esc(label(n))}</th>`).join('')}</tr>${rows}</table></details>` : '';
+  return `<div class="chart" id="${id}">${svg}<div class="tip"></div></div>${table}`;
+}
+
+function hover(el, c) {
+  const svg = el.querySelector('svg'), tip = el.querySelector('.tip'), names = Object.keys(c.series);
+  const W = 680, L = 128, R = 12, top = 20, H = 46, gap = 10, T = c.t[c.t.length - 1] || 1;
+  const dots = [...svg.querySelectorAll('.dot')], cross = svg.querySelector('.cross');
+  const move = ev => {
+    const p = svg.createSVGPoint(); p.x = ev.clientX; p.y = ev.clientY;
+    const q = p.matrixTransform(svg.getScreenCTM().inverse());
+    const j = Math.max(0, Math.min(c.t.length - 1, Math.round((q.x - L) / (W - L - R) * (c.t.length - 1))));
+    const cx = L + (W - L - R) * c.t[j] / T;
+    cross.setAttribute('x1', cx); cross.setAttribute('x2', cx); cross.setAttribute('visibility', 'visible');
+    names.forEach((n, i) => {
+      const v = c.series[n], y0 = top + i * (H + gap);
+      let lo = Math.min(0, ...v), hi = Math.max(0, ...v); if (hi - lo < 1e-6) { lo -= 1; hi += 1 }
+      dots[i].setAttribute('cx', cx); dots[i].setAttribute('cy', y0 + H - (v[j] - lo) / (hi - lo) * H);
+      dots[i].setAttribute('visibility', 'visible');
+    });
+    tip.innerHTML = `<div class="t">${fmt(c.t[j], 2)} s</div>` + names.map(n => `${esc(label(n))} <b>${fmt(c.series[n][j])}</b> ${unit(n)}`).join('<br>');
+    const box = el.getBoundingClientRect(), left = (cx / W) * box.width;
+    tip.style.display = 'block';
+    tip.style.left = Math.min(box.width - tip.offsetWidth, left + 12) + 'px'; tip.style.top = '18px';
+  };
+  const hit = svg.querySelector('.hit');
+  hit.addEventListener('pointermove', move); hit.addEventListener('pointerdown', move);
+  hit.addEventListener('pointerleave', () => { tip.style.display = 'none'; [cross, ...dots].forEach(d => d.setAttribute('visibility', 'hidden')) });
+}
+
+function card(e, i) {
+  const [k, said, color] = kindOf(e), time = new Date(e.t * 1000).toLocaleTimeString();
+  const tempo = e.tempo && e.tempo !== 1 ? ` · 速さ ×${fmt(e.tempo)}` : '';
+  const addressed = e.addressed != null ? ` · 話しかけ ${Math.round(e.addressed * 100)}%` : '';
+  const offered = e.considered ? ` · 候補 ${e.considered}` : '';
+  let html = `<article class="card"><div class="heard"><span class="time">${time}</span>
+    <span class="text">${e.text ? '「' + esc(e.text) + '」' : '（物音）'}</span><span class="src">${SRC[e.source] || esc(e.source)}</span></div>
+    <div class="steps"><div class="step ${k}"><div class="label"><b>反射</b> ${esc(e.by)} · ${fmt(e.reflex_ms / 1000)} s${offered}</div>
+    <div class="choice"><span class="chip"><i style="background:${color}"></i>${said}</span>
+    <span class="meta">強さ ${fmt(e.intensity, 2)}${tempo}${addressed}</span></div>
+    ${e.why ? `<div class="why">${esc(e.why)}</div>` : ''}${e.note && !e.design ? `<div class="err">${esc(e.note)}</div>` : ''}</div>`;
+  if (e.design) html += `<div class="step new"><div class="label"><b>振付</b> ${esc(e.design.by)} · ${fmt(e.design.ms / 1000)} s</div>
+    ${e.design.why ? `<div class="why">${esc(e.design.why)}</div>` : ''}</div>`;
+  if (e.motion) {
+    html += `<div class="step ${k}"><div class="label"><b>動き</b></div><div><span class="about">${esc(e.motion.about)}</span><span class="name">${esc(e.motion.name)}</span></div>`;
+    html += e.motion.curve ? chart(e.motion.curve, 'c' + i) : `<div class="meta">ロボットに入っている動き（グラフなし）</div>`;
+    html += `</div>`;
+  }
+  return html + `</div></article>`;
+}
+
+let shown = '';
+async function refresh() {
+  try {
+    const list = await (await fetch('trace', {signal: AbortSignal.timeout(4000)})).json();
+    document.getElementById('live').textContent = '更新 ' + new Date().toLocaleTimeString();
+    const key = list.length + ':' + (list.length ? list[list.length - 1].t : 0);
+    if (key === shown) return;
+    shown = key;
+    const items = list.slice().reverse();
+    const main = document.getElementById('list');
+    main.innerHTML = items.length ? items.map(card).join('') : '<p class="empty">まだ何も聞いていません。話しかけてみてください。</p>';
+    items.forEach((e, i) => { if (e.motion && e.motion.curve) hover(document.getElementById('c' + i), e.motion.curve) });
+  } catch (err) {
+    document.getElementById('live').textContent = 'mind に接続できません';
+  }
+}
+refresh(); setInterval(refresh, 2000);
+</script>
+</body>
+</html>

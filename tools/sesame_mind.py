@@ -104,6 +104,8 @@ class Decision:
     confidence: float | None = None
     by: str = ""
     tempo: float = 1.0  # speed factor for designed motions (0.5 = half speed, 2 = twice)
+    why: str = ""  # one line of reasoning, shown in the thought log
+    considered: int = 0  # how many choices the reflex was offered
 
 
 # ---------------------------------------------------------------- specs
@@ -159,6 +161,38 @@ def frames(manifest, spec, hz=FRAME_HZ, intensity=0.5, tempo=1.0):
             degs = [manifest.to_firmware(j, base[j.name] + math.radians(delta.get(j.name, 0.0)))
                     for j in manifest.joints]
         yield [round(min(max(d, j.limits_deg[0]), j.limits_deg[1]), 1) for d, j in zip(degs, manifest.joints)]
+
+
+def curve(manifest, spec, intensity=0.5, tempo=1.0, hz=40):
+    """What a designed motion does over time, for the thought log's chart: offsets of each
+    axis (motion-space units) or joint (degrees from base) as played, plus where each key
+    ends and how it eases. None for firmware motions, whose steps live on the robot."""
+    if spec.get("kind") == "firmware":
+        return None
+    scale, tempo = 0.3 + 0.7 * intensity, min(max(tempo, TEMPO[0]), TEMPO[1])
+    times = [i / hz for i in range(int(duration(spec) / tempo * hz) + 1)]
+    samples = [angles(manifest, spec, t * tempo, scale) for t in times]
+    present = {n for x in samples for n in x}
+    names = [n for n in [*AXES, *(j.name for j in manifest.joints)] if n in present]
+    keys, end = [], 0.0
+    for k in spec.get("keys", []):
+        end += k["ms"] / 1000 / tempo
+        keys.append({"t": round(end, 3), "ease": k.get("ease", "linear")})
+    return {"t": [round(t, 3) for t in times], "unit": "deg" if spec["kind"] in ("osc", "keys") else "axis",
+            "series": {n: [round(x.get(n, 0.0), 2) for x in samples] for n in names}, "keys": keys}
+
+
+def trace(mind, n=30):
+    """The newest log entries, each with the motion it played drawn as a curve."""
+    out = []
+    for e in mind.memory.recent(n):
+        item = mind.library.items.get(e.get("did"))
+        motion = None
+        if item:
+            motion = {"name": e["did"], "about": item["about"], "kind": item["spec"]["kind"],
+                      "curve": curve(mind.spine.manifest, item["spec"], e.get("intensity", 0.5), e.get("tempo", 1.0))}
+        out.append({**e, "motion": motion})
+    return out
 
 
 def validate(manifest, spec):
@@ -278,12 +312,12 @@ class RuleReflex:
     def decide(self, moment, library, notes=""):
         text = moment.text.lower()
         if moment.source == "chat" and any(w in text for w in ("作って", "つくって", "new ")):
-            return Decision(NEW, 0.6, 1.0, by=self.by, tempo=spoken_tempo(text))
+            return Decision(NEW, 0.6, 1.0, by=self.by, tempo=spoken_tempo(text), why="「作って」と言われた")
         for name in sorted(library.names(), key=len, reverse=True):
             if name in text:
-                return Decision(name, 0.6, 1.0, by=self.by, tempo=spoken_tempo(text))
+                return Decision(name, 0.6, 1.0, by=self.by, tempo=spoken_tempo(text), why=f"「{name}」が聞こえた")
         if moment.onset:
-            return Decision("shake", min(1.0, moment.loudness / 8000), by=self.by)
+            return Decision("shake", min(1.0, moment.loudness / 8000), by=self.by, why="急に大きな音がした")
         return Decision(NONE, 0.0, by=self.by)
 
 
@@ -360,6 +394,7 @@ DESIGN_SYSTEM = """\
 - osc: 関節の周期運動（joints）。keys: 関節のキーポーズの列（angles）
 実際の動きは指定の 0.3〜1 倍（声の勢いで変わる）です。使わない種類の欄は空配列か0にしてください。
 name は英小文字とアンダースコア、about は日本語で20字以内。
+why には、どういう気持ちや様子をどう体で表したか（緩急の付け方も）を日本語60字以内で書いてください。
 
 """ + describe()
 
@@ -381,6 +416,7 @@ def design_schema(manifest):
     return obj({
         "name": {"type": "string"},
         "about": {"type": "string"},
+        "why": {"type": "string"},
         "kind": {"type": "string", "enum": ["axes", "axes_keys", "osc", "keys"]},
         "base": {"type": "string", "enum": list(manifest.raw["poses"])},
         "hz": num, "seconds": num,
@@ -479,7 +515,8 @@ class Designer:
     def design(self, moment, library, notes=""):
         user = (f"メモ:\n{notes or '（まだない）'}\n\n既にある動き: {', '.join(library.names())}\n\n"
                 f"聞こえたこと（{moment.source}）:「{moment.text}」")
-        return spec_of(json.loads(self.brain.ask(DESIGN_SYSTEM, user, self.schema)))
+        design = json.loads(self.brain.ask(DESIGN_SYSTEM, user, self.schema))
+        return (*spec_of(design), str(design.get("why", "")))
 
     def ruminate(self, recent, notes=""):
         events = "\n".join(json.dumps(e, ensure_ascii=False) for e in recent)
@@ -493,7 +530,7 @@ REFLEX_SYSTEM = """\
 - これまでに作った動き（名前と説明）の中に、言葉の意味や気持ちがほぼ同じものがあるときだけそれを選ぶ。
   似ているだけ、場面が違う、気持ちの強さが違うなら new
 - none は、話しかけではない雑音や、意味のない言葉（「テスト」など）のときだけ
-チャットはセサミへの話しかけです。
+チャットはセサミへの話しかけです。why には、そう決めた理由を日本語30字以内で書いてください。
 intensity は 0〜1 の動きの大きさ、tempo は速さの倍率 0.5〜2（1 = ふつう。「速く」「ゆっくり」
 「のんびり」「キビキビ」などに合わせる）、addressed はセサミ自身に話しかけられた確率（0〜1）。
 """
@@ -511,9 +548,10 @@ class LLMReflex:
                 if self.use_stock or v["spec"]["kind"] != "firmware"}
         options = list(menu) + [NEW, NONE]
         schema = {"type": "object", "additionalProperties": False,
-                  "required": ["action", "intensity", "tempo", "addressed"],
+                  "required": ["action", "intensity", "tempo", "addressed", "why"],
                   "properties": {"action": {"type": "string", "enum": options}, "intensity": {"type": "number"},
-                                 "tempo": {"type": "number"}, "addressed": {"type": "number"}}}
+                                 "tempo": {"type": "number"}, "addressed": {"type": "number"},
+                                 "why": {"type": "string"}}}
         user = (f"これまでに作った動き: {json.dumps(menu, ensure_ascii=False) if menu else '（まだない）'}\n"
                 f"メモ: {notes[-800:]}\n"
                 f"聞こえたこと（{moment.source}, 音量 {moment.loudness:.0f}{', 急な音' if moment.onset else ''}）:"
@@ -521,7 +559,8 @@ class LLMReflex:
         d = json.loads(self.brain.ask(REFLEX_SYSTEM, user, schema))
         return Decision(d["action"] if d["action"] in options else NONE,
                         min(1.0, max(0.0, float(d["intensity"]))), float(d["addressed"]), by=self.by,
-                        tempo=min(max(float(d.get("tempo", 1.0)), TEMPO[0]), TEMPO[1]))
+                        tempo=min(max(float(d.get("tempo", 1.0)), TEMPO[0]), TEMPO[1]),
+                        why=str(d.get("why", "")), considered=len(options))
 
 
 # ---------------------------------------------------------------- settings
@@ -837,11 +876,12 @@ class Mind:
             print(f"(reflex {self.reflex.by}) {e}; falling back to rules", file=sys.stderr)
             decision = RuleReflex().decide(moment, self.library)
         reflex_ms = (time.monotonic() - t0) * 1000
-        action, note = decision.action, ""
+        action, note, self.designed = decision.action, "", None
         if action == NEW:
             action, note = self.invent(moment)
         entry = {"t": self.clock(), **asdict(moment), **asdict(decision), "did": action,
-                 "reflex_ms": round(reflex_ms), "note": note}
+                 "reflex_ms": round(reflex_ms), "note": note,
+                 **({"design": self.designed} if self.designed else {})}
         self.memory.add(entry)
         speed = f" ×{decision.tempo:g}" if decision.tempo != 1 else ""
         print(f"🧠 {moment.source}「{moment.text}」→ {action}{speed} ({decision.by}, {reflex_ms:.0f} ms)"
@@ -862,14 +902,18 @@ class Mind:
         return entry
 
     def invent(self, moment):
+        self.designed = None
         if self.designer is None:
             return NONE, "no designer"
+        t0 = time.monotonic()
         try:
-            name, about, spec = self.designer.design(moment, self.library, self.memory.notes)
+            name, about, spec, *why = self.designer.design(moment, self.library, self.memory.notes)
             validate(self.spine.manifest, spec)
         except Exception as e:  # a bad design must not stop the robot listening
             return NONE, f"design failed: {e}"
         name = self.library.add(name, about, spec)
+        self.designed = {"by": getattr(self.designer, "by", ""), "ms": round((time.monotonic() - t0) * 1000),
+                         "why": why[0] if why else ""}
         return name, f"new motion {name}: {about}"
 
     def configure(self, settings):
@@ -1012,13 +1056,14 @@ class Console:
 
 
 CONSOLE = Console()
+TRACE_PAGE = Path(__file__).with_name("sesame_thoughts.html")
 
 
 
 PAGE = """<!doctype html><meta charset=utf-8><meta name=viewport content="width=device-width">
 <title>Sesame mind</title><style>body{font:16px system-ui;margin:12px;max-width:640px}
 #log,#bst,#con{white-space:pre-wrap;font:13px ui-monospace,monospace}#con{color:#555}form{display:flex;gap:6px}input{flex:1;font:16px system-ui}
-img{width:100%;display:none;margin:6px 0}</style><h3>Sesame mind</h3>
+img{width:100%;display:none;margin:6px 0}</style><h3>Sesame mind <a href="thoughts" style="font-size:14px">思考ログ →</a></h3>
 <form id=f><input id=t placeholder="話しかける / ○○みたいな動きを作って" autofocus><button>送る</button></form>
 <p><select id=body><option value=off>声で動く: オフ<option value=both>声で動く: 抑揚＋言葉<option value=prosody>声で動く: 抑揚だけ
 <option value=words>声で動く: 言葉だけ</select> <button id=r>反芻</button></p><div id=bst></div><img id=sim alt="sim">
@@ -1062,6 +1107,10 @@ def serve(port, mind, moments):
                 return self.reply(200, PAGE, "text/html")
             if self.path == "/log":
                 return self.reply(200, json.dumps(mind.memory.recent(40), ensure_ascii=False))
+            if self.path == "/trace":
+                return self.reply(200, json.dumps(trace(mind), ensure_ascii=False))
+            if self.path == "/thoughts":
+                return self.reply(200, TRACE_PAGE.read_text(), "text/html")
             if self.path == "/console":
                 return self.reply(200, json.dumps(CONSOLE.recent(), ensure_ascii=False))
             if self.path == "/config":
