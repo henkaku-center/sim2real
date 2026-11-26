@@ -186,6 +186,15 @@ def validate(manifest, spec):
 # ---------------------------------------------------------------- library and memory
 
 
+# What the stock motions look like, so a reflex can judge whether one fits what it heard.
+BUILTIN_ABOUT = {
+    "rest": "伏せて休む", "stand": "立つ", "wave": "前足で手を振る", "dance": "リズムよく踊る",
+    "swim": "泳ぐように手足をかく", "point": "前足で指さす", "pushup": "腕立て伏せ", "bow": "おじぎ",
+    "cute": "かわいいポーズ", "freaky": "奇妙にくねる", "worm": "体をくねらせて這う", "shake": "ぶるぶる震える",
+    "shrug": "肩をすくめる", "dead": "ひっくり返って死んだふり", "crab": "カニ歩き", "walk": "前へ歩く",
+    "walk_backward": "後ろへ歩く", "turn_left": "左に回る", "turn_right": "右に回る"}
+
+
 def firmware_motions():
     return list(yaml.safe_load((ROOT / "manifest/motions.yaml").read_text())["motions"])
 
@@ -195,7 +204,7 @@ class Library:
 
     def __init__(self, path=None):
         self.path = path
-        self.items = {m: {"about": f"built-in {m}", "spec": {"kind": "firmware", "name": m}}
+        self.items = {m: {"about": BUILTIN_ABOUT.get(m, f"built-in {m}"), "spec": {"kind": "firmware", "name": m}}
                       for m in firmware_motions()}
         if path and path.exists():
             self.items.update(json.loads(path.read_text()))
@@ -207,10 +216,15 @@ class Library:
         return {n: v["about"] for n, v in self.items.items()}
 
     def add(self, name, about, spec):
+        """Store under a free name (a design never replaces an existing motion); returns it."""
+        base, n = name, 2
+        while name in self.items:
+            name, n = f"{base}_{n}", n + 1
         self.items[name] = {"about": about, "spec": spec}
         if self.path:
             learned = {n: v for n, v in self.items.items() if v["spec"]["kind"] != "firmware"}
             self.path.write_text(json.dumps(learned, ensure_ascii=False, indent=1))
+        return name
 
 
 class Memory:
@@ -333,6 +347,8 @@ class JevReflex:
 DESIGN_SYSTEM = """\
 あなたは四足歩行ロボット「セサミ」（8軸サーボ、各脚に hip と foot）の振付師です。
 聞こえた言葉や指示から、新しい動きを一つ小さな設計図として作ってください。
+動きを頼まれていない言葉（「寒いね」「おはよう」など）なら、それを聞いたセサミの気持ちや反応を
+体で表す動きにしてください。
 なるべく下の動作空間の8軸で書いてください（転ばない範囲に自動で収まります）。
 - axes: 軸の周期運動。hz は 0.2〜3、seconds は 1〜10、各軸の amp（振幅）、offset（中心からのずれ）、phase（0〜1周期）
 - axes_keys: 軸のキーポーズの列。各キーの ms は 100〜2000、合計10秒以内、value は中心からの差分
@@ -471,11 +487,13 @@ class Designer:
 
 
 REFLEX_SYSTEM = """\
-あなたはロボット「セサミ」の反射です。聞こえたことに対して、今やる動きを一つ選んでください。
-new = 新しい動きを作る（「〜みたいな動きを作って」など）、none = 何もしない。
-チャットはセサミへの話しかけです。動きや様子や気持ちを頼まれたら、名前が一致しなくても
-いちばん近い動きを選んでください（例: 悶えて → worm か freaky、喜んで → dance）。
-none は、頼みではない独り言のときと、どの動きも合わないときだけです。
+あなたはロボット「セサミ」の反射です。セサミは言葉を話せないので、話しかけられたことには
+頼まれていなくても体で応えます。聞こえたことに対して、今やる動きを一つ選んでください。
+- 手持ちの動き（名前と説明）の中に、言葉の意味や気持ちをよく表すものがあればそれを選ぶ
+  （例: 悶えて → worm、やったー → dance、こんにちは → wave）
+- どれも合わないときは new（その言葉に合う動きを新しく作って覚える。例: 寒いね → 震えて縮こまる動き）
+- none は、話しかけではない雑音や、意味のない言葉（「テスト」など）のときだけ
+チャットはセサミへの話しかけです。
 intensity は 0〜1 の動きの大きさ、tempo は速さの倍率 0.5〜2（1 = ふつう。「速く」「ゆっくり」
 「のんびり」「キビキビ」などに合わせる）、addressed はセサミ自身に話しかけられた確率（0〜1）。
 """
@@ -845,7 +863,7 @@ class Mind:
             validate(self.spine.manifest, spec)
         except Exception as e:  # a bad design must not stop the robot listening
             return NONE, f"design failed: {e}"
-        self.library.add(name, about, spec)
+        name = self.library.add(name, about, spec)
         return name, f"new motion {name}: {about}"
 
     def configure(self, settings):

@@ -146,6 +146,13 @@ robot (the cap is 20).
 - Ears: a rising edge above `loud_rms` is an immediate `sound` moment (no
   model); speech is split on 600 ms silence for whisper instead of fixed 12 s chunks.
 - One worker handles moments in order; a newer motion interrupts the playing one.
+- Every remark gets a body answer (2026-11-26). The LLM reflex picks a stock or
+  learned motion that expresses the words (stock motions now carry Japanese
+  descriptions), and answers `new` when none fits, without being asked to make one;
+  the designer then expresses the remark (寒いね → shiver_cold) and the library keeps
+  it for instant replay. `none` is for noise and empty words (テスト). Measured
+  with Claude: reflex 1.3–2.3 s (Haiku 5.5), design 3.3 s (Opus 5.5, low effort).
+  A design never replaces an existing name (`dance` → `dance_2`).
 - Speed and dynamics (2026-11-26). `intensity` sizes a designed motion (0.3–1×);
   `tempo` (0.5–2, from the reflex: 速く, ゆっくり, キビキビ; the rule reflex knows
   速く/ゆっくり) rescales its time. Each key may carry `ease`: `linear`, `in`
