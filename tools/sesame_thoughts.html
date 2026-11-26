@@ -85,7 +85,7 @@ details.table th:first-child, details.table td:first-child { text-align: left }
   <div class="row">
     <button class="mic" id="mic" type="button"></button>
     <label class="keep"><input type="checkbox" id="keep"> <span data-t="keep"></span></label>
-    <span class="lang" style="margin-left:auto"><a id="other" href="#"></a></span>
+    <button class="lang" id="other" type="button" style="margin-left:auto;border:1px solid var(--ring);background:var(--page);color:var(--text-secondary);border-radius:999px;padding:6px 12px;font:inherit;font-size:13px;cursor:pointer"></button>
   </div>
   <div class="now" id="now"></div>
   <div class="hint" id="hint" data-t="hint"></div>
@@ -103,10 +103,13 @@ details.table th:first-child, details.table td:first-child { text-align: left }
 if (!location.pathname.endsWith('/') && !location.pathname.endsWith('/thoughts'))
   location.replace(location.pathname + '/' + location.search);
 
-// Language: ?lang=en|ja, else the browser's. Speech recognition follows it, and the mind
-// answers in the language it hears, so reasons and motion names read the same way.
+// Language: one URL for both. The toggle remembers the choice on this phone; ?lang=en|ja
+// still works for links; otherwise the browser's language. Speech recognition follows it,
+// and the mind answers in the language it hears, so reasons and motion names match.
 const asked = new URLSearchParams(location.search).get('lang');
-const LANG = asked === 'en' || asked === 'ja' ? asked : (navigator.language || 'ja').startsWith('ja') ? 'ja' : 'en';
+let saved = null; try { saved = localStorage.getItem('sesame-lang') } catch (e) {}
+const LANG = ['en', 'ja'].includes(asked) ? asked : ['en', 'ja'].includes(saved) ? saved
+  : (navigator.language || 'ja').startsWith('ja') ? 'ja' : 'en';
 const STR = {
   ja: {
     talk: '話しかける', mic: '🎤 話しかける', listening: '● 聞いています', keep: 'ずっと聞く', other: 'English',
@@ -153,7 +156,10 @@ document.querySelectorAll('[data-t]').forEach(el => el.textContent = STR[el.data
 document.querySelectorAll('[data-t-placeholder]').forEach(el => el.placeholder = STR[el.dataset.tPlaceholder]);
 document.querySelectorAll('[data-t-aria]').forEach(el => el.setAttribute('aria-label', STR[el.dataset.tAria]));
 document.getElementById('other').textContent = STR.other;
-document.getElementById('other').href = '?lang=' + (LANG === 'ja' ? 'en' : 'ja');
+document.getElementById('other').onclick = () => {
+  try { localStorage.setItem('sesame-lang', LANG === 'ja' ? 'en' : 'ja') } catch (e) {}
+  location.replace(location.pathname);  // same URL, without ?lang
+};
 document.getElementById('live').textContent = STR.connecting;
 document.getElementById('list').innerHTML = `<p class="empty">${STR.empty}</p>`;
 document.documentElement.style.setProperty('--why', `"${STR.why}　"`);
