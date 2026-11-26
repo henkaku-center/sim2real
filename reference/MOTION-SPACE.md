@@ -113,6 +113,35 @@ The Sesame Mind designer appends it to its system prompt. It writes `axes`
 (periodic) and `axes_keys` (keyframes) specs, whose values are offsets from
 the centre, and the spine runs every frame through `project()`.
 
+## Interactive viewer
+
+`web/public/motion-space/index.html` is one self-contained file of about
+41 kB, with no network or dependencies. It shows:
+
+- a 3-D robot (drag to orbit), with the support polygon and the centre of
+  mass on the floor;
+- the four rule measures, live;
+- a map of any two axes, coloured by the rule that fails and with the
+  budget region marked. Click the map to move the robot;
+- axis sliders whose green band is each axis's range on its own;
+- trot buttons, with the floor scrolling at the simulated speed;
+- six walkthroughs for a talk: the eight axes, the hip budget, centre of
+  mass and leg collision, short legs, walking and turning;
+- the LLM text.
+
+It is generated from three sources: `sim/motion_space_viewer.html` (the
+page), `sim/motion_space.js` (a port of the model) and the YAML.
+`tests/test_motion_space_js.py` checks the port against Python with node and
+checks that the committed page is fresh. Rebuild it with
+`uv run python -m sim.motion_space --html`.
+
+The S3 firmware (`feat/s3-mind-chat`) serves the same page gzipped from flash
+at `http://sesame-s3-8b2c.local/space`; regenerate its header with
+`--firmware-header firmware/sesame-s3/space_ui.h`. When the page is served
+by the robot, a "実機に送る" switch arms run mode. It then sends a `pose`
+whenever the shown pose changes (at most 10 Hz) and a heartbeat every
+200 ms. Freeze and OUTPUTS OFF are next to it.
+
 ## Next hardware checks
 
 Record the results in `DECISIONS.md` when measured:

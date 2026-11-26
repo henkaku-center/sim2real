@@ -1,5 +1,18 @@
 # HANDOVER
 
+## Motion-space viewer — November 26, 2026
+
+An interactive viewer for the eight-axis motion space, built for the talk. It
+shows a 3-D robot, a feasibility map of any two axes (coloured by the rule
+that fails), axis sliders, six "discovery" walkthroughs, trot animations and
+the LLM text. The robot serves it at `http://sesame-s3-8b2c.local/space`. The
+robot now runs `feat/s3-mind-chat` @3de6e45, which is 824666e plus this page.
+Calibration (saved=1) and Wi-Fi were checked after the flash. When the page
+is served by the robot, "実機に送る" streams `pose` frames; this has not yet
+moved the real robot. The same page is the single, self-contained file
+`web/public/motion-space/index.html`, ready to copy into the presentation.
+See `reference/MOTION-SPACE.md`.
+
 ## Voice body — November 26, 2026
 
 Sound and voice move Sesame through a coupled-oscillator body: prosody drives
