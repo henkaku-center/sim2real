@@ -29,3 +29,6 @@ assets/cad/work/
 assets/cad/**/*.FCBak
 assets/cad/**/*.FCStd1
 assets/cad/**/*.FCStd.*
+
+# Pinned third-party models of the line twin (tools/fetch_line_models.py)
+assets/line/upstream/

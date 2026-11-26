@@ -1,0 +1,168 @@
+# Digital twin of a tabletop assembly line that builds a Sesame: the stations
+# around the robot, not the robot (manifest/robot.yaml and manifest/twin.yaml).
+#
+# This is a rehearsal model for a concept. It answers geometric questions with
+# numbers: does the line fit on the table, and can each arm reach the places its
+# steps name. It does not model grasping, soldering, printing or cycle time, and
+# nothing here was measured on real hardware.
+#
+# From this file `uv run python -m sim.line` writes
+#   assets/line/<layout>/reach.json   reach evidence for every robot step
+# and `uv run python -m sim.line --check` fails when that record is stale.
+# Third-party models are fetched at pinned commits by tools/fetch_line_models.py
+# into the ignored assets/line/upstream/ cache.
+#
+# Frame: origin at the centre of the table top; X along the line (left to right
+# seen from the front), Y away from the viewer, Z up; metres and degrees.
+#
+# Status of every geometric entry:
+#   upstream-model      geometry and kinematics from the project's published model
+#   unmeasured-nominal  catalogue or assumed dimension; not measured
+#   concept             invented for this line; no real counterpart yet
+
+schema_version: 1
+layout: tabletop-v0
+
+table:
+  size: [2.4, 0.9]
+  thickness: 0.03
+  status: concept
+  note: A large workbench. The trailer keyframes that inspired this layout show a shorter table.
+
+machines:
+  so101:
+    name: SO-101 follower arm
+    project: https://github.com/TheRobotStudio/SO-ARM100
+    licence: Apache-2.0
+    commit: 141aea7bcac2744d92998e30268c413202a56f96
+    fetch: {dir: so-arm100, paths: [Simulation/SO101, LICENSE]}
+    model: so-arm100/Simulation/SO101/so101_new_calib.xml
+    grippers: {main: gripperframe}
+    status: upstream-model
+  openarm:
+    name: OpenArm 2.0 bimanual on pedestal
+    project: https://github.com/enactic/openarm_mujoco
+    licence: Apache-2.0
+    commit: 102317900868c5619d06a45c415c28a959b95ccd
+    fetch: {dir: openarm_mujoco, paths: [v2, LICENSE]}
+    model: openarm_mujoco/v2/pedestal/openarm_pedestal.xml
+    grippers: {left: left_ee_control_point, right: right_ee_control_point}
+    status: upstream-model
+  sesame:
+    name: Sesame, course internal-frame-s3 design
+    project: https://github.com/dorianborian/sesame-robot
+    licence: Apache-2.0
+    model: repo:models/internal-frame-s3.xml
+    status: upstream-model
+    note: This repository's generated twin; see manifest/twin.yaml for its own evidence limits.
+  voron:
+    name: Voron 2.4, 250 mm build
+    project: https://github.com/VoronDesign/Voron-2
+    licence: GPL-3.0
+    status: unmeasured-nominal
+    box: [0.41, 0.41, 0.43]
+    bed: {size: [0.25, 0.25], height: 0.12}
+    note: >-
+      Placeholder box and bed plate with assumed outer dimensions and bed height.
+      No simulation model is used and the door, gantry and frame are not modelled.
+
+# Placed machine instances. `yaw` turns the machine about Z.
+instances:
+  printer_1: {machine: voron, pos: [-0.95, 0.22, 0.0]}
+  printer_2: {machine: voron, pos: [-0.52, 0.22, 0.0]}
+  printer_3: {machine: voron, pos: [-0.09, 0.22, 0.0]}
+  harvest_arm: {machine: so101, pos: [-0.52, -0.20, 0.0], yaw: 90}
+  kit_arm: {machine: so101, pos: [0.22, -0.02, 0.0], yaw: -90}
+  assembly_arms: {machine: openarm, pos: [1.0, 0.28, 0.0], yaw: -90}
+  new_sesame: {machine: sesame, pos: [0.74, -0.28, 0.03], yaw: -90}
+
+# Passive fixtures: open trays, the kit pallet and the assembly jig.
+fixtures:
+  parts_tray: {kind: tray, pos: [-0.22, -0.28, 0.0], size: [0.18, 0.12, 0.03], colour: yellow, holds: printed parts}
+  servo_tray: {kind: tray, pos: [0.02, -0.30, 0.0], size: [0.18, 0.12, 0.03], colour: pink, holds: servos}
+  pcb_tray: {kind: tray, pos: [0.22, -0.30, 0.0], size: [0.18, 0.12, 0.03], colour: mint, holds: circuit boards}
+  oled_tray: {kind: tray, pos: [0.42, -0.30, 0.0], size: [0.18, 0.12, 0.03], colour: yellow, holds: displays}
+  pallet: {kind: pallet, pos: [0.48, -0.04, 0.0], size: [0.20, 0.16, 0.012], holds: one kit}
+  jig: {kind: jig, pos: [1.0, -0.12, 0.0], size: [0.16, 0.12, 0.02], holds: board nest and assembly jig}
+
+# Named points that steps refer to. Left and right are as seen from the front;
+# the assembly arms face the viewer, so their left gripper works on the right. `at` is a fixture or instance; `offset` is
+# added to its position (for a printer, to the centre of its bed plate).
+targets:
+  bed_1: {at: printer_1, surface: bed, offset: [0, 0, 0.03]}
+  bed_2: {at: printer_2, surface: bed, offset: [0, 0, 0.03]}
+  bed_3: {at: printer_3, surface: bed, offset: [0, 0, 0.03]}
+  parts_tray: {at: parts_tray, offset: [0, 0, 0.06]}
+  servo_tray: {at: servo_tray, offset: [0, 0, 0.06]}
+  pcb_tray: {at: pcb_tray, offset: [0, 0, 0.06]}
+  oled_tray: {at: oled_tray, offset: [0, 0, 0.06]}
+  pallet: {at: pallet, offset: [0, 0, 0.05]}
+  jig_left: {at: jig, offset: [-0.05, 0, 0.06]}
+  jig_right: {at: jig, offset: [0.05, 0, 0.06]}
+
+reach:
+  tolerance_m: 0.005
+  restarts: 24
+  seed: 20261126
+  note: >-
+    Position-only inverse kinematics for the gripper point of the published
+    model, inside its joint limits. Tool orientation, collisions with the
+    printer frame or other machines, payload and grasping are not checked.
+
+# The loop, in order. `actor` is an instance, `human` or `agent`. `visits` lists,
+# per gripper, the targets a robot must reach. `evidence` is what is known about the step in
+# the real world, as a claim about practice, not about this model.
+steps:
+  - id: print
+    actor: printer_1
+    does: Print the shell, frame and leg parts.
+    evidence: works-today
+  - id: harvest
+    actor: harvest_arm
+    does: Take finished parts off each printer bed and put them in the parts tray.
+    visits: {main: [bed_1, bed_2, bed_3, parts_tray]}
+    evidence: demo-level
+  - id: order
+    actor: agent
+    does: Prepare the board and parts order from the design; a person approves the purchase.
+    evidence: demo-level
+  - id: unpack
+    actor: human
+    does: Unpack deliveries into the servo, board and display trays.
+    evidence: works-today
+  - id: kit
+    actor: kit_arm
+    does: Collect one kit from the trays onto the pallet.
+    visits: {main: [parts_tray, servo_tray, pcb_tray, oled_tray, pallet]}
+    evidence: demo-level
+  - id: solder
+    actor: assembly_arms
+    does: Hold the board in its nest with one gripper and solder its headers with the other.
+    visits: {left: [jig_right], right: [jig_left]}
+    evidence: concept
+  - id: flash
+    actor: agent
+    does: Flash and test the board over USB-C.
+    evidence: works-today
+  - id: assemble
+    actor: assembly_arms
+    does: Fit servos, legs and the head shell.
+    visits: {left: [jig_right], right: [jig_left, pallet]}
+    evidence: concept
+  - id: walk_off
+    actor: new_sesame
+    does: Stand up and walk off the line.
+    evidence: works-today
+
+# One scripted rehearsal: joint-space motion through the named targets, with the
+# carried item following the gripper. Kinematic only; no grasp physics.
+rehearsals:
+  kit_servo:
+    step: kit
+    actor: kit_arm
+    gripper: main
+    item: {name: servo, size: [0.023, 0.012, 0.029], colour: blue}
+    pick: servo_tray
+    place: pallet
+    lift_m: 0.07
+    seconds: 6.0

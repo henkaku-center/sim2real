@@ -21,6 +21,7 @@ uv run pytest                # full test suite
 uv run python sim/view.py    # native viewer (macOS: uv run mjpython sim/view.py)
 uv run python sim/bench.py   # physics step-rate benchmark
 uv run python -m sim.twin --check   # generated twins and dynamics records are current
+uv run python -m sim.line --summary # assembly-line twin findings (see assets/line/README.md)
 cd web && npm ci && npm run dev   # browser sim at http://localhost:5173
 ```
 
