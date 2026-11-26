@@ -2,7 +2,7 @@
 # cloud-run.sh prepares (firmware, manifest, reference, tools and the course
 # body's leg-clearance evidence); the full repository is not needed.
 FROM python:3.12-slim-bookworm
-COPY --from=ghcr.io/astral-sh/uv:0.9.11 /uv /usr/local/bin/uv
+COPY --from=ghcr.io/astral-sh/uv:0.12.19 /uv /usr/local/bin/uv
 WORKDIR /opt/sim2real
 COPY . .
 RUN uv sync --project tools/voice_demo --locked --extra google --no-dev --python /usr/local/bin/python3 \
