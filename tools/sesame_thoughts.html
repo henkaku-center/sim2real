@@ -122,6 +122,7 @@ h2 { font-family: var(--display); font-weight: 400; font-size: 28px; margin: 40p
 .card .said { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap }
 .card .text { font-family: var(--display); font-size: 23px; line-height: 1.3; color: var(--yellow) }
 .card .when { color: var(--muted); font-size: 14px; font-variant-numeric: tabular-nums }
+.card .meant { margin-top: 4px; font-size: 18px; font-weight: 800; color: var(--yamabuki) }
 .steps { margin: 12px 0 0 6px; border-left: 3px solid var(--night-3); padding-left: 16px }
 .step { position: relative; padding: 4px 0 10px }
 .step::before { content: ""; position: absolute; left: -24px; top: 9px; width: 13px; height: 13px; border-radius: 50%;
@@ -223,7 +224,7 @@ const STR = {
     allow: 'マイクを許可してください', misheard: e => `聞き取れませんでした（${e}）`,
     q: t => '「' + t + '」', noise: '（物音）', reflex: '反射', design: '振付', motion: '動き',
     candidates: n => `候補 ${n}`, strength: n => `大きさ ${n}`, speed: n => `速さ ×${n}`, addressed: n => `話しかけ ${n}%`,
-    why: '理由', none: '何もしない', made: '新しく作った', stock: '内蔵の動き', reuse: '覚えた動きを再生',
+    why: '理由', meant: '聞き直し', none: '何もしない', made: '新しく作った', stock: '内蔵の動き', reuse: '覚えた動きを再生',
     nochart: 'ロボットに入っている動き（グラフなし）', table: '数値で見る', keyend: 'キーの終わり', ease: '移り方',
     chart: '動きの時間変化', src: {chat: 'チャット', voice: '声', radio: 'ラジオ', sound: '物音', button: 'ボタン', pad: 'パッド'},
     padsTitle: 'パッド', speedLbl: '速さ', sizeLbl: '大きさ', stockLbl: 'ロボットに最初から入っている動き',
@@ -255,7 +256,7 @@ const STR = {
     allow: 'Please allow the microphone', misheard: e => `Didn’t catch that (${e})`,
     q: t => '“' + t + '”', noise: '(a sound)', reflex: 'Reflex', design: 'Choreography', motion: 'Movement',
     candidates: n => `${n} choices`, strength: n => `size ${n}`, speed: n => `speed ×${n}`, addressed: n => `addressed ${n}%`,
-    why: 'Why', none: 'Does nothing', made: 'Made a new movement', stock: 'Built-in movement', reuse: 'Replays a learned movement',
+    why: 'Why', meant: 'Probably meant', none: 'Does nothing', made: 'Made a new movement', stock: 'Built-in movement', reuse: 'Replays a learned movement',
     nochart: 'Built into the robot (no chart)', table: 'Show numbers', keyend: 'Key ends', ease: 'Ease',
     chart: 'Movement over time', src: {chat: 'chat', voice: 'voice', radio: 'radio', sound: 'sound', button: 'button', pad: 'pad'},
     padsTitle: 'Pads', speedLbl: 'Speed', sizeLbl: 'Size', stockLbl: 'Built into the robot',
@@ -387,8 +388,9 @@ function card(e, i) {
   }
   const [k, said] = kindOf(e);
   if (e.addressed != null) chips.push(STR.addressed(Math.round(e.addressed * 100)));
+  const meant = e.meant && e.meant !== e.text ? `<div class="meant">${STR.meant}: ${STR.q(esc(e.meant))}</div>` : '';
   let html = `<article class="card"><div class="said"><span class="text">${e.text ? STR.q(esc(e.text)) : STR.noise}</span>
-    <span class="when">${time}, ${STR.src[e.source] || esc(e.source)}</span></div><div class="steps">
+    <span class="when">${time}, ${STR.src[e.source] || esc(e.source)}</span></div>${meant}<div class="steps">
     <div class="step ${k}"><div class="what">${STR.reflex}<span>${esc(e.by)} ${fmt(e.reflex_ms / 1000)} s${e.considered ? ', ' + STR.candidates(e.considered) : ''}</span></div>
     <div class="choice">${said}</div><div class="chips">${chips.map(c => `<span class="chip">${c}</span>`).join('')}</div>
     ${e.why ? `<div class="why">${STR.why}: ${esc(e.why)}</div>` : ''}${e.note && !e.design ? `<div class="err">${esc(e.note)}</div>` : ''}</div>`;

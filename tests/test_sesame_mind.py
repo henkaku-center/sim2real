@@ -860,3 +860,20 @@ def test_hearer_decodes_with_ffmpeg_and_drops_silence_and_noise(monkeypatch):
     assert hear(b"a") == "こんにちは" and runs[0][0] == "ja" and runs[0][1][-2:] == ("--prompt", sm.PROMPT)
     assert hear(b"b", "en") == "" and runs[1][0] == "en" and "--prompt" not in runs[1][1]  # outro = noise
     assert hear(b"c") == "" and len(runs) == 2  # silence never reaches whisper
+
+
+def test_llm_reflex_reads_misheard_speech_back_and_the_log_keeps_it(tmp_path):
+    class Brain:
+        by = "fake"
+
+        def ask(self, system, user, schema):
+            assert "盆踊り" in system and "meant" in schema["required"]
+            return json.dumps({"action": sm.NEW, "intensity": 0.6, "tempo": 1, "addressed": 0.9,
+                               "why": "盆踊りを頼まれた", "meant": "盆踊りをしてください"})
+
+    spine = FakeSpine()
+    mind = sm.Mind(sm.LLMReflex(Brain()), sm.Library(tmp_path / "lib.json"), sm.Memory(tmp_path), spine,
+                   FakeDesigner())
+    entry = mind.handle(sm.Moment("chat", "ボーン踊りをしてください"))
+    assert entry["meant"] == "盆踊りをしてください" and entry["text"] == "ボーン踊りをしてください"
+    assert "盆踊り" in sm.DESIGN_SYSTEM  # the designer reads it back too (it runs in parallel)

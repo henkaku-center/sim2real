@@ -110,6 +110,7 @@ class Decision:
     tempo: float = 1.0  # speed factor for designed motions (0.5 = half speed, 2 = twice)
     why: str = ""  # one line of reasoning, shown in the thought log
     considered: int = 0  # how many choices the reflex was offered
+    meant: str = ""  # what was probably said, when speech recognition misheard it
 
 
 # ---------------------------------------------------------------- specs
@@ -382,7 +383,16 @@ class JevReflex:
 # ---------------------------------------------------------------- designer (Claude)
 
 
-DESIGN_SYSTEM = """\
+# Speech goes through whisper on a Pi (small model), which mishears short or unusual words.
+# The models read the text back as sounds before thinking; the examples are real ones.
+MISHEARD = """\
+聞こえたことは音声認識を通っているので、聞き間違いや変な漢字を含むことがあります
+（実際の例: 「ボーン踊り」「ボウ踊り」→盆踊り、「5気振り」→ゴキブリ、「よっ払って」→酔っ払って、
+「全頭部用」→伝統舞踊）。そのままでは意味が通らないときは、音の近い言葉で意味が通るように
+読み直してから考えてください。
+"""
+
+DESIGN_SYSTEM = MISHEARD + """\
 あなたは四足歩行ロボット「セサミ」（8軸サーボ、各脚に hip と foot）の振付師です。
 聞こえた言葉や指示から、新しい動きを一つ小さな設計図として作ってください。
 動きを頼まれていない言葉（「寒いね」「おはよう」など）なら、それを聞いたセサミの気持ちや反応を
@@ -539,7 +549,8 @@ REFLEX_SYSTEM = """\
 聞こえた言葉と同じ言語で書いてください（英語で話しかけられたら英語）。どの言語でも同じように体で応えます。
 intensity は 0〜1 の動きの大きさ、tempo は速さの倍率 0.5〜2（1 = ふつう。「速く」「ゆっくり」
 「のんびり」「キビキビ」などに合わせる）、addressed はセサミ自身に話しかけられた確率（0〜1）。
-"""
+meant には、読み直した後の文を書いてください（聞き間違いがなければ聞こえた文のまま）。
+""" + "\n" + MISHEARD
 
 
 class LLMReflex:
@@ -554,10 +565,10 @@ class LLMReflex:
                 if self.use_stock or v["spec"]["kind"] != "firmware"}
         options = list(menu) + [NEW, NONE]
         schema = {"type": "object", "additionalProperties": False,
-                  "required": ["action", "intensity", "tempo", "addressed", "why"],
+                  "required": ["action", "intensity", "tempo", "addressed", "why", "meant"],
                   "properties": {"action": {"type": "string", "enum": options}, "intensity": {"type": "number"},
                                  "tempo": {"type": "number"}, "addressed": {"type": "number"},
-                                 "why": {"type": "string"}}}
+                                 "why": {"type": "string"}, "meant": {"type": "string"}}}
         user = (f"これまでに作った動き: {json.dumps(menu, ensure_ascii=False) if menu else '（まだない）'}\n"
                 f"メモ: {notes[-800:]}\n"
                 f"聞こえたこと（{moment.source}, 音量 {moment.loudness:.0f}{', 急な音' if moment.onset else ''}）:"
@@ -566,7 +577,8 @@ class LLMReflex:
         return Decision(d["action"] if d["action"] in options else NONE,
                         min(1.0, max(0.0, float(d["intensity"]))), float(d["addressed"]), by=self.by,
                         tempo=min(max(float(d.get("tempo", 1.0)), TEMPO[0]), TEMPO[1]),
-                        why=str(d.get("why", "")), considered=len(options))
+                        why=str(d.get("why", "")), considered=len(options),
+                        meant=str(d.get("meant", "")).strip()[:200])
 
 
 # ---------------------------------------------------------------- settings
@@ -986,7 +998,8 @@ class Mind:
                  **({"design": self.designed} if self.designed else {})}
         self.memory.add(entry)
         speed = f" ×{decision.tempo:g}" if decision.tempo != 1 else ""
-        print(f"🧠 {moment.source}「{moment.text}」→ {action}{speed} ({decision.by}, {reflex_ms:.0f} ms)"
+        meant = f"（→「{decision.meant}」）" if decision.meant and decision.meant != moment.text else ""
+        print(f"🧠 {moment.source}「{moment.text}」{meant}→ {action}{speed} ({decision.by}, {reflex_ms:.0f} ms)"
               f"{note and ' ' + note}", flush=True)
         if action == NONE or self.library.items[action]["spec"]["kind"] != "firmware":
             self.cue("idle")  # firmware motions set their own face
