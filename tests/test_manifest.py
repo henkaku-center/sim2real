@@ -72,7 +72,7 @@ def test_hip_limits_are_the_course_body_values(manifest, joints):
     assert all(j["limits_deg"] == [0, 180] for j in joints if j["role"] == "foot")
     # Calibration saved under the identity these limits replaced stays readable.
     assert manifest["hardware_profiles"]["sesame_s3"]["calibration_compatible_manifest_ids"] == [
-        "e669b916d178ac0a", "bd7675604b98ae46", "8d75c0ea0b2c68e7"]
+        "e669b916d178ac0a", "bd7675604b98ae46", "8d75c0ea0b2c68e7", "fe108150ee38fa10"]
 
 
 def test_leg_and_role_cover_the_quadruped(joints):

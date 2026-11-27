@@ -68,7 +68,11 @@ def test_flatten_wave(doc, manifest):
     events = flatten(doc["motions"]["wave"], manifest.raw["poses"])
     assert events[0].time_ms == 0.0
     assert events[0].targets_deg["R1"] == 135  # stand pose applied at t=0
-    assert duration_ms(events) == pytest.approx(200 + 200 + 300 + 4 * 600)
+    assert duration_ms(events) == pytest.approx(200 + 300 + 300 + 4 * 600)
+    # The rear-right foot folds and the front-right hip swings forward before the paw lifts (D28).
+    fold, lift = events[1], events[2]
+    assert fold.targets_deg == {"R4": 80, "L2": 90, "R1": 180} and lift.targets_deg == {"L3": 180}
+    assert lift.time_ms - fold.time_ms == 300
     # schedule maps to channels and internal radians monotonically
     schedule = ctrl_schedule(events, manifest, 0.002)
     steps = [s for s, _, _ in schedule]

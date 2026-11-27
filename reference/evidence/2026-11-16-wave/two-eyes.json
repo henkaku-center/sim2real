@@ -1,0 +1,446 @@
+{
+  "status": "simulated-unmeasured-parameters",
+  "engine": "3.10.0",
+  "design": "internal-frame-s3-two-eyes",
+  "limits": {
+    "penetration_mm": 1.0,
+    "tilt_deg": 20.0,
+    "wave_contact_fraction": 0.01,
+    "tilt_change_deg": 1.0,
+    "penetration_change_mm": 0.25,
+    "contact_fraction_change": 0.02
+  },
+  "converged": false,
+  "accepted": false,
+  "input_sha256": {
+    "sim/robustness.py": "ba0fb9226a943915db05f080f8cf5a9bdd7221bcdd1d91b58e889b6b9daf34f1",
+    "manifest/motions.yaml": "d683ebab22369570b30663ed3a20da5aeb106f93bd03c8f6c36f25ea4b455cfb",
+    "manifest/twin.yaml": "891b4a7f2267ae59db4f9b7a4c4dd52d4c9df887f6b00824ba3abdd1f5331423",
+    "manifest/robot.yaml": "ebc5f147591d774be05113fa7700e1698ab3ad812afda1e1de7ed0910725c0f2"
+  },
+  "runs": [
+    {
+      "variation": [
+        0.0,
+        0.0,
+        "box",
+        [
+          1.0,
+          1.0
+        ]
+      ],
+      "result": {
+        "upright": true,
+        "feet_in_air": [
+          "L3"
+        ],
+        "air_fraction": {
+          "R4": 0.022,
+          "R3": 0.0,
+          "L3": 1.0,
+          "L4": 0.0
+        },
+        "minimum_up_axis": 0.976718,
+        "maximum_tilt_deg": 12.388,
+        "maximum_floor_penetration_mm": 4.91,
+        "body_floor_contact_s": 0.0,
+        "finite": true,
+        "solver_warnings": 0,
+        "timestep_s": 0.002,
+        "wave_contact_fraction": 0.0,
+        "wave_maximum_tilt_deg": 12.387675184497326
+      },
+      "failures": [
+        "excessive-floor-penetration"
+      ]
+    },
+    {
+      "variation": [
+        0.0,
+        0.0,
+        "box",
+        [
+          1.0,
+          1.0
+        ]
+      ],
+      "result": {
+        "upright": true,
+        "feet_in_air": [
+          "L3"
+        ],
+        "air_fraction": {
+          "R4": 0.003,
+          "R3": 0.0,
+          "L3": 1.0,
+          "L4": 0.0
+        },
+        "minimum_up_axis": 0.978995,
+        "maximum_tilt_deg": 11.764,
+        "maximum_floor_penetration_mm": 3.129,
+        "body_floor_contact_s": 0.0,
+        "finite": true,
+        "solver_warnings": 0,
+        "timestep_s": 0.001,
+        "wave_contact_fraction": 0.0,
+        "wave_maximum_tilt_deg": 11.764063523896528
+      },
+      "failures": [
+        "excessive-floor-penetration"
+      ]
+    },
+    {
+      "variation": [
+        0.0,
+        0.0,
+        "box",
+        [
+          1.0,
+          1.0
+        ]
+      ],
+      "result": {
+        "upright": true,
+        "feet_in_air": [
+          "L3"
+        ],
+        "air_fraction": {
+          "R4": 0.0,
+          "R3": 0.0,
+          "L3": 1.0,
+          "L4": 0.0
+        },
+        "minimum_up_axis": 0.980258,
+        "maximum_tilt_deg": 11.404,
+        "maximum_floor_penetration_mm": 3.116,
+        "body_floor_contact_s": 0.0,
+        "finite": true,
+        "solver_warnings": 0,
+        "timestep_s": 0.0005,
+        "wave_contact_fraction": 0.0,
+        "wave_maximum_tilt_deg": 11.381060791788888
+      },
+      "failures": [
+        "excessive-floor-penetration"
+      ]
+    },
+    {
+      "variation": [
+        -15.0,
+        -8.0,
+        "box",
+        [
+          0.6,
+          0.5
+        ]
+      ],
+      "result": {
+        "upright": true,
+        "feet_in_air": [
+          "L3"
+        ],
+        "air_fraction": {
+          "R4": 0.19,
+          "R3": 0.041,
+          "L3": 1.0,
+          "L4": 0.034
+        },
+        "minimum_up_axis": 0.964351,
+        "maximum_tilt_deg": 15.345,
+        "maximum_floor_penetration_mm": 13.438,
+        "body_floor_contact_s": 0.0,
+        "finite": true,
+        "solver_warnings": 0,
+        "timestep_s": 0.002,
+        "wave_contact_fraction": 0.0,
+        "wave_maximum_tilt_deg": 15.344674222668731
+      },
+      "failures": [
+        "excessive-floor-penetration"
+      ]
+    },
+    {
+      "variation": [
+        -15.0,
+        -8.0,
+        "box",
+        [
+          0.6,
+          0.5
+        ]
+      ],
+      "result": {
+        "upright": true,
+        "feet_in_air": [
+          "L3"
+        ],
+        "air_fraction": {
+          "R4": 0.013,
+          "R3": 0.01,
+          "L3": 1.0,
+          "L4": 0.008
+        },
+        "minimum_up_axis": 0.970942,
+        "maximum_tilt_deg": 13.846,
+        "maximum_floor_penetration_mm": 3.918,
+        "body_floor_contact_s": 0.0,
+        "finite": true,
+        "solver_warnings": 0,
+        "timestep_s": 0.001,
+        "wave_contact_fraction": 0.0,
+        "wave_maximum_tilt_deg": 13.846018044427058
+      },
+      "failures": [
+        "excessive-floor-penetration"
+      ]
+    },
+    {
+      "variation": [
+        -15.0,
+        -8.0,
+        "box",
+        [
+          0.6,
+          0.5
+        ]
+      ],
+      "result": {
+        "upright": true,
+        "feet_in_air": [
+          "L3"
+        ],
+        "air_fraction": {
+          "R4": 0.001,
+          "R3": 0.002,
+          "L3": 1.0,
+          "L4": 0.002
+        },
+        "minimum_up_axis": 0.974445,
+        "maximum_tilt_deg": 12.981,
+        "maximum_floor_penetration_mm": 1.923,
+        "body_floor_contact_s": 0.0,
+        "finite": true,
+        "solver_warnings": 0,
+        "timestep_s": 0.0005,
+        "wave_contact_fraction": 0.0,
+        "wave_maximum_tilt_deg": 12.980801181818643
+      },
+      "failures": [
+        "excessive-floor-penetration"
+      ]
+    },
+    {
+      "variation": [
+        15.0,
+        8.0,
+        "box",
+        [
+          0.6,
+          0.5
+        ]
+      ],
+      "result": {
+        "upright": true,
+        "feet_in_air": [
+          "L3",
+          "R4"
+        ],
+        "air_fraction": {
+          "R4": 1.0,
+          "R3": 0.002,
+          "L3": 1.0,
+          "L4": 0.007
+        },
+        "minimum_up_axis": 0.994503,
+        "maximum_tilt_deg": 6.01,
+        "maximum_floor_penetration_mm": 6.267,
+        "body_floor_contact_s": 0.0,
+        "finite": true,
+        "solver_warnings": 0,
+        "timestep_s": 0.002,
+        "wave_contact_fraction": 0.0,
+        "wave_maximum_tilt_deg": 2.284782806361995
+      },
+      "failures": [
+        "excessive-floor-penetration"
+      ]
+    },
+    {
+      "variation": [
+        15.0,
+        8.0,
+        "box",
+        [
+          0.6,
+          0.5
+        ]
+      ],
+      "result": {
+        "upright": true,
+        "feet_in_air": [
+          "L3",
+          "R4"
+        ],
+        "air_fraction": {
+          "R4": 1.0,
+          "R3": 0.0,
+          "L3": 1.0,
+          "L4": 0.001
+        },
+        "minimum_up_axis": 0.994654,
+        "maximum_tilt_deg": 5.927,
+        "maximum_floor_penetration_mm": 5.543,
+        "body_floor_contact_s": 0.0,
+        "finite": true,
+        "solver_warnings": 0,
+        "timestep_s": 0.001,
+        "wave_contact_fraction": 0.0,
+        "wave_maximum_tilt_deg": 1.8157406934434777
+      },
+      "failures": [
+        "excessive-floor-penetration"
+      ]
+    },
+    {
+      "variation": [
+        15.0,
+        8.0,
+        "box",
+        [
+          0.6,
+          0.5
+        ]
+      ],
+      "result": {
+        "upright": true,
+        "feet_in_air": [
+          "L3",
+          "R4"
+        ],
+        "air_fraction": {
+          "R4": 1.0,
+          "R3": 0.0,
+          "L3": 0.994,
+          "L4": 0.0
+        },
+        "minimum_up_axis": 0.995056,
+        "maximum_tilt_deg": 5.7,
+        "maximum_floor_penetration_mm": 4.64,
+        "body_floor_contact_s": 0.0,
+        "finite": true,
+        "solver_warnings": 0,
+        "timestep_s": 0.0005,
+        "wave_contact_fraction": 0.0,
+        "wave_maximum_tilt_deg": 1.7786416383485983
+      },
+      "failures": [
+        "excessive-floor-penetration"
+      ]
+    },
+    {
+      "variation": [
+        15.0,
+        8.0,
+        "hull",
+        [
+          1.6,
+          1.2
+        ]
+      ],
+      "result": {
+        "upright": true,
+        "feet_in_air": [
+          "L3"
+        ],
+        "air_fraction": {
+          "R4": 0.059,
+          "R3": 0.0,
+          "L3": 1.0,
+          "L4": 0.0
+        },
+        "minimum_up_axis": 0.977032,
+        "maximum_tilt_deg": 12.304,
+        "maximum_floor_penetration_mm": 7.199,
+        "body_floor_contact_s": 0.0,
+        "finite": true,
+        "solver_warnings": 0,
+        "timestep_s": 0.002,
+        "wave_contact_fraction": 0.0,
+        "wave_maximum_tilt_deg": 12.26947242594243
+      },
+      "failures": [
+        "excessive-floor-penetration"
+      ]
+    },
+    {
+      "variation": [
+        15.0,
+        8.0,
+        "hull",
+        [
+          1.6,
+          1.2
+        ]
+      ],
+      "result": {
+        "upright": true,
+        "feet_in_air": [
+          "L3"
+        ],
+        "air_fraction": {
+          "R4": 0.003,
+          "R3": 0.0,
+          "L3": 1.0,
+          "L4": 0.0
+        },
+        "minimum_up_axis": 0.978227,
+        "maximum_tilt_deg": 11.978,
+        "maximum_floor_penetration_mm": 6.563,
+        "body_floor_contact_s": 0.0,
+        "finite": true,
+        "solver_warnings": 0,
+        "timestep_s": 0.001,
+        "wave_contact_fraction": 0.0,
+        "wave_maximum_tilt_deg": 11.978079903593134
+      },
+      "failures": [
+        "excessive-floor-penetration"
+      ]
+    },
+    {
+      "variation": [
+        15.0,
+        8.0,
+        "hull",
+        [
+          1.6,
+          1.2
+        ]
+      ],
+      "result": {
+        "upright": true,
+        "feet_in_air": [
+          "L3"
+        ],
+        "air_fraction": {
+          "R4": 0.001,
+          "R3": 0.0,
+          "L3": 1.0,
+          "L4": 0.0
+        },
+        "minimum_up_axis": 0.978774,
+        "maximum_tilt_deg": 11.826,
+        "maximum_floor_penetration_mm": 6.053,
+        "body_floor_contact_s": 0.0,
+        "finite": true,
+        "solver_warnings": 0,
+        "timestep_s": 0.0005,
+        "wave_contact_fraction": 0.0,
+        "wave_maximum_tilt_deg": 11.82602159777053
+      },
+      "failures": [
+        "excessive-floor-penetration"
+      ]
+    }
+  ]
+}

@@ -692,3 +692,21 @@ Servo leads are still not in the mass table.
   RMS no longer improve; those two assertions are now bounds.
 - **Not done.** No part was weighed. Weighing the assembled carrier would
   replace the least certain rows.
+
+## D28. Wave candidate held by numerical validation (2026-11-16)
+
+The instructor observed real forward tipping and proposed moving a rear leg
+first. A candidate in `manifest/motions.yaml` folds R4 first, waits 300 ms and
+then lifts L3; it also moves R1 forward to 180°. This second change was selected
+in simulation, not physically tested. See `reference/WAVE-RELIABILITY.md`.
+
+The new `sim.robustness` development grid distinguishes coarse outcome agreement
+from numerical acceptance. Final uprightness alone hid transient failures.
+The independent `--check-wave` gate currently rejects both designs because of
+excessive penetration and timestep dependence. No thresholds were widened to
+make it pass. The command and APS PR 81 remain undeployed pending resolution.
+
+Motion changes alter firmware identity. The candidate reads the previous
+`fe108150ee38fa10` saved-calibration records without rewriting them. The
+historical body-v1 proof allows only this exact firmware metadata difference;
+geometry, executed results and FAIL-DRAFT flags are unchanged.

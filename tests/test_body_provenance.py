@@ -9,6 +9,9 @@ import pytest
 import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
+EXCEPTED = {'operation': 'replace', 'path': ['hardware_profiles', 'sesame_s3', 'calibration_compatible_manifest_ids'],
+            'original_value': ['e669b916d178ac0a', 'bd7675604b98ae46', '8d75c0ea0b2c68e7'],
+            'value': ['e669b916d178ac0a', 'bd7675604b98ae46', '8d75c0ea0b2c68e7', 'fe108150ee38fa10']}
 sys.path.insert(0, str(ROOT / 'tools'))
 import revalidate_body_provenance as provenance
 
@@ -95,9 +98,14 @@ def test_committed_revalidation_is_true_and_keeps_hold():
     assert proof['original_commit'] == provenance.AUDITED_REPORT_COMMIT == '828862d1442db375b68e6594a39d6773eac281d4'
     assert proof['validator_executed'] is False
     assert proof['method'] == 'executed-manifest-exact-v4'
-    # The validator ran with the manifest as it is: nothing is excepted.
-    assert proof['allowed_manifest_changes'] == provenance.ALLOWED_MANIFEST_CHANGES == []
-    assert proof['original_manifest_yaml'].encode() == (ROOT / provenance.MANIFEST).read_bytes()
+    # One firmware-only difference from the executed manifest is excepted: the
+    # fourth readable calibration identity (DECISIONS.md D28).
+    assert proof['allowed_manifest_changes'] == provenance.ALLOWED_MANIFEST_CHANGES == [EXCEPTED]
+    executed, current = (yaml.safe_load(text) for text in (proof['original_manifest_yaml'], (ROOT / provenance.MANIFEST).read_text()))
+    profile = current['hardware_profiles']['sesame_s3']
+    assert profile['calibration_compatible_manifest_ids'] == EXCEPTED['value']
+    profile['calibration_compatible_manifest_ids'] = EXCEPTED['original_value']
+    assert executed == current
     assert proof['original_input_hashes'][provenance.MANIFEST] == 'a9ae157f0485eaaa2f0e5fbf4748c61567922420a1d02e5689b80066d2ea13a5'
     report = json.loads((ROOT / provenance.REPORT).read_bytes())
     assert report['status'] == 'FAIL-DRAFT' and not report['release_ready'] and not report['geometry_pass']
@@ -125,10 +133,10 @@ def test_refresh_preserves_reconstructible_execution_and_is_idempotent(fixture_r
     assert (root / provenance.REPORT).read_bytes() == first
 
 
-def test_current_baseline_excepts_no_manifest_difference(fixture_repo):
+def test_current_baseline_excepts_one_firmware_only_difference(fixture_repo):
     root, baseline, files = fixture_repo
     old = files[provenance.MANIFEST]
-    assert provenance.ALLOWED_MANIFEST_CHANGES == [] and old == (ROOT / provenance.MANIFEST).read_bytes()
+    assert provenance.ALLOWED_MANIFEST_CHANGES == [EXCEPTED] and old != (ROOT / provenance.MANIFEST).read_bytes()
     expected = provenance.sha(provenance.encoded(yaml.safe_load(old)))
     assert provenance.effective_identity(old, (ROOT / provenance.MANIFEST).read_bytes()) == expected
     provenance.refresh(root, baseline)

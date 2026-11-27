@@ -11,11 +11,11 @@
   "generated_on": "Darwin x86_64, Python 3.12.13",
   "inputs": {
     "models/internal-frame-s3.xml": "5457896080f18f9f6ff1b06568c0ade07bb4229886f975fb153f885dd69bea2c",
-    "assets/printing/internal-frame-s3/dynamics.json": "0be5273f5929a072d294b2d6d293420b93b527a34ca17fbd9abda49d2ba32653",
+    "assets/printing/internal-frame-s3/dynamics.json": "abffa996ec5022b9503cbf610d8910bd96dcadc122f446ddc9a3e90f5e1c42ca",
     "models/internal-frame-s3-two-eyes.xml": "f55c31dc1bd7f5834d29c93e2f98d809cc8046e55dd816a3a9d952a138e74794",
-    "assets/printing/internal-frame-s3-two-eyes/dynamics.json": "0a2bf0226d60cdb168be9ec99a475a886e7aa5d603e8c937c96e6cd5f5dc0781",
-    "manifest/robot.yaml": "a9ae157f0485eaaa2f0e5fbf4748c61567922420a1d02e5689b80066d2ea13a5",
-    "manifest/motions.yaml": "ffffa42423cdbe05068eb627ea487ee6903f61faa8640e35ea6c441e2054bd9f",
+    "assets/printing/internal-frame-s3-two-eyes/dynamics.json": "6c88a91c6d25fc099b1689dfc7a0cf8d5f0de1d82c95b837ab7097d24598b58e",
+    "manifest/robot.yaml": "ebc5f147591d774be05113fa7700e1698ab3ad812afda1e1de7ed0910725c0f2",
+    "manifest/motions.yaml": "d683ebab22369570b30663ed3a20da5aeb106f93bd03c8f6c36f25ea4b455cfb",
     "sim/twin_evidence.py": "05b1ea45778553a3fbe0835c2c42586107687b21bb5d50a027c202bc91dc082f",
     "sim/telemetry.py": "9dfa59ef2daa5bae07d65096180128efe3ba6f97dffc025e24ae7aaf87ee20eb",
     "sim/motions.py": "8da8dc663f5629dcf639e8454de3e3a22f3b4b6bd4823cc35f6e47cc4afce3e5"
@@ -1062,48 +1062,48 @@
     },
     "wave": {
       "internal-frame-s3": {
-        "disp_x": 0.016888,
-        "disp_y": 0.00279,
-        "yaw_deg": -6.05726,
+        "disp_x": 0.012772,
+        "disp_y": 0.011909,
+        "yaw_deg": 5.544414,
         "final_z": 0.048799,
         "min_z": 0.017463,
         "max_z": 0.061244,
-        "pitch_min": -0.003752,
-        "pitch_max": 0.019504,
+        "pitch_min": -0.003947,
+        "pitch_max": 0.014335,
         "upright_final": 1.0,
         "paw_air_frac": {
-          "R4": 0.223415,
-          "R3": 0.052195,
-          "L3": 0.758049,
-          "L4": 0.04878
+          "R4": 0.09619,
+          "R3": 0.062381,
+          "L3": 0.75381,
+          "L4": 0.05619
         },
         "paw_max_z": {
-          "R4": 0.041283,
+          "R4": 0.016532,
           "R3": 0.016532,
-          "L3": 0.111805,
+          "L3": 0.107003,
           "L4": 0.016532
         }
       },
       "internal-frame-s3-two-eyes": {
-        "disp_x": 0.014035,
-        "disp_y": 0.003503,
-        "yaw_deg": -3.118526,
+        "disp_x": 0.010407,
+        "disp_y": 0.012885,
+        "yaw_deg": 1.090185,
         "final_z": 0.048786,
         "min_z": 0.017428,
         "max_z": 0.060418,
-        "pitch_min": -0.003592,
-        "pitch_max": 0.019782,
+        "pitch_min": -0.003805,
+        "pitch_max": 0.015117,
         "upright_final": 1.0,
         "paw_air_frac": {
-          "R4": 0.230732,
-          "R3": 0.054146,
-          "L3": 0.756098,
-          "L4": 0.04439
+          "R4": 0.095238,
+          "R3": 0.052381,
+          "L3": 0.756667,
+          "L4": 0.046667
         },
         "paw_max_z": {
-          "R4": 0.043162,
+          "R4": 0.016532,
           "R3": 0.016532,
-          "L3": 0.112369,
+          "L3": 0.108217,
           "L4": 0.016532
         }
       }
