@@ -6,6 +6,10 @@ whisper.cpp and posts the text to the mind's `/say`, the same door the chat box
 uses. The mind and the robot stay where they are; only words cross the network
 (Tailscale), so the ear works from any Wi-Fi.
 
+With a foot pedal (any USB pedal that shows up as a keyboard or mouse, e.g. the
+PCsensor FootSwitch) it is push-to-talk: hold the pedal, speak, let go; only
+that stretch is transcribed. Without one it cuts speech by loudness.
+
     python3 tools/sesame_ear.py --mind http://100.112.210.74:8765 \\
         --mic-device alsa:plughw:CARD=Device,DEV=0 --whisper-model ~/models/whisper/ggml-small-q5_1.bin
     python3 tools/sesame_ear.py --dry ...     # print what it heard, post nothing
@@ -14,10 +18,16 @@ uses. The mind and the robot stay where they are; only words cross the network
 from __future__ import annotations
 
 import argparse
+import collections
+import fcntl
 import getpass
+import glob
+import queue
 import shlex
+import struct
 import subprocess
 import sys
+import threading
 import time
 import urllib.request
 from pathlib import Path
@@ -40,23 +50,109 @@ def voiced_s(pcm, silence_rms, frame_ms=100):
     return sum(rms(pcm[i:i + n]) >= silence_rms for i in range(0, len(pcm), n)) * frame_ms / 1000
 
 
-def listen(args, post=say, popen=subprocess.Popen, once=False):
+EVENT = struct.Struct("llHHi")  # struct input_event on 64-bit Linux
+EV_KEY = 1
+EVIOCGRAB = 0x40044590
+FRAME = 3200  # 100 ms of 16 kHz s16le
+
+
+class Pedal:
+    """Held while any key or button on the pedal's input devices is down."""
+
+    def __init__(self, paths=(), grab=True):
+        self.held, self.lock, self.down = set(), threading.Lock(), threading.Event()
+        for path in paths:
+            f = open(path, "rb", buffering=0)
+            if grab:  # keep the pedal's keystrokes out of the console
+                try:
+                    fcntl.ioctl(f, EVIOCGRAB, 1)
+                except OSError:
+                    pass
+            threading.Thread(target=self._read, args=(f, path), daemon=True).start()
+
+    def _read(self, f, key):
+        while data := f.read(EVENT.size * 16):
+            self.feed(data, key)
+
+    def feed(self, data, source=""):
+        for i in range(0, len(data) - EVENT.size + 1, EVENT.size):
+            _, _, kind, code, value = EVENT.unpack_from(data, i)
+            if kind != EV_KEY or value == 2:  # 2 = autorepeat
+                continue
+            with self.lock:
+                (self.held.add if value else self.held.discard)((source, code))
+                self.down.set() if self.held else self.down.clear()
+
+
+def find_pedal(spec):
+    if spec == "off":
+        return []
+    if spec == "auto":
+        return sorted(glob.glob("/dev/input/by-id/*FootSwitch*-event-*"))
+    return [spec]
+
+
+def hand_over(args, pcm, post):
+    """Transcribe one stretch and post it; whisper's [音楽] / (拍手) mean no speech."""
+    text = transcribe(pcm, args.whisper_cmd, args.whisper_model, args.language).strip()
+    if not text or text.startswith(("[", "(")):
+        return None
+    print(f"👂 {text}  (rms {rms(pcm):.0f})", flush=True)
+    if not args.dry:
+        try:
+            post(args.mind, text)
+        except OSError as e:
+            print(f"  (mind) not reached: {e}", file=sys.stderr, flush=True)
+    return text
+
+
+def push_to_talk(args, stream, is_down, post=say, pre=3, tail=3, max_s=30.0):
+    """Keep what the mic heard while the pedal was down, plus `pre` frames before the
+    press and `tail` after the release (audio lags the pedal), and hand it over.
+    Transcribing runs on another thread so the next press is not lost."""
+    jobs = queue.Queue()
+
+    def work():
+        while (pcm := jobs.get()) is not None:
+            if voiced_s(pcm, args.silence_rms) >= args.min_s:
+                hand_over(args, pcm, post)
+            else:
+                print("  (pedal) nothing loud enough", flush=True)
+
+    worker = threading.Thread(target=work, daemon=True)
+    worker.start()
+    before, buf, after = collections.deque(maxlen=pre), None, 0
+    while data := stream.read(FRAME):
+        if is_down():
+            if buf is None:
+                print("🦶 listening", flush=True)
+                buf = bytearray(b"".join(before))
+            buf += data
+            after = 0
+        elif buf is not None:
+            buf += data
+            after += 1
+        else:
+            before.append(data)
+        if buf is not None and (after >= tail or len(buf) >= max_s * 16000 * 2):
+            jobs.put(bytes(buf))
+            buf, after = None, 0
+            before.clear()
+    jobs.put(None)
+    worker.join()
+
+
+def listen(args, post=say, popen=subprocess.Popen, once=False, pedal=None):
     """Run the microphone; restart it if it dies (USB unplugged, ALSA busy)."""
     while True:
         proc = popen(source_command(args), stdout=subprocess.PIPE)
         try:
-            for kind, pcm in utterances(proc.stdout, silence_rms=args.silence_rms):
-                if kind != "speech" or voiced_s(pcm, args.silence_rms) < args.min_s:
-                    continue
-                text = transcribe(pcm, args.whisper_cmd, args.whisper_model, args.language).strip()
-                if not text or text.startswith(("[", "(")):  # whisper's [音楽] / (拍手) for non-speech
-                    continue
-                print(f"👂 {text}  (rms {rms(pcm):.0f})", flush=True)
-                if not args.dry:
-                    try:
-                        post(args.mind, text)
-                    except OSError as e:
-                        print(f"  (mind) not reached: {e}", file=sys.stderr, flush=True)
+            if pedal is not None:
+                push_to_talk(args, proc.stdout, pedal.down.is_set, post)
+            else:
+                for kind, pcm in utterances(proc.stdout, silence_rms=args.silence_rms):
+                    if kind == "speech" and voiced_s(pcm, args.silence_rms) >= args.min_s:
+                        hand_over(args, pcm, post)
         finally:
             proc.terminate()
             proc.wait()
@@ -101,6 +197,8 @@ def main(argv=None):
     p.add_argument("--silence-rms", type=float, default=450.0,
                    help="speech threshold (int16 RMS; the Pi's USB mic idles near 200)")
     p.add_argument("--min-s", type=float, default=0.4, help="ignore sounds shorter than this")
+    p.add_argument("--pedal", default="auto",
+                   help="push-to-talk input device: auto (a USB FootSwitch if plugged in), off, or /dev/input/...")
     p.add_argument("--dry", action="store_true", help="print, do not post")
     p.add_argument("--unit", action="store_true", help="print a systemd unit and exit")
     a = p.parse_args(argv)
@@ -111,8 +209,11 @@ def main(argv=None):
     if not Path(a.whisper_model).expanduser().exists():
         raise SystemExit(f"no whisper model at {a.whisper_model}")
     a.whisper_model = str(Path(a.whisper_model).expanduser())
-    print(f"ear: {a.mic_device} -> {a.mind}/say" + (" (dry)" if a.dry else ""), flush=True)
-    listen(a)
+    paths = find_pedal(a.pedal)
+    pedal = Pedal(paths) if paths else None
+    mode = f"push-to-talk on {', '.join(paths)}" if pedal else "by loudness"
+    print(f"ear: {a.mic_device} -> {a.mind}/say, {mode}" + (" (dry)" if a.dry else ""), flush=True)
+    listen(a, pedal=pedal)
     return 0
 
 

@@ -1,4 +1,5 @@
 import argparse
+import pytest
 import io
 import sys
 from pathlib import Path
@@ -55,3 +56,39 @@ def test_dry_run_posts_nothing_and_unit_keeps_arguments(monkeypatch):
     text = ear.unit(["--mind", "http://m:8765", "--unit"])
     exec_line = next(line for line in text.splitlines() if line.startswith("ExecStart="))
     assert exec_line.endswith("sesame_ear.py --mind http://m:8765") and "Restart=always" in text
+
+
+def key(code, value):
+    return ear.EVENT.pack(0, 0, ear.EV_KEY, code, value)
+
+
+def test_pedal_is_down_while_any_key_is_held_and_ignores_repeat_and_other_events():
+    pedal = ear.Pedal()
+    pedal.feed(ear.EVENT.pack(0, 0, 4, 4, 7) + key(48, 1), "kbd")  # MSC_SCAN then b down
+    assert pedal.down.is_set()
+    pedal.feed(key(272, 1), "mouse")
+    pedal.feed(key(48, 2) + key(48, 0), "kbd")                      # repeat, then up
+    assert pedal.down.is_set()                                       # mouse button still held
+    pedal.feed(key(272, 0), "mouse")
+    assert not pedal.down.is_set()
+
+
+def test_push_to_talk_keeps_only_the_pressed_stretch_with_pre_and_tail(monkeypatch):
+    quiet, loud = bytes(FRAME), LOUD * (FRAME // 2)
+    # idle (noise at 4) | pressed 0.8 s | released | pressed 0.5 s | released
+    frames = [quiet] * 4 + [loud] + [loud] * 8 + [quiet] * 7 + [loud] * 5 + [quiet] * 3
+    down = [False] * 5 + [True] * 8 + [False] * 7 + [True] * 5 + [False] * 3
+    tick = iter(down)
+    got = []
+    monkeypatch.setattr(ear, "transcribe", lambda pcm, *a: got.append(len(pcm) // FRAME) or "歩いて")
+    posted = []
+    ear.push_to_talk(args(), io.BytesIO(b"".join(frames)), lambda: next(tick),
+                     post=lambda mind, text: posted.append(text))
+    assert got == [3 + 8 + 3, 3 + 5 + 3]   # pre + held + tail, for both presses
+    assert posted == ["歩いて", "歩いて"]
+
+
+def test_push_to_talk_drops_a_silent_press(monkeypatch):
+    monkeypatch.setattr(ear, "transcribe", lambda *a: pytest.fail("silence must not reach whisper"))
+    tick = iter([True] * 5 + [False] * 5)
+    ear.push_to_talk(args(), io.BytesIO(bytes(FRAME) * 10), lambda: next(tick), post=lambda *a: None)
