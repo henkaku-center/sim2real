@@ -3,12 +3,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#000000">
-<title>Sesame</title>
+<title>URASHIMA</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Dela+Gothic+One&display=swap" rel="stylesheet">
 <style>
-/* Sesame at the café: black, with yamabuki (山吹色, the deep golden yellow of the kerria
+/* URASHIMA (the Sesame robot) at the café: black, with yamabuki (山吹色, the deep golden yellow of the kerria
    flower) for what you press and a lighter yellow for what is live. Text is warm white;
    learned pads come in six yellow-to-gold tones. Charts sit on dark cards. */
 :root {
@@ -19,7 +19,9 @@
   --ok: #FFE135; --warn: #F8B500; --bad: #FF5A5A; --idle: #6B6352;
   /* chart neutrals on the dark cards */
   --grid: #2E2E2E; --axis: #555048; --muted: #A39C88; --line: #F8B500;
-  --display: "Dela Gothic One", "Hiragino Sans", "Noto Sans JP", system-ui, sans-serif;
+  /* Impact for Latin (Anton, its free look-alike, where Impact is missing: Android, some iPhones);
+     Japanese has no glyphs in either and falls through to Dela Gothic One */
+  --display: Impact, Anton, "Haettenschweiler", "Dela Gothic One", "Hiragino Sans", "Noto Sans JP", system-ui, sans-serif;
   --body: system-ui, -apple-system, "Hiragino Sans", "Noto Sans JP", sans-serif;
 }
 * { box-sizing: border-box }
@@ -37,14 +39,16 @@ button, input { font: inherit }
 
 /* hero: the wordmark and the talk button */
 .hero { text-align: center; padding: 6px 0 4px }
-.word { font-family: var(--display); font-weight: 400; font-size: clamp(44px, 14vw, 76px); line-height: 1; letter-spacing: .02em; margin: 4px 0 6px }
+.word { font-family: var(--display); font-weight: 400; font-size: clamp(56px, 19vw, 104px); line-height: .95; letter-spacing: .01em;
+  margin: 4px 0 2px; color: var(--yamabuki) }
+.fmf { font-family: var(--display); font-size: clamp(18px, 5.4vw, 26px); letter-spacing: .14em; color: var(--yellow); margin: 0 0 8px }
+.fmf span { color: var(--mist); margin: 0 .35em }
 .tag { color: var(--mist); font-size: 17px; margin: 0 0 22px }
 .mic { width: min(68vw, 260px); aspect-ratio: 1; border-radius: 50%; border: 0; cursor: pointer;
   background: var(--yamabuki); color: #000; font-family: var(--display); font-size: clamp(24px, 7.5vw, 34px);
   line-height: 1.15; box-shadow: 0 10px 0 var(--pink-deep); transition: transform .08s, box-shadow .08s;
   position: relative; padding: 0 18px }
 .mic:active { transform: translateY(6px); box-shadow: 0 4px 0 var(--pink-deep) }
-.mic .em { display: block; font-size: 1.6em; margin-bottom: 4px }
 .mic.on::after { content: ""; position: absolute; inset: -14px; border-radius: 50%; border: 5px solid var(--yellow);
   animation: ring 1.2s ease-out infinite }
 @keyframes ring { from { transform: scale(.92); opacity: 1 } to { transform: scale(1.18); opacity: 0 } }
@@ -55,10 +59,8 @@ button, input { font: inherit }
 
 /* the remote ear (a mic + foot pedal on the Pi): live under the talk button */
 .ear { margin: 22px auto 0; max-width: 520px; padding: 14px 18px; border-radius: 20px; background: var(--night-2);
-  border: 2px solid var(--night-3); text-align: left; display: grid; grid-template-columns: auto 1fr; gap: 4px 14px;
-  align-items: center; transition: border-color .15s }
+  border: 2px solid var(--night-3); text-align: left; display: grid; gap: 6px; transition: border-color .15s }
 .ear[hidden] { display: none }
-.ear .icon { font-size: 30px; line-height: 1; grid-row: span 2 }
 .ear .label { font-size: 15px; font-weight: 700; color: var(--mist) }
 .ear .said { font-family: var(--display); font-size: clamp(22px, 6vw, 30px); line-height: 1.25; color: var(--yellow); word-break: break-word; min-height: 1.25em }
 .ear .meter { height: 14px; border-radius: 999px; background: #000; overflow: hidden; border: 1px solid var(--night-3) }
@@ -145,12 +147,13 @@ details.table th:first-child, details.table td:first-child { text-align: left }
   <div class="top"><button class="lang" id="other" type="button"></button></div>
 
   <section class="hero" data-t-aria="talk">
-    <h1 class="word">SESAME</h1>
+    <h1 class="word">URASHIMA</h1>
+    <p class="fmf" aria-label="form, move, function">FORM<span>·</span>MOVE<span>·</span>FUNC</p>
     <p class="tag" data-t="tag"></p>
     <button class="mic" id="mic" type="button"></button>
-    <div class="ear" id="ear" data-s="" hidden aria-live="polite"><span class="icon" id="earIcon">🎤</span>
+    <div class="ear" id="ear" data-s="" hidden aria-live="polite">
       <span class="label" id="earLabel"></span><span class="said" id="earSaid"></span>
-      <div class="meter" id="earMeter" hidden style="grid-column: 2"><i id="earLevel"></i></div></div>
+      <div class="meter" id="earMeter" hidden><i id="earLevel"></i></div></div>
     <div><label class="keep"><input type="checkbox" id="keep"> <span data-t="keep"></span></label></div>
     <p class="heard" id="now" aria-live="polite"></p>
     <div class="status" id="status" data-s="idle" aria-live="polite"><span class="dot"></span>
@@ -194,10 +197,10 @@ const STR = {
     ear: {listening: 'マイクで聞いてるよ（ペダルを離すと届きます）', thinking: '文字にしています', heard: 'マイクで聞こえたこと',
       dropped: 'うまく聞き取れませんでした', again: 'もう一度ペダルを踏んで話してね'},
     tag: '話しかけると、体で答えるロボット', placeholder: '文字でも話しかけられます', send: '送る',
-    title: 'セサミの頭の中', flow: '聞こえたことを、どう考えて、どう動いたか', connecting: '接続中…', updated: '更新 ',
+    title: 'ウラシマの頭の中', flow: '聞こえたことを、どう考えて、どう動いたか', connecting: '接続中…', updated: '更新 ',
     empty: 'まだ何も聞いていません。話しかけてみてください。',
     st: {ok: '元気です', idle: '待っています', dry: '試しモード', offline: 'ロボットにつながりません', resetting: '電池が少ないかも',
-      error: 'うまく動けませんでした', mind: 'セサミの頭（PC）につながりません', listening: '聞いています…', thinking: '考え中…',
+      error: 'うまく動けませんでした', mind: 'ウラシマの頭につながりません', listening: '聞いています…', thinking: '考え中…',
       busy: 'ちょっと待ってね', done: '今日はおやすみ'},
     sub: {ok: 'さっき: ', idle: 'ボタンを押して話しかけてね', dry: 'ロボットには送っていません', offline: '電源と Wi-Fi を確認してください',
       resetting: '動くたびに再起動しています。バッテリーを充電してください', error: 'もう一度試してみてね', mind: 'Mac と mind が動いているか確認してください',
@@ -212,7 +215,7 @@ const STR = {
     nochart: 'ロボットに入っている動き（グラフなし）', table: '数値で見る', keyend: 'キーの終わり', ease: '移り方',
     chart: '動きの時間変化', src: {chat: 'チャット', voice: '声', radio: 'ラジオ', sound: '物音', button: 'ボタン', pad: 'パッド'},
     padsTitle: 'パッド', speedLbl: '速さ', sizeLbl: '大きさ', stockLbl: 'ロボットに最初から入っている動き',
-    padNote: '叩くとすぐ動きます。色つきはセサミが自分で作った動き（新しい順）。速さと大きさは色つきの動きにかかります。',
+    padNote: '叩くとすぐ動きます。色つきはウラシマが自分で作った動き（新しい順）。速さと大きさは色つきの動きにかかります。',
     noLearned: 'まだありません。話しかけると増えていきます。', playing: n => `${n}！`,
     EASE: {linear: '等速', in: '溜め', out: '余韻', inout: 'なめらか'},
     AXIS: {surge: '前後振り', spread: '開き', yaw: 'ひねり', stride: '歩幅', height: '高さ', pitch: '前上がり', roll: '横傾き', lift: '足上げ'},
@@ -222,10 +225,10 @@ const STR = {
     ear: {listening: 'Listening on the mic (let go of the pedal to send)', thinking: 'Writing it down', heard: 'Heard on the mic',
       dropped: 'Didn’t catch that', again: 'Press the pedal and try again'},
     tag: 'A robot that answers with its body', placeholder: 'Or type a message', send: 'Send',
-    title: 'Inside Sesame’s head', flow: 'What it heard, how it thought, how it moved', connecting: 'Connecting…', updated: 'Updated ',
+    title: 'Inside Urashima’s head', flow: 'What it heard, how it thought, how it moved', connecting: 'Connecting…', updated: 'Updated ',
     empty: 'Nothing heard yet. Say something!',
     st: {ok: 'Feeling fine', idle: 'Waiting for you', dry: 'Practice mode', offline: 'Can’t reach the robot', resetting: 'Battery may be low',
-      error: 'Couldn’t move', mind: 'Can’t reach Sesame’s brain (the PC)', listening: 'Listening…', thinking: 'Thinking…',
+      error: 'Couldn’t move', mind: 'Can’t reach Urashima’s brain', listening: 'Listening…', thinking: 'Thinking…',
       busy: 'Just a moment', done: 'Resting for today'},
     sub: {ok: 'Just now: ', idle: 'Press the button and talk', dry: 'Not sending to the robot', offline: 'Check its power and Wi-Fi',
       resetting: 'It restarts whenever it moves. Charge the battery', error: 'Give it another try', mind: 'Check that the Mac and the mind are running',
@@ -240,8 +243,8 @@ const STR = {
     nochart: 'Built into the robot (no chart)', table: 'Show numbers', keyend: 'Key ends', ease: 'Ease',
     chart: 'Movement over time', src: {chat: 'chat', voice: 'voice', radio: 'radio', sound: 'sound', button: 'button', pad: 'pad'},
     padsTitle: 'Pads', speedLbl: 'Speed', sizeLbl: 'Size', stockLbl: 'Built into the robot',
-    padNote: 'Tap to play right away. Coloured pads are movements Sesame made itself, newest first. Speed and size apply to those.',
-    noLearned: 'None yet. Talk to Sesame and it will make some.', playing: n => `${n}!`,
+    padNote: 'Tap to play right away. Coloured pads are movements Urashima made itself, newest first. Speed and size apply to those.',
+    noLearned: 'None yet. Talk to Urashima and it will make some.', playing: n => `${n}!`,
     EASE: {linear: 'steady', in: 'wind-up', out: 'settle', inout: 'smooth'},
     AXIS: {surge: 'sweep', spread: 'spread', yaw: 'twist', stride: 'stride', height: 'height', pitch: 'nose up', roll: 'tilt', lift: 'paw lift'},
   },
@@ -266,7 +269,7 @@ const label = n => STR.AXIS[n] || n, unit = n => UNIT[n] || '°';
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'}[c]));
 const fmt = (x, d = 1) => (Math.round(x * 10 ** d) / 10 ** d).toString();
 
-// Status line: one place that says, in big type, what Sesame is doing and what to do about it.
+// Status line: one place that says, in big type, what the robot is doing and what to do about it.
 // Moments (listening, thinking, a wait) show for a while; otherwise the robot's health shows.
 const MOOD = {ok: 'ok', idle: 'idle', dry: 'idle', offline: 'bad', resetting: 'warn', error: 'warn', mind: 'bad',
   listening: 'busy', thinking: 'busy', busy: 'warn', done: 'warn'};
@@ -409,13 +412,11 @@ async function refresh() {
 // The remote ear: what the mic by the robot is hearing, right under the talk button.
 // While someone holds the pedal the page polls fast so the meter and the words keep up.
 let earBusy = false, earSeen = 0;
-const EAR_ICON = {listening: '🎤', thinking: '✍️', heard: '💬', dropped: '🤔'};
 function drawEar(e) {
   const box = $('ear');
   earBusy = !!e && (e.s === 'listening' || e.s === 'thinking') && Date.now() / 1000 - e.t < 8;
   if (!e || Date.now() / 1000 - e.t > (e.s === 'heard' ? 20 : 8)) { box.hidden = true; box.dataset.s = ''; return }
   box.hidden = false; box.dataset.s = e.s;
-  $('earIcon').textContent = EAR_ICON[e.s] || '🎤';
   $('earLabel').textContent = STR.ear[e.s] || '';
   $('earMeter').hidden = e.s !== 'listening';
   $('earLevel').style.width = Math.round((e.level || 0) * 100) + '%';
@@ -462,7 +463,7 @@ function listen() {
 function start() { try { listen() } catch (e) { listening = false; draw() } }
 function draw() {
   mic.classList.toggle('on', listening);
-  mic.innerHTML = `<span class="em" aria-hidden="true">${listening ? '👂' : '🎤'}</span>${listening ? STR.listening : STR.mic}`;
+  mic.textContent = listening ? STR.listening : STR.mic;
 }
 draw();
 mic.onclick = () => { if (listening) { keep.checked = false; rec.stop() } else start() };
