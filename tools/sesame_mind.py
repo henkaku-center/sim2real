@@ -55,6 +55,7 @@ import json
 import math
 import os
 import queue
+import re
 import signal
 import socket
 import subprocess
@@ -923,6 +924,25 @@ class Mind:
         self.spine.start(item, intensity, tempo)
         return entry
 
+    FACE = re.compile(r"[a-z_]{1,20}")
+
+    def cue(self, face):
+        """Show an OLED face now (no servos), in the background so nothing waits on the
+        robot: the remote ear's pedal (surprised = listening) and the wait for Claude
+        (thinking). False for no robot or a name that is not a plain face word."""
+        robot = self.spine.robot
+        if robot is None or not self.FACE.fullmatch(face or ""):
+            return False
+
+        def send():
+            try:
+                robot.command(f"face {face}")
+            except OSError:
+                pass
+
+        threading.Thread(target=send, daemon=True).start()
+        return True
+
     def stand(self, source="button"):
         """Stand now (the stock motion)."""
         return self.play("stand", source=source)
@@ -931,6 +951,8 @@ class Mind:
         if self.body.mode != "off":
             return self.handle_body(moment)
         t0 = time.monotonic()
+        if moment.text:
+            self.cue("thinking")
         early = self.design_early(moment)
         try:
             decision = self.reflex.decide(moment, self.library, self.memory.notes)
@@ -948,6 +970,8 @@ class Mind:
         speed = f" ×{decision.tempo:g}" if decision.tempo != 1 else ""
         print(f"🧠 {moment.source}「{moment.text}」→ {action}{speed} ({decision.by}, {reflex_ms:.0f} ms)"
               f"{note and ' ' + note}", flush=True)
+        if action == NONE or self.library.items[action]["spec"]["kind"] != "firmware":
+            self.cue("idle")  # firmware motions set their own face
         if action != NONE:
             self.spine.start(self.library.items[action], decision.intensity, decision.tempo)
         return entry
@@ -1282,6 +1306,8 @@ def serve(port, mind, moments):
                 threading.Thread(target=mind.ruminate, daemon=True).start()
             elif self.path == "/stand":
                 mind.stand()
+            elif self.path == "/cue":
+                return self.reply(202 if mind.cue(body.strip()) else 400, "{}")
             elif self.path == "/play":
                 return self.reply(*play_request(mind, body))
             elif self.path == "/config":

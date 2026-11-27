@@ -46,6 +46,18 @@ def say(mind, text, timeout=10.0):
         return r.status
 
 
+def cue(mind, face, timeout=3.0):
+    """Ask the mind to show an OLED face now; in the background, failures ignored."""
+    def send():
+        try:
+            req = urllib.request.Request(mind.rstrip("/") + "/cue", face.encode(), method="POST")
+            urllib.request.urlopen(req, timeout=timeout).close()
+        except OSError:
+            pass
+
+    threading.Thread(target=send, daemon=True).start()
+
+
 def voiced_s(pcm, silence_rms, frame_ms=100):
     """Seconds above the speech threshold; the trailing quiet the cutter keeps does not count."""
     n = int(16000 * frame_ms / 1000) * 2
@@ -152,10 +164,12 @@ def hand_over(args, pcm, post):
     return text
 
 
-def push_to_talk(args, stream, is_down, post=say, pre=3, tail=2, max_s=30.0):
+def push_to_talk(args, stream, is_down, post=say, pre=3, tail=2, max_s=30.0, show=None):
     """Keep what the mic heard while the pedal was down, plus `pre` frames before the
     press and `tail` after the release (audio lags the pedal), and hand it over.
-    Transcribing runs on another thread so the next press is not lost."""
+    Transcribing runs on another thread so the next press is not lost. `show(face)`
+    gives instant feedback on the robot: surprised while held, thinking after."""
+    show = show or (lambda face: None)
     jobs = queue.Queue()
 
     def work():
@@ -172,10 +186,13 @@ def push_to_talk(args, stream, is_down, post=say, pre=3, tail=2, max_s=30.0):
         if is_down():
             if buf is None:
                 print("🦶 listening", flush=True)
+                show("surprised")
                 buf = bytearray(b"".join(before))
             buf += data
             after = 0
         elif buf is not None:
+            if after == 0:
+                show("thinking")
             buf += data
             after += 1
         else:
@@ -194,7 +211,8 @@ def listen(args, post=say, popen=subprocess.Popen, once=False, pedal=None):
         proc = popen(source_command(args), stdout=subprocess.PIPE)
         try:
             if pedal is not None:
-                push_to_talk(args, proc.stdout, pedal.down.is_set, post)
+                show = None if args.dry else (lambda face: cue(args.mind, face))
+                push_to_talk(args, proc.stdout, pedal.down.is_set, post, show=show)
             else:
                 for kind, pcm in utterances(proc.stdout, silence_rms=args.silence_rms):
                     if kind == "speech" and voiced_s(pcm, args.silence_rms) >= args.min_s:

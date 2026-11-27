@@ -246,6 +246,25 @@ def test_model_reflex_designs_in_parallel_and_drops_unused_designs(tmp_path):
     assert rules.designer.calls == 0  # the rules reflex pays for no design
 
 
+def test_mind_shows_thinking_then_idle_and_cue_rejects_command_chains(tmp_path):
+    sent = []
+
+    class Robot:
+        def command(self, text):
+            sent.append(text)
+            return True, "OK FACE"
+
+    spine = FakeSpine()
+    spine.robot = Robot()
+    mind = sm.Mind(sm.RuleReflex(), sm.Library(tmp_path / "lib.json"), sm.Memory(tmp_path), spine, FakeDesigner())
+    mind.handle(sm.Moment("chat", "くねくねする動きを作って"))   # designed motion
+    mind.handle(sm.Moment("chat", "wave"))                     # firmware motion sets its own face
+    mind.handle(sm.Moment("chat", "ふーん"))                   # nothing to do
+    time.sleep(0.1)
+    assert sorted(sent) == sorted(["face thinking", "face idle", "face thinking", "face thinking", "face idle"])
+    assert mind.cue("surprised") and not mind.cue("happy;off") and not mind.cue("")
+
+
 def test_spine_dry_run_and_streaming():
     sent = []
 

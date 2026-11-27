@@ -81,9 +81,10 @@ def test_push_to_talk_keeps_only_the_pressed_stretch_with_pre_and_tail(monkeypat
     tick = iter(down)
     got = []
     monkeypatch.setattr(ear, "transcribe", lambda pcm, *a: got.append(len(pcm) // FRAME) or "歩いて")
-    posted = []
+    posted, faces = [], []
     ear.push_to_talk(args(), io.BytesIO(b"".join(frames)), lambda: next(tick),
-                     post=lambda mind, text: posted.append(text))
+                     post=lambda mind, text: posted.append(text), show=faces.append)
+    assert faces == ["surprised", "thinking"] * 2
     assert got == [3 + 8 + 2, 3 + 5 + 2]   # pre + held + tail, for both presses
     assert posted == ["歩いて", "歩いて"]
 
