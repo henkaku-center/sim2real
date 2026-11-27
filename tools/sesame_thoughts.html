@@ -70,13 +70,22 @@ button, input { font: inherit }
 .ear[data-s="thinking"] .said::after { content: "…"; animation: blink 1s infinite }
 .ear[data-s="dropped"] .said { color: var(--mist) }
 
-/* what you just said, and the card it became: right under the talk button */
+/* solo play: a pill under the text box */
+.alone { display: block; margin: 16px auto 0; padding: 12px 22px; border-radius: 999px; cursor: pointer;
+  border: 2px solid var(--yamabuki); background: transparent; color: var(--yamabuki); font-family: var(--display);
+  font-size: 20px; letter-spacing: .02em }
+.alone[aria-pressed="true"] { background: var(--yamabuki); color: #000 }
+.alone[data-playing="true"] { box-shadow: 0 0 0 6px rgba(255, 225, 53, .28); animation: blink 1.4s infinite }
+.alone-hint { color: var(--mist); font-size: 15px; margin: 8px 0 0 }
+
+/* what you just said, and the card it became */
 .mine { margin: 30px 0 0; text-align: left }
 .mine[hidden] { display: none }
 .mine .tagline { font-size: 15px; font-weight: 700; color: var(--mist); margin: 0 0 -6px 4px }
 .mine .card { border: 2px solid var(--yamabuki) }
 .mine .wait { margin-top: 10px; font-size: 17px; font-weight: 700; color: var(--yamabuki) }
 .mine .wait::after { content: "…"; animation: blink 1s infinite }
+@media (prefers-reduced-motion: reduce) { .alone[data-playing="true"] { animation: none } }
 
 /* status: big enough to read across the table */
 .status { display: flex; align-items: center; gap: 14px; margin: 18px 0 6px; padding: 14px 18px; border-radius: 20px;
@@ -166,6 +175,8 @@ details.table th:first-child, details.table td:first-child { text-align: left }
     <div class="status" id="status" data-s="idle" aria-live="polite"><span class="dot"></span>
       <div><span id="statusText"></span><small id="hint"></small></div></div>
     <form class="type" id="say"><input id="text" maxlength="200" autocomplete="off" data-t-placeholder="placeholder"><button data-t="send"></button></form>
+    <button class="alone" id="alone" type="button" aria-pressed="false"></button>
+    <p class="alone-hint" data-t="aloneHint"></p>
   </section>
 
   <section class="mine" id="mine" hidden aria-live="polite"><p class="tagline" data-t="mineLbl"></p><div id="mineCard"></div></section>
@@ -204,6 +215,8 @@ const STR = {
   ja: {
     talk: '話しかける', mic: '話しかける', listening: '聞いてるよ', keep: 'ずっと聞く', other: 'English',
     mineLbl: 'いま話したことと、ウラシマの頭の中', mineWait: '考え中',
+    aloneOff: 'ひとり遊びさせる', aloneOn: 'ひとり遊び中（押すと止める）',
+    aloneHint: 'だれも話しかけていない間、今日の動きを速さを変えて組み合わせて遊びます。話しかけるとすぐやめます',
     micOn: '聞いてるよ（押すと止まる）', recOn: '録音中（押すと送る）', srHint: 'もう一度押すと止まります',
     recHint: 'もう一度押すと送ります（20 秒まで）', recFallback: 'このブラウザの音声認識が使えないので、録音して送ります',
     transcribing: '文字にしています', noWhisper: '録音を文字にする準備ができていません。文字で送ってね', nothing: 'うまく聞き取れませんでした',
@@ -236,6 +249,8 @@ const STR = {
   en: {
     talk: 'Talk', mic: 'Talk to me', listening: 'Listening', keep: 'Keep listening', other: '日本語',
     mineLbl: 'Just said, and inside Urashima’s head', mineWait: 'Thinking',
+    aloneOff: 'Let it play alone', aloneOn: 'Playing alone (tap to stop)',
+    aloneHint: 'While nobody talks, it mixes today’s movements at different speeds. It stops as soon as you talk',
     micOn: 'Listening (tap to stop)', recOn: 'Recording (tap to send)', srHint: 'Tap again to stop',
     recHint: 'Tap again to send (up to 20 s)', recFallback: 'This browser can’t recognise speech, so it records and sends instead',
     transcribing: 'Writing it down', noWhisper: 'Recordings can’t be written down yet. Please type', nothing: 'Didn’t catch that',
@@ -412,7 +427,7 @@ async function refresh() {
   busy = true;
   try {
     const v = await (await fetch('latest', {signal: AbortSignal.timeout(8000)})).json();
-    health = {robot: v.robot || 'idle', doing: v.doing || ''}; drawStatus(); drawEar(v.ear);
+    health = {robot: v.robot || 'idle', doing: v.doing || ''}; drawStatus(); drawEar(v.ear); drawAlone(v);
     $('live').textContent = STR.updated + new Date().toLocaleTimeString([], {hour: '2-digit', minute: '2-digit', second: '2-digit'});
     const key = v.n + ':' + v.t;
     if (key === shown) return;
@@ -428,6 +443,22 @@ async function refresh() {
     health = {robot: 'mind', doing: ''}; drawStatus();
   } finally { busy = false }
 }
+// Solo play: the mind mixes known motions while nobody talks (no model calls).
+let aloneOn = false;
+function drawAlone(v) {
+  aloneOn = !!v.alone;
+  const b = $('alone');
+  b.setAttribute('aria-pressed', aloneOn); b.dataset.playing = !!(aloneOn && v.alone_playing);
+  b.textContent = aloneOn ? STR.aloneOn : STR.aloneOff;
+}
+drawAlone({});
+$('alone').onclick = async () => {
+  try {
+    const r = await fetch('alone', {method: 'POST', body: aloneOn ? 'off' : 'on', signal: AbortSignal.timeout(8000)});
+    if (r.ok) drawAlone(await r.json());
+  } catch (e) { status('mind', null, 4000) }
+};
+
 // One card above the pads: the newest thing anyone said (page, pedal mic) and what it became.
 // Something just sent shows at once with "thinking" until its card arrives, matched by text
 // and the mind's own clock (the reply to /say or /hear, or the ear's report), so an older

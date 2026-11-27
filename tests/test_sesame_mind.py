@@ -741,10 +741,10 @@ def test_guest_port_only_talks_and_shows_thoughts(tmp_path):
         with pytest.raises(urllib.error.HTTPError):
             urllib.request.urlopen(base + "/config")
         with urllib.request.urlopen(base + "/latest") as r:
-            assert json.loads(r.read()) == {"n": 0, "t": 0, "robot": "dry", "doing": "", "ear": None}
+            assert json.loads(r.read()) == {"n": 0, "t": 0, "robot": "dry", "doing": "", "ear": None, "alone": False, "alone_playing": False}
         mind.memory.add({"t": 5.0, "text": "x" * 4000, "did": "none"})
         with urllib.request.urlopen(base + "/latest") as r:
-            assert json.loads(r.read()) == {"n": 1, "t": 5.0, "robot": "dry", "doing": "none", "ear": None}
+            assert json.loads(r.read()) == {"n": 1, "t": 5.0, "robot": "dry", "doing": "none", "ear": None, "alone": False, "alone_playing": False}
         import gzip
         req = urllib.request.Request(base + "/trace", headers={"Accept-Encoding": "gzip"})
         with urllib.request.urlopen(req) as r:
@@ -877,3 +877,54 @@ def test_llm_reflex_reads_misheard_speech_back_and_the_log_keeps_it(tmp_path):
     entry = mind.handle(sm.Moment("chat", "ボーン踊りをしてください"))
     assert entry["meant"] == "盆踊りをしてください" and entry["text"] == "ボーン踊りをしてください"
     assert "盆踊り" in sm.DESIGN_SYSTEM  # the designer reads it back too (it runs in parallel)
+
+
+def test_solo_play_combines_todays_motions_at_different_speeds_and_yields_to_people(tmp_path):
+    import random
+    class Robot:
+        def command(self, text):
+            return True, "OK"
+
+    spine = FakeSpine()
+    spine.robot = Robot()
+    settings = sm.Settings(tmp_path)
+    mind = sm.Mind(sm.RuleReflex(), sm.Library(tmp_path / "lib.json"), sm.Memory(tmp_path), spine, FakeDesigner())
+    mind.settings = settings
+    mind.handle(sm.Moment("chat", "くねくねする動きを作って"))  # designed today: "wiggle"
+    w = mind.alone_weights()
+    assert w["wiggle"] > w["wave"] and not set(sm.Mind.ALONE_SKIP) & set(w)  # never walks or plays dead
+    plan = mind.compose(random.Random(3))
+    assert 2 <= len(plan) <= 3 and len({n for n, _, _ in plan}) == len(plan)
+    assert len({t for _, _, t in plan}) == len(plan)  # each at its own time scale
+    assert mind.alone_once(random.Random(3), sleep=lambda s: None) is False  # solo play is off
+    settings.update({"alone": True})
+    spine.played.clear()
+    assert mind.alone_once(random.Random(3), sleep=lambda s: None) and len(spine.played) == len(plan)
+    spine.played.clear()
+
+    def someone_talks(s):
+        mind.active_at += 1  # a remark or pad press arrives mid-combination
+    assert mind.alone_once(random.Random(3), sleep=someone_talks) is False and len(spine.played) == 1
+    assert json.loads(sm.Settings(tmp_path).path.read_text())["alone"] is True  # kept across restarts
+
+
+def test_guest_alone_button_switches_solo_play(tmp_path):
+    import queue
+    import urllib.error
+    import urllib.request
+    mind = sm.Mind(sm.RuleReflex(), sm.Library(), sm.Memory(tmp_path), sm.Spine(M))
+    mind.settings = sm.Settings(tmp_path)
+    server = sm.serve_guest(0, mind, queue.Queue())
+    base = f"http://127.0.0.1:{server.server_address[1]}"
+    try:
+        r = urllib.request.urlopen(urllib.request.Request(base + "/alone", b"on", method="POST"))
+        assert json.loads(r.read()) == {"alone": True} and mind.alone
+        assert json.loads(urllib.request.urlopen(base + "/latest").read())["alone"] is True
+        with pytest.raises(urllib.error.HTTPError) as e:
+            urllib.request.urlopen(urllib.request.Request(base + "/alone", b"live", method="POST"))
+        assert e.value.code == 400  # only on/off: no other setting through the guest port
+        time.sleep(0.45)  # the pad gate
+        urllib.request.urlopen(urllib.request.Request(base + "/alone", b"off", method="POST"))
+        assert not mind.alone
+    finally:
+        server.shutdown()

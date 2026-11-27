@@ -55,6 +55,7 @@ import json
 import math
 import os
 import queue
+import random
 import re
 import signal
 import socket
@@ -599,6 +600,7 @@ DEFAULTS = {
     "host": "",  # robot address; empty = dry run
     "live": False,
     "body": "off",  # voice body: off | both | prosody | words
+    "alone": False,  # solo play: combine known motions while nobody talks (no model calls)
 }
 
 
@@ -629,7 +631,7 @@ class Settings:
             if k in DEFAULTS:
                 if k in CHOICES and v not in CHOICES[k]:
                     raise ValueError(f"{k} must be one of {', '.join(CHOICES[k])}")
-                self.values[k] = bool(v) if k == "live" else str(v).strip()
+                self.values[k] = bool(v) if k in ("live", "alone") else str(v).strip()
         if self.path:
             self.path.parent.mkdir(parents=True, exist_ok=True)
             self.path.write_text(json.dumps(self.values, indent=1))
@@ -925,6 +927,8 @@ class Mind:
         self.settings, self.link, self.error = None, None, ""
         self.body = VoiceBody(spine.manifest, spine)
         self.ear = None  # what a remote ear (tools/sesame_ear.py) is doing, for the guest page
+        self.active_at = time.monotonic()  # the last remark or pad: solo play waits for quiet
+        self.alone_playing = False
 
     def play(self, name, intensity=0.5, tempo=1.0, source="pad"):
         """Play a library motion now (a pad or button press; no model call), logged like any
@@ -932,6 +936,7 @@ class Mind:
         item = self.library.items[name]
         intensity = min(max(float(intensity), 0.0), 1.0)
         tempo = min(max(float(tempo), TEMPO[0]), TEMPO[1])
+        self.active_at = time.monotonic()
         entry = {"t": self.clock(), "source": source, "text": name, "did": name, "by": source,
                  "intensity": intensity, "tempo": tempo, "reflex_ms": 0, "note": ""}
         self.memory.add(entry)
@@ -973,6 +978,74 @@ class Mind:
         self.ear = ear
         return ear
 
+    # Solo play never walks (it could leave the table) and never lies down or plays dead.
+    ALONE_SKIP = ("rest", "dead", "pushup", "worm", "swim", "crab", "walk", "walk_backward", "turn_left", "turn_right")
+
+    @property
+    def alone(self):
+        return bool(self.settings and self.settings.values.get("alone"))
+
+    def alone_weights(self, day=None):
+        """How much solo play likes each motion: today's conversation first (the motions it
+        answered with, and those it designed today count more), then whatever the notes
+        mention, then everything else it may play a little."""
+        day = day or time.strftime("%Y-%m-%d")
+        notes = self.memory.notes
+        weights = {n: 1.0 for n in self.library.names() if n not in self.ALONE_SKIP}
+        for e in self.memory.lines:
+            if e.get("did") in weights and time.strftime("%Y-%m-%d", time.localtime(e.get("t", 0))) == day:
+                weights[e["did"]] += 6.0 if e.get("design") else 3.0
+        for n, v in self.library.items.items():
+            if n in weights and (n in notes or v["about"] in notes):
+                weights[n] += 2.0
+        return weights
+
+    def compose(self, rng=random):
+        """Two or three different motions, each at its own time scale: one slow, one quick,
+        sometimes one as it is (URASHIMA: every motion keeps its own time)."""
+        weights = self.alone_weights()
+        names, picked = list(weights), []
+        for _ in range(rng.choice((2, 2, 3))):
+            pool = [n for n in names if n not in picked]
+            if not pool:
+                break
+            picked.append(rng.choices(pool, [weights[n] for n in pool])[0])
+        tempos = rng.sample((0.6, 1.0, 1.5), len(picked))
+        return [(n, round(rng.uniform(0.45, 0.8), 2), t) for n, t in zip(picked, tempos)]
+
+    def alone_once(self, rng=random, gap_s=0.8, sleep=time.sleep):
+        """Play one combination; stop at once if someone talks or presses a pad meanwhile."""
+        start, plan = self.active_at, self.compose(rng)
+        self.alone_playing = True
+        try:
+            print("🐢 alone: " + " → ".join(f"{n}×{t:g}" for n, _, t in plan), flush=True)
+            for name, intensity, tempo in plan:
+                if self.active_at != start or not self.alone:
+                    return False
+                self.spine.start(self.library.items[name], intensity, tempo)
+                thread = getattr(self.spine, "thread", None)
+                if thread:
+                    thread.join(timeout=30)
+                sleep(gap_s)
+            return True
+        finally:
+            self.alone_playing = False
+
+    def alone_loop(self, quiet_s=20.0, rest_s=(15.0, 35.0), rng=random, sleep=time.sleep, clock=time.monotonic):
+        """While solo play is on: after `quiet_s` without remarks or pads, play a combination,
+        then rest a while before the next."""
+        while True:
+            sleep(1.0)
+            if not self.alone or self.spine.robot is None or clock() - self.active_at < quiet_s:
+                continue
+            try:
+                self.alone_once(rng)
+            except Exception as e:  # solo play must never take the mind down
+                print(f"(alone) {e}", file=sys.stderr, flush=True)
+            wait_until = clock() + rng.uniform(*rest_s)
+            while clock() < wait_until and self.alone:
+                sleep(1.0)
+
     def stand(self, source="button"):
         """Stand now (the stock motion)."""
         return self.play("stand", source=source)
@@ -980,7 +1053,7 @@ class Mind:
     def handle(self, moment):
         if self.body.mode != "off":
             return self.handle_body(moment)
-        t0 = time.monotonic()
+        t0 = self.active_at = time.monotonic()
         if moment.text:
             self.cue("thinking")
         early = self.design_early(moment)
@@ -1263,7 +1336,9 @@ def latest(mind):
     return json.dumps({"n": len(mind.memory.lines), "t": recent[-1]["t"] if recent else 0,
                        "robot": mind.spine.health if robot else "dry",
                        "doing": recent[-1].get("did", "") if recent else "",
-                       "ear": ear if ear and time.time() - ear["t"] < 30 else None}, ensure_ascii=False)
+                       "ear": ear if ear and time.time() - ear["t"] < 30 else None,
+                       "alone": getattr(mind, "alone", False), "alone_playing": getattr(mind, "alone_playing", False)},
+                      ensure_ascii=False)
 
 
 def config_view(mind):
@@ -1456,6 +1531,15 @@ def serve_guest(port, mind, moments, gate=None, host="127.0.0.1", daily=300, hea
                 return self.reply(*play_request(mind, body))
             if self.path.split("?")[0] == "/hear":
                 return self.hear_audio()
+            if self.path.split("?")[0] == "/alone":  # solo play on/off, from the page's button
+                want = self.rfile.read(min(int(self.headers.get("Content-Length", 0)), 10)).decode().strip()
+                if want not in ("on", "off") or mind.settings is None:
+                    return self.reply(400, "{}")
+                if pad_gate.wait_s() > 0:
+                    return self.reply(429, json.dumps({"wait_s": 1}))
+                mind.settings.update({"alone": want == "on"})
+                print(f"🐢 alone {want}", flush=True)
+                return self.reply(200, json.dumps({"alone": mind.alone}))
             if self.path.split("?")[0] != "/say":
                 return self.reply(404, "{}")
             n = int(self.headers.get("Content-Length", 0))
@@ -1608,6 +1692,7 @@ def main(argv=None):
                 hear = hearer(args.whisper_cmd, args.whisper_model, args.language) if args.whisper_model else None
                 serve_guest(guest, mind, moments, daily=args.guest_daily, hear=hear)
             threading.Thread(target=announce, args=(mind, args.robot, args.serve), daemon=True).start()
+            threading.Thread(target=mind.alone_loop, daemon=True).start()
         if audio:
             threading.Thread(target=hear, args=(args, moments, mind.body), daemon=True).start()
         if args.text:
