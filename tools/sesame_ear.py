@@ -73,7 +73,7 @@ FRAME = 3200  # 100 ms of 16 kHz s16le
 PROMPT = "ロボットへのお願い。"
 # whisper's stock hallucinations on noise (YouTube outros)
 HALLUCINATIONS = ("ご視聴ありがとう", "チャンネル登録", "最後までご視聴", "おやすみなさい。", "字幕")
-LOOP = re.compile(r"(.{1,8}?)\1{3,}")  # 喜んで喜んで喜んで… when the audio context is too short
+LOOP = re.compile(r"(.{1,24}?)\1{2,}")  # 喜んで喜んで喜んで… / a sentence three times over
 
 
 def fast_flags(pcm):

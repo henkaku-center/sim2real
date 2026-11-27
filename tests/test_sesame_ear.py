@@ -114,5 +114,8 @@ def test_fast_flags_fit_the_encoder_to_the_clip_and_loops_are_dropped(monkeypatc
     ac = lambda pcm: int(ear.fast_flags(pcm)[ear.fast_flags(pcm).index("-ac") + 1])
     assert ac(bytes(sec * 2)) == 256 and ac(bytes(sec * 4)) == 296 and ac(bytes(sec * 40)) == 1500
     assert ear.fast_flags(bytes(sec))[:5] == ("-bs", "1", "-bo", "1", "-nf")
-    monkeypatch.setattr(ear, "transcribe", lambda *a: "喜んで" * 9)
-    assert ear.hand_over(args(prompt=""), bytes(sec), lambda *a: pytest.fail("loop posted")) is None
+    for loop in ("喜んで" * 9, "サウナに入ってください。" * 30):
+        monkeypatch.setattr(ear, "transcribe", lambda *a, t=loop: t)
+        assert ear.hand_over(args(prompt=""), bytes(sec), lambda *a: pytest.fail("loop posted")) is None
+    monkeypatch.setattr(ear, "transcribe", lambda *a: "もっともっと速く")
+    assert ear.hand_over(args(prompt=""), bytes(sec), lambda *a: None) == "もっともっと速く"
