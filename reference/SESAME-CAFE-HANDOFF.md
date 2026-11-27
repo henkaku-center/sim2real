@@ -192,6 +192,22 @@ Feedback while waiting: pedal down → OLED `surprised`, pedal up → `thinking`
 (through the mind's admin `POST /cue`), the mind shows `thinking` on every remark
 and `idle` after a designed motion or none. Faces take 0.1–0.4 s and move no servo.
 
+## The Pi runs everything (2026-11-27, later)
+
+The user moved the whole system off the Mac:
+
+| | |
+|---|---|
+| Wi-Fi | `SAFECAST JP FREE` (open, 2.4 GHz): robot 172.16.42.4 (RSSI ~-76), Pi 172.16.42.2 (`autoconnect-priority 10`). The robot's known list is now `SAFECAST JP FREE|FabCafeMTRL|FabCafe FreeWi-Fi|kotaronowifi`; FabCafeMTRL reached the robot only at -87 dBm and failed. |
+| Mind | systemd **user** unit `~/.config/systemd/user/sesame-mind.service` on the Pi (`python3 tools/sesame_mind_agent.py install|restart|status|log`; linger is on). The old system unit `/etc/systemd/system/sesame-mind.service` is disabled. Library, notes and memory were copied from the Mac; the Pi's previous ones are in `~/sesame-mind-backup/`. |
+| Ear | `sesame-ear.service` posts to the first mind that answers: `127.0.0.1:8765`, else the Mac (`100.112.210.74:8765`). |
+| Public page | `https://sesame-relay.tail08c5d0.ts.net/sesame/` (Funnel on the Pi; `tailscale set --operator=sesame` was set so no sudo is needed). Checked through the public ingress: page 200, `/latest` 200, `/config` 404. |
+| Claude | **not set up on the Pi**: `.sesame-mind/env` still has `# ANTHROPIC_API_KEY=` commented, so the mind runs the rules reflex and no designer. Put the key there and run `python3 tools/sesame_mind_agent.py restart`. |
+
+Checked: the ear's `/say` → Pi mind (rules, 2 ms) → `motion wave` → `OK MOTION wave`.
+The Mac's mind and its Funnel (`kotaromacbook-air-1…/sesame/`) still run but no
+longer reach the robot.
+
 ## Pitfalls
 
 - The page is public: anyone with the URL can move the robot, and the thought
