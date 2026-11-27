@@ -204,6 +204,13 @@ The user moved the whole system off the Mac:
 | Public page | `https://sesame-relay.tail08c5d0.ts.net/sesame/` (Funnel on the Pi; `tailscale set --operator=sesame` was set so no sudo is needed). Checked through the public ingress: page 200, `/latest` 200, `/config` 404. |
 | Claude | `ANTHROPIC_API_KEY=` in the Pi's `.sesame-mind/env` (uncommented; the user's key). Reflex Haiku 5.5, designer Sonnet 5.5. After editing the file: `python3 tools/sesame_mind_agent.py restart`. |
 
+Live mic on the page: the ear posts its state to the mind's admin `POST /ear`
+(listening with a 0..1 level every ~0.15 s while the pedal is held, thinking,
+heard + text, dropped); `/latest` carries it as `ear` for 30 s and the page shows it
+under the talk button, polling every 0.3 s while the ear is busy (1.5 s otherwise).
+The mind also turns ear states into OLED faces. The page is black with yamabuki
+(#F8B500) and yellow (#FFE135).
+
 Checked: the ear's `/say` → Pi mind (rules, 2 ms) → `motion wave` → `OK MOTION wave`;
 with Claude, ちょっと眠そうだね → new `sleepy_nod_off` (reflex 3.0 s, design 4.7 s
 in parallel), and a pedal remark ボウの踊りして → new `bo_staff_dance`.
