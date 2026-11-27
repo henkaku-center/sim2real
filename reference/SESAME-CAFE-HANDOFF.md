@@ -202,9 +202,11 @@ The user moved the whole system off the Mac:
 | Mind | systemd **user** unit `~/.config/systemd/user/sesame-mind.service` on the Pi (`python3 tools/sesame_mind_agent.py install|restart|status|log`; linger is on). The old system unit `/etc/systemd/system/sesame-mind.service` is disabled. Library, notes and memory were copied from the Mac; the Pi's previous ones are in `~/sesame-mind-backup/`. |
 | Ear | `sesame-ear.service` posts to the first mind that answers: `127.0.0.1:8765`, else the Mac (`100.112.210.74:8765`). |
 | Public page | `https://sesame-relay.tail08c5d0.ts.net/sesame/` (Funnel on the Pi; `tailscale set --operator=sesame` was set so no sudo is needed). Checked through the public ingress: page 200, `/latest` 200, `/config` 404. |
-| Claude | **not set up on the Pi**: `.sesame-mind/env` still has `# ANTHROPIC_API_KEY=` commented, so the mind runs the rules reflex and no designer. Put the key there and run `python3 tools/sesame_mind_agent.py restart`. |
+| Claude | `ANTHROPIC_API_KEY=` in the Pi's `.sesame-mind/env` (uncommented; the user's key). Reflex Haiku 5.5, designer Sonnet 5.5. After editing the file: `python3 tools/sesame_mind_agent.py restart`. |
 
-Checked: the ear's `/say` → Pi mind (rules, 2 ms) → `motion wave` → `OK MOTION wave`.
+Checked: the ear's `/say` → Pi mind (rules, 2 ms) → `motion wave` → `OK MOTION wave`;
+with Claude, ちょっと眠そうだね → new `sleepy_nod_off` (reflex 3.0 s, design 4.7 s
+in parallel), and a pedal remark ボウの踊りして → new `bo_staff_dance`.
 The Mac's mind and its Funnel (`kotaromacbook-air-1…/sesame/`) still run but no
 longer reach the robot.
 
