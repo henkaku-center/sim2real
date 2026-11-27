@@ -6,7 +6,7 @@ whisper.cpp and posts the text to the mind's `/say`, the same door the chat box
 uses. The mind and the robot stay where they are; only words cross the network
 (Tailscale), so the ear works from any Wi-Fi.
 
-    python3 tools/sesame_ear.py --mind http://kotaromacbook-air-1:8765 \\
+    python3 tools/sesame_ear.py --mind http://100.112.210.74:8765 \\
         --mic-device alsa:plughw:CARD=Device,DEV=0 --whisper-model ~/models/whisper/ggml-small-q5_1.bin
     python3 tools/sesame_ear.py --dry ...     # print what it heard, post nothing
     python3 tools/sesame_ear.py --unit ...    # print a systemd unit with these arguments
@@ -91,13 +91,15 @@ WantedBy=multi-user.target
 def main(argv=None):
     argv = sys.argv[1:] if argv is None else argv
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    p.add_argument("--mind", default="http://kotaromacbook-air-1:8765", help="the mind's admin URL")
+    p.add_argument("--mind", default="http://100.112.210.74:8765",
+                   help="the mind's admin URL (the Mac's tailnet IP: the Pi runs without MagicDNS)")
     p.add_argument("--mic-device", default="alsa:plughw:CARD=Device,DEV=0",
                    help="ffmpeg input: alsa:DEVICE or pulse:NAME on Linux, ':0' on macOS")
     p.add_argument("--whisper-cmd", default="whisper-cli")
     p.add_argument("--whisper-model", default=str(Path.home() / "models/whisper/ggml-small-q5_1.bin"))
     p.add_argument("--language", default="ja")
-    p.add_argument("--silence-rms", type=float, default=300.0, help="speech threshold (int16 RMS)")
+    p.add_argument("--silence-rms", type=float, default=450.0,
+                   help="speech threshold (int16 RMS; the Pi's USB mic idles near 200)")
     p.add_argument("--min-s", type=float, default=0.4, help="ignore sounds shorter than this")
     p.add_argument("--dry", action="store_true", help="print, do not post")
     p.add_argument("--unit", action="store_true", help="print a systemd unit and exit")
