@@ -152,6 +152,23 @@ cannot join Tailscale, so the Pi has to be on the robot's Wi-Fi. At the check it
 was on another network (`118.238.250.233`), and Tailscale SSH no longer
 answered (`Permission denied (publickey,password)`, no SSH host keys advertised).
 
+## The Pi as a remote ear (2026-11-27)
+
+Decision: the mind and the robot stay on the Mac and `kotaronowifi`; the
+`sesame-relay` Pi (Henkaku tailnet, at FabCafe on `FabCafeMTRL`) is only a
+microphone. `tools/sesame_ear.py` cuts speech from its USB mic (JMTek, ALSA
+`plughw:CARD=Device,DEV=0`), transcribes it with whisper.cpp on the Pi and posts
+the text to the mind's admin `/say` at `http://100.112.210.74:8765` (the Mac's
+tailnet IP; the Pi runs with `CorpDNS: false`, so MagicDNS names do not resolve).
+
+Measured from the Pi: the mind answers in 0.04 s; the mic idles at RMS ~200, so
+the ear's threshold is 450. Not yet done (needs `sudo` and downloads on the Pi,
+which the agent was not allowed to run): `cmake`, building `whisper-cli`, the
+model `~/models/whisper/ggml-small-q5_1.bin`, installing the unit
+(`python tools/sesame_ear.py --unit | sudo tee /etc/systemd/system/sesame-ear.service`),
+and stopping the Pi's older `sesame-mind.service` (a second mind that cannot
+reach the robot from FabCafeMTRL).
+
 ## Pitfalls
 
 - The page is public: anyone with the URL can move the robot, and the thought
