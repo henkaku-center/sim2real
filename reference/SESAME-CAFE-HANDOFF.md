@@ -132,6 +132,26 @@ resolve `.local`, so phones need the IP (shown on the mind page and the OLED).
 - The reuse judgement is lenient (踊って → pirouette); tighten the prompt if
   visitors want more new movements.
 
+## Henkaku tailnet access (2026-11-27)
+
+The guest page is also served **inside the Henkaku Center tailnet only** (no
+Funnel) from the Mac's `wizard-of-oz@henkaku.center` profile:
+
+```sh
+tailscale serve --bg --set-path /sesame http://127.0.0.1:8766   # https://kotaromacbook-air-1.tail08c5d0.ts.net/sesame/
+tailscale serve --https=443 --set-path /sesame off              # undo
+```
+
+Checked from the Mac: page 200, `/latest` 200, `/motions` 200, `/config` 404.
+Each Tailscale profile keeps its own serve config, so switching back to
+`gomakotaro17@gmail.com` brings the public Funnel back and this URL goes down.
+
+Hosting the mind on the `sesame-relay` Pi (Raspberry Pi 5 on the same tailnet)
+is possible but not done. The mind must reach the robot over HTTP and the robot
+cannot join Tailscale, so the Pi has to be on the robot's Wi-Fi. At the check it
+was on another network (`118.238.250.233`), and Tailscale SSH no longer
+answered (`Permission denied (publickey,password)`, no SSH host keys advertised).
+
 ## Pitfalls
 
 - The page is public: anyone with the URL can move the robot, and the thought
