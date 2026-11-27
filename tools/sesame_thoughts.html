@@ -52,8 +52,7 @@ button, input { font: inherit }
 .mic.on::after { content: ""; position: absolute; inset: -14px; border-radius: 50%; border: 5px solid var(--yellow);
   animation: ring 1.2s ease-out infinite }
 @keyframes ring { from { transform: scale(.92); opacity: 1 } to { transform: scale(1.18); opacity: 0 } }
-.keep { display: inline-flex; align-items: center; gap: 10px; margin-top: 22px; font-size: 17px; color: var(--mist); cursor: pointer }
-.keep input { width: 24px; height: 24px; accent-color: var(--pink) }
+.mic + .ear, .mic + .heard { margin-top: 26px }
 .heard { font-family: var(--display); font-size: clamp(26px, 7vw, 38px); line-height: 1.25; min-height: 1.3em; margin: 18px 0 0;
   word-break: break-word; color: var(--yellow) }
 
@@ -72,7 +71,7 @@ button, input { font: inherit }
 .ear[data-s="dropped"] .said { color: var(--mist) }
 
 /* what you just said, and the card it became: right under the talk button */
-.mine { margin: 22px 0 0; text-align: left }
+.mine { margin: 30px 0 0; text-align: left }
 .mine[hidden] { display: none }
 .mine .tagline { font-size: 15px; font-weight: 700; color: var(--mist); margin: 0 0 -6px 4px }
 .mine .card { border: 2px solid var(--yamabuki) }
@@ -162,13 +161,13 @@ details.table th:first-child, details.table td:first-child { text-align: left }
     <div class="ear" id="ear" data-s="" hidden aria-live="polite">
       <span class="label" id="earLabel"></span><span class="said" id="earSaid"></span>
       <div class="meter" id="earMeter" hidden><i id="earLevel"></i></div></div>
-    <div class="mine" id="mine" hidden aria-live="polite"><p class="tagline" data-t="mineLbl"></p><div id="mineCard"></div></div>
-    <div><label class="keep"><input type="checkbox" id="keep"> <span data-t="keep"></span></label></div>
     <p class="heard" id="now" aria-live="polite"></p>
     <div class="status" id="status" data-s="idle" aria-live="polite"><span class="dot"></span>
       <div><span id="statusText"></span><small id="hint"></small></div></div>
     <form class="type" id="say"><input id="text" maxlength="200" autocomplete="off" data-t-placeholder="placeholder"><button data-t="send"></button></form>
   </section>
+
+  <section class="mine" id="mine" hidden aria-live="polite"><p class="tagline" data-t="mineLbl"></p><div id="mineCard"></div></section>
 
   <section class="pads" data-t-aria="padsTitle">
     <h2 data-t="padsTitle"></h2>
@@ -203,7 +202,10 @@ const LANG = ['en', 'ja'].includes(asked) ? asked : ['en', 'ja'].includes(saved)
 const STR = {
   ja: {
     talk: '話しかける', mic: '話しかける', listening: '聞いてるよ', keep: 'ずっと聞く', other: 'English',
-    mineLbl: 'いま話したこと と ウラシマの頭の中', mineWait: '考え中',
+    mineLbl: 'いま話したことと、ウラシマの頭の中', mineWait: '考え中',
+    micOn: '聞いてるよ（押すと止まる）', recOn: '録音中（押すと送る）', srHint: 'もう一度押すと止まります',
+    recHint: 'もう一度押すと送ります（20 秒まで）', recFallback: 'このブラウザの音声認識が使えないので、録音して送ります',
+    transcribing: '文字にしています', noWhisper: '録音を文字にする準備ができていません。文字で送ってね', nothing: 'うまく聞き取れませんでした',
     ear: {listening: 'マイクで聞いてるよ（ペダルを離すと届きます）', thinking: '文字にしています', heard: 'マイクで聞こえたこと',
       dropped: 'うまく聞き取れませんでした', again: 'もう一度ペダルを踏んで話してね'},
     tag: '話しかけると、体で答えるロボット', placeholder: '文字でも話しかけられます', send: '送る',
@@ -232,7 +234,10 @@ const STR = {
   },
   en: {
     talk: 'Talk', mic: 'Talk to me', listening: 'Listening', keep: 'Keep listening', other: '日本語',
-    mineLbl: 'What you just said, inside Urashima’s head', mineWait: 'Thinking',
+    mineLbl: 'Just said, and inside Urashima’s head', mineWait: 'Thinking',
+    micOn: 'Listening (tap to stop)', recOn: 'Recording (tap to send)', srHint: 'Tap again to stop',
+    recHint: 'Tap again to send (up to 20 s)', recFallback: 'This browser can’t recognise speech, so it records and sends instead',
+    transcribing: 'Writing it down', noWhisper: 'Recordings can’t be written down yet. Please type', nothing: 'Didn’t catch that',
     ear: {listening: 'Listening on the mic (let go of the pedal to send)', thinking: 'Writing it down', heard: 'Heard on the mic',
       dropped: 'Didn’t catch that', again: 'Press the pedal and try again'},
     tag: 'A robot that answers with its body', placeholder: 'Or type a message', send: 'Send',
@@ -421,15 +426,21 @@ async function refresh() {
     health = {robot: 'mind', doing: ''}; drawStatus();
   } finally { busy = false }
 }
-// What you just said and the card it became, under the talk button. Matched by text and the
-// mind's own clock (the reply to /say, or the ear's report), so an older motion never shows.
+// One card above the pads: the newest thing anyone said (page, pedal mic) and what it became.
+// Something just sent shows at once with "thinking" until its card arrives, matched by text
+// and the mind's own clock (the reply to /say or /hear, or the ear's report), so an older
+// card never stands in for it. Pad presses are not speech and never show here.
 let mine = null, lastItems = [];
-function said(text, t) { mine = {text: text.trim().slice(0, 200), t}; now.textContent = ''; drawMine() }
+function said(text, t) { mine = {text: text.trim().slice(0, 200), t, at: Date.now()}; now.textContent = ''; drawMine() }
+const spoken = x => x.text && x.source !== 'pad' && x.source !== 'button';
 function drawMine() {
-  if (!mine) return;
-  const e = lastItems.find(x => x.text === mine.text && x.t >= mine.t - 1);
+  if (mine && Date.now() - mine.at > 30000) mine = null;  // it never became a card: stop waiting
+  let e = mine ? lastItems.find(x => x.text === mine.text && x.t >= mine.t - 1) : null;
+  if (e || !mine) { mine = null; e = e || lastItems.find(spoken) }
+  if (!e && !mine) { $('mine').hidden = true; return }
   $('mine').hidden = false;
   if (!e) {
+    $('mineCard').dataset.key = '';
     $('mineCard').innerHTML = `<article class="card"><div class="said"><span class="text">${STR.q(esc(mine.text))}</span></div>
       <div class="wait">${STR.mineWait}</div></article>`;
     return;
@@ -462,16 +473,16 @@ loop();
 
 // Talking: the browser's speech recognition (needs HTTPS or localhost) turns speech into
 // text; the text goes to the mind like a chat line. Typing works everywhere.
-const now = $('now'), mic = $('mic'), keep = $('keep');
+const now = $('now'), mic = $('mic');
+function refused(r, j) {  // 429 from the 4 s / daily gate
+  return j.done_for_today ? status('done', null, 8000) : status('busy', STR.sub.busy(Math.ceil(j.wait_s)), 3000);
+}
 async function send(text) {
   text = text.trim(); if (!text) return;
   now.textContent = STR.q(text);
   try {
     const r = await fetch('say', {method: 'POST', body: text, signal: AbortSignal.timeout(15000)});
-    if (r.status === 429) {
-      const j = await r.json();
-      return j.done_for_today ? status('done', null, 8000) : status('busy', STR.sub.busy(Math.ceil(j.wait_s)), 3000);
-    }
+    if (r.status === 429) return refused(r, await r.json());
     if (!r.ok) return status('error', null);
     const j = await r.json().catch(() => ({}));
     said(text, j.t || 0);
@@ -479,31 +490,100 @@ async function send(text) {
   } catch (e) { status('mind', e.name === 'TimeoutError' ? STR.slow : null, 6000) }
 }
 $('say').onsubmit = e => { e.preventDefault(); send($('text').value); $('text').value = '' };
+
+// The talk button: tap to start, tap again to stop. Two ways to listen:
+//  sr  - the browser's speech recognition (Chrome, Safari, phones). It ends by itself after
+//        each phrase or a silence, so it is restarted until the button is tapped again
+//        (and after 60 s without words). This is what used to stop "right away" on a PC.
+//  rec - record here and let the mind's whisper write it down (POST /hear). Used where
+//        recognition is missing or broken (Firefox; Vivaldi, Brave and other Chromium builds
+//        without Google's speech service answer "network" at once).
 const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-let rec = null, listening = false;
-if (!SR || !window.isSecureContext) {
-  mic.disabled = true; mic.style.opacity = .45; keep.parentElement.hidden = true;
-  $('text').placeholder = SR ? STR.https : STR.nosr;
+const canRecord = !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia && window.MediaRecorder);
+let mode = SR ? 'sr' : 'rec', listening = false, rec = null, heardAt = 0, quickEnds = 0;
+if (!window.isSecureContext || (!SR && !canRecord)) {
+  mic.disabled = true; mic.style.opacity = .45;
+  $('text').placeholder = window.isSecureContext ? STR.nosr : STR.https;
 }
-function listen() {
+function draw() {
+  mic.classList.toggle('on', listening);
+  mic.textContent = listening ? (mode === 'rec' ? STR.recOn : STR.micOn) : STR.mic;
+}
+function stopListening() { listening = false; momentUntil = 0; drawStatus(); draw() }
+function toRecording() {
+  mode = 'rec'; if (rec) { rec.onend = null; try { rec.abort() } catch (e) {} }
+  status('listening', STR.recFallback, 6000); recStart();
+}
+function srStart() {
+  const started = Date.now();
   rec = new SR(); rec.lang = LANG === 'ja' ? 'ja-JP' : 'en-US'; rec.interimResults = true; rec.continuous = false;
   rec.onresult = e => {
     const r = e.results[e.results.length - 1], t = r[0].transcript;
-    now.textContent = STR.q(t);
+    heardAt = Date.now(); quickEnds = 0; now.textContent = STR.q(t);
     if (r.isFinal) send(t);
   };
-  rec.onerror = e => status('error', e.error === 'not-allowed' ? STR.allow : STR.misheard(e.error), 5000);
-  rec.onend = () => { listening = false; draw(); if (keep.checked) setTimeout(() => { if (keep.checked && !listening) start() }, 400) };
-  rec.start(); listening = true; draw(); status('listening', null, 8000);
+  rec.onerror = e => {
+    if (['network', 'service-not-allowed', 'language-not-supported'].includes(e.error) && canRecord) return toRecording();
+    if (['not-allowed', 'audio-capture', 'service-not-allowed'].includes(e.error)) {
+      rec.onend = null; stopListening(); status('error', STR.allow, 6000);
+    }  // no-speech, aborted: onend starts again
+  };
+  rec.onend = () => {
+    if (!listening || mode !== 'sr') return draw();
+    if (Date.now() - heardAt > 60000) return stopListening();
+    // a recogniser that keeps ending at once without hearing anything does not work here
+    quickEnds = Date.now() - started < 1000 ? quickEnds + 1 : 0;
+    if (quickEnds >= 3 && canRecord) return toRecording();
+    setTimeout(() => { if (listening && mode === 'sr') try { srStart() } catch (e) { stopListening() } }, 250);
+  };
+  rec.start();
 }
-function start() { try { listen() } catch (e) { listening = false; draw() } }
-function draw() {
-  mic.classList.toggle('on', listening);
-  mic.textContent = listening ? STR.listening : STR.mic;
+let media = null, stream = null, chunks = [], recTimer = 0;
+async function recStart() {
+  try {
+    stream = await navigator.mediaDevices.getUserMedia({audio: {echoCancellation: true, noiseSuppression: true}});
+  } catch (e) { stopListening(); return status('error', STR.allow, 6000) }
+  if (!listening) { stream.getTracks().forEach(t => t.stop()); return }
+  const type = ['audio/webm;codecs=opus', 'audio/webm', 'audio/mp4', 'audio/ogg;codecs=opus']
+    .find(t => MediaRecorder.isTypeSupported(t)) || '';
+  media = new MediaRecorder(stream, type ? {mimeType: type} : {}); chunks = [];
+  media.ondataavailable = e => { if (e.data.size) chunks.push(e.data) };
+  media.onstop = upload;
+  media.start(); draw(); status('listening', STR.recHint, 21000);
+  recTimer = setTimeout(() => { if (listening && mode === 'rec') recStop() }, 20000);
+}
+function recStop() {
+  clearTimeout(recTimer); listening = false; draw();
+  if (media && media.state !== 'inactive') media.stop();
+  if (stream) stream.getTracks().forEach(t => t.stop());
+}
+async function upload() {
+  const blob = new Blob(chunks, {type: (media && media.mimeType) || 'audio/webm'});
+  if (blob.size < 1500) return stopListening();
+  status('thinking', STR.transcribing, 30000);
+  try {
+    const r = await fetch('hear?lang=' + LANG, {method: 'POST', body: blob, headers: {'Content-Type': blob.type},
+      signal: AbortSignal.timeout(40000)});
+    if (r.status === 429) return refused(r, await r.json());
+    if (r.status === 503) return status('error', STR.noWhisper, 8000);
+    if (!r.ok) return status('error', null);
+    const j = await r.json();
+    if (!j.text) return status('error', STR.nothing, 5000);
+    said(j.text, j.t || 0);
+    status('thinking', null, 20000); shown = ''; setTimeout(refresh, 1500); setTimeout(refresh, 4000);
+  } catch (e) { status('mind', e.name === 'TimeoutError' ? STR.slow : null, 6000) }
 }
 draw();
-mic.onclick = () => { if (listening) { keep.checked = false; rec.stop() } else start() };
-keep.onchange = () => { if (keep.checked && !listening) start() };
+mic.onclick = () => {
+  if (listening) {
+    if (mode === 'rec') return recStop();
+    listening = false; if (rec) try { rec.stop() } catch (e) {}
+    return stopListening();
+  }
+  listening = true; heardAt = Date.now(); quickEnds = 0; draw();
+  if (mode === 'sr') { status('listening', STR.srHint, 60000); try { srStart() } catch (e) { canRecord ? toRecording() : stopListening() } }
+  else recStart();
+};
 
 // Pads: every motion the robot knows, played at once (no model call), like a DJ's pads.
 // A pad keeps its colour (from its name) wherever it moves in the list.

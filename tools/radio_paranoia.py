@@ -36,6 +36,7 @@ import array
 import json
 import math
 import queue
+import re
 import subprocess
 import sys
 import tempfile
@@ -280,6 +281,30 @@ def transcribe(pcm, whisper_cmd, model, language, extra=()):
         print(f"(ear) {whisper_cmd} failed: {out.stderr.strip()[-300:]}", file=sys.stderr)
         return ""
     return " ".join(out.stdout.split())
+
+
+# whisper.cpp --prompt: sets the register. A word list cost ~0.5 s per clip on a Pi 5
+# and doubled short answers (喜んで。喜んで。); this short one costs nothing measurable.
+PROMPT = "ロボットへのお願い。"
+# whisper's stock hallucinations on noise (YouTube outros)
+HALLUCINATIONS = ("ご視聴ありがとう", "チャンネル登録", "最後までご視聴", "おやすみなさい。", "字幕")
+LOOP = re.compile(r"(.{1,24}?)\1{2,}")  # 喜んで喜んで喜んで… / a sentence three times over
+
+
+def fast_flags(pcm):
+    """Greedy decoding without fallback, and an encoder context cut to the clip
+    (1500 = 30 s; ~50 per second plus margin, 256 at least). On a Pi 5 with the
+    small model this takes a 2-4 s clip from ~9 s to ~1.5 s; tighter contexts
+    start repeating words."""
+    seconds = len(pcm) / (16000 * 2)
+    return ("-bs", "1", "-bo", "1", "-nf", "-ac", str(min(1500, max(256, int(seconds * 50) + 96))))
+
+
+def no_speech(text):
+    """True for an empty transcript or whisper's noise answers: [音楽] / (拍手), YouTube
+    outros, or one phrase repeated over and over."""
+    return (not text or text.startswith(("[", "(")) or any(h in text for h in HALLUCINATIONS)
+            or bool(LOOP.search(text)))
 
 
 def transcripts(args):

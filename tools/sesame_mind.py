@@ -62,6 +62,7 @@ import subprocess
 import sys
 import threading
 import time
+import urllib.parse
 import urllib.request
 from dataclasses import asdict, dataclass
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -73,7 +74,8 @@ import yaml
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / "tools"))
-from radio_paranoia import RATE, offer, rms, source_command, transcribe  # noqa: E402
+from radio_paranoia import (PROMPT, RATE, fast_flags, no_speech, offer, rms, source_command,  # noqa: E402
+                            transcribe)
 from sesame_remote import Robot, run_lines, start_heartbeat  # noqa: E402
 from sim.manifest import load_manifest  # noqa: E402
 from sim.voice_motion import FRAME_HZ as BODY_HZ, ProsodyStream, VoiceCpg  # noqa: E402
@@ -1375,7 +1377,31 @@ class Gate:
             return 0.0
 
 
-def serve_guest(port, mind, moments, gate=None, host="127.0.0.1", daily=300):
+MAX_AUDIO = 3_000_000  # bytes: ~2 min of opus, far more than one remark
+
+
+def hearer(whisper_cmd, model, language, run=subprocess.run, quiet_rms=150.0):
+    """Recorded audio from the guest page (webm/opus, mp4, wav: whatever the browser's
+    MediaRecorder makes) -> text with the remote ear's whisper settings, or "" for
+    silence and noise. For browsers without working speech recognition (Firefox,
+    Vivaldi and other Chromium builds without Google's speech service)."""
+    def hear(audio, lang=None):
+        import tempfile
+        with tempfile.NamedTemporaryFile() as f:  # a file, not a pipe: mp4 needs to seek
+            f.write(audio)
+            f.flush()
+            out = run(["ffmpeg", "-nostdin", "-loglevel", "error", "-i", f.name, "-ac", "1", "-ar", str(RATE),
+                       "-f", "s16le", "-"], capture_output=True, timeout=30)
+        pcm = out.stdout if out.returncode == 0 else b""
+        if len(pcm) < RATE // 2 or rms(pcm) < quiet_rms:  # under 0.25 s, or silence
+            return ""
+        prompt = ("--prompt", PROMPT) if (lang or language) == "ja" else ()
+        text = transcribe(pcm, whisper_cmd, model, lang or language, fast_flags(pcm) + prompt).strip()
+        return "" if no_speech(text) else text
+    return hear
+
+
+def serve_guest(port, mind, moments, gate=None, host="127.0.0.1", daily=300, hear=None):
     """The guest page (talk + thought log) for people who walk up to the robot. Only these
     routes exist here, so settings, rumination and the voice body stay on the admin port.
     Bound to localhost: `tailscale serve` gives it an HTTPS address, which phones need
@@ -1415,6 +1441,8 @@ def serve_guest(port, mind, moments, gate=None, host="127.0.0.1", daily=300):
                     mind.stand()
                     return self.reply(202, "{}")
                 return self.reply(*play_request(mind, body))
+            if self.path.split("?")[0] == "/hear":
+                return self.hear_audio()
             if self.path.split("?")[0] != "/say":
                 return self.reply(404, "{}")
             n = int(self.headers.get("Content-Length", 0))
@@ -1427,6 +1455,31 @@ def serve_guest(port, mind, moments, gate=None, host="127.0.0.1", daily=300):
                 return self.reply(429, json.dumps({"wait_s": round(left, 1)}))
             offer(moments, Moment("chat", text))
             self.reply(202, json.dumps({"t": round(time.time(), 2)}))  # the page finds its card by this
+
+        def hear_audio(self):
+            """POST /hear: a recording from the page, transcribed here, then like /say."""
+            n = int(self.headers.get("Content-Length", 0))
+            if hear is None:
+                return self.reply(503, json.dumps({"error": "no whisper model on the mind"}))
+            if not 0 < n <= MAX_AUDIO:
+                return self.reply(413 if n else 400, json.dumps({"error": "audio size"}))
+            audio = self.rfile.read(n)
+            if (left := gate.wait_s()) == math.inf:
+                return self.reply(429, json.dumps({"done_for_today": True}))
+            if left > 0:
+                return self.reply(429, json.dumps({"wait_s": round(left, 1)}))
+            lang = urllib.parse.parse_qs(urllib.parse.urlsplit(self.path).query).get("lang", [""])[0]
+            try:
+                text = hear(audio, lang if lang in ("ja", "en") else None)[:200]
+            except (OSError, subprocess.SubprocessError) as e:
+                print(f"(hear) {e}", file=sys.stderr, flush=True)
+                text = ""
+            t = round(time.time(), 2)
+            if not text:
+                return self.reply(200, json.dumps({"t": t, "text": ""}))
+            print(f"👂 page「{text}」", flush=True)
+            offer(moments, Moment("chat", text))
+            self.reply(202, json.dumps({"t": t, "text": text}, ensure_ascii=False))
 
         def log_message(self, *a):
             pass
@@ -1529,14 +1582,18 @@ def main(argv=None):
     moments = queue.Queue(maxsize=4)
 
     def stopped(*_):
-        raise KeyboardInterrupt  # launchd stops with SIGTERM: release the robot the same way
+        # launchd/systemd stop with SIGTERM: release the robot the same way as Ctrl-C. systemd
+        # signals uv and python both, so ignore the second one or it cuts the "off" short.
+        signal.signal(signal.SIGTERM, signal.SIG_IGN)
+        raise KeyboardInterrupt
 
     signal.signal(signal.SIGTERM, stopped)
     try:
         if args.serve:
             serve(args.serve, mind, moments)
             if (guest := args.serve + 1 if args.guest is None else args.guest):
-                serve_guest(guest, mind, moments, daily=args.guest_daily)
+                hear = hearer(args.whisper_cmd, args.whisper_model, args.language) if args.whisper_model else None
+                serve_guest(guest, mind, moments, daily=args.guest_daily, hear=hear)
             threading.Thread(target=announce, args=(mind, args.robot, args.serve), daemon=True).start()
         if audio:
             threading.Thread(target=hear, args=(args, moments, mind.body), daemon=True).start()

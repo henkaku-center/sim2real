@@ -811,3 +811,52 @@ def test_pads_list_learned_first_and_play_at_once(tmp_path):
         assert err.value.code == 400
     finally:
         server.shutdown()
+
+
+def test_guest_hear_transcribes_recordings_like_say(tmp_path):
+    import queue
+    import urllib.error
+    import urllib.request
+    mind = sm.Mind(sm.RuleReflex(), sm.Library(), sm.Memory(tmp_path), sm.Spine(M))
+    moments, t = queue.Queue(), [100.0]
+    heard, langs = iter(["立って", ""]), []
+    server = sm.serve_guest(0, mind, moments, sm.Gate(every=4.0, clock=lambda: t[0]),
+                            hear=lambda audio, lang: langs.append(lang) or next(heard))
+    bare = sm.serve_guest(0, mind, queue.Queue())
+    base = f"http://127.0.0.1:{server.server_address[1]}"
+
+    def post(url, body):
+        return urllib.request.urlopen(urllib.request.Request(url + "/hear", body, method="POST"))
+
+    try:
+        r = urllib.request.urlopen(urllib.request.Request(base + "/hear?lang=en", b"webm bytes", method="POST"))
+        assert r.status == 202 and json.loads(r.read())["text"] == "立って" and moments.get_nowait().text == "立って"
+        with pytest.raises(urllib.error.HTTPError) as e:
+            post(base, b"again")  # the same 4 s gate as /say
+        assert e.value.code == 429
+        t[0] += 4.0
+        r = post(base, b"silence")
+        assert r.status == 200 and json.loads(r.read())["text"] == "" and moments.empty()
+        assert langs == ["en", None]
+        with pytest.raises(urllib.error.HTTPError) as e:
+            post(f"http://127.0.0.1:{bare.server_address[1]}", b"x")
+        assert e.value.code == 503  # no whisper model on this mind
+    finally:
+        server.shutdown()
+        bare.shutdown()
+
+
+def test_hearer_decodes_with_ffmpeg_and_drops_silence_and_noise(monkeypatch):
+    loud = (3000).to_bytes(2, "little", signed=True) * 16000  # 1 s
+    runs, said = [], iter(["こんにちは", "ご視聴ありがとうございました"])
+
+    class Out:
+        def __init__(self, pcm):
+            self.returncode, self.stdout = 0, pcm
+
+    pcm = [loud, loud, bytes(32000)]
+    monkeypatch.setattr(sm, "transcribe", lambda p, cmd, model, lang, extra: runs.append((lang, extra)) or next(said))
+    hear = sm.hearer("whisper-cli", "m.bin", "ja", run=lambda cmd, **k: Out(pcm.pop(0)))
+    assert hear(b"a") == "こんにちは" and runs[0][0] == "ja" and runs[0][1][-2:] == ("--prompt", sm.PROMPT)
+    assert hear(b"b", "en") == "" and runs[1][0] == "en" and "--prompt" not in runs[1][1]  # outro = noise
+    assert hear(b"c") == "" and len(runs) == 2  # silence never reaches whisper

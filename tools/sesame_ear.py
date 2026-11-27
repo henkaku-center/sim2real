@@ -37,7 +37,8 @@ import wave
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from radio_paranoia import rms, source_command, transcribe  # noqa: E402
+from radio_paranoia import (HALLUCINATIONS, LOOP, PROMPT, fast_flags, no_speech, rms,  # noqa: E402,F401
+                            source_command, transcribe)
 from sesame_mind import utterances  # noqa: E402
 
 
@@ -110,21 +111,6 @@ EVENT = struct.Struct("llHHi")  # struct input_event on 64-bit Linux
 EV_KEY = 1
 EVIOCGRAB = 0x40044590
 FRAME = 3200  # 100 ms of 16 kHz s16le
-# whisper.cpp --prompt: sets the register. A word list cost ~0.5 s per clip on a Pi 5
-# and doubled short answers (喜んで。喜んで。); this short one costs nothing measurable.
-PROMPT = "ロボットへのお願い。"
-# whisper's stock hallucinations on noise (YouTube outros)
-HALLUCINATIONS = ("ご視聴ありがとう", "チャンネル登録", "最後までご視聴", "おやすみなさい。", "字幕")
-LOOP = re.compile(r"(.{1,24}?)\1{2,}")  # 喜んで喜んで喜んで… / a sentence three times over
-
-
-def fast_flags(pcm):
-    """Greedy decoding without fallback, and an encoder context cut to the clip
-    (1500 = 30 s; ~50 per second plus margin, 256 at least). On a Pi 5 with the
-    small model this takes a 2-4 s clip from ~9 s to ~1.5 s; tighter contexts
-    start repeating words."""
-    seconds = len(pcm) / (16000 * 2)
-    return ("-bs", "1", "-bo", "1", "-nf", "-ac", str(min(1500, max(256, int(seconds * 50) + 96))))
 
 
 class Pedal:
@@ -194,7 +180,7 @@ def hand_over(args, pcm, post, report=quiet):
     if getattr(args, "keep", None):
         keep_clip(args.keep, pcm, text)
     note = f"(rms {rms(pcm):.0f}, clipped {clip:.1%}, whisper {took:.1f} s)"
-    if not text or text.startswith(("[", "(")) or any(h in text for h in HALLUCINATIONS) or LOOP.search(text):
+    if no_speech(text):
         print(f"  (ear) dropped {text!r} {note}", flush=True)
         report("dropped")
         return None
