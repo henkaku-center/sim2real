@@ -163,6 +163,13 @@ microphone. `tools/sesame_ear.py` cuts speech from its USB mic (JMTek, ALSA
 the text to the mind's admin `/say` at `http://100.112.210.74:8765` (the Mac's
 tailnet IP; the Pi runs with `CorpDNS: false`, so MagicDNS names do not resolve).
 
+With the PCsensor FootSwitch plugged in (`--pedal auto`, the default) the ear is
+push-to-talk: hold the pedal, speak, release. All three of the pedal's input
+devices count (keyboard, mouse, vendor), so its key mapping does not matter; the
+ear grabs them so the key does not type into the console. Without a pedal it cuts
+speech by loudness. Update the Pi with `git pull` and kill the ear process
+(`systemctl` restarts it; `sudo systemctl restart sesame-ear` also works).
+
 Measured from the Pi: the mind answers in 0.04 s; the mic idles at RMS ~200, so
 the ear's threshold is 450. Not yet done (needs `sudo` and downloads on the Pi,
 which the agent was not allowed to run): `cmake`, building `whisper-cli`, the
