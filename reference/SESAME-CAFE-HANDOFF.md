@@ -217,6 +217,24 @@ in parallel), and a pedal remark ボウの踊りして → new `bo_staff_dance`.
 The Mac's mind and its Funnel (`kotaromacbook-air-1…/sesame/`) still run but no
 longer reach the robot.
 
+## Guest page, later on 2026-11-27
+
+- Named **URASHIMA** (Impact, Anton as the web fallback), subtitle FORM · MOVE · FUNC,
+  no emoji. Code names, URLs and hostnames still say sesame.
+- One card above the pads: the newest spoken remark (page, pedal) and its thought-log
+  card. A remark just sent shows at once with 考え中 and is matched to its card by text
+  and the mind's clock (`/say` and `/hear` reply `{"t": …}`). Old motion names no longer
+  show (no "Just now: <motion>", no pad name in big type).
+- Talk button: tap to start, tap again to stop. With the browser's recognition it is
+  restarted after each phrase until tapped (stops after 60 s without words); on a PC it
+  used to end at once. Where recognition is missing or answers `network` (Firefox,
+  Vivaldi and other Chromium builds), the page records and posts the audio to the guest
+  port's `POST /hear?lang=ja|en`, which the mind transcribes with the ear's whisper
+  settings (needs `--whisper-model`; the Pi unit now passes `ggml-small-q5_1.bin`).
+  Checked on the Pi: a 40 kB webm clip → 喜んでください。 in 1.9 s → reflex 1.6 s.
+- The mind ignores the second SIGTERM systemd sends (to uv and python), so `off`
+  reaches the robot on restart.
+
 ## Pitfalls
 
 - The page is public: anyone with the URL can move the robot, and the thought
