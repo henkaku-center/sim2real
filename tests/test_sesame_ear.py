@@ -119,3 +119,28 @@ def test_fast_flags_fit_the_encoder_to_the_clip_and_loops_are_dropped(monkeypatc
         assert ear.hand_over(args(prompt=""), bytes(sec), lambda *a: pytest.fail("loop posted")) is None
     monkeypatch.setattr(ear, "transcribe", lambda *a: "もっともっと速く")
     assert ear.hand_over(args(prompt=""), bytes(sec), lambda *a: None) == "もっともっと速く"
+
+
+def test_post_first_falls_back_from_a_local_mind_to_the_mac():
+    tried = []
+
+    class Reply:
+        status = 202
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *a):
+            pass
+
+    def opener(req, timeout):
+        tried.append(req.full_url)
+        if "127.0.0.1" in req.full_url:
+            raise ConnectionRefusedError(111, "refused")
+        return Reply()
+
+    minds = "http://127.0.0.1:8765, http://100.112.210.74:8765"
+    assert ear.post_first(minds, "/say", "やあ".encode(), 1, opener) == ("http://100.112.210.74:8765", 202)
+    assert tried == ["http://127.0.0.1:8765/say", "http://100.112.210.74:8765/say"]
+    with pytest.raises(OSError):
+        ear.post_first("http://127.0.0.1:8765", "/say", b"x", 1, opener)

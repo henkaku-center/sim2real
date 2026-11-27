@@ -39,19 +39,30 @@ from radio_paranoia import rms, source_command, transcribe  # noqa: E402
 from sesame_mind import utterances  # noqa: E402
 
 
-def say(mind, text, timeout=10.0):
-    req = urllib.request.Request(mind.rstrip("/") + "/say", text.encode(), method="POST",
-                                 headers={"Content-Type": "text/plain; charset=utf-8"})
-    with urllib.request.urlopen(req, timeout=timeout) as r:
-        return r.status
+def post_first(minds, path, body, timeout, opener=urllib.request.urlopen):
+    """POST to the first mind in the comma-separated list that answers: a mind on this
+    box (connection refused at once when it is not running), else the Mac's."""
+    error = OSError("no mind given")
+    for mind in filter(None, (m.strip() for m in minds.split(","))):
+        req = urllib.request.Request(mind.rstrip("/") + path, body, method="POST",
+                                     headers={"Content-Type": "text/plain; charset=utf-8"})
+        try:
+            with opener(req, timeout=timeout) as r:
+                return mind, r.status
+        except OSError as e:
+            error = e
+    raise error
 
 
-def cue(mind, face, timeout=3.0):
+def say(minds, text, timeout=10.0):
+    return post_first(minds, "/say", text.encode(), timeout)
+
+
+def cue(minds, face, timeout=3.0):
     """Ask the mind to show an OLED face now; in the background, failures ignored."""
     def send():
         try:
-            req = urllib.request.Request(mind.rstrip("/") + "/cue", face.encode(), method="POST")
-            urllib.request.urlopen(req, timeout=timeout).close()
+            post_first(minds, "/cue", face.encode(), timeout)
         except OSError:
             pass
 
@@ -251,8 +262,9 @@ WantedBy=multi-user.target
 def main(argv=None):
     argv = sys.argv[1:] if argv is None else argv
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    p.add_argument("--mind", default="http://100.112.210.74:8765",
-                   help="the mind's admin URL (the Mac's tailnet IP: the Pi runs without MagicDNS)")
+    p.add_argument("--mind", default="http://127.0.0.1:8765,http://100.112.210.74:8765",
+                   help="the mind's admin URL; with a comma list the first that answers is used "
+                        "(default: a mind on this box, else the Mac's tailnet IP: the Pi runs without MagicDNS)")
     p.add_argument("--mic-device", default="alsa:plughw:CARD=Device,DEV=0",
                    help="ffmpeg input: alsa:DEVICE or pulse:NAME on Linux, ':0' on macOS")
     p.add_argument("--whisper-cmd", default="whisper-cli")
