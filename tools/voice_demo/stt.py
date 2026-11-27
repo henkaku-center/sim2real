@@ -8,6 +8,10 @@ import urllib.request
 from .providers import USER_AGENT, ProviderError, check_text, check_wav
 
 
+class NoSpeech(ProviderError):
+    """A successful recognition response contained no speech."""
+
+
 class NoRedirect(urllib.request.HTTPRedirectHandler):
     def redirect_request(self, _request, _response, code, *_args, **_kwargs):
         raise ProviderError(f"Deepgram HTTP {code}; endpoint redirect refused")
@@ -55,7 +59,7 @@ class DeepgramSpeechProvider:
         except (urllib.error.URLError, OSError, ValueError, RecursionError, KeyError, IndexError, TypeError):
             raise ProviderError("Deepgram request failed: network, timeout or invalid JSON response") from None
         if not text.strip():
-            raise ProviderError("Deepgram returned no speech; try another recording")
+            raise NoSpeech("Deepgram returned no speech; try another recording")
         check_text(text)
         return text
 

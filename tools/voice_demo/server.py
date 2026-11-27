@@ -8,7 +8,7 @@ import threading
 
 from .plan import Catalog, InvalidPlan
 from .providers import MAX_AUDIO_BYTES, FakeProvider, PlanRefusal, ProviderError, check_text, check_wav, provider_from_env
-from .stt import speech_from_env
+from .stt import NoSpeech, speech_from_env
 
 
 class Server(ThreadingHTTPServer):
@@ -77,8 +77,9 @@ class Handler(BaseHTTPRequestHandler):
     def do_POST(self):
         if not self.authorized():
             return self.reply(401, {"error": "device token required"})
-        if self.path != "/prompt":
+        if self.path not in ("/prompt", "/transcribe"):
             return self.reply(404, {"error": "not found"})
+        transcript_only = self.path == "/transcribe"
         if not self.server.slot.acquire(blocking=False):
             return self.reply(503, {"error": "server busy; use local motions"})
         try:
@@ -95,9 +96,16 @@ class Handler(BaseHTTPRequestHandler):
             if len(data) != length:
                 raise InvalidPlan("truncated request")
             content_type = self.headers.get_content_type()
+            if transcript_only and content_type != "audio/wav":
+                return self.reply(415, {"error": "use audio/wav"})
             if content_type == "audio/wav":
                 check_wav(data)
-                transcript = self.server.transcriber.transcribe(data)
+                try:
+                    transcript = self.server.transcriber.transcribe(data)
+                except NoSpeech:
+                    if not transcript_only:
+                        raise
+                    transcript = ""
             elif content_type == "application/json":
                 body = json.loads(data)
                 if not isinstance(body, dict) or set(body) != {"text"}:
@@ -105,6 +113,9 @@ class Handler(BaseHTTPRequestHandler):
                 transcript = check_text(body["text"])
             else:
                 return self.reply(415, {"error": "use application/json or audio/wav"})
+            if transcript_only:
+                transcript = "" if isinstance(transcript, str) and not transcript.strip() else check_text(transcript)
+                return self.reply(200, {"transcript": transcript})
             transcript = check_text(transcript)
             plan, notes = self.server.provider.generate(transcript)
             self.server.catalog.validate(plan)

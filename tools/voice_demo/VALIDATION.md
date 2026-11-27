@@ -10,10 +10,14 @@ secret-free errors. `/health` reports `stt_provider: deepgram`.
 
 - uv **0.12.19** regenerated the demo lockfile, removing Google-only packages
   while retaining the base dependency versions.
-- Python **3.11.16**, macOS Intel: focused voice suite **93 passed, 1 skipped**
-  (Linux-only GPIO), 14.19 seconds.
+- Python **3.11.16**, macOS Intel: final focused voice suite **105 passed,
+  1 skipped** (Linux-only GPIO), 11.84 seconds. Includes `/transcribe` English,
+  Japanese and silence success, no planner invocation, auth/type/size/busy
+  rejection, invalid WAV, upstream 502, slot release and unchanged `/prompt`
+  no-speech handling.
 - Python **3.12.13**: full root suite **549 passed, 17 skipped, 1 expected
-  failure**, 164.69 seconds. Existing hardware/browser/environment skips remain.
+  failure**, 164.69 seconds, before the transcript-only route addition.
+  Existing hardware/browser/environment skips remain; CI covers the final tree.
 - Complete fake HTTP → relay → native firmware PTY demo passed, asserting
   `mode=0 outputs=0`; shell syntax and `git diff --check` passed.
 - Self-review checked the single production factory, startup failure without a

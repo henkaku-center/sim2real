@@ -11,7 +11,7 @@ import pytest
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from tools.voice_demo.providers import ClaudeProvider, NoRedirect, PlanRefusal, ProviderError, provider_from_env
 from tools.voice_demo.plan import InvalidPlan
-from tools.voice_demo.stt import DeepgramSpeechProvider, NoRedirect as SpeechNoRedirect, speech_from_env
+from tools.voice_demo.stt import DeepgramSpeechProvider, NoRedirect as SpeechNoRedirect, NoSpeech, speech_from_env
 from test_voice_demo import catalog, serving, wav, TOKEN
 from tools.voice_demo.client import request_plan, ServerUnavailable
 
@@ -231,7 +231,7 @@ def test_deepgram_wire_contract(deepgram, monkeypatch, text):
 @pytest.mark.parametrize("text", ["", "  \n"])
 def test_deepgram_no_speech(deepgram, monkeypatch, text):
     mock_http(monkeypatch, [speech_response(text)])
-    with pytest.raises(ProviderError, match="no speech"):
+    with pytest.raises(NoSpeech, match="no speech"):
         deepgram.transcribe(wav())
 
 

@@ -21,7 +21,9 @@ The adapter POSTs mono PCM16 16 kHz WAV bytes (at most 30 seconds) to
 and `Content-Type: audio/wav`. Kotoleaf forces Nova-3 English/Japanese
 code-switching, so the application sends no model or language parameters.
 The transcript is `results.channels[0].alternatives[0].transcript`; an empty
-transcript is an explicit no-speech error, never a fake transcription.
+transcript is an explicit no-speech result, never a fake transcription. `/prompt`
+reports it as a provider error; the transcript-only `/transcribe` route returns
+HTTP 200 with an empty transcript and never calls the planner.
 
 The token is mandatory at startup in real-provider mode. Cloud Run receives it
 from `voice-stt-token:latest` in Secret Manager. No Google Speech extra, ADC,

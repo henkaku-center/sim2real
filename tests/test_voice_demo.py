@@ -21,7 +21,8 @@ from tools.voice_demo.client import Controller, ServerUnavailable, request_plan
 from tools.voice_demo.inputs import PushToTalk, Recorder
 from tools.voice_demo.plan import Catalog, InvalidPlan
 from tools.voice_demo.playback import Player, PlaybackError, SerialLink
-from tools.voice_demo.providers import FakeProvider, check_wav, provider_from_env
+from tools.voice_demo.providers import FakeProvider, ProviderError, check_wav, provider_from_env
+from tools.voice_demo.stt import NoSpeech
 from tools.voice_demo.server import Server
 from tools.voice_demo.simulator import SimulatedRobot
 from tools.voice_demo import inputs
@@ -153,6 +154,73 @@ def test_wav_validation():
     for data in (b"bad", wav()[:-2], wav(31), b"a" * 1_000_001):
         with pytest.raises(InvalidPlan):
             check_wav(data)
+
+
+@pytest.mark.parametrize("transcript", ["Do a bow.", "みんなに挨拶して。", "", "  ", NoSpeech("no speech")])
+def test_transcribe_only_never_plans(catalog, monkeypatch, transcript):
+    with serving(catalog) as (url, server):
+        def transcribe(data):
+            assert data == wav()
+            if isinstance(transcript, Exception):
+                raise transcript
+            return transcript
+        monkeypatch.setattr(server.transcriber, "transcribe", transcribe)
+        monkeypatch.setattr(server.provider, "generate", lambda _: pytest.fail("must not plan"))
+        request = urllib.request.Request(url + "/transcribe", data=wav(), headers={
+            "Authorization": f"Bearer {TOKEN}", "Content-Type": "audio/wav"})
+        with urllib.request.urlopen(request) as response:
+            expected = transcript.strip() if isinstance(transcript, str) else ""
+            assert response.status == 200 and json.load(response) == {"transcript": expected}
+
+
+@pytest.mark.parametrize("case,status", [
+    ("auth", 401), ("content_type", 415), ("oversize", 413), ("invalid_wav", 422),
+    ("upstream", 502), ("busy", 503)])
+def test_transcribe_only_errors(catalog, monkeypatch, case, status):
+    with serving(catalog) as (url, server):
+        def transcribe(_):
+            if case == "upstream":
+                raise ProviderError("Deepgram HTTP 500; check endpoint and credentials")
+            pytest.fail("must reject before calling speech provider")
+        monkeypatch.setattr(server.transcriber, "transcribe", transcribe)
+        monkeypatch.setattr(server.provider, "generate", lambda _: pytest.fail("must not plan"))
+        headers = {"Authorization": f"Bearer {TOKEN}", "Content-Type": "audio/wav"}
+        data = wav()
+        if case == "auth":
+            headers.pop("Authorization")
+        elif case == "content_type":
+            headers["Content-Type"] = "application/json"
+            data = b'{"text":"bow"}'
+        elif case == "oversize":
+            # Declare an oversized body so the server can reject before reading.
+            headers["Content-Length"] = "1000001"
+        elif case == "invalid_wav":
+            data = b"not a recording"
+        elif case == "busy":
+            assert server.slot.acquire(blocking=False) and server.slot.acquire(blocking=False)
+        request = urllib.request.Request(url + "/transcribe", data=data, headers=headers)
+        try:
+            with pytest.raises(urllib.error.HTTPError) as error:
+                urllib.request.urlopen(request)
+            with error.value as response:
+                assert response.code == status
+                assert "error" in json.load(response)
+        finally:
+            if case == "busy":
+                server.slot.release()
+                server.slot.release()
+        assert server.slot.acquire(timeout=1) and server.slot.acquire(timeout=1)
+        server.slot.release()
+        server.slot.release()
+
+
+def test_prompt_silence_remains_provider_error(catalog, monkeypatch):
+    with serving(catalog) as (url, server):
+        def transcribe(_):
+            raise NoSpeech("Deepgram returned no speech; try another recording")
+        monkeypatch.setattr(server.transcriber, "transcribe", transcribe)
+        with pytest.raises(ServerUnavailable, match="no speech"):
+            request_plan(url, TOKEN, audio=wav())
 
 
 def test_server_text_audio_auth_and_failures(catalog):

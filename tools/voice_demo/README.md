@@ -104,6 +104,13 @@ mode is text-only because terminals do not reliably report key releases.
 `{"text":"do a bow"}`, or a raw `audio/wav` body. Both require
 `Authorization: Bearer <device-token>`. The response is exactly
 `{transcript, plan, notes}`. `GET /health` also requires the token.
+`POST /transcribe` accepts only raw `audio/wav`, with the same device-token
+authentication, size limits, busy handling, timeouts and error mapping. It runs
+only speech recognition, never the planner, and returns HTTP 200
+`{"transcript":"..."}`. Silence returns HTTP 200 `{"transcript":""}`; upstream
+failures still return 502. This lets another robot controller use transcription
+with its device token while the Kotoleaf gateway token stays in the server's
+Secret Manager configuration. `/prompt` keeps its existing no-speech error.
 Bodies are limited to 1,000,000 bytes, text to 2,000 characters. HTTP errors are
 401 (auth), 413 (size), 415 (format), 422 (invalid input/plan), 502 (provider),
 503 (busy). The server bounds active connections and provider requests and does
