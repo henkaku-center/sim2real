@@ -2,7 +2,7 @@
 
 Software for the Loftwork/FabCafe **AI is not magic** exhibition: setup
 **1 December 2026**, party **3 December 2026**, then a two-month installation.
-No robot firmware changes. Hardware and the Google Cloud VM are not commissioned
+No robot firmware changes. Hardware and the replacement speech path are not commissioned
 by this change.
 
 ## Run the complete local demo
@@ -22,14 +22,14 @@ Try `--text 'do a bow'` or `--text 'say hello to the audience'` too.
 
 Python 3.11+ works, including Raspberry Pi OS Bookworm's Python 3.11 on arm64.
 The small independent environment avoids installing MuJoCo/CAD dependencies on
-the Pi or VM. Base dependencies are **PySerial 3.5 and PyYAML 6.0.3**; the server's
-`google` extra adds **google-cloud-speech 2.41.0** for transcription. GPIO
+the Pi or server. Base dependencies are **PySerial 3.5 and PyYAML 6.0.3**;
+Deepgram transcription uses standard-library HTTP through Kotoleaf. GPIO
 optionally adds **gpiod 2.3.0 on Linux only**. Versions/hashes are in `uv.lock`.
 Development uses pytest 9.0.2. Native simulation needs `c++`; actual relay/server
 deployment does not. The root repository pytest runner also discovers the tests.
 
 ```sh
-uv run --project tools/voice_demo --locked --extra google python -m pytest tests/test_voice_demo.py tests/test_voice_providers.py -v
+uv run --project tools/voice_demo --locked python -m pytest tests/test_voice_demo.py tests/test_voice_providers.py -v
 ```
 
 CI runs this minimal environment and the complete demo on Linux x86_64,
@@ -104,13 +104,20 @@ mode is text-only because terminals do not reliably report key releases.
 `{"text":"do a bow"}`, or a raw `audio/wav` body. Both require
 `Authorization: Bearer <device-token>`. The response is exactly
 `{transcript, plan, notes}`. `GET /health` also requires the token.
+`POST /transcribe` accepts only raw `audio/wav`, with the same device-token
+authentication, size limits, busy handling, timeouts and error mapping. It runs
+only speech recognition, never the planner, and returns HTTP 200
+`{"transcript":"..."}`. Silence returns HTTP 200 `{"transcript":""}`; upstream
+failures still return 502. This lets another robot controller use transcription
+with its device token while the Kotoleaf gateway token stays in the server's
+Secret Manager configuration. `/prompt` keeps its existing no-speech error.
 Bodies are limited to 1,000,000 bytes, text to 2,000 characters. HTTP errors are
 401 (auth), 413 (size), 415 (format), 422 (invalid input/plan), 502 (provider),
 503 (busy). The server bounds active connections and provider requests and does
 not retain audio/transcripts or log headers. The Pi console shows transcript,
 notes, step data and outcome, with terminal control characters escaped.
 
-The default is **Claude planning + Google Speech-to-Text**, not an implicit fake
+The default is **Claude planning + Deepgram through Kotoleaf**, not an implicit fake
 fallback. Claude submits one `submit_plan` tool call using the plan schema below.
 The server locally validates it; missing/invalid tool output gets one correction
 attempt with the validator's reason. Two failures produce HTTP 422
@@ -120,7 +127,7 @@ relay allows 100 seconds for transcription plus up to two planning attempts.
 Offline keys continue to preempt a pending request.
 
 Provider requests identify this application as `sesame-voice-demo/0.1.0` (Claude
-HTTP User-Agent; Google SDK ClientInfo). HTTP errors preserve status and exact
+and Deepgram HTTP User-Agent). HTTP errors preserve status; Claude also preserves
 short numeric edge diagnostics such as `error code: 1010`, while suppressing
 arbitrary provider text/JSON/HTML and credentials. Cloudflare can reject the
 default Python urllib User-Agent before a request reaches the Worker.
@@ -188,12 +195,12 @@ with a typed prompt and with synthetic English and Japanese speech; see
 [VALIDATION.md](VALIDATION.md).
 
 One-time setup in the project: enable Cloud Run, Cloud Build, Artifact Registry,
-Secret Manager and Speech-to-Text; create the service accounts `voice-server`
-(Speech Client, plus Secret Accessor on the two secrets) and `voice-build`
+Secret Manager; create the service accounts `voice-server`
+(Secret Accessor on the three secrets) and `voice-build`
 (Cloud Run Builder and Logs Writer; the project has no Compute Engine default
-account for builds); and create the secrets `voice-device-token` and
-`voice-claude-token` without a trailing newline. Then, from a clean checkout of
-the revision to deploy:
+account for builds); and create the secrets `voice-device-token`,
+`voice-claude-token` and `voice-stt-token` without a trailing newline. Then, from
+a clean checkout of the revision to deploy:
 
 ```sh
 GCP_PROJECT=sesame-robots VOICE_CLAUDE_BASE_URL=https://YOUR-WORKER-ORIGIN \
@@ -216,7 +223,7 @@ Secret Manager and on the Pi, and rotate it by adding a secret version and
 redeploying. The systemd unit in `deploy/` remains for running the server on a
 private host instead.
 
-### Configure Claude and Google
+### Configure Claude and Deepgram
 
 Set these **only in the server's private environment file**:
 
@@ -225,11 +232,8 @@ VOICE_PROVIDER=claude
 VOICE_CLAUDE_BASE_URL=https://YOUR-WORKER.YOUR-SUBDOMAIN.workers.dev
 VOICE_CLAUDE_TOKEN=YOUR-WORKER-ACCESS-TOKEN
 VOICE_PLAN_MODEL=claude-haiku-4-5
-VOICE_STT_PROVIDER=google
-GOOGLE_CLOUD_PROJECT=sesame-robots
-VOICE_STT_LOCATION=us
-VOICE_STT_MODEL=chirp_3
-VOICE_STT_LANGUAGES=en-US,ja-JP
+VOICE_STT_URL=https://kotoleaf.wandering-sky-fcce.workers.dev
+VOICE_STT_TOKEN=YOUR-KOTOLEAF-ACCESS-TOKEN
 ```
 
 Obtain the actual Worker URL from its deployment; the example is a placeholder.
@@ -240,20 +244,19 @@ uses only the supported non-streaming Messages subset and `x-api-key` auth.
 To switch to an **Anthropic Console API key**, change
 `VOICE_CLAUDE_BASE_URL=https://api.anthropic.com` and replace
 `VOICE_CLAUDE_TOKEN` with that key; set `VOICE_PLAN_MODEL` to the desired available
-model and restart the server. No code, relay or Google change is needed.
+model and restart the server. No code, relay or speech change is needed.
 Application-specific variables avoid inheriting unrelated Anthropic auth settings.
 
-For audio, enable Speech-to-Text in `sesame-robots` and run the service as an
-account with Speech Client (`roles/speech.client`). ADC obtains its credentials
-from the metadata server; no key file is
-needed and `GOOGLE_APPLICATION_CREDENTIALS` should remain unset. The Google
-client is loaded only for audio. Chirp 3 uses a regional endpoint (`us`, not
-`global`) and detects English/Japanese from the two-language setting. To allow
-unrestricted language detection, set `VOICE_STT_LANGUAGES=auto` instead.
+For audio, `VOICE_STT_TOKEN` is required at server startup in real-provider mode.
+`VOICE_STT_URL` must be an HTTPS origin and defaults to the Kotoleaf URL above.
+The server POSTs WAV bytes to `/v1/listen?smart_format=true`, authenticated with
+`Authorization: Token <token>`. Kotoleaf enforces Nova-3 English/Japanese
+code-switching; the app sends no model or language parameters. Requests use a
+30-second timeout, no redirects or environment proxies, and bounded responses.
+Deepgram is the only speech adapter; `/health` reports `stt_provider: deepgram`.
 
 Planners implement `generate(text) -> (plan, notes)`; speech adapters implement
-`transcribe(wav_bytes) -> text`. Add an adapter in `stt.py` and its factory branch
-to support another STT provider. The Pi never receives either provider's credentials.
+`transcribe(wav_bytes) -> text`. The Pi never receives either provider's credentials.
 
 The opt-in live text matrix uses configured Claude credentials and a simulated
 robot; it consumes provider quota and stops immediately on HTTP/transport errors:
@@ -266,8 +269,7 @@ uv run --project tools/voice_demo --locked python -m tools.voice_demo.live_check
 
 Use Raspberry Pi OS Bookworm or newer, 64-bit. Install `alsa-utils`, git, uv and
 Tailscale; enroll the Pi in the same tailnet. Check out the **same revision** at
-`/opt/sim2real` and create the minimal environment (no `google` extra needed on
-the Pi). Configure the
+`/opt/sim2real` and create the minimal environment. Configure the
 installation user's access to `dialout`, `audio`, `input` and, for GPIO, `gpio`.
 The provided service uses the dedicated `sesame-voice` user; create it as above.
 
@@ -297,11 +299,8 @@ transcripts; set the venue's local retention policy appropriately.
 | `VOICE_CLAUDE_BASE_URL` | Server | `https://api.anthropic.com`; set Worker origin for gateway testing |
 | `VOICE_CLAUDE_TOKEN` | Server | Required: Worker access token or Anthropic Console key |
 | `VOICE_PLAN_MODEL` | Server | `claude-haiku-4-5` |
-| `VOICE_STT_PROVIDER` | Server | `google`; fake planner mode uses its fixed WAV fixture |
-| `GOOGLE_CLOUD_PROJECT` | Server | `sesame-robots` |
-| `VOICE_STT_LOCATION` | Server | `us` |
-| `VOICE_STT_MODEL` | Server | `chirp_3` |
-| `VOICE_STT_LANGUAGES` | Server | `en-US,ja-JP`; or `auto` alone |
+| `VOICE_STT_URL` | Server | `https://kotoleaf.wandering-sky-fcce.workers.dev` |
+| `VOICE_STT_TOKEN` | Server | Required: Kotoleaf access token; fake mode needs none |
 | `VOICE_SERVER_URL` | Pi | `http://127.0.0.1:8765` for development |
 | `VOICE_SERIAL_PORT` | Pi | No inferred port |
 | `VOICE_INPUT` | Pi | `terminal`; set `evdev` for headless Pi |
@@ -322,7 +321,7 @@ transcripts; set the venue's local retention policy appropriately.
   USB-connected full-robot installation arrangement. USB-only bench capacity is
   unmeasured. See `reference/SESAME-S3-CALIBRATION.md` and the generated interface's
   `power` section; do not infer an electrical design from this serial architecture.
-- VM/Tailscale deployment, live Google audio/ADC, direct Anthropic Console-key
+- VM/Tailscale deployment, deployed Kotoleaf audio path, direct Anthropic Console-key
   access, load-dependent latency/cost, arbitrary-prompt semantic correctness,
   and unattended two-month endurance/restart behaviour. The test Worker text
   path and native PTY were exercised; see VALIDATION.md.
