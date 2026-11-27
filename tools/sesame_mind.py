@@ -1426,7 +1426,7 @@ def serve_guest(port, mind, moments, gate=None, host="127.0.0.1", daily=300):
             if left > 0:
                 return self.reply(429, json.dumps({"wait_s": round(left, 1)}))
             offer(moments, Moment("chat", text))
-            self.reply(202, "{}")
+            self.reply(202, json.dumps({"t": round(time.time(), 2)}))  # the page finds its card by this
 
         def log_message(self, *a):
             pass

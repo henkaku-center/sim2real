@@ -71,6 +71,14 @@ button, input { font: inherit }
 .ear[data-s="thinking"] .said::after { content: "…"; animation: blink 1s infinite }
 .ear[data-s="dropped"] .said { color: var(--mist) }
 
+/* what you just said, and the card it became: right under the talk button */
+.mine { margin: 22px 0 0; text-align: left }
+.mine[hidden] { display: none }
+.mine .tagline { font-size: 15px; font-weight: 700; color: var(--mist); margin: 0 0 -6px 4px }
+.mine .card { border: 2px solid var(--yamabuki) }
+.mine .wait { margin-top: 10px; font-size: 17px; font-weight: 700; color: var(--yamabuki) }
+.mine .wait::after { content: "…"; animation: blink 1s infinite }
+
 /* status: big enough to read across the table */
 .status { display: flex; align-items: center; gap: 14px; margin: 18px 0 6px; padding: 14px 18px; border-radius: 20px;
   background: var(--night-2); font-size: 20px; font-weight: 700; text-align: left }
@@ -154,6 +162,7 @@ details.table th:first-child, details.table td:first-child { text-align: left }
     <div class="ear" id="ear" data-s="" hidden aria-live="polite">
       <span class="label" id="earLabel"></span><span class="said" id="earSaid"></span>
       <div class="meter" id="earMeter" hidden><i id="earLevel"></i></div></div>
+    <div class="mine" id="mine" hidden aria-live="polite"><p class="tagline" data-t="mineLbl"></p><div id="mineCard"></div></div>
     <div><label class="keep"><input type="checkbox" id="keep"> <span data-t="keep"></span></label></div>
     <p class="heard" id="now" aria-live="polite"></p>
     <div class="status" id="status" data-s="idle" aria-live="polite"><span class="dot"></span>
@@ -194,6 +203,7 @@ const LANG = ['en', 'ja'].includes(asked) ? asked : ['en', 'ja'].includes(saved)
 const STR = {
   ja: {
     talk: '話しかける', mic: '話しかける', listening: '聞いてるよ', keep: 'ずっと聞く', other: 'English',
+    mineLbl: 'いま話したこと と ウラシマの頭の中', mineWait: '考え中',
     ear: {listening: 'マイクで聞いてるよ（ペダルを離すと届きます）', thinking: '文字にしています', heard: 'マイクで聞こえたこと',
       dropped: 'うまく聞き取れませんでした', again: 'もう一度ペダルを踏んで話してね'},
     tag: '話しかけると、体で答えるロボット', placeholder: '文字でも話しかけられます', send: '送る',
@@ -222,6 +232,7 @@ const STR = {
   },
   en: {
     talk: 'Talk', mic: 'Talk to me', listening: 'Listening', keep: 'Keep listening', other: '日本語',
+    mineLbl: 'What you just said, inside Urashima’s head', mineWait: 'Thinking',
     ear: {listening: 'Listening on the mic (let go of the pedal to send)', thinking: 'Writing it down', heard: 'Heard on the mic',
       dropped: 'Didn’t catch that', again: 'Press the pedal and try again'},
     tag: 'A robot that answers with its body', placeholder: 'Or type a message', send: 'Send',
@@ -280,7 +291,7 @@ function drawStatus() {
   const m = moment && Date.now() < momentUntil ? moment : null;
   const kind = m ? m.kind : health.robot;
   let sub = m && m.sub != null ? m.sub : STR.sub[kind];
-  if (!m && kind === 'ok') sub = health.doing && health.doing !== 'none' ? STR.sub.ok + (aboutOf[health.doing] || health.doing) : STR.sub.idle;
+  if (!m && kind === 'ok') sub = STR.sub.idle;  // no "just now: <motion>": an old motion's name reads as an answer
   $('status').dataset.s = MOOD[kind] || 'idle';
   $('statusText').textContent = STR.st[kind] || kind;
   $('hint').textContent = typeof sub === 'string' ? sub : '';
@@ -404,24 +415,47 @@ async function refresh() {
     const items = list.slice().reverse();
     $('list').innerHTML = items.length ? items.map(card).join('') : `<p class="empty">${STR.empty}</p>`;
     items.forEach((e, i) => { if (e.motion && e.motion.curve) hover($('c' + i), e.motion.curve) });
+    lastItems = items; drawMine();
     if (moment && moment.kind === 'thinking') momentUntil = 0;  // the answer arrived
   } catch (err) {
     health = {robot: 'mind', doing: ''}; drawStatus();
   } finally { busy = false }
 }
+// What you just said and the card it became, under the talk button. Matched by text and the
+// mind's own clock (the reply to /say, or the ear's report), so an older motion never shows.
+let mine = null, lastItems = [];
+function said(text, t) { mine = {text: text.trim().slice(0, 200), t}; now.textContent = ''; drawMine() }
+function drawMine() {
+  if (!mine) return;
+  const e = lastItems.find(x => x.text === mine.text && x.t >= mine.t - 1);
+  $('mine').hidden = false;
+  if (!e) {
+    $('mineCard').innerHTML = `<article class="card"><div class="said"><span class="text">${STR.q(esc(mine.text))}</span></div>
+      <div class="wait">${STR.mineWait}</div></article>`;
+    return;
+  }
+  if ($('mineCard').dataset.key === e.t + e.text) return;
+  $('mineCard').dataset.key = e.t + e.text;
+  $('mineCard').innerHTML = card(e, 'mine');
+  if (e.motion && e.motion.curve) hover($('cmine'), e.motion.curve);
+}
+
 // The remote ear: what the mic by the robot is hearing, right under the talk button.
 // While someone holds the pedal the page polls fast so the meter and the words keep up.
 let earBusy = false, earSeen = 0;
 function drawEar(e) {
   const box = $('ear');
   earBusy = !!e && (e.s === 'listening' || e.s === 'thinking') && Date.now() / 1000 - e.t < 8;
+  if (e && e.s === 'heard') {  // the words move into the card below; the panel's job is done
+    if (e.t !== earSeen) { earSeen = e.t; said(e.text, e.t); shown = ''; status('thinking', null, 20000) }
+    box.hidden = true; box.dataset.s = ''; return;
+  }
   if (!e || Date.now() / 1000 - e.t > (e.s === 'heard' ? 20 : 8)) { box.hidden = true; box.dataset.s = ''; return }
   box.hidden = false; box.dataset.s = e.s;
   $('earLabel').textContent = STR.ear[e.s] || '';
   $('earMeter').hidden = e.s !== 'listening';
   $('earLevel').style.width = Math.round((e.level || 0) * 100) + '%';
-  $('earSaid').textContent = e.s === 'heard' ? STR.q(e.text) : e.s === 'dropped' ? STR.ear.again : '';
-  if (e.s === 'heard' && e.t !== earSeen) { earSeen = e.t; shown = ''; status('thinking', null, 20000) }
+  $('earSaid').textContent = e.s === 'dropped' ? STR.ear.again : '';
 }
 async function loop() { await refresh(); setTimeout(loop, earBusy || listening ? 300 : 1500) }
 loop();
@@ -439,6 +473,8 @@ async function send(text) {
       return j.done_for_today ? status('done', null, 8000) : status('busy', STR.sub.busy(Math.ceil(j.wait_s)), 3000);
     }
     if (!r.ok) return status('error', null);
+    const j = await r.json().catch(() => ({}));
+    said(text, j.t || 0);
     status('thinking', null, 20000); shown = ''; setTimeout(refresh, 1500); setTimeout(refresh, 4000);
   } catch (e) { status('mind', e.name === 'TimeoutError' ? STR.slow : null, 6000) }
 }
@@ -495,7 +531,7 @@ document.querySelector('.pads').addEventListener('click', async ev => {
   try {
     const r = await fetch('play', {method: 'POST', signal: AbortSignal.timeout(15000),
       body: JSON.stringify({name: b.dataset.name, tempo: +tempoIn.value, intensity: +sizeIn.value})});
-    if (r.ok) { now.textContent = STR.playing(aboutOf[b.dataset.name] || b.dataset.name); shown = ''; setTimeout(refresh, 800) }
+    if (r.ok) { shown = ''; setTimeout(refresh, 800) }
   } catch (e) { status('mind', e.name === 'TimeoutError' ? STR.slow : null, 6000) }
 });
 loadPads().catch(() => {});

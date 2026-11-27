@@ -726,7 +726,9 @@ def test_guest_port_only_talks_and_shows_thoughts(tmp_path):
     try:
         with urllib.request.urlopen(base + "/") as r:
             assert "話しかける" in r.read().decode() and r.headers["Cache-Control"] == "no-store"
-        assert post("/say", "こんにちは").status == 202 and moments.get_nowait().text == "こんにちは"
+        r = post("/say", "こんにちは")
+        assert r.status == 202 and moments.get_nowait().text == "こんにちは"
+        assert abs(json.loads(r.read())["t"] - time.time()) < 5  # the page matches its card by this
         with pytest.raises(urllib.error.HTTPError) as e:
             post("/say", "もう一回")  # within 4 s
         assert e.value.code == 429 and json.loads(e.value.read())["wait_s"] == 4.0
