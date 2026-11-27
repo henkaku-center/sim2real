@@ -56,9 +56,9 @@ EVENT = struct.Struct("llHHi")  # struct input_event on 64-bit Linux
 EV_KEY = 1
 EVIOCGRAB = 0x40044590
 FRAME = 3200  # 100 ms of 16 kHz s16le
-# what people say to the robot; whisper.cpp's --prompt biases the decoder toward these words
-PROMPT = ("ロボットへの短いお願い。立って。座って。踊って。ジャンプして。歩いて。回って。"
-          "手を振って。こんにちは。かわいいね。おいしい！寒いね。")
+# whisper.cpp --prompt: sets the register. A word list cost ~0.5 s per clip on a Pi 5
+# and doubled short answers (喜んで。喜んで。); this short one costs nothing measurable.
+PROMPT = "ロボットへのお願い。"
 # whisper's stock hallucinations on noise (YouTube outros)
 HALLUCINATIONS = ("ご視聴ありがとう", "チャンネル登録", "最後までご視聴", "おやすみなさい。", "字幕")
 LOOP = re.compile(r"(.{1,8}?)\1{3,}")  # 喜んで喜んで喜んで… when the audio context is too short
