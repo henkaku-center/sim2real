@@ -43,7 +43,8 @@ MAC_MIC, LINUX_MIC = ":MacBook Airのマイク", "pulse:default"
 
 def command(robot, mic, port, whisper, groups=("radio", "dev")):
     uv = shutil.which("uv") or str(Path.home() / ".local/bin/uv")
-    args = [uv, "run", "--project", str(ROOT), *[x for g in groups for x in ("--group", g)], "python",
+    no_dev = [] if "dev" in groups else ["--no-dev"]  # uv syncs the dev group by default
+    args = [uv, "run", "--project", str(ROOT), *no_dev, *[x for g in groups for x in ("--group", g)], "python",
             str(ROOT / "tools" / "sesame_mind.py"), "--mic", "--mic-on-demand", "--mic-device", mic,
             "--serve", str(port), "--robot", robot]
     if whisper and Path(whisper).expanduser().exists():

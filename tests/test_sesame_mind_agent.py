@@ -9,7 +9,7 @@ import sesame_mind_agent as agent  # noqa: E402
 def test_systemd_unit_runs_radio_group_with_chosen_mic_and_escapes_specifiers():
     text = agent.unit("sesame-s3-8b2c.local", "alsa:plughw:CARD=Device,DEV=0", 8765, None)
     exec_line = next(line for line in text.splitlines() if line.startswith("ExecStart="))
-    assert "--group radio" in exec_line and "--group dev" not in exec_line
+    assert "--no-dev --group radio" in exec_line and "--group dev" not in exec_line
     assert "--mic-device alsa:plughw:CARD=Device,DEV=0" in exec_line
     assert "--serve 8765 --robot sesame-s3-8b2c.local" in exec_line
     assert f"StandardOutput=append:{agent.LOG}" in text and "Restart=always" in text
