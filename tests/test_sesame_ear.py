@@ -84,7 +84,7 @@ def test_push_to_talk_keeps_only_the_pressed_stretch_with_pre_and_tail(monkeypat
     posted = []
     ear.push_to_talk(args(), io.BytesIO(b"".join(frames)), lambda: next(tick),
                      post=lambda mind, text: posted.append(text))
-    assert got == [3 + 8 + 3, 3 + 5 + 3]   # pre + held + tail, for both presses
+    assert got == [3 + 8 + 2, 3 + 5 + 2]   # pre + held + tail, for both presses
     assert posted == ["歩いて", "歩いて"]
 
 
@@ -104,5 +104,14 @@ def test_hand_over_passes_prompt_drops_outros_and_measures_clipping(monkeypatch,
     assert ear.clipped(rail) == pytest.approx(1 / 3)
     assert ear.hand_over(a, rail, lambda mind, text: posted.append(text)) is None
     assert ear.hand_over(a, rail, lambda mind, text: posted.append(text)) == "立って"
-    assert posted == ["立って"] and calls[0][-1] == ("--prompt", "立って。")
+    assert posted == ["立って"] and calls[0][-1][-2:] == ("--prompt", "立って。")
     assert len(list(tmp_path.glob("*.wav"))) >= 1
+
+
+def test_fast_flags_fit_the_encoder_to_the_clip_and_loops_are_dropped(monkeypatch):
+    sec = 16000 * 2
+    ac = lambda pcm: int(ear.fast_flags(pcm)[ear.fast_flags(pcm).index("-ac") + 1])
+    assert ac(bytes(sec * 2)) == 256 and ac(bytes(sec * 4)) == 296 and ac(bytes(sec * 40)) == 1500
+    assert ear.fast_flags(bytes(sec))[:5] == ("-bs", "1", "-bo", "1", "-nf")
+    monkeypatch.setattr(ear, "transcribe", lambda *a: "喜んで" * 9)
+    assert ear.hand_over(args(prompt=""), bytes(sec), lambda *a: pytest.fail("loop posted")) is None

@@ -23,6 +23,7 @@ import fcntl
 import getpass
 import glob
 import queue
+import re
 import shlex
 import struct
 import subprocess
@@ -60,6 +61,16 @@ PROMPT = ("ロボットへの短いお願い。立って。座って。踊って
           "手を振って。こんにちは。かわいいね。おいしい！寒いね。")
 # whisper's stock hallucinations on noise (YouTube outros)
 HALLUCINATIONS = ("ご視聴ありがとう", "チャンネル登録", "最後までご視聴", "おやすみなさい。", "字幕")
+LOOP = re.compile(r"(.{1,8}?)\1{3,}")  # 喜んで喜んで喜んで… when the audio context is too short
+
+
+def fast_flags(pcm):
+    """Greedy decoding without fallback, and an encoder context cut to the clip
+    (1500 = 30 s; ~50 per second plus margin, 256 at least). On a Pi 5 with the
+    small model this takes a 2-4 s clip from ~9 s to ~1.5 s; tighter contexts
+    start repeating words."""
+    seconds = len(pcm) / (16000 * 2)
+    return ("-bs", "1", "-bo", "1", "-nf", "-ac", str(min(1500, max(256, int(seconds * 50) + 96))))
 
 
 class Pedal:
@@ -123,13 +134,13 @@ def hand_over(args, pcm, post):
     """Transcribe one stretch and post it; whisper's [音楽] / (拍手) and its YouTube
     outros on noise mean no speech."""
     t = time.monotonic()
-    extra = ("--prompt", args.prompt) if getattr(args, "prompt", "") else ()
+    extra = fast_flags(pcm) + (("--prompt", args.prompt) if getattr(args, "prompt", "") else ())
     text = transcribe(pcm, args.whisper_cmd, args.whisper_model, args.language, extra).strip()
     took, clip = time.monotonic() - t, clipped(pcm)
     if getattr(args, "keep", None):
         keep_clip(args.keep, pcm, text)
     note = f"(rms {rms(pcm):.0f}, clipped {clip:.1%}, whisper {took:.1f} s)"
-    if not text or text.startswith(("[", "(")) or any(h in text for h in HALLUCINATIONS):
+    if not text or text.startswith(("[", "(")) or any(h in text for h in HALLUCINATIONS) or LOOP.search(text):
         print(f"  (ear) dropped {text!r} {note}", flush=True)
         return None
     print(f"👂 {text}  {note}", flush=True)
@@ -141,7 +152,7 @@ def hand_over(args, pcm, post):
     return text
 
 
-def push_to_talk(args, stream, is_down, post=say, pre=3, tail=3, max_s=30.0):
+def push_to_talk(args, stream, is_down, post=say, pre=3, tail=2, max_s=30.0):
     """Keep what the mic heard while the pedal was down, plus `pre` frames before the
     press and `tail` after the release (audio lags the pedal), and hand it over.
     Transcribing runs on another thread so the next press is not lost."""
