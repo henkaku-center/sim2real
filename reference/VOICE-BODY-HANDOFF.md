@@ -1,5 +1,8 @@
 # Voice body handoff (2026-11-26)
 
+> Continued in `reference/SESAME-CAFE-HANDOFF.md` (2026-11-27): public guest page,
+> pads, thought log, café Wi-Fi, launchd agent and the low-battery behaviour.
+
 Sesame can be moved by sound and voice through a coupled-oscillator (CPG)
 body, live on the robot or on a simulated robot. Everything is reachable from
 the robot's own page, `http://sesame-s3-8b2c.local`. This note covers what
