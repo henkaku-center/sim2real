@@ -102,6 +102,8 @@ def test_mic_and_file_sources_emit_16k_mono_pcm():
     assert mac[1:5] == ["-f", "avfoundation", "-i", ":0"]
     assert linux[1:5] == ["-f", "pulse", "-i", "default"]
     assert f[:4] == ["ffmpeg", "-re", "-i", "a.mp3"]
+    alsa = rp.source_command(args(mic=True, mic_device="alsa:plughw:CARD=Device,DEV=0"), platform="linux")
+    assert alsa[1:5] == ["-f", "alsa", "-i", "plughw:CARD=Device,DEV=0"]
     for cmd in (mac, linux, f):
         assert cmd[-9:] == ["-ac", "1", "-ar", "16000", "-f", "s16le", "-loglevel", "error", "-"]
 

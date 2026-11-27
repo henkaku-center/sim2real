@@ -236,7 +236,10 @@ def source_command(args, platform=sys.platform):
         return ["rtl_fm", "-f", f"{args.sdr}M", "-M", "wbfm", "-r", str(RATE), *gain, "-"]
     if args.mic:
         fmt, dev = ("avfoundation", ":0") if platform == "darwin" else ("pulse", "default")
-        return ["ffmpeg", "-f", fmt, "-i", args.mic_device or dev, *pcm]
+        dev = args.mic_device or dev
+        if platform != "darwin" and dev.split(":", 1)[0] in ("alsa", "pulse") and ":" in dev:
+            fmt, dev = dev.split(":", 1)  # e.g. alsa:plughw:CARD=Device,DEV=0 for a USB mic without PulseAudio
+        return ["ffmpeg", "-f", fmt, "-i", dev, *pcm]
     return ["ffmpeg", "-re", "-i", args.file, *pcm]
 
 
