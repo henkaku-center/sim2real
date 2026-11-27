@@ -93,6 +93,11 @@ and `CLS` tables. Numbers in the texts are read from the YAML, not typed in.
 
 ## Not verified / open
 
+- **Wrong body.** This model is the S2-era MJCF body. The printed robot is
+  the V3 frame with the v3headarms shell: hips 15 mm wider apart and about
+  67% heavier with the shell. The deck status and the recompute plan are in
+  `reference/MOTION-SPACE-V3-SHELL-HANDOFF.md`.
+
 - **No real-browser check yet.** Open `/space` (and the copied file) in
   Safari or Chrome at the projector's resolution, and click through the
   six walkthroughs.
