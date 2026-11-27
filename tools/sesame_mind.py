@@ -931,6 +931,7 @@ class Mind:
         if self.body.mode != "off":
             return self.handle_body(moment)
         t0 = time.monotonic()
+        early = self.design_early(moment)
         try:
             decision = self.reflex.decide(moment, self.library, self.memory.notes)
         except (OSError, ValueError, KeyError, TypeError, AttributeError) as e:
@@ -939,7 +940,7 @@ class Mind:
         reflex_ms = (time.monotonic() - t0) * 1000
         action, note, self.designed = decision.action, "", None
         if action == NEW:
-            action, note = self.invent(moment)
+            action, note = self.invent(moment, early)
         entry = {"t": self.clock(), **asdict(moment), **asdict(decision), "did": action,
                  "reflex_ms": round(reflex_ms), "note": note,
                  **({"design": self.designed} if self.designed else {})}
@@ -962,13 +963,38 @@ class Mind:
         print(f"🫀 {moment.source}「{moment.text}」→ {did}", flush=True)
         return entry
 
-    def invent(self, moment):
+    def design_early(self, moment):
+        """A model reflex mostly answers "new", so start the designer at the same time:
+        a new motion then waits max(reflex, design) instead of their sum (~3 s less with
+        Claude). If the reflex picks a learned motion the early design is dropped unused.
+        The rules reflex rarely says new, so it does not pay for a design per remark."""
+        if self.designer is None or not moment.text or getattr(self.reflex, "by", "rules") == "rules":
+            return None
+        early = {"t0": time.monotonic()}
+
+        def run():
+            try:
+                early["result"] = self.designer.design(moment, self.library, self.memory.notes)
+            except Exception as e:  # reported by invent() if the design is needed
+                early["error"] = e
+
+        early["thread"] = threading.Thread(target=run, daemon=True)
+        early["thread"].start()
+        return early
+
+    def invent(self, moment, early=None):
         self.designed = None
         if self.designer is None:
             return NONE, "no designer"
-        t0 = time.monotonic()
+        t0 = early["t0"] if early else time.monotonic()
         try:
-            name, about, spec, *why = self.designer.design(moment, self.library, self.memory.notes)
+            if early:
+                early["thread"].join()
+                if "error" in early:
+                    raise early["error"]
+                name, about, spec, *why = early["result"]
+            else:
+                name, about, spec, *why = self.designer.design(moment, self.library, self.memory.notes)
             validate(self.spine.manifest, spec)
         except Exception as e:  # a bad design must not stop the robot listening
             return NONE, f"design failed: {e}"

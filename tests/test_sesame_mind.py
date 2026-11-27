@@ -5,6 +5,7 @@ import io
 import json
 import math
 import sys
+import time
 from pathlib import Path
 
 import pytest
@@ -205,6 +206,44 @@ def test_mind_survives_bad_designs_and_reflex_outages(tmp_path):
     mind.designer.ruminate = lambda *a: (_ for _ in ()).throw(RuntimeError("offline"))
     mind.ruminate()  # logged, not raised
     assert mind.memory.notes == ""
+
+
+class SlowLLMReflex:
+    by = "llm:claude"
+
+    def __init__(self, answers):
+        self.answers = iter(answers)
+
+    def decide(self, moment, library, notes=""):
+        time.sleep(0.2)
+        return sm.Decision(next(self.answers), 0.6, 1.0, by=self.by)
+
+
+class SlowDesigner(FakeDesigner):
+    def __init__(self):
+        super().__init__()
+        self.calls = 0
+
+    def design(self, moment, library, notes=""):
+        self.calls += 1
+        time.sleep(0.2)
+        return super().design(moment, library, notes)
+
+
+def test_model_reflex_designs_in_parallel_and_drops_unused_designs(tmp_path):
+    spine, designer = FakeSpine(), SlowDesigner()
+    mind = sm.Mind(SlowLLMReflex([sm.NEW, "wave", sm.NEW]), sm.Library(tmp_path / "lib.json"), sm.Memory(tmp_path),
+                   spine, designer)
+    t0 = time.monotonic()
+    entry = mind.handle(sm.Moment("chat", "くねくねして"))
+    assert entry["did"] == "wiggle" and time.monotonic() - t0 < 0.35  # max(0.2, 0.2), not their sum
+    assert mind.handle(sm.Moment("chat", "手を振って"))["did"] == "wave" and designer.calls == 2
+    assert "wiggle_2" not in mind.library.items  # the early design for "wave" was not kept
+    designer.design = lambda *a: (_ for _ in ()).throw(RuntimeError("overloaded"))
+    assert "design failed: overloaded" in mind.handle(sm.Moment("chat", "もう一つ"))["note"]
+    rules = sm.Mind(sm.RuleReflex(), sm.Library(), sm.Memory(), FakeSpine(), SlowDesigner())
+    rules.handle(sm.Moment("chat", "wave"))
+    assert rules.designer.calls == 0  # the rules reflex pays for no design
 
 
 def test_spine_dry_run_and_streaming():
