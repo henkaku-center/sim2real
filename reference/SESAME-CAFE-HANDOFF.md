@@ -134,15 +134,17 @@ resolve `.local`, so phones need the IP (shown on the mind page and the OLED).
 
 ## Henkaku tailnet access (2026-11-27)
 
-The guest page is also served **inside the Henkaku Center tailnet only** (no
-Funnel) from the Mac's `wizard-of-oz@henkaku.center` profile:
+The guest page is also published **on the Funnel of the Mac's
+`wizard-of-oz@henkaku.center` profile** (public, by the user's choice on
+2026-11-27; first it was tailnet-only `serve`):
 
 ```sh
-tailscale serve --bg --set-path /sesame http://127.0.0.1:8766   # https://kotaromacbook-air-1.tail08c5d0.ts.net/sesame/
-tailscale serve --https=443 --set-path /sesame off              # undo
+tailscale funnel --bg --set-path /sesame http://127.0.0.1:8766  # https://kotaromacbook-air-1.tail08c5d0.ts.net/sesame/
+tailscale funnel --https=443 --set-path /sesame off             # undo
 ```
 
-Checked from the Mac: page 200, `/latest` 200, `/motions` 200, `/config` 404.
+Checked through the public ingress (103.84.155.217): page 200, `/latest` 200,
+`/config` 404.
 Each Tailscale profile keeps its own serve config, so switching back to
 `gomakotaro17@gmail.com` brings the public Funnel back and this URL goes down.
 
