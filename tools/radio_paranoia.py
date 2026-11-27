@@ -267,14 +267,14 @@ def ear(stream, chunk_bytes, chunks):
     offer(chunks, None)
 
 
-def transcribe(pcm, whisper_cmd, model, language):
+def transcribe(pcm, whisper_cmd, model, language, extra=()):
     with tempfile.NamedTemporaryFile(suffix=".wav") as f:
         with wave.open(f.name, "wb") as w:
             w.setnchannels(1)
             w.setsampwidth(2)
             w.setframerate(RATE)
             w.writeframes(pcm)
-        out = subprocess.run([whisper_cmd, "-m", model, "-f", f.name, "-l", language, "-nt", "-np"],
+        out = subprocess.run([whisper_cmd, "-m", model, "-f", f.name, "-l", language, "-nt", "-np", *extra],
                              capture_output=True, text=True, timeout=120)
     if out.returncode:
         print(f"(ear) {whisper_cmd} failed: {out.stderr.strip()[-300:]}", file=sys.stderr)

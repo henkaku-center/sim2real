@@ -92,3 +92,17 @@ def test_push_to_talk_drops_a_silent_press(monkeypatch):
     monkeypatch.setattr(ear, "transcribe", lambda *a: pytest.fail("silence must not reach whisper"))
     tick = iter([True] * 5 + [False] * 5)
     ear.push_to_talk(args(), io.BytesIO(bytes(FRAME) * 10), lambda: next(tick), post=lambda *a: None)
+
+
+def test_hand_over_passes_prompt_drops_outros_and_measures_clipping(monkeypatch, tmp_path):
+    calls = []
+    said = iter(["ご視聴ありがとうございました", "立って"])
+    monkeypatch.setattr(ear, "transcribe", lambda pcm, *a: calls.append(a) or next(said))
+    posted = []
+    a = args(prompt="立って。", keep=str(tmp_path))
+    rail = (32767).to_bytes(2, "little", signed=True) * 100 + bytes(200 * 2)
+    assert ear.clipped(rail) == pytest.approx(1 / 3)
+    assert ear.hand_over(a, rail, lambda mind, text: posted.append(text)) is None
+    assert ear.hand_over(a, rail, lambda mind, text: posted.append(text)) == "立って"
+    assert posted == ["立って"] and calls[0][-1] == ("--prompt", "立って。")
+    assert len(list(tmp_path.glob("*.wav"))) >= 1

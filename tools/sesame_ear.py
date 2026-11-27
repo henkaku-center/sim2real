@@ -30,6 +30,7 @@ import sys
 import threading
 import time
 import urllib.request
+import wave
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -54,6 +55,11 @@ EVENT = struct.Struct("llHHi")  # struct input_event on 64-bit Linux
 EV_KEY = 1
 EVIOCGRAB = 0x40044590
 FRAME = 3200  # 100 ms of 16 kHz s16le
+# what people say to the robot; whisper.cpp's --prompt biases the decoder toward these words
+PROMPT = ("ロボットへの短いお願い。立って。座って。踊って。ジャンプして。歩いて。回って。"
+          "手を振って。こんにちは。かわいいね。おいしい！寒いね。")
+# whisper's stock hallucinations on noise (YouTube outros)
+HALLUCINATIONS = ("ご視聴ありがとう", "チャンネル登録", "最後までご視聴", "おやすみなさい。", "字幕")
 
 
 class Pedal:
@@ -92,12 +98,41 @@ def find_pedal(spec):
     return [spec]
 
 
+def clipped(pcm, limit=32000):
+    """Share of samples at the rails: above ~1 % the mic gain is too high."""
+    n = len(pcm) // 2
+    return sum(abs(v) >= limit for v in memoryview(pcm[: n * 2]).cast("h")) / n if n else 0.0
+
+
+def keep_clip(folder, pcm, text, keep=30):
+    folder = Path(folder).expanduser()
+    folder.mkdir(parents=True, exist_ok=True)
+    stem = time.strftime("%Y%m%d-%H%M%S")
+    with wave.open(str(folder / f"{stem}.wav"), "wb") as w:
+        w.setnchannels(1)
+        w.setsampwidth(2)
+        w.setframerate(16000)
+        w.writeframes(pcm)
+    (folder / f"{stem}.txt").write_text(text + "\n")
+    for old in sorted(folder.glob("*.wav"))[:-keep]:
+        old.unlink(missing_ok=True)
+        old.with_suffix(".txt").unlink(missing_ok=True)
+
+
 def hand_over(args, pcm, post):
-    """Transcribe one stretch and post it; whisper's [音楽] / (拍手) mean no speech."""
-    text = transcribe(pcm, args.whisper_cmd, args.whisper_model, args.language).strip()
-    if not text or text.startswith(("[", "(")):
+    """Transcribe one stretch and post it; whisper's [音楽] / (拍手) and its YouTube
+    outros on noise mean no speech."""
+    t = time.monotonic()
+    extra = ("--prompt", args.prompt) if getattr(args, "prompt", "") else ()
+    text = transcribe(pcm, args.whisper_cmd, args.whisper_model, args.language, extra).strip()
+    took, clip = time.monotonic() - t, clipped(pcm)
+    if getattr(args, "keep", None):
+        keep_clip(args.keep, pcm, text)
+    note = f"(rms {rms(pcm):.0f}, clipped {clip:.1%}, whisper {took:.1f} s)"
+    if not text or text.startswith(("[", "(")) or any(h in text for h in HALLUCINATIONS):
+        print(f"  (ear) dropped {text!r} {note}", flush=True)
         return None
-    print(f"👂 {text}  (rms {rms(pcm):.0f})", flush=True)
+    print(f"👂 {text}  {note}", flush=True)
     if not args.dry:
         try:
             post(args.mind, text)
@@ -197,6 +232,8 @@ def main(argv=None):
     p.add_argument("--silence-rms", type=float, default=450.0,
                    help="speech threshold (int16 RMS; the Pi's USB mic idles near 200)")
     p.add_argument("--min-s", type=float, default=0.4, help="ignore sounds shorter than this")
+    p.add_argument("--prompt", default=PROMPT, help="whisper initial prompt ('' for none)")
+    p.add_argument("--keep", default="~/sesame-ear-clips", help="save the last 30 clips + text here ('' for none)")
     p.add_argument("--pedal", default="auto",
                    help="push-to-talk input device: auto (a USB FootSwitch if plugged in), off, or /dev/input/...")
     p.add_argument("--dry", action="store_true", help="print, do not post")
