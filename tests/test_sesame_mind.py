@@ -265,6 +265,33 @@ def test_mind_shows_thinking_then_idle_and_cue_rejects_command_chains(tmp_path):
     assert mind.cue("surprised") and not mind.cue("happy;off") and not mind.cue("")
 
 
+def test_remote_ear_state_reaches_latest_and_sets_faces_once(tmp_path):
+    sent = []
+
+    class Robot:
+        def command(self, text):
+            sent.append(text)
+            return True, "OK FACE"
+
+    spine = FakeSpine()
+    spine.robot = Robot()
+    spine.health = "ok"
+    mind = sm.Mind(sm.RuleReflex(), sm.Library(), sm.Memory(tmp_path), spine)
+    assert json.loads(sm.latest(mind))["ear"] is None
+    mind.hear_ear({"s": "listening", "level": 0.4})
+    mind.hear_ear({"s": "listening", "level": 7})
+    mind.hear_ear({"s": "thinking"})
+    ear = mind.hear_ear({"s": "heard", "text": "立って" * 100})
+    assert ear["level"] == 0 and len(ear["text"]) == 200
+    assert json.loads(sm.latest(mind))["ear"]["s"] == "heard"
+    with pytest.raises(ValueError):
+        mind.hear_ear({"s": "face happy;off"})
+    time.sleep(0.1)
+    assert sorted(sent) == ["face surprised", "face thinking"]  # one face per state change
+    mind.ear["t"] -= 60
+    assert json.loads(sm.latest(mind))["ear"] is None  # stale
+
+
 def test_spine_dry_run_and_streaming():
     sent = []
 
@@ -705,17 +732,17 @@ def test_guest_port_only_talks_and_shows_thoughts(tmp_path):
         assert e.value.code == 429 and json.loads(e.value.read())["wait_s"] == 4.0
         t[0] += 4.0
         assert post("/say", "あ" * 500).status == 202 and len(moments.get_nowait().text) == 200
-        for path, body in (("/config", '{"live": true}'), ("/ruminate", "")):
+        for path, body in (("/config", '{"live": true}'), ("/ruminate", ""), ("/ear", '{"s": "heard"}'), ("/cue", "x")):
             with pytest.raises(urllib.error.HTTPError) as e:
                 post(path, body)
             assert e.value.code == 404  # settings stay on the admin port
         with pytest.raises(urllib.error.HTTPError):
             urllib.request.urlopen(base + "/config")
         with urllib.request.urlopen(base + "/latest") as r:
-            assert json.loads(r.read()) == {"n": 0, "t": 0, "robot": "dry", "doing": ""}
+            assert json.loads(r.read()) == {"n": 0, "t": 0, "robot": "dry", "doing": "", "ear": None}
         mind.memory.add({"t": 5.0, "text": "x" * 4000, "did": "none"})
         with urllib.request.urlopen(base + "/latest") as r:
-            assert json.loads(r.read()) == {"n": 1, "t": 5.0, "robot": "dry", "doing": "none"}
+            assert json.loads(r.read()) == {"n": 1, "t": 5.0, "robot": "dry", "doing": "none", "ear": None}
         import gzip
         req = urllib.request.Request(base + "/trace", headers={"Accept-Encoding": "gzip"})
         with urllib.request.urlopen(req) as r:

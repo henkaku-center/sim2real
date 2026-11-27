@@ -2,6 +2,7 @@ import argparse
 import pytest
 import io
 import sys
+import time
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "tools"))
@@ -81,10 +82,14 @@ def test_push_to_talk_keeps_only_the_pressed_stretch_with_pre_and_tail(monkeypat
     tick = iter(down)
     got = []
     monkeypatch.setattr(ear, "transcribe", lambda pcm, *a: got.append(len(pcm) // FRAME) or "歩いて")
-    posted, faces = [], []
+    posted, states = [], []
     ear.push_to_talk(args(), io.BytesIO(b"".join(frames)), lambda: next(tick),
-                     post=lambda mind, text: posted.append(text), show=faces.append)
-    assert faces == ["surprised", "thinking"] * 2
+                     post=lambda mind, text: posted.append(text), report=lambda st, **f: states.append((st, f)))
+    names = [st for st, f in states]
+    assert names == ["listening"] * 8 + ["thinking"] + ["listening"] * 5 + ["thinking"] + ["heard"] * 2 \
+        or sorted(names) == sorted(["listening"] * 13 + ["thinking"] * 2 + ["heard"] * 2)  # worker thread may interleave
+    assert {f["text"] for st, f in states if st == "heard"} == {"歩いて"}
+    assert all(0.6 < f["level"] <= 1 for st, f in states if st == "listening")
     assert got == [3 + 8 + 2, 3 + 5 + 2]   # pre + held + tail, for both presses
     assert posted == ["歩いて", "歩いて"]
 
@@ -144,3 +149,24 @@ def test_post_first_falls_back_from_a_local_mind_to_the_mac():
     assert tried == ["http://127.0.0.1:8765/say", "http://100.112.210.74:8765/say"]
     with pytest.raises(OSError):
         ear.post_first("http://127.0.0.1:8765", "/say", b"x", 1, opener)
+
+
+def test_reporter_sends_only_the_newest_state():
+    sent = []
+    gate = __import__("threading").Event()
+
+    def post(minds, path, body, timeout):
+        gate.wait(1)
+        sent.append((path, __import__("json").loads(body)))
+
+    r = ear.Reporter("http://m", gap=0, post=post)
+    r("listening", level=0.2)
+    r("listening", level=0.5)
+    r("thinking")
+    gate.set()
+    for _ in range(100):
+        if sent and sent[-1][1]["s"] == "thinking":
+            break
+        time.sleep(0.01)
+    assert sent[-1] == ("/ear", {"s": "thinking"}) and len(sent) <= 2
+    assert ear.level(bytes(3200)) == 0 and ear.level(LOUD * 1600) == pytest.approx((20 * __import__("math").log10(2000) - 40) / 40)

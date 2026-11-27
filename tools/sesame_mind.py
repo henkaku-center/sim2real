@@ -910,6 +910,7 @@ class Mind:
         self.designer, self.clock = designer, clock
         self.settings, self.link, self.error = None, None, ""
         self.body = VoiceBody(spine.manifest, spine)
+        self.ear = None  # what a remote ear (tools/sesame_ear.py) is doing, for the guest page
 
     def play(self, name, intensity=0.5, tempo=1.0, source="pad"):
         """Play a library motion now (a pad or button press; no model call), logged like any
@@ -942,6 +943,21 @@ class Mind:
 
         threading.Thread(target=send, daemon=True).start()
         return True
+
+    EAR_STATES = {"listening": "surprised", "thinking": "thinking", "heard": None, "dropped": "idle"}
+
+    def hear_ear(self, report, clock=time.time):
+        """A remote ear's state: listening (with a 0..1 level), thinking, heard (text) or
+        dropped. Shown under the talk button; a new state also sets the OLED face."""
+        state = report.get("s")
+        if state not in self.EAR_STATES:
+            raise ValueError(f"ear state must be one of {', '.join(self.EAR_STATES)}")
+        level = min(max(float(report.get("level", 0.0)), 0.0), 1.0)
+        ear = {"s": state, "level": round(level, 2), "text": str(report.get("text", ""))[:200], "t": round(clock(), 2)}
+        if (self.ear or {}).get("s") != state and self.EAR_STATES[state]:
+            self.cue(self.EAR_STATES[state])
+        self.ear = ear
+        return ear
 
     def stand(self, source="button"):
         """Stand now (the stock motion)."""
@@ -1228,9 +1244,11 @@ def latest(mind):
     robot is doing (no robot = dry run) for the page's status line."""
     recent = mind.memory.recent(1)
     robot = mind.spine.robot
+    ear = getattr(mind, "ear", None)
     return json.dumps({"n": len(mind.memory.lines), "t": recent[-1]["t"] if recent else 0,
                        "robot": mind.spine.health if robot else "dry",
-                       "doing": recent[-1].get("did", "") if recent else ""})
+                       "doing": recent[-1].get("did", "") if recent else "",
+                       "ear": ear if ear and time.time() - ear["t"] < 30 else None}, ensure_ascii=False)
 
 
 def config_view(mind):
@@ -1308,6 +1326,11 @@ def serve(port, mind, moments):
                 mind.stand()
             elif self.path == "/cue":
                 return self.reply(202 if mind.cue(body.strip()) else 400, "{}")
+            elif self.path == "/ear":
+                try:
+                    return self.reply(202, json.dumps(mind.hear_ear(json.loads(body or "{}")), ensure_ascii=False))
+                except (ValueError, TypeError, AttributeError) as e:
+                    return self.reply(400, json.dumps({"error": str(e)}))
             elif self.path == "/play":
                 return self.reply(*play_request(mind, body))
             elif self.path == "/config":

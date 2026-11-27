@@ -22,6 +22,8 @@ import collections
 import fcntl
 import getpass
 import glob
+import json
+import math
 import queue
 import re
 import shlex
@@ -58,15 +60,44 @@ def say(minds, text, timeout=10.0):
     return post_first(minds, "/say", text.encode(), timeout)
 
 
-def cue(minds, face, timeout=3.0):
-    """Ask the mind to show an OLED face now; in the background, failures ignored."""
-    def send():
-        try:
-            post_first(minds, "/cue", face.encode(), timeout)
-        except OSError:
-            pass
+class Reporter:
+    """Tells the mind what the ear is doing (POST /ear): listening with a level, thinking,
+    heard with the text, dropped. The guest page shows it under the talk button and the
+    mind turns it into OLED faces. Only the newest state is sent, at most every `gap`
+    seconds, from a background thread; failures are ignored."""
 
-    threading.Thread(target=send, daemon=True).start()
+    def __init__(self, minds, gap=0.15, post=post_first):
+        self.minds, self.gap, self.post = minds, gap, post
+        self.pending, self.lock, self.wake = None, threading.Lock(), threading.Event()
+        threading.Thread(target=self._run, daemon=True).start()
+
+    def __call__(self, state, **fields):
+        with self.lock:
+            self.pending = {"s": state, **fields}
+        self.wake.set()
+
+    def _run(self):
+        while True:
+            self.wake.wait()
+            self.wake.clear()
+            with self.lock:
+                report, self.pending = self.pending, None
+            if report is None:
+                continue
+            try:
+                self.post(self.minds, "/ear", json.dumps(report, ensure_ascii=False).encode(), 2.0)
+            except OSError:
+                pass
+            time.sleep(self.gap)
+
+
+def level(pcm):
+    """0..1 loudness for a meter: 40 dB (RMS 100, room hum) to 80 dB (RMS 10000, shouting)."""
+    return min(1.0, max(0.0, (20 * math.log10(max(rms(pcm), 1.0)) - 40) / 40))
+
+
+def quiet(*a, **k):
+    pass
 
 
 def voiced_s(pcm, silence_rms, frame_ms=100):
@@ -153,7 +184,7 @@ def keep_clip(folder, pcm, text, keep=30):
         old.with_suffix(".txt").unlink(missing_ok=True)
 
 
-def hand_over(args, pcm, post):
+def hand_over(args, pcm, post, report=quiet):
     """Transcribe one stretch and post it; whisper's [音楽] / (拍手) and its YouTube
     outros on noise mean no speech."""
     t = time.monotonic()
@@ -165,8 +196,10 @@ def hand_over(args, pcm, post):
     note = f"(rms {rms(pcm):.0f}, clipped {clip:.1%}, whisper {took:.1f} s)"
     if not text or text.startswith(("[", "(")) or any(h in text for h in HALLUCINATIONS) or LOOP.search(text):
         print(f"  (ear) dropped {text!r} {note}", flush=True)
+        report("dropped")
         return None
     print(f"👂 {text}  {note}", flush=True)
+    report("heard", text=text)
     if not args.dry:
         try:
             post(args.mind, text)
@@ -175,20 +208,20 @@ def hand_over(args, pcm, post):
     return text
 
 
-def push_to_talk(args, stream, is_down, post=say, pre=3, tail=2, max_s=30.0, show=None):
+def push_to_talk(args, stream, is_down, post=say, pre=3, tail=2, max_s=30.0, report=quiet):
     """Keep what the mic heard while the pedal was down, plus `pre` frames before the
     press and `tail` after the release (audio lags the pedal), and hand it over.
-    Transcribing runs on another thread so the next press is not lost. `show(face)`
-    gives instant feedback on the robot: surprised while held, thinking after."""
-    show = show or (lambda face: None)
+    Transcribing runs on another thread so the next press is not lost. `report` gets
+    listening (with the level of every frame) while held, then thinking."""
     jobs = queue.Queue()
 
     def work():
         while (pcm := jobs.get()) is not None:
             if voiced_s(pcm, args.silence_rms) >= args.min_s:
-                hand_over(args, pcm, post)
+                hand_over(args, pcm, post, report)
             else:
                 print("  (pedal) nothing loud enough", flush=True)
+                report("dropped")
 
     worker = threading.Thread(target=work, daemon=True)
     worker.start()
@@ -197,13 +230,13 @@ def push_to_talk(args, stream, is_down, post=say, pre=3, tail=2, max_s=30.0, sho
         if is_down():
             if buf is None:
                 print("🦶 listening", flush=True)
-                show("surprised")
                 buf = bytearray(b"".join(before))
+            report("listening", level=round(level(data), 2))
             buf += data
             after = 0
         elif buf is not None:
             if after == 0:
-                show("thinking")
+                report("thinking")
             buf += data
             after += 1
         else:
@@ -216,18 +249,19 @@ def push_to_talk(args, stream, is_down, post=say, pre=3, tail=2, max_s=30.0, sho
     worker.join()
 
 
-def listen(args, post=say, popen=subprocess.Popen, once=False, pedal=None):
+def listen(args, post=say, popen=subprocess.Popen, once=False, pedal=None, report=None):
     """Run the microphone; restart it if it dies (USB unplugged, ALSA busy)."""
+    report = report or (quiet if args.dry else Reporter(args.mind))
     while True:
         proc = popen(source_command(args), stdout=subprocess.PIPE)
         try:
             if pedal is not None:
-                show = None if args.dry else (lambda face: cue(args.mind, face))
-                push_to_talk(args, proc.stdout, pedal.down.is_set, post, show=show)
+                push_to_talk(args, proc.stdout, pedal.down.is_set, post, report=report)
             else:
                 for kind, pcm in utterances(proc.stdout, silence_rms=args.silence_rms):
                     if kind == "speech" and voiced_s(pcm, args.silence_rms) >= args.min_s:
-                        hand_over(args, pcm, post)
+                        report("thinking")
+                        hand_over(args, pcm, post, report)
         finally:
             proc.terminate()
             proc.wait()

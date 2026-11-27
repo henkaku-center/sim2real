@@ -2,28 +2,30 @@
 <html lang="ja" id="root">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#17195E">
+<meta name="theme-color" content="#000000">
 <title>Sesame</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&display=swap" rel="stylesheet">
 <style>
-/* Sesame at the café: a night-indigo room, a pink talk button, pads in 3D-printer filament
-   colours. Charts sit on white cards with the validated chart neutrals. */
+/* Sesame at the café: black, with yamabuki (山吹色, the deep golden yellow of the kerria
+   flower) for what you press and a lighter yellow for what is live. Text is warm white;
+   learned pads come in six yellow-to-gold tones. Charts sit on dark cards. */
 :root {
-  --night: #17195E; --night-2: #23278A; --night-3: #2F35A8; --ink: #17195E;
-  --white: #FFFFFF; --mist: #C9CCF5; --pink: #FF4F9A; --pink-deep: #E0237A;
-  --f-yellow: #FFD23F; --f-mint: #3DDC97; --f-sky: #4CC9F0; --f-orange: #FF8A3D; --f-lilac: #B69CFF; --f-coral: #FF7070;
-  --ok: #3DDC97; --warn: #FFB020; --bad: #FF5A5A; --idle: #C9CCF5;
-  /* chart neutrals on white (validated reference palette) */
-  --grid: #e1e0d9; --axis: #c3c2b7; --muted: #6f6e69; --line: #2a78d6;
+  --night: #000000; --night-2: #141414; --night-3: #2B2B2B; --ink: #000000;
+  --white: #FFF8E1; --mist: #C9BE9C; --pink: #F8B500; --pink-deep: #A87A00;
+  --yellow: #FFE135; --yamabuki: #F8B500;
+  --f-yellow: #FFE135; --f-mint: #F8B500; --f-sky: #FFD166; --f-orange: #E6A100; --f-lilac: #FFF09A; --f-coral: #FFC233;
+  --ok: #FFE135; --warn: #F8B500; --bad: #FF5A5A; --idle: #6B6352;
+  /* chart neutrals on the dark cards */
+  --grid: #2E2E2E; --axis: #555048; --muted: #A39C88; --line: #F8B500;
   --display: "Dela Gothic One", "Hiragino Sans", "Noto Sans JP", system-ui, sans-serif;
   --body: system-ui, -apple-system, "Hiragino Sans", "Noto Sans JP", sans-serif;
 }
 * { box-sizing: border-box }
 html { background: var(--night); color: var(--white); -webkit-text-size-adjust: 100% }
 body { margin: 0; font: 17px/1.55 var(--body); min-height: 100vh;
-  background: radial-gradient(120% 60% at 50% 0%, var(--night-3) 0%, var(--night) 60%) fixed }
+  background: radial-gradient(120% 55% at 50% 0%, #241A00 0%, var(--night) 62%) fixed }
 .wrap { max-width: 720px; margin: 0 auto; padding: 14px 16px 80px }
 button, input { font: inherit }
 :focus-visible { outline: 3px solid var(--f-yellow); outline-offset: 3px }
@@ -38,31 +40,48 @@ button, input { font: inherit }
 .word { font-family: var(--display); font-weight: 400; font-size: clamp(44px, 14vw, 76px); line-height: 1; letter-spacing: .02em; margin: 4px 0 6px }
 .tag { color: var(--mist); font-size: 17px; margin: 0 0 22px }
 .mic { width: min(68vw, 260px); aspect-ratio: 1; border-radius: 50%; border: 0; cursor: pointer;
-  background: var(--pink); color: var(--white); font-family: var(--display); font-size: clamp(24px, 7.5vw, 34px);
+  background: var(--yamabuki); color: #000; font-family: var(--display); font-size: clamp(24px, 7.5vw, 34px);
   line-height: 1.15; box-shadow: 0 10px 0 var(--pink-deep); transition: transform .08s, box-shadow .08s;
   position: relative; padding: 0 18px }
 .mic:active { transform: translateY(6px); box-shadow: 0 4px 0 var(--pink-deep) }
 .mic .em { display: block; font-size: 1.6em; margin-bottom: 4px }
-.mic.on::after { content: ""; position: absolute; inset: -14px; border-radius: 50%; border: 5px solid var(--pink);
+.mic.on::after { content: ""; position: absolute; inset: -14px; border-radius: 50%; border: 5px solid var(--yellow);
   animation: ring 1.2s ease-out infinite }
 @keyframes ring { from { transform: scale(.92); opacity: 1 } to { transform: scale(1.18); opacity: 0 } }
 .keep { display: inline-flex; align-items: center; gap: 10px; margin-top: 22px; font-size: 17px; color: var(--mist); cursor: pointer }
 .keep input { width: 24px; height: 24px; accent-color: var(--pink) }
-.heard { font-family: var(--display); font-size: clamp(26px, 7vw, 38px); line-height: 1.25; min-height: 1.3em; margin: 18px 0 0; word-break: break-word }
+.heard { font-family: var(--display); font-size: clamp(26px, 7vw, 38px); line-height: 1.25; min-height: 1.3em; margin: 18px 0 0;
+  word-break: break-word; color: var(--yellow) }
+
+/* the remote ear (a mic + foot pedal on the Pi): live under the talk button */
+.ear { margin: 22px auto 0; max-width: 520px; padding: 14px 18px; border-radius: 20px; background: var(--night-2);
+  border: 2px solid var(--night-3); text-align: left; display: grid; grid-template-columns: auto 1fr; gap: 4px 14px;
+  align-items: center; transition: border-color .15s }
+.ear[hidden] { display: none }
+.ear .icon { font-size: 30px; line-height: 1; grid-row: span 2 }
+.ear .label { font-size: 15px; font-weight: 700; color: var(--mist) }
+.ear .said { font-family: var(--display); font-size: clamp(22px, 6vw, 30px); line-height: 1.25; color: var(--yellow); word-break: break-word; min-height: 1.25em }
+.ear .meter { height: 14px; border-radius: 999px; background: #000; overflow: hidden; border: 1px solid var(--night-3) }
+.ear .meter i { display: block; height: 100%; width: 0; border-radius: 999px;
+  background: linear-gradient(90deg, var(--yamabuki), var(--yellow)); transition: width .12s linear }
+.ear[data-s="listening"] { border-color: var(--yellow) }
+.ear[data-s="thinking"] { border-color: var(--yamabuki) }
+.ear[data-s="thinking"] .said::after { content: "…"; animation: blink 1s infinite }
+.ear[data-s="dropped"] .said { color: var(--mist) }
 
 /* status: big enough to read across the table */
 .status { display: flex; align-items: center; gap: 14px; margin: 18px 0 6px; padding: 14px 18px; border-radius: 20px;
   background: var(--night-2); font-size: 20px; font-weight: 700; text-align: left }
 .status .dot { flex: none; width: 18px; height: 18px; border-radius: 50%; background: var(--idle); box-shadow: 0 0 0 5px rgba(255,255,255,.08) }
 .status[data-s="ok"] .dot { background: var(--ok) } .status[data-s="warn"] .dot { background: var(--warn) }
-.status[data-s="bad"] .dot { background: var(--bad) } .status[data-s="busy"] .dot { background: var(--pink); animation: blink 1s infinite }
+.status[data-s="bad"] .dot { background: var(--bad) } .status[data-s="busy"] .dot { background: var(--yamabuki); animation: blink 1s infinite }
 @keyframes blink { 50% { opacity: .35 } }
 .status small { display: block; font-size: 16px; font-weight: 400; color: var(--mist) }
 .type { display: flex; gap: 10px; margin-top: 16px }
 .type input { flex: 1; min-width: 0; padding: 14px 16px; border-radius: 16px; border: 2px solid var(--night-3);
   background: var(--night); color: var(--white); font-size: 17px }
 .type input::placeholder { color: var(--mist); opacity: .8 }
-.type button { padding: 14px 20px; border-radius: 16px; border: 0; background: var(--white); color: var(--ink); font-weight: 800; cursor: pointer }
+.type button { padding: 14px 20px; border-radius: 16px; border: 0; background: var(--yellow); color: #000; font-weight: 800; cursor: pointer }
 
 /* pads */
 h2 { font-family: var(--display); font-weight: 400; font-size: 28px; margin: 40px 0 6px }
@@ -73,7 +92,7 @@ h2 { font-family: var(--display); font-weight: 400; font-size: 28px; margin: 40p
 .knob output { min-width: 3em; font-variant-numeric: tabular-nums; color: var(--f-yellow) }
 .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px }
 .pad { min-height: 92px; border: 0; border-radius: 18px; padding: 12px 14px; text-align: left; cursor: pointer;
-  color: var(--ink); font-size: 17px; font-weight: 800; line-height: 1.3; display: flex; flex-direction: column;
+  color: #000; font-size: 17px; font-weight: 800; line-height: 1.3; display: flex; flex-direction: column;
   justify-content: space-between; gap: 6px; touch-action: manipulation; box-shadow: 0 6px 0 rgba(0,0,0,.28);
   transition: transform .07s, box-shadow .07s, filter .2s }
 .pad small { font-size: 13px; font-weight: 600; opacity: .7; overflow: hidden; text-overflow: ellipsis; white-space: nowrap }
@@ -82,43 +101,44 @@ h2 { font-family: var(--display); font-weight: 400; font-size: 28px; margin: 40p
 .pad.c0 { background: var(--f-yellow) } .pad.c1 { background: var(--f-mint) } .pad.c2 { background: var(--f-sky) }
 .pad.c3 { background: var(--f-orange) } .pad.c4 { background: var(--f-lilac) } .pad.c5 { background: var(--f-coral) }
 .pad.stock { background: transparent; color: var(--white); border: 2px solid var(--night-3); box-shadow: none; min-height: 72px; font-weight: 700 }
-.pad.stock.hit { background: var(--night-3) }
+.pad.stock:hover { border-color: var(--yamabuki) }
+.pad.stock.hit { background: var(--night-3); border-color: var(--yellow) }
 .sub { font-size: 18px; font-weight: 700; margin: 26px 0 10px; color: var(--mist) }
 .empty { color: var(--mist); font-size: 17px }
 
-/* thought log: quiet white cards */
+/* thought log: quiet dark cards */
 .log-head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; flex-wrap: wrap }
 .live { color: var(--mist); font-size: 15px }
-.card { background: var(--white); color: var(--ink); border-radius: 18px; padding: 16px 18px; margin-top: 14px }
+.card { background: var(--night-2); color: var(--white); border: 1px solid var(--night-3); border-radius: 18px; padding: 16px 18px; margin-top: 14px }
 .card .said { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap }
-.card .text { font-family: var(--display); font-size: 23px; line-height: 1.3 }
+.card .text { font-family: var(--display); font-size: 23px; line-height: 1.3; color: var(--yellow) }
 .card .when { color: var(--muted); font-size: 14px; font-variant-numeric: tabular-nums }
-.steps { margin: 12px 0 0 6px; border-left: 3px solid #E6E7FA; padding-left: 16px }
+.steps { margin: 12px 0 0 6px; border-left: 3px solid var(--night-3); padding-left: 16px }
 .step { position: relative; padding: 4px 0 10px }
 .step::before { content: ""; position: absolute; left: -24px; top: 9px; width: 13px; height: 13px; border-radius: 50%;
-  background: var(--white); border: 3px solid #B9BCEB }
-.step.new::before { border-color: var(--pink) } .step.reuse::before { border-color: #1baf7a }
-.step .what { font-size: 14px; font-weight: 800; color: #5B5FC7 }
+  background: var(--night-2); border: 3px solid var(--axis) }
+.step.new::before { border-color: var(--yellow) } .step.reuse::before { border-color: var(--yamabuki) }
+.step .what { font-size: 14px; font-weight: 800; color: var(--yamabuki) }
 .step .what span { font-weight: 500; color: var(--muted); margin-left: 8px }
 .choice { font-size: 19px; font-weight: 800; margin-top: 2px }
 .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px }
-.chip { background: #EEEFFC; border-radius: 999px; padding: 2px 10px; font-size: 14px; font-variant-numeric: tabular-nums }
-.why { margin-top: 6px; font-size: 16px; color: #33356B }
+.chip { background: var(--night-3); color: var(--white); border-radius: 999px; padding: 2px 10px; font-size: 14px; font-variant-numeric: tabular-nums }
+.why { margin-top: 6px; font-size: 16px; color: #E3D9BC }
 .about { font-size: 18px; font-weight: 800 } .name { color: var(--muted); font-size: 14px; margin-left: 8px }
-.err { color: #B4232C; font-size: 15px; margin-top: 4px }
+.err { color: #FF8A80; font-size: 15px; margin-top: 4px }
 .chart { position: relative; margin-top: 8px }
 .chart svg { display: block; width: 100%; height: auto; overflow: visible }
 .chart text { font-size: 12px; fill: var(--muted); font-family: var(--body) }
-.chart .rowname { fill: var(--ink); font-size: 13px; font-weight: 700 }
-.tip { position: absolute; pointer-events: none; background: var(--ink); color: var(--white); border-radius: 10px;
+.chart .rowname { fill: var(--white); font-size: 13px; font-weight: 700 }
+.tip { position: absolute; pointer-events: none; background: #000; color: var(--white); border: 1px solid var(--yamabuki); border-radius: 10px;
   padding: 6px 9px; font-size: 13px; display: none; white-space: nowrap; font-variant-numeric: tabular-nums }
 .tip .t { color: var(--mist) }
-details.table { margin-top: 6px; font-size: 14px; color: #33356B }
+details.table { margin-top: 6px; font-size: 14px; color: #E3D9BC }
 details.table summary { cursor: pointer; color: var(--muted) }
 details.table table { border-collapse: collapse; margin-top: 4px; font-variant-numeric: tabular-nums }
 details.table td, details.table th { padding: 2px 12px 2px 0; text-align: right; font-weight: 500 }
 details.table th:first-child, details.table td:first-child { text-align: left }
-@media (prefers-reduced-motion: reduce) { .mic.on::after, .status[data-s="busy"] .dot { animation: none } }
+@media (prefers-reduced-motion: reduce) { .mic.on::after, .status[data-s="busy"] .dot, .ear .said::after { animation: none } }
 </style>
 <body>
 <div class="wrap">
@@ -128,6 +148,9 @@ details.table th:first-child, details.table td:first-child { text-align: left }
     <h1 class="word">SESAME</h1>
     <p class="tag" data-t="tag"></p>
     <button class="mic" id="mic" type="button"></button>
+    <div class="ear" id="ear" data-s="" hidden aria-live="polite"><span class="icon" id="earIcon">🎤</span>
+      <span class="label" id="earLabel"></span><span class="said" id="earSaid"></span>
+      <div class="meter" id="earMeter" hidden style="grid-column: 2"><i id="earLevel"></i></div></div>
     <div><label class="keep"><input type="checkbox" id="keep"> <span data-t="keep"></span></label></div>
     <p class="heard" id="now" aria-live="polite"></p>
     <div class="status" id="status" data-s="idle" aria-live="polite"><span class="dot"></span>
@@ -168,6 +191,8 @@ const LANG = ['en', 'ja'].includes(asked) ? asked : ['en', 'ja'].includes(saved)
 const STR = {
   ja: {
     talk: '話しかける', mic: '話しかける', listening: '聞いてるよ', keep: 'ずっと聞く', other: 'English',
+    ear: {listening: 'マイクで聞いてるよ（ペダルを離すと届きます）', thinking: '文字にしています', heard: 'マイクで聞こえたこと',
+      dropped: 'うまく聞き取れませんでした', again: 'もう一度ペダルを踏んで話してね'},
     tag: '話しかけると、体で答えるロボット', placeholder: '文字でも話しかけられます', send: '送る',
     title: 'セサミの頭の中', flow: '聞こえたことを、どう考えて、どう動いたか', connecting: '接続中…', updated: '更新 ',
     empty: 'まだ何も聞いていません。話しかけてみてください。',
@@ -194,6 +219,8 @@ const STR = {
   },
   en: {
     talk: 'Talk', mic: 'Talk to me', listening: 'Listening', keep: 'Keep listening', other: '日本語',
+    ear: {listening: 'Listening on the mic (let go of the pedal to send)', thinking: 'Writing it down', heard: 'Heard on the mic',
+      dropped: 'Didn’t catch that', again: 'Press the pedal and try again'},
     tag: 'A robot that answers with its body', placeholder: 'Or type a message', send: 'Send',
     title: 'Inside Sesame’s head', flow: 'What it heard, how it thought, how it moved', connecting: 'Connecting…', updated: 'Updated ',
     empty: 'Nothing heard yet. Say something!',
@@ -290,7 +317,7 @@ function chart(c, id) {
     svg += `<text x="${L - 6}" y="${y0 + H}" text-anchor="end">${fmt(lo)}</text>`;
     const pts = v.map((val, j) => `${x(c.t[j]).toFixed(1)},${y(val).toFixed(1)}`).join(' ');
     svg += `<polyline points="${pts}" fill="none" stroke="var(--line)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>`;
-    svg += `<circle class="dot" r="4" cx="0" cy="0" visibility="hidden" fill="var(--line)" stroke="#fff" stroke-width="2"/>`;
+    svg += `<circle class="dot" r="4" cx="0" cy="0" visibility="hidden" fill="var(--line)" stroke="#000" stroke-width="2"/>`;
   });
   svg += `<text x="${L}" y="${height - 2}">0 s</text><text x="${W - R}" y="${height - 2}" text-anchor="end">${fmt(T, 2)} s</text>`;
   svg += `<line class="cross" visibility="hidden" x1="0" x2="0" y1="16" y2="${height - 18}" stroke="var(--axis)" stroke-width="1"/>`;
@@ -364,7 +391,7 @@ async function refresh() {
   busy = true;
   try {
     const v = await (await fetch('latest', {signal: AbortSignal.timeout(8000)})).json();
-    health = {robot: v.robot || 'idle', doing: v.doing || ''}; drawStatus();
+    health = {robot: v.robot || 'idle', doing: v.doing || ''}; drawStatus(); drawEar(v.ear);
     $('live').textContent = STR.updated + new Date().toLocaleTimeString([], {hour: '2-digit', minute: '2-digit', second: '2-digit'});
     const key = v.n + ':' + v.t;
     if (key === shown) return;
@@ -379,7 +406,24 @@ async function refresh() {
     health = {robot: 'mind', doing: ''}; drawStatus();
   } finally { busy = false }
 }
-refresh(); setInterval(refresh, 2000);
+// The remote ear: what the mic by the robot is hearing, right under the talk button.
+// While someone holds the pedal the page polls fast so the meter and the words keep up.
+let earBusy = false, earSeen = 0;
+const EAR_ICON = {listening: '🎤', thinking: '✍️', heard: '💬', dropped: '🤔'};
+function drawEar(e) {
+  const box = $('ear');
+  earBusy = !!e && (e.s === 'listening' || e.s === 'thinking') && Date.now() / 1000 - e.t < 8;
+  if (!e || Date.now() / 1000 - e.t > (e.s === 'heard' ? 20 : 8)) { box.hidden = true; box.dataset.s = ''; return }
+  box.hidden = false; box.dataset.s = e.s;
+  $('earIcon').textContent = EAR_ICON[e.s] || '🎤';
+  $('earLabel').textContent = STR.ear[e.s] || '';
+  $('earMeter').hidden = e.s !== 'listening';
+  $('earLevel').style.width = Math.round((e.level || 0) * 100) + '%';
+  $('earSaid').textContent = e.s === 'heard' ? STR.q(e.text) : e.s === 'dropped' ? STR.ear.again : '';
+  if (e.s === 'heard' && e.t !== earSeen) { earSeen = e.t; shown = ''; status('thinking', null, 20000) }
+}
+async function loop() { await refresh(); setTimeout(loop, earBusy || listening ? 300 : 1500) }
+loop();
 
 // Talking: the browser's speech recognition (needs HTTPS or localhost) turns speech into
 // text; the text goes to the mind like a chat line. Typing works everywhere.
