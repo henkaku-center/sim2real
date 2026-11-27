@@ -178,6 +178,20 @@ model `~/models/whisper/ggml-small-q5_1.bin`, installing the unit
 and stopping the Pi's older `sesame-mind.service` (a second mind that cannot
 reach the robot from FabCafeMTRL).
 
+## Lag (2026-11-27)
+
+Measured on the Pi 5 (small q5_1) and the Mac mind on the phone hotspot:
+
+| Step | Before | After |
+|---|---|---|
+| whisper on the Pi | 9.7 s | ~1.5 s: greedy, no fallback, `-ac` cut to the clip (≥256; tighter repeats words), short prompt |
+| reflex (Haiku 5.5) | 1.4–6 s | unchanged (network-bound) |
+| new motion design | Opus 5–8 s, after the reflex | in parallel with the reflex; designer set to Sonnet 5.5 (4–8 s) on the settings page |
+
+Feedback while waiting: pedal down → OLED `surprised`, pedal up → `thinking`
+(through the mind's admin `POST /cue`), the mind shows `thinking` on every remark
+and `idle` after a designed motion or none. Faces take 0.1–0.4 s and move no servo.
+
 ## Pitfalls
 
 - The page is public: anyone with the URL can move the robot, and the thought
