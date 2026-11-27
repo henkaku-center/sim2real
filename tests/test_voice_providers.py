@@ -1,4 +1,4 @@
-"""Mocked HTTP/Google RPC tests. Never discover real ADC or call a model."""
+"""Mocked provider HTTP tests. Never call a live provider."""
 import io
 import json
 from pathlib import Path
@@ -11,7 +11,7 @@ import pytest
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from tools.voice_demo.providers import ClaudeProvider, NoRedirect, PlanRefusal, ProviderError, provider_from_env
 from tools.voice_demo.plan import InvalidPlan
-from tools.voice_demo.stt import GoogleSpeechProvider, speech_from_env
+from tools.voice_demo.stt import DeepgramSpeechProvider, NoRedirect as SpeechNoRedirect, speech_from_env
 from test_voice_demo import catalog, serving, wav, TOKEN
 from tools.voice_demo.client import request_plan, ServerUnavailable
 
@@ -28,7 +28,7 @@ def claude(catalog, monkeypatch):
     monkeypatch.setenv("VOICE_CLAUDE_BASE_URL", "https://worker.example")
     monkeypatch.setenv("VOICE_PLAN_MODEL", "claude-haiku-4-5")
     monkeypatch.delenv("VOICE_PROVIDER", raising=False)
-    monkeypatch.delenv("VOICE_STT_PROVIDER", raising=False)
+    monkeypatch.setenv("VOICE_STT_TOKEN", "speech-fixture-secret")
     return provider_from_env(catalog)
 
 
@@ -168,8 +168,9 @@ def test_default_is_claude_and_missing_token_does_not_silently_fake(catalog, mon
     monkeypatch.delenv("VOICE_CLAUDE_TOKEN", raising=False)
     with pytest.raises(ProviderError, match="VOICE_CLAUDE_TOKEN"):
         provider_from_env(catalog)
-    monkeypatch.delenv("VOICE_STT_PROVIDER", raising=False)
-    assert isinstance(speech_from_env(), GoogleSpeechProvider)
+    monkeypatch.delenv("VOICE_STT_TOKEN", raising=False)
+    with pytest.raises(ProviderError, match="VOICE_STT_TOKEN"):
+        speech_from_env()
 
 
 def test_refusal_notes_survive_server_and_relay(catalog, claude, monkeypatch):
@@ -196,66 +197,93 @@ def test_separate_stt_adapter_passes_transcript_to_planner(catalog, claude, monk
 
 
 @pytest.fixture
-def google(monkeypatch):
-    speech = pytest.importorskip("google.cloud.speech_v2")
-    monkeypatch.setenv("GOOGLE_CLOUD_PROJECT", "sesame-robots")
-    monkeypatch.setenv("VOICE_STT_LOCATION", "us")
-    monkeypatch.setenv("VOICE_STT_MODEL", "chirp_3")
-    monkeypatch.setenv("VOICE_STT_LANGUAGES", "en-US,ja-JP")
-    return speech
+def deepgram(monkeypatch):
+    monkeypatch.setenv("VOICE_STT_TOKEN", "speech-fixture-secret")
+    monkeypatch.delenv("VOICE_STT_URL", raising=False)
+    return speech_from_env()
 
 
-@pytest.mark.parametrize("languages", ["en-US,ja-JP", "auto"])
-def test_google_v2_request_uses_adc_and_short_bilingual_audio(google, monkeypatch, languages):
-    from google.cloud.speech_v2.types import cloud_speech
-    calls = []
-    monkeypatch.setenv("VOICE_STT_LANGUAGES", languages)
-    class Client:
-        def __init__(self, *, client_options, client_info):
-            assert client_options.api_endpoint == "us-speech.googleapis.com"
-            assert client_info.user_agent == "sesame-voice-demo/0.1.0"
-        def __enter__(self):
-            return self
-        def __exit__(self, *_):
-            calls.append("closed")
-        def recognize(self, *, request, retry, timeout):
-            calls.append(request)
-            assert retry is None and timeout == 30
-            return cloud_speech.RecognizeResponse(results=[
-                {"alternatives": [{"transcript": "おじぎして"}]}])
-    monkeypatch.setattr(google, "SpeechClient", Client)
-    assert GoogleSpeechProvider().transcribe(wav()) == "おじぎして"
-    request = calls[0]
-    assert request.recognizer == "projects/sesame-robots/locations/us/recognizers/_"
-    assert request.config.model == "chirp_3" and list(request.config.language_codes) == languages.split(",")
-    assert request.config._pb.HasField("auto_decoding_config")
-    assert request.content == wav() and calls[-1] == "closed"
+def speech_response(text):
+    return {"results": {"channels": [{"alternatives": [{"transcript": text}]}]}}
 
 
-@pytest.mark.parametrize("error_type", ["adc", "api", "empty"])
-def test_google_failure_is_clear_and_private(google, monkeypatch, error_type):
-    from google.api_core.exceptions import PermissionDenied
-    from google.auth.exceptions import DefaultCredentialsError
-    from google.cloud.speech_v2.types import cloud_speech
-    class Client:
-        def __init__(self, **kwargs):
-            if error_type == "adc":
-                raise DefaultCredentialsError("private credential path")
-        def __enter__(self):
-            return self
-        def __exit__(self, *_):
-            pass
-        def recognize(self, **kwargs):
-            if error_type == "api":
-                raise PermissionDenied("private provider error")
-            return cloud_speech.RecognizeResponse()
-    monkeypatch.setattr(google, "SpeechClient", Client)
-    with pytest.raises(ProviderError, match="Google Speech") as error:
-        GoogleSpeechProvider().transcribe(wav())
-    assert "private" not in str(error.value)
+@pytest.mark.parametrize("text", ["Do a bow.", "みんなに挨拶して。", "  おじぎして  "])
+def test_deepgram_wire_contract(deepgram, monkeypatch, text):
+    calls = mock_http(monkeypatch, [speech_response(text)])
+    handlers = []
+    build = urllib.request.build_opener
+    def capture(*args):
+        handlers.extend(args)
+        return build(*args)
+    monkeypatch.setattr(urllib.request, "build_opener", capture)
+    assert isinstance(deepgram, DeepgramSpeechProvider) and deepgram.name == "deepgram"
+    assert deepgram.transcribe(wav()) == text
+    request, timeout = calls[0]
+    assert request.full_url == "https://kotoleaf.wandering-sky-fcce.workers.dev/v1/listen?smart_format=true"
+    assert request.get_method() == "POST" and request.data == wav() and timeout == 30
+    assert dict(request.header_items()) == {
+        "Authorization": "Token speech-fixture-secret", "Content-type": "audio/wav",
+        "User-agent": "sesame-voice-demo/0.1.0"}
+    assert any(isinstance(h, urllib.request.ProxyHandler) and h.proxies == {} for h in handlers)
+    assert any(isinstance(h, SpeechNoRedirect) for h in handlers)
 
 
-def test_google_rejects_bad_audio_before_adc(google, monkeypatch):
-    monkeypatch.setattr(google, "SpeechClient", lambda **kwargs: pytest.fail("must not discover ADC"))
+@pytest.mark.parametrize("text", ["", "  \n"])
+def test_deepgram_no_speech(deepgram, monkeypatch, text):
+    mock_http(monkeypatch, [speech_response(text)])
+    with pytest.raises(ProviderError, match="no speech"):
+        deepgram.transcribe(wav())
+
+
+@pytest.mark.parametrize("status", [401, 429, 500])
+def test_deepgram_http_status_without_secrets(deepgram, monkeypatch, status):
+    body = io.BytesIO(b"speech-fixture-secret private response")
+    calls = mock_http(monkeypatch, [urllib.error.HTTPError(
+        deepgram.url, status, deepgram.token, {}, body)])
+    with pytest.raises(ProviderError, match=f"HTTP {status}") as error:
+        deepgram.transcribe(wav())
+    assert deepgram.token not in str(error.value) and "private" not in str(error.value)
+    assert error.value.__suppress_context__ and body.closed and len(calls) == 1
+
+
+@pytest.mark.parametrize("response", [b"speech-fixture-secret", b"\xff", {}, [],
+    {"results": {"channels": []}}, speech_response(None), b"x" * 262145,
+    TimeoutError("speech-fixture-secret"), urllib.error.URLError("speech-fixture-secret")])
+def test_deepgram_invalid_response_is_private(deepgram, monkeypatch, response):
+    calls = mock_http(monkeypatch, [response])
+    with pytest.raises(ProviderError) as error:
+        deepgram.transcribe(wav())
+    assert deepgram.token not in str(error.value) and len(calls) == 1
+
+
+@pytest.mark.parametrize("url", ["http://example.com", "file:///secret", "https://user:secret@example.com",
+    "https://example.com?token=secret", "https://example.com/#secret", "https://[", "https://example.com:bad"])
+def test_deepgram_rejects_invalid_url(deepgram, monkeypatch, url):
+    monkeypatch.setenv("VOICE_STT_URL", url)
+    with pytest.raises(ProviderError, match="HTTPS origin") as error:
+        speech_from_env()
+    assert "secret" not in str(error.value)
+
+
+def test_deepgram_custom_origin(deepgram, monkeypatch):
+    monkeypatch.setenv("VOICE_STT_URL", "https://speech.example/")
+    assert speech_from_env().url == "https://speech.example/v1/listen?smart_format=true"
+
+
+def test_deepgram_redirect_refused():
+    with pytest.raises(ProviderError, match="HTTP 307.*redirect refused"):
+        SpeechNoRedirect().redirect_request(None, None, 307, "secret", {}, "https://other.example")
+
+
+def test_deepgram_rejects_bad_audio_before_http(deepgram, monkeypatch):
+    calls = mock_http(monkeypatch, [])
     with pytest.raises(InvalidPlan, match="WAV"):
-        GoogleSpeechProvider().transcribe(b"not a recording")
+        deepgram.transcribe(b"not a recording")
+    assert not calls
+
+
+def test_health_reports_deepgram(catalog, claude):
+    with serving(catalog, claude) as (url, _):
+        request = urllib.request.Request(url + "/health", headers={"Authorization": f"Bearer {TOKEN}"})
+        with urllib.request.urlopen(request) as response:
+            assert json.load(response)["stt_provider"] == "deepgram"

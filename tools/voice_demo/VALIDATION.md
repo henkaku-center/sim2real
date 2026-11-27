@@ -1,6 +1,34 @@
-# Validation and self-review — 25 November 2026
+# Validation and self-review
 
-## Claude / Google migration
+## Deepgram / Kotoleaf replacement — 27 November 2026
+
+The production speech adapter now uses Deepgram through Kotoleaf exclusively.
+Offline tests cover exact URL, WAV body, authorization and User-Agent, unchanged
+English/Japanese transcripts, empty speech, HTTP 401/429/500, malformed/oversized
+responses, HTTPS validation, missing tokens, redirects, disabled proxies and
+secret-free errors. `/health` reports `stt_provider: deepgram`.
+
+- uv **0.12.19** regenerated the demo lockfile, removing Google-only packages
+  while retaining the base dependency versions.
+- Python **3.11.16**, macOS Intel: focused voice suite **93 passed, 1 skipped**
+  (Linux-only GPIO), 14.19 seconds.
+- Python **3.12.13**: full root suite **549 passed, 17 skipped, 1 expected
+  failure**, 164.69 seconds. Existing hardware/browser/environment skips remain.
+- Complete fake HTTP → relay → native firmware PTY demo passed, asserting
+  `mode=0 outputs=0`; shell syntax and `git diff --check` passed.
+- Self-review checked the single production factory, startup failure without a
+  token, bounded private errors, HTTP status, proxy/redirect refusal, secret
+  mapping and removal of Google-specific runtime/configuration/dependencies.
+  CI runs the voice suite on Linux x86_64, Linux arm64 and macOS.
+
+The live deployed check will follow the owner's deployment from main. No live
+provider requests, deployment, cloud resources or credentials were used here.
+The comparison reported by the owner on 27 November is recorded in DECISION.md;
+it is separate from this offline adapter validation.
+
+The following sections preserve historical results for the superseded adapters.
+
+## Claude / Google migration — 25 November 2026 (historical)
 
 - `uv run --project tools/voice_demo --locked --extra google --python 3.11 python -m pytest tests/test_voice_demo.py tests/test_voice_providers.py -q`:
   **71 passed, 1 skipped**, 11.42 seconds, macOS Intel / Python 3.11.16. The skip

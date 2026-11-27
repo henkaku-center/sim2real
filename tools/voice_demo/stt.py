@@ -1,61 +1,64 @@
-"""Speech adapters expose only transcribe(wav_bytes) -> text; no planner coupling."""
+"""Speech transcription through the Kotoleaf Deepgram gateway."""
+import json
 import os
-import re
+import urllib.error
+import urllib.parse
+import urllib.request
 
 from .providers import USER_AGENT, ProviderError, check_text, check_wav
 
 
-class GoogleSpeechProvider:
-    name = "google"
+class NoRedirect(urllib.request.HTTPRedirectHandler):
+    def redirect_request(self, _request, _response, code, *_args, **_kwargs):
+        raise ProviderError(f"Deepgram HTTP {code}; endpoint redirect refused")
+
+
+class DeepgramSpeechProvider:
+    name = "deepgram"
 
     def __init__(self):
-        self.project = os.environ.get("GOOGLE_CLOUD_PROJECT", "sesame-robots")
-        self.location = os.environ.get("VOICE_STT_LOCATION", "us")
-        self.model = os.environ.get("VOICE_STT_MODEL", "chirp_3")
-        self.languages = os.environ.get("VOICE_STT_LANGUAGES", "en-US,ja-JP").split(",")
-        self.languages = [language.strip() for language in self.languages]
-        if (not re.fullmatch(r"[a-z][a-z0-9-]*", self.project) or
-                not re.fullmatch(r"[a-z][a-z0-9-]*", self.location) or self.location == "global"):
-            raise ProviderError("Google Speech needs a project ID and regional location (not global)")
-        if not 1 <= len(self.languages) <= 3 or any(not language for language in self.languages):
-            raise ProviderError("VOICE_STT_LANGUAGES needs 1..3 comma-separated language codes")
-        if "auto" in self.languages and self.languages != ["auto"]:
-            raise ProviderError("Use auto alone in VOICE_STT_LANGUAGES")
+        self.token = os.environ.get("VOICE_STT_TOKEN", "")
+        if not self.token:
+            raise ProviderError("VOICE_STT_TOKEN is required for Deepgram through Kotoleaf")
+        base = os.environ.get("VOICE_STT_URL", "https://kotoleaf.wandering-sky-fcce.workers.dev").rstrip("/")
+        try:
+            parsed = urllib.parse.urlsplit(base)
+            valid = (parsed.scheme == "https" and parsed.hostname and not parsed.username
+                     and not parsed.password and not parsed.query and not parsed.fragment
+                     and not parsed.path)
+            parsed.port  # Reject malformed ports without exposing the supplied URL.
+        except ValueError:
+            valid = False
+        if not valid:
+            raise ProviderError("VOICE_STT_URL must be an HTTPS origin without credentials")
+        self.url = base + "/v1/listen?smart_format=true"
 
     def transcribe(self, audio):
         check_wav(audio)
-        # Lazy import/ADC: fake mode and text-only Claude need no Google packages or credentials.
         try:
-            from google.api_core.client_options import ClientOptions
-            from google.api_core.gapic_v1.client_info import ClientInfo
-            from google.api_core.exceptions import GoogleAPICallError
-            from google.auth.exceptions import GoogleAuthError
-            from google.cloud.speech_v2 import SpeechClient
-            from google.cloud.speech_v2.types import cloud_speech
-        except ImportError:
-            raise ProviderError("Install the voice demo google extra for Google Speech") from None
-        request = cloud_speech.RecognizeRequest(
-            recognizer=f"projects/{self.project}/locations/{self.location}/recognizers/_",
-            config=cloud_speech.RecognitionConfig(
-                auto_decoding_config=cloud_speech.AutoDetectDecodingConfig(),
-                language_codes=self.languages, model=self.model),
-            content=audio)
-        try:
-            # ADC uses the VM's attached service account. No key-file plumbing.
-            with SpeechClient(client_options=ClientOptions(
-                    api_endpoint=f"{self.location}-speech.googleapis.com"),
-                    client_info=ClientInfo(user_agent=USER_AGENT)) as client:
-                response = client.recognize(request=request, retry=None, timeout=30)
-        except (GoogleAPICallError, GoogleAuthError, OSError, ValueError):
-            raise ProviderError("Google Speech failed; check ADC, Speech API, IAM, region and model") from None
-        text = " ".join(result.alternatives[0].transcript for result in response.results if result.alternatives)
+            request = urllib.request.Request(self.url, data=audio, headers={
+                "Authorization": f"Token {self.token}", "Content-Type": "audio/wav",
+                "User-Agent": USER_AGENT})
+            opener = urllib.request.build_opener(urllib.request.ProxyHandler({}), NoRedirect())
+            with opener.open(request, timeout=30) as response:
+                data = response.read(262145)
+                if len(data) > 262144:
+                    raise ProviderError("Deepgram response too large")
+                result = json.loads(data)
+            text = result["results"]["channels"][0]["alternatives"][0]["transcript"]
+            if not isinstance(text, str):
+                raise ProviderError("Deepgram returned an invalid transcript")
+        except urllib.error.HTTPError as exc:
+            code = exc.code
+            exc.close()
+            raise ProviderError(f"Deepgram HTTP {code}; check endpoint and credentials") from None
+        except (urllib.error.URLError, OSError, ValueError, RecursionError, KeyError, IndexError, TypeError):
+            raise ProviderError("Deepgram request failed: network, timeout or invalid JSON response") from None
         if not text.strip():
-            raise ProviderError("Google Speech returned no speech; try another recording")
-        return check_text(text)
+            raise ProviderError("Deepgram returned no speech; try another recording")
+        check_text(text)
+        return text
 
 
 def speech_from_env():
-    selected = os.environ.get("VOICE_STT_PROVIDER", "google")
-    if selected == "google":
-        return GoogleSpeechProvider()
-    raise ProviderError("VOICE_STT_PROVIDER must be google; use VOICE_PROVIDER=fake for offline fixtures")
+    return DeepgramSpeechProvider()

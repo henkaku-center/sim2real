@@ -5,7 +5,7 @@ FROM python:3.12-slim-bookworm
 COPY --from=ghcr.io/astral-sh/uv:0.12.19 /uv /usr/local/bin/uv
 WORKDIR /opt/sim2real
 COPY . .
-RUN uv sync --project tools/voice_demo --locked --extra google --no-dev --python /usr/local/bin/python3 \
+RUN uv sync --project tools/voice_demo --locked --no-dev --python /usr/local/bin/python3 \
  && useradd --system --no-create-home --shell /usr/sbin/nologin sesame-voice
 USER sesame-voice
 ENV PYTHONUNBUFFERED=1 PYTHONDONTWRITEBYTECODE=1
