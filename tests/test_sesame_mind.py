@@ -199,7 +199,7 @@ def test_mind_invents_learns_and_replays(tmp_path):
 def test_mind_survives_bad_designs_and_reflex_outages(tmp_path):
     spine = FakeSpine()
     mind = sm.Mind(BrokenReflex(), sm.Library(), sm.Memory(), spine, FakeDesigner({"kind": "dance"}))
-    assert mind.handle(sm.Moment("chat", "wave"))["by"] == "rules"
+    assert mind.handle(sm.Moment("chat", "dance"))["by"] == "rules"
     entry = mind.handle(sm.Moment("chat", "新しいのを作って"))
     assert entry["did"] == sm.NONE and "design failed" in entry["note"]
     assert len(spine.played) == 1
@@ -237,7 +237,7 @@ def test_model_reflex_designs_in_parallel_and_drops_unused_designs(tmp_path):
     t0 = time.monotonic()
     entry = mind.handle(sm.Moment("chat", "くねくねして"))
     assert entry["did"] == "wiggle" and time.monotonic() - t0 < 0.35  # max(0.2, 0.2), not their sum
-    assert mind.handle(sm.Moment("chat", "手を振って"))["did"] == "wave" and designer.calls == 2
+    assert mind.handle(sm.Moment("chat", "こんにちは"))["did"] == "wave" and designer.calls == 2
     assert "wiggle_2" not in mind.library.items  # the early design for "wave" was not kept
     designer.design = lambda *a: (_ for _ in ()).throw(RuntimeError("overloaded"))
     assert "design failed: overloaded" in mind.handle(sm.Moment("chat", "もう一つ"))["note"]
@@ -928,3 +928,24 @@ def test_guest_alone_button_switches_solo_play(tmp_path):
         assert not mind.alone
     finally:
         server.shutdown()
+
+
+def test_named_stock_motions_skip_the_reflex(tmp_path):
+    class NoReflex:
+        by = "never"
+
+        def decide(self, *a, **k):
+            raise AssertionError("the reflex must not be asked for a named stock motion")
+
+    lib = sm.Library()
+    for text, name in [("Please do a bow.", "bow"), ("おじぎして", "bow"), ("Wave to everyone!", "wave"),
+                       ("手を振って", "wave"), ("Now do a one eighty degree rotation.", "turn_left"),
+                       ("Turn around 180 degrees", "turn_left"), ("くるっと回って", "turn_left")]:
+        assert sm.stock_request(text, lib) == name, text
+    for text in ("my elbow hurts", "microwave the rainbow", "寒いね", "dance please", ""):
+        assert sm.stock_request(text, lib) is None, text
+    spine = FakeSpine()
+    mind = sm.Mind(NoReflex(), lib, sm.Memory(tmp_path), spine)
+    entry = mind.handle(sm.Moment("chat", "Please do a bow."))
+    assert entry["did"] == "bow" and entry["by"] == "stock"
+    assert spine.played == [(lib.items["bow"]["spec"], 0.6)]

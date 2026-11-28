@@ -311,6 +311,26 @@ def spoken_tempo(text):
     return 1.0
 
 
+# A stock motion asked for by name is played as it is, without a model call: visitors
+# who say "bow" expect the bow they know, and the answer starts at once. Anything else
+# still goes to the reflex. English needs whole words (not elbow, microwave).
+STOCK_REQUESTS = (
+    ("bow", re.compile(r"\bbow(?:ing|s)?\b|おじぎ|お辞儀")),
+    ("wave", re.compile(r"\bwav(?:e|es|ing)\b|手を振|手をふ")),
+    ("turn_left", re.compile(r"\b180\b|one[ -]eighty|\bturn(?:ing)? around\b|\brotat(?:e|es|ing|ion)\b|\bspin\b"
+                             r"|回って|回転|振り向")),
+)
+
+
+def stock_request(text, library):
+    """The stock motion a request names directly, or None."""
+    text = text.lower()
+    for name, pattern in STOCK_REQUESTS:
+        if name in library.items and pattern.search(text):
+            return name
+    return None
+
+
 class RuleReflex:
     """Offline fallback: library names in the text, 作って/new for a new motion, onsets startle."""
     by = "rules"
@@ -1056,9 +1076,11 @@ class Mind:
         t0 = self.active_at = time.monotonic()
         if moment.text:
             self.cue("thinking")
-        early = self.design_early(moment)
+        named = stock_request(moment.text, self.library) if moment.text else None
+        early = None if named else self.design_early(moment)
         try:
-            decision = self.reflex.decide(moment, self.library, self.memory.notes)
+            decision = (Decision(named, 0.6, 1.0, by="stock", why="asked for by name") if named
+                        else self.reflex.decide(moment, self.library, self.memory.notes))
         except (OSError, ValueError, KeyError, TypeError, AttributeError) as e:
             print(f"(reflex {self.reflex.by}) {e}; falling back to rules", file=sys.stderr)
             decision = RuleReflex().decide(moment, self.library)
